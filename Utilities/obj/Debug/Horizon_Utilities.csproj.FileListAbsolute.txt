@@ -1,0 +1,5 @@
+C:\Users\Admin\Documents\Visual Studio 2015\Projects\Horizon\Utilities\bin\Debug\Utilities.dll
+C:\Users\Admin\Documents\Visual Studio 2015\Projects\Horizon\Utilities\bin\Debug\Utilities.pdb
+C:\Users\Admin\Documents\Visual Studio 2015\Projects\Horizon\Utilities\obj\Debug\Horizon_Utilities.csprojResolveAssemblyReference.cache
+C:\Users\Admin\Documents\Visual Studio 2015\Projects\Horizon\Utilities\obj\Debug\Utilities.dll
+C:\Users\Admin\Documents\Visual Studio 2015\Projects\Horizon\Utilities\obj\Debug\Utilities.pdb

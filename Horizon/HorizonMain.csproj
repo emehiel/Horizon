@@ -43,49 +43,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Horizon_Utilities\Complex.cs" />
-    <Compile Include="Horizon_Utilities\Matrix.cs" />
-    <Compile Include="Horizon_Utilities\MatrixIndex.cs" />
-    <Compile Include="Horizon_Utilities\obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
-    <Compile Include="Horizon_Utilities\obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
-    <Compile Include="Horizon_Utilities\obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
-    <Compile Include="Horizon_Utilities\Properties\AssemblyInfo.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Scheduler\Target.cs" />
-    <Compile Include="Scheduler\Task.cs" />
-    <Compile Include="System_H\Asset.cs" />
-    <Compile Include="System_H\Constraint.cs" />
-    <Compile Include="System_H\Subsystem\Asset.cs" />
-    <Compile Include="System_H\Subsystem\Dependencies.cs" />
-    <Compile Include="System_H\Subsystem\Subsystem.cs" />
-    <Compile Include="System_H\Subsystem\SubsystemNode.cs" />
-    <Compile Include="System_H\SystemClass.cs" />
-    <Compile Include="Universe\CloudCover.cs" />
-    <Compile Include="Universe\DynamicState.cs" />
-    <Compile Include="Universe\Environment.cs" />
-    <Compile Include="Universe\geomAccess.cs" />
-    <Compile Include="Universe\geomUtil.cs" />
-    <Compile Include="Universe\Sun.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Horizon_Utilities\obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
-    <None Include="Horizon_Utilities\obj\Debug\Horizon_Utilities.csprojResolveAssemblyReference.cache" />
     <None Include="obj\Debug\DesignTimeResolveAssemblyReferencesInput.cache" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Horizon_Utilities\obj\Debug\TempPE\" />
     <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Horizon_Utilities\bin\Debug\Horizon_Utilities.pdb" />
-    <Content Include="Horizon_Utilities\Horizon_Utilities.csproj" />
-    <Content Include="Horizon_Utilities\obj\Debug\Horizon_Utilities.csproj.FileListAbsolute.txt" />
-    <Content Include="Horizon_Utilities\obj\Debug\Horizon_Utilities.pdb" />
     <Content Include="obj\Debug\Horizon.csproj.FileListAbsolute.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

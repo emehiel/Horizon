@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horizon", "Horizon\Horizon.csproj", "{6E6D45BA-6E13-4117-839E-469A59EEF191}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorizonMain", "Horizon\HorizonMain.csproj", "{6E6D45BA-6E13-4117-839E-469A59EEF191}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horizon_Utilities", "Utilities\Horizon_Utilities.csproj", "{EDA938FC-7A34-4506-81F8-D4D940D6ED84}"
 EndProject
@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "System_H", "System_H\System
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Scheduler", "Scheduler\Scheduler.csproj", "{241171AB-18B2-45A0-848A-62B2EF751644}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorizonUnitTest", "HorizonUnitTest\HorizonUnitTest.csproj", "{596FA71B-12FA-40E5-89B6-DE19547A2A0F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniverseUnitTest", "HorizonUnitTest\UniverseUnitTest.csproj", "{596FA71B-12FA-40E5-89B6-DE19547A2A0F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Subsystem", "Subsystem\Subsystem.csproj", "{2006798B-5974-4838-AA6D-29340FB171D2}"
 EndProject

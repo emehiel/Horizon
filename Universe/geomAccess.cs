@@ -13,31 +13,31 @@ namespace Universe{
            int num_tasks = access_pregen.Count;
            int num_assets = access_pregen[0].Count;
             // initialize vector to hold tasks each asset has access to
-           Stack<List<Task>> assetTasks = new Stack<List<Task>>(num_assets); //TODO double check this
+           List<Stack<Task>> assetTasks = new Stack<List<Task>>(num_assets); //TODO double check this
            // iterate through each task that acces has been pregenerated for
            //foreach (List<Dictionary<double, bool> accessPregenIt in access_pregen)
            int i = 0, j;
            List<List<Dictionary<double, bool>>> accessPregenIt = new List<List<Dictionary<double, bool>>>();
-            Stack<List<Task>> assetTaskIt = assetTasks;
+            List<Stack<Task>> assetTaskIt = assetTasks;
           //  List<Task> taskIt = taskList;
            foreach (List<Task> taskIt in taskList){
               // accessPregenIt = access_pregen[i++];// List of dictionaries.
                bool hasAccess;
                j = 0;
                foreach(List<Dictionary<double, bool>> assetAccessPregenIt in accessPregenIt){
-                   assetTaskIt = assetTasks[j++];
+                   //assetTaskIt = assetTasks[j++];
                     Dictionary<double, bool> access = assetAccessPregenIt.upper_bound(time);
                    // check the map to find if the asset has access to the task
                    foreach(Dictionary<double,bool> access in 
-                           assetAccessPregenIt.upper_bound(time)){// not sure about this
+                           assetAccessPregenIt.upper_bound(time)){// need to implement upper_bound extention
                        if(access != accessPregenIt.end()){
-                           hasAccess = !(access.second);
+                           hasAccess = !(access.TryGetValue());
                        }
                        else{
-                           hasAccess = assetAccessPregenIt.rbegin().second;
+                           hasAccess = assetAccessPregenIt.Last().TryGetValue();
                        }
                        if(hasAccess){
-                           assetTaskIt.Push(taskIt);
+                           assetTaskIt.ElementAt(j).Push(taskIt);
                        }
                    }
                }

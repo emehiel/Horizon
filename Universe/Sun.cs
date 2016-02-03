@@ -56,7 +56,7 @@ namespace Universe
         * @return a Matrix containing the Earth-Sun vector in ECI.
         */
         public Matrix getEarSunVec(double simTime){
-            if (_isSunVecConstant && esVec != Matrix()) // != Matrix()
+            if (_isSunVecConstant && esVec.NumCols != 0 && esVec.NumRows != 0) // != Matrix()
                 return esVec;
 
             Matrix RSun = new Matrix(3, 1, 0.0);

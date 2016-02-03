@@ -9,20 +9,20 @@ using Horizon_Utilities;
 namespace Subsystem
 {
 		public class SubsystemNode{
-			private bool _isChecked {get; private set};
+			public bool _isChecked { get; private set; }
 			private bool _scriptingEnabled;
-			private Subsystem _subsystem {get; private set};
-			private Asset _asset {get; private set};
-			private int _nAsset {get; set};
-			private List<SubsystemNode> _preceedingNodes {get;  private set}; //should we just have a linked list of nodes?
-			private NodeDependencies _dependencies {get; set};
+			public Subsystem _subsystem { get; private set; }
+			public Asset _asset { get; private set; }
+			private int _nAsset { get; set; }
+			private List<SubsystemNode> _preceedingNodes { get; private set; } //should we just have a linked list of nodes?
+			private NodeDependencies _dependencies { get; set; }
 			
 			public SubsystemNode()
             {
 				_dependencies = new NodeDependencies();
 			}
 			
-			public SubsystemNode(const Subsystem subsystem, Asset asset){
+			public SubsystemNode(Subsystem subsystem, Asset asset){
 				_subsystem = subsystem;
 				_asset = asset;
 			}

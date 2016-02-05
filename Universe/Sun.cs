@@ -18,8 +18,7 @@ namespace Universe
     {
         NO_SHADOW,
         UMBRA,
-        PENUMBRA,
-        hello
+        PENUMBRA
     };
     public class Sun
     {

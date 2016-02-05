@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2006798B-5974-4838-AA6D-29340FB171D2}</ProjectGuid>
+    <ProjectGuid>{241171AB-18B2-45A0-848A-62B2EF751644}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Subsystem</RootNamespace>
-    <AssemblyName>Subsystem</AssemblyName>
+    <RootNamespace>HSFScheduler</RootNamespace>
+    <AssemblyName>HSFScheduler</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -40,21 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Asset.cs" />
-    <Compile Include="Dependencies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Subsystem.cs" />
-    <Compile Include="SubsystemNode.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\System_H\HSFSystem.csproj">
-      <Project>{72fa2884-1d92-4088-9fac-60564f9971f8}</Project>
-      <Name>HSFSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilitites.csproj">
-      <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>
-      <Name>Utilitites</Name>
-    </ProjectReference>
+    <Compile Include="Target.cs" />
+    <Compile Include="Task.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

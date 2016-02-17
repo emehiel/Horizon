@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace Horizon_Utilities
+namespace Utilities
 {
     [Serializable]
     public class Complex : ICloneable, ISerializable

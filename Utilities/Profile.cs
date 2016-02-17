@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HSF_Utility
+namespace Utilities
 {
-    class Profile<T>
+    public class HSFProfile<T>
     {
         // Class Data
 
@@ -26,7 +26,7 @@ namespace HSF_Utility
         /// <summary>
         /// Creates a new empty profile
         /// </summary>
-        public Profile()
+        public HSFProfile()
         {
         }
 
@@ -37,7 +37,7 @@ namespace HSF_Utility
         /// This constructor create a deep copy of the Profile passed in as a reference
         /// </summary>
         /// <param name="otherProfile"></param>
-        public Profile(Profile<T> otherProfile)
+        public HSFProfile(HSFProfile<T> otherProfile)
         {
             foreach (var item in otherProfile.data)
                 data[item.Key] = item.Value;
@@ -48,7 +48,7 @@ namespace HSF_Utility
         /// as a KeyValuePair
         /// </summary>
         /// <param name="pointIn">The intial point in the new profile</param>
-        public Profile(KeyValuePair<double, T> pointIn)
+        public HSFProfile(KeyValuePair<double, T> pointIn)
         {
             data.Add(pointIn.Key, pointIn.Value);
         }
@@ -59,7 +59,7 @@ namespace HSF_Utility
         /// </summary>
         /// <param name="timeIn"></param>
         /// <param name="valIn"></param>
-        public Profile(double timeIn, T valIn)
+        public HSFProfile(double timeIn, T valIn)
         {
             data.Add(timeIn, valIn);
         }
@@ -69,7 +69,7 @@ namespace HSF_Utility
         /// </summary>
         /// <param name="timeIn"></param>
         /// <param name="valIn"></param>
-        public Profile(List<double> timeIn, List<T> valIn)
+        public HSFProfile(List<double> timeIn, List<T> valIn)
         {
             // TODO:  Assert that both lists are of equal length
             int i = 0;
@@ -84,7 +84,7 @@ namespace HSF_Utility
         /// Create a new Profile from a copy on an existing profile
         /// </summary>
         /// <param name="dataIn"></param>
-        public Profile(SortedDictionary<double, T> dataIn)
+        public HSFProfile(SortedDictionary<double, T> dataIn)
         {
             data = new SortedDictionary<double, T>(dataIn);
         }
@@ -310,7 +310,7 @@ namespace HSF_Utility
         /// Adds a new data points to an existing profile from some other existing profile
         /// </summary>
         /// <param name="otherProfile">The existing profile which is merged with this profile</param>
-        public void Add(Profile<T> otherProfile)
+        public void Add(HSFProfile<T> otherProfile)
         {
             if (!otherProfile.Empty())
             {
@@ -323,16 +323,16 @@ namespace HSF_Utility
 
         // Operators
 
-        public Profile<T> MergeProfiles(Profile<T> p1, Profile<T> p2)
+        public HSFProfile<T> MergeProfiles(HSFProfile<T> p1, HSFProfile<T> p2)
         {
-            Profile<T> p3 = new Profile<T>();
+            HSFProfile<T> p3 = new HSFProfile<T>();
             p3.data = (SortedDictionary<double, T>)(p1.data.Union(p2.data));
             p3.RemoveDuplicates();
 
             return p3;
         }
 
-        public static Profile<T> operator +(Profile<T> p1, Profile<T> p2)
+        public static HSFProfile<T> operator +(HSFProfile<T> p1, HSFProfile<T> p2)
         {
             if (p1.Empty())
                 return p2;
@@ -340,7 +340,7 @@ namespace HSF_Utility
             if (p2.Empty())
                 return p1;
 
-            Profile<T> p3 = new Profile<T>();
+            HSFProfile<T> p3 = new HSFProfile<T>();
 
             IEnumerable<double> p1Keys = p1.data.Keys;
             IEnumerable<double> p2Keys = p2.data.Keys;
@@ -352,9 +352,9 @@ namespace HSF_Utility
             return p3;
         }
 
-        public static Profile<T> operator +(Profile<T> p1, dynamic someNumber)
+        public static HSFProfile<T> operator +(HSFProfile<T> p1, dynamic someNumber)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
 
             foreach (KeyValuePair<double, T> item in p1.data)
                 pOut[item.Key] += someNumber;
@@ -362,43 +362,43 @@ namespace HSF_Utility
             return pOut;
         }
 
-        public static Profile<T> operator +(dynamic someNumber, Profile<T> p1)
+        public static HSFProfile<T> operator +(dynamic someNumber, HSFProfile<T> p1)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
 
             return pOut = p1 + someNumber;
         }
 
-        public static Profile<T> operator -(Profile<T> p1)
+        public static HSFProfile<T> operator -(HSFProfile<T> p1)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
             foreach (KeyValuePair<double, T> item in p1.data)
                 pOut[item.Key] = -(dynamic)p1[item.Key];
 
             return pOut;
         }
 
-        public static Profile<T> operator -(Profile<T> p1, Profile<T> p2)
+        public static HSFProfile<T> operator -(HSFProfile<T> p1, HSFProfile<T> p2)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
             return pOut = p1 + (-p2);
         }
 
-        public static Profile<T> operator -(Profile<T> p1, dynamic someNumber)
+        public static HSFProfile<T> operator -(HSFProfile<T> p1, dynamic someNumber)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
             return pOut = p1 + (-someNumber);
         }
 
-        public static Profile<T> operator -(dynamic someNumber, Profile<T> p1)
+        public static HSFProfile<T> operator -(dynamic someNumber, HSFProfile<T> p1)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
             return pOut = p1 + (-someNumber);
         }
 
-        public static Profile<T> operator *(Profile<T> p1, dynamic someNumber)
+        public static HSFProfile<T> operator *(HSFProfile<T> p1, dynamic someNumber)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
 
             foreach (KeyValuePair<double, T> item in p1.data)
                 pOut[item.Key] *= someNumber;
@@ -406,23 +406,23 @@ namespace HSF_Utility
             return pOut;
         }
 
-        public static Profile<T> operator *(dynamic someNumber, Profile<T> p1)
+        public static HSFProfile<T> operator *(dynamic someNumber, HSFProfile<T> p1)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
 
             return pOut = p1 * someNumber;
         }
 
-        public static Profile<T> operator /(dynamic someNumber, Profile<T> p1)
+        public static HSFProfile<T> operator /(dynamic someNumber, HSFProfile<T> p1)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
 
             return pOut = p1 * (1.0 / someNumber);
         }
 
-        public static Profile<T> operator /(Profile<T> p1, dynamic someNumber)
+        public static HSFProfile<T> operator /(HSFProfile<T> p1, dynamic someNumber)
         {
-            Profile<T> pOut = new Profile<T>();
+            HSFProfile<T> pOut = new HSFProfile<T>();
 
             return pOut = p1 * (1.0 / someNumber);
         }
@@ -436,17 +436,17 @@ namespace HSF_Utility
             }
 
             // TODO: write your implementation of Equals() here
-            Profile<T> p = obj as Profile<T>;
+            HSFProfile<T> p = obj as HSFProfile<T>;
             return data == p.data;
 
         }
 
-        public static bool operator == (Profile<T> p1, Profile<T> p2)
+        public static bool operator == (HSFProfile<T> p1, HSFProfile<T> p2)
         {
             return p1.Equals(p2);
         }
 
-        public static bool operator != (Profile<T> p1, Profile<T> p2)
+        public static bool operator != (HSFProfile<T> p1, HSFProfile<T> p2)
         {
             return !(p1 == p2);
         }

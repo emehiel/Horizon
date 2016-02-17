@@ -20,11 +20,11 @@ namespace Subsystem
 				_name = name
 			}
             virtual Subsystem clone(){}
-            virtual bool can perform (const State oldState, State newSTate, 
+            virtual bool canPerform (const State oldState, State newSTate, 
                                       const Task tash, DynamicState position,
                                       Environment environment, 
                                       NodeDependencies, dep){}
-            virtual bool can Extend(State newState, DynamicState position,
+            virtual bool canExtend(State newState, DynamicState position,
                                     Environment environment,
                                     const double evalToTime,
                                     NodeDependencies dependencies){}

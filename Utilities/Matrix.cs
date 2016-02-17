@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
-namespace Horizon_Utilities
+namespace Utilities
 {
     [Serializable]
     public class Matrix : ISerializable, IEnumerable

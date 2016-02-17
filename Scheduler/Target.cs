@@ -16,10 +16,10 @@ namespace Scheduler
     class Target
     {
         /** The name of the target */
-        private string _name { get; private set; }
+        public string _name { get; private set; }
 
         /** The type of the target */
-        private string _targetType { get; private set; }
+        public string _targetType { get; private set; }
 
         /** The position of the target */
         protected DynamicState _dynamicState { get; private set; }

@@ -25,7 +25,7 @@ namespace Universe
     * @author Cory O'Connor
     * @author Eric Mehiel (conversion to C#)
     */
-    class DynamicState
+    public class DynamicState
     {
         SortedList<Double, Matrix> stateData;
 

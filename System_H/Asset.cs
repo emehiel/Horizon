@@ -3,26 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Universe;
 namespace System_H
 {
     class Asset
     {
-        protected Position _assetPosition{get; private set};
-        protected bool _isTaskable{get; private set};
+        public DynamicState _assetPosition{ get; private set; } //was protected, why?
+        //TODO:make isTaskable mean something
+        public bool _isTaskable{ get; private set; }//was protected, why?
 
         public Asset() {
             _isTaskable = false;
         }
-        public Asset(Position pos)
+        public Asset(DynamicState pos)
         {
             _assetPosition = pos;
             _isTaskable = false;
         }
 
-        public Asset(XMLNode XML pos)
+        public Asset(XMLNode assetXMLNode)
         {
-            _assetPosition =new Position(assetXMLNode.getChildNode("POSITION");
+            _assetPosition =new DynamicState(assetXMLNode.getChildNode("POSITION"));
             _isTaskable = false;
         }
 

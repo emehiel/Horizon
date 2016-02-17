@@ -3,22 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Universe;
 namespace System_H
 {
     class SystemClass
     {
-        private List<Asset> _assets{get; private set;}
-        private List<SubsystemNode> _subsystemNodes{get; private set;}
-        private List<Constraint> _constraints{get; private set;}
-        private Environment _environment{get; private set;}
-        private int _threadNum{get; private set;}
+        public List<Asset> _assets{get; private set;}
+        public List<SubsystemNode> _subsystemNodes{get; private set;}
+        public List<Constraint> _constraints{get; private set;}
+        public Universe.Environment _environment{get; private set;}
+        public int _threadNum{get; private set;}
+
         public SystemClass() { 
             
         }
         
-        public SystemClass(const List<Asset> assets, const List<SubsystemNode> subsystems
-                        const List<Constraint> constraints, Environment environment){
+        public SystemClass(List<Asset> assets, List<SubsystemNode> subsystems
+                         List<Constraint> constraints, Universe.Environment environment){
             _assets = assets;
             _subsystemNodes = subsystems;
             _constraints = constraints;
@@ -32,7 +33,7 @@ namespace System_H
             }
         }
         
-        public SystemClass(const System other){
+        public SystemClass(System other){
             // First make a deep copy of the SubsystemNode's
             _assets = other.assets;
             _environment = other.environment;
@@ -94,7 +95,7 @@ namespace System_H
         }
         
         private bool checkSubs(List<SubstemNode> subNodeList, 
-                               systemSchedule sySched, const bool mustEvaluate){
+                               systemSchedule sySched, bool mustEvaluate){
             int subAssetNum;
             foreach(SubstemNode subNodeIt in subNodeList){
                 subAssetNum = subNodeIt._nAsset;
@@ -141,18 +142,7 @@ namespace System_H
             
         }
         */
-        public void setThreadnum(int threadNum){
-              _threadNum = threadNum;
-              foreach(SubsystemNode subIt in _subsystemNodes){
-                  subIt.setThreadnum(threadNum);
-              }
-        }
-        
-        public void setDependencies(Dependencies deps){
-            foreach(SubstemNode subIt in _subsystemNodes){
-                subIt.setDependencies(deps);
-            }
-        }
+
       
 
     }

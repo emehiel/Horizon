@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+//using Universe; causes circular dependencies
 
 
 namespace Scheduler
@@ -15,16 +16,16 @@ namespace Scheduler
     class Target
     {
         /** The name of the target */
-        private string _name { get; set; }
+        public string _name { get; private set; }
 
         /** The type of the target */
-        private string _targetType { get; set; }
+        public string _targetType { get; private set; }
 
         /** The position of the target */
-        protected DynamicState _dynamicState { get; set; }
+        protected DynamicState _dynamicState { get; private set; }
 
         /** The value of the target */
-        protected int _value { get; set; }
+        protected int _value { get; private set; }
 
         protected int minQualCM;
 
@@ -35,10 +36,10 @@ namespace Scheduler
 
         public Target(String name, TargetType type, DynamicState dynamicState, int value)
         {
-            _Name = name;
-            _TargetType = type;
-            _DynamicState = dynamicState;
-            _Value = value;
+            _name = name;
+            _targetType = type;
+            _dynamicState = dynamicState;
+            _value = value;
         }
 
         /**

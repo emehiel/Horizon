@@ -233,6 +233,7 @@ namespace Utilities
             }
         }
 
+<<<<<<< HEAD
         /// <summary>
         /// Creates a new matrix from a string representing the matrix
         /// </summary>
@@ -267,6 +268,8 @@ namespace Utilities
 
         }
 
+=======
+>>>>>>> 717c152f1f0ef286bbf2bbd8bb057e490ecae3dc
         #endregion
 
         #region Overrrides

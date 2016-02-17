@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Utilities;
@@ -16,3 +17,19 @@ namespace UtilitiesUnitTest
         }
     }
 }
+=======
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+namespace UtilitiesUnitTest
+{
+    [TestClass]
+    public class UnitTest1
+    {
+        [TestMethod]
+        public void TestMethod1()
+        {
+        }
+    }
+}
+>>>>>>> 717c152f1f0ef286bbf2bbd8bb057e490ecae3dc

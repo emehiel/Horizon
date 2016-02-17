@@ -27,6 +27,7 @@ namespace Universe
     */
     public class DynamicState
     {
+<<<<<<< HEAD
         private SortedList<Double, Matrix> _stateData;
 
         private DynamicStateType _type { get; }
@@ -183,6 +184,35 @@ namespace Universe
             else
                 return 0;
 
+=======
+        SortedList<Double, Matrix> stateData;
+
+        private DynamicStateType type;
+        DynamicStateType Type
+        {
+            get
+            {
+                return this.type;
+            }
+        }
+
+        public DynamicState(SortedList<double, Matrix> stateData, DynamicStateType type)
+        {
+            this.stateData = stateData;
+            this.type = type;
+        }
+
+        public DynamicState(XmlNode positionXmlNode)
+        {
+            stateData = new SortedList<double, Matrix>();
+            this.type = DynamicStateType.STATIC_ECI;
+
+        }
+
+        public void Add(Double simTime, Matrix dynamicState)
+        {
+            this.stateData.Add(simTime, dynamicState);
+>>>>>>> 717c152f1f0ef286bbf2bbd8bb057e490ecae3dc
         }
 
 
@@ -199,11 +229,19 @@ namespace Universe
             get
             {
                 // TODO: if the stateData does not exist at 'simTime' interprolate...
+<<<<<<< HEAD
                 return this._stateData[simTime];
             }
             set
             {
                 this._stateData[simTime] = value;
+=======
+                return this.stateData[simTime];
+            }
+            set
+            {
+                this.stateData[simTime] = value;
+>>>>>>> 717c152f1f0ef286bbf2bbd8bb057e490ecae3dc
             }
         }
         public Matrix getPosECI(double simTime) //TODO
@@ -213,6 +251,10 @@ namespace Universe
     }
 
     public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
+<<<<<<< HEAD
     public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };
+=======
+
+>>>>>>> 717c152f1f0ef286bbf2bbd8bb057e490ecae3dc
 
 }

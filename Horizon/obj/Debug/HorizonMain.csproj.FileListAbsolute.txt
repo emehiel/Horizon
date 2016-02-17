@@ -1,0 +1,2 @@
+C:\Users\Admin\Documents\Visual Studio 2015\Projects\Horizon\Horizon\bin\Debug\Horizon.exe.config
+C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\Horizon\bin\Debug\Horizon.exe.config

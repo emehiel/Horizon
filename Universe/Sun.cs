@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Horizon_Utilities;
+using Utilities;
 using IO;
 /**
 * Creates a Sun model able to compute the Sun Vector to the Earth as well as 
@@ -18,8 +18,7 @@ namespace Universe
     {
         NO_SHADOW,
         UMBRA,
-        PENUMBRA,
-        hello
+        PENUMBRA
     };
     public class Sun
     {

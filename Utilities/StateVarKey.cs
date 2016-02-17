@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    class StateVarKey
+    public class StateVarKey
     {
         private string _varName { get; set; }
 

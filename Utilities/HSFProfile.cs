@@ -181,7 +181,7 @@ namespace Utilities
                     }
                     else
                     {
-                        Console.WriteLine("DataAtTime: Attempring to reference time before first data point in profile");
+                        Console.WriteLine("DataAtTime: Attempting to reference time before first data point in profile");
                         return data.Single(item => item.Key == data.Keys.Min());
                     }
 
@@ -323,7 +323,7 @@ namespace Utilities
 
         // Operators
 
-        public HSFProfile<T> MergeProfiles(HSFProfile<T> p1, HSFProfile<T> p2)
+        public static HSFProfile<T> MergeProfiles(HSFProfile<T> p1, HSFProfile<T> p2) //Morgan made this static
         {
             HSFProfile<T> p3 = new HSFProfile<T>();
             p3.data = (SortedDictionary<double, T>)(p1.data.Union(p2.data));

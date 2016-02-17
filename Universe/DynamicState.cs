@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using Horizon_Utilities;
+using Utilities;
 
 namespace Universe
 {
@@ -25,35 +25,164 @@ namespace Universe
     * @author Cory O'Connor
     * @author Eric Mehiel (conversion to C#)
     */
-    class DynamicState
+    public class DynamicState
     {
-        SortedList<Double, Matrix> stateData;
+        private SortedList<Double, Matrix> _stateData;
 
-        private DynamicStateType type;
-        DynamicStateType Type
+        private DynamicStateType _type { get; }
+
+        private EOMS _eoms { get; }
+
+        private double _stateDataTimeStep { get;  set; }
+
+        private XmlNode _intergratorNode;
+
+        private PropagationType _propagatorType { get; set; }
+
+        public DynamicState(XmlNode dynamicStateXMLNode)
         {
-            get
+            string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].ToString();
+            _type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
+
+            Matrix ics = new Matrix(dynamicStateXMLNode.Attributes["ICs"].ToString());
+            _stateData.Add(0.0, ics);
+
+            if (!(_type == DynamicStateType.STATIC_LLA || _type == DynamicStateType.STATIC_ECI))
             {
-                return this.type;
+                // I think this should be a constructor...
+                //_eoms = createEOMSObject(dynamicStateXMLNode["EOMS"]);
+
+                // Returns a null reference if INTEGRATOR is not set in XML
+                _intergratorNode = dynamicStateXMLNode["INTEGRATOR"];
+
+                if (dynamicStateXMLNode.Attributes["PosDataStep"] != null)
+                    _stateDataTimeStep = Convert.ToDouble(dynamicStateXMLNode.Attributes["PosDataStep"]);
+                else
+                    _stateDataTimeStep = 30.0;
             }
+            else
+            {
+                _eoms = null;
+                _intergratorNode = null;
+                _stateDataTimeStep = 30.0;
+            }
+
         }
 
-        public DynamicState(SortedList<double, Matrix> stateData, DynamicStateType type)
+        public DynamicState(SortedList<double, Matrix> stateData, DynamicStateType type, EOMS eoms, double stateDataTimeStep, XmlNode integratorNode)
         {
-            this.stateData = stateData;
-            this.type = type;
+            _stateData = stateData;
+            _type = type;
+            _eoms = eoms;
+            _stateDataTimeStep = stateDataTimeStep;
+            _intergratorNode = integratorNode;
         }
 
-        public DynamicState(XmlNode positionXmlNode)
+        public Matrix IC()
         {
-            stateData = new SortedList<double, Matrix>();
-            this.type = DynamicStateType.STATIC_ECI;
-
+            return _stateData[0.0];
         }
 
         public void Add(Double simTime, Matrix dynamicState)
         {
-            this.stateData.Add(simTime, dynamicState);
+            this._stateData.Add(simTime, dynamicState);
+        }
+
+        /// <summary>
+        /// Returns the current position of the system at the time simTime.
+        /// </summary>
+        /// <param name="simTime"></param>
+        /// <returns></returns>
+        public Matrix PositionECI(double simTime)
+        {
+            Matrix initState = _stateData[0];
+            double JD = simTime / 86400.0 + simParams::SIMSTART_JD();
+            bool hasrun = !(posData.size() == 1);
+
+            if (_type == DynamicStateType.STATIC_LLA )
+                return LLA2ECI(initState, JD);
+            else if (_type == DynamicStateType.STATIC_ECI)
+                return initState;
+            else if (_type == DynamicStateType.PREDETERMINED_LLA)
+            {
+                if (hasrun)
+                {
+                    //return LLA2ECI((posData.lower_bound(simTime))->second, JD);
+                    return LLA2ECI(this->getStateAtTime(simTime), JD);
+                }
+                else
+                {
+                    cout << "Integrating and resampling position data... " << endl;
+                    double vals[2] = { 0, simParams::SIMEND_SECONDS() };
+                    Integrator solver;
+                    bool rk45;
+                    // Update the integrator parameters using the information in the XML Node
+                    setIntegratorParams(solver);
+
+                    if (rk45)
+                    {
+                        solver.setParam("nsteps", (vals[1] - vals[0]) / schedParams::SIMSTEP_SECONDS());
+                        posData = solver.rk45(eomsObject, Matrix(2, 1, vals), initState).ODE_RESULT;
+                    }
+                    else
+                    {
+                        cout << "Using rk4 integrator..." << endl;
+                        posData = solver.rk4(eomsObject, Matrix(2, 1, vals), initState).ODE_RESULT;
+                    }
+                    cout << "DONE!" << endl;
+                    //return LLA2ECI((posData.lower_bound(simTime))->second, JD);			
+                    return LLA2ECI(this->getStateAtTime(simTime), JD);
+                }
+            }
+            else if (posType == POSITION_TYPE_PREDETERMINED_ECI)
+            {
+                if (hasrun)
+                {
+                    //return (posData.lower_bound(simTime))->second;
+                    return this->getStateAtTime(simTime);
+                }
+                else
+                {
+                    cout << "Integrating and resampling position data... " << endl;
+                    this->setPropagationModel();
+
+                    if (this->propagatorType == RK45)
+                    {
+                        double vals[2] = { 0, simParams::SIMEND_SECONDS() };
+                        Integrator solver;
+
+                        // Update the integrator parameters using the information in the XML Node
+                        setIntegratorParams(solver);
+
+                        solver.setParam("nsteps", (vals[1] - vals[0]) / schedParams::SIMSTEP_SECONDS());
+
+                        cout << "Using rk45 integrator..." << endl;
+                        posData = solver.rk45(eomsObject, Matrix(2, 1, vals), initState).ODE_RESULT;
+                    }
+                    else if (this->propagatorType == RK4)
+                    {
+                        double vals[2] = { 0, simParams::SIMEND_SECONDS() };
+                        Integrator solver;
+
+                        // Update the integrator parameters using the information in the XML Node
+                        setIntegratorParams(solver);
+
+                        cout << "Using rk4 integrator..." << endl;
+                        posData = solver.rk4(eomsObject, Matrix(2, 1, vals), initState).ODE_RESULT;
+                    }
+                    else if (this->propagatorType == SGP4)
+                    {
+                        cout << "Using sgp4 integrator..." << endl;
+                        // creat an sgp4 object and propagate
+                    }
+                    cout << "DONE!" << endl;
+                    //return (posData.lower_bound(simTime))->second;
+                    return this->getStateAtTime(simTime);
+                }
+            }
+            else
+                return 0;
+
         }
 
 
@@ -70,11 +199,11 @@ namespace Universe
             get
             {
                 // TODO: if the stateData does not exist at 'simTime' interprolate...
-                return this.stateData[simTime];
+                return this._stateData[simTime];
             }
             set
             {
-                this.stateData[simTime] = value;
+                this._stateData[simTime] = value;
             }
         }
         public Matrix getPosECI(double simTime) //TODO
@@ -84,6 +213,6 @@ namespace Universe
     }
 
     public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
-
+    public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };
 
 }

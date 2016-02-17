@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 
-namespace Horizon_Utilities
+namespace Utilities
 {
     [Serializable]
     public class Matrix : ISerializable, IEnumerable
@@ -231,6 +231,40 @@ namespace Horizon_Utilities
                 for (int j = 0; j < c; j++)
                     ((List<Complex>)this.elements[i]).Add(Complex.Zero);
             }
+        }
+
+        /// <summary>
+        /// Creates a new matrix from a string representing the matrix
+        /// </summary>
+        /// <param name="matrixString">A string representing the matrix elements.  Use Matlab format</param>
+        public Matrix(string matrixString)
+        {
+            string[] rows = matrixString.Split(';');
+            rows[0] = rows[0].TrimStart('[');
+            rows[rows.Length-1] = rows[rows.Length - 1].TrimEnd(']');
+            double[] dRows;
+            NumRows = rows.Length;
+            int rowNumber = 0;
+
+            this.elements = new List<List<Complex>>(NumRows);
+
+            foreach (string row in rows)
+            {
+                dRows = Array.ConvertAll(row.Split(','), new Converter<string, double>(Double.Parse));
+                NumCols = dRows.Length;
+
+                this.elements.Add(new List<Complex>(this.NumCols));
+
+                for (int j = 0; j < this.NumCols; j++)
+                    ((List<Complex>)this.elements[rowNumber]).Add(new Complex(dRows[j]));
+
+                rowNumber++;
+            }
+                
+
+//            for (int r = 0; r < dRows[1].Length; r++)
+//                for (int c = 0; c < )
+
         }
 
         #endregion

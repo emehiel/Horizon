@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HSF_Utility
+namespace Utilities
 {
-    class Profile<T>
+    public class Profile<T>
     {
         // Class Data
 

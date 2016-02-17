@@ -57,9 +57,9 @@
       <Project>{241171ab-18b2-45a0-848a-62b2ef751644}</Project>
       <Name>Scheduler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Utilities\Horizon_Utilities.csproj">
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>
-      <Name>Horizon_Utilities</Name>
+      <Name>Utilities</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

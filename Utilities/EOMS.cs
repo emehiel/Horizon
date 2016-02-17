@@ -11,7 +11,7 @@ namespace Utilities
 /// sort of motion of an object.
 /// @author Cory O'Connor
 /// </summary>
-    abstract class EOMS
+    public abstract class EOMS
     {
         /// <summary>
         /// Computes one timestep of the equations of motion object from a specified

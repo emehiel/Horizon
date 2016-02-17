@@ -36,3 +36,6 @@
 *.*log
 *.ipch
 *.suo
+
+#Class Diagrams
+.dgml

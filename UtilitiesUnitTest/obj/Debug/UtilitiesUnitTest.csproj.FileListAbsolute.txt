@@ -1,8 +1,0 @@
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\UtilitiesUnitTest\bin\Debug\UtilitiesUnitTest.dll
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\UtilitiesUnitTest\bin\Debug\UtilitiesUnitTest.pdb
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\UtilitiesUnitTest\bin\Debug\Microsoft.VisualStudio.QualityTools.UnitTestFramework.dll
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\UtilitiesUnitTest\obj\Debug\UtilitiesUnitTest.csprojResolveAssemblyReference.cache
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\UtilitiesUnitTest\obj\Debug\UtilitiesUnitTest.dll
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\UtilitiesUnitTest\obj\Debug\UtilitiesUnitTest.pdb
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\UtilitiesUnitTest\bin\Debug\Utilities.dll
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\UtilitiesUnitTest\bin\Debug\Utilities.pdb

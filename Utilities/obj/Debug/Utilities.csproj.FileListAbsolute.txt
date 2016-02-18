@@ -1,5 +1,0 @@
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\Utilities\obj\Debug\Utilities.csprojResolveAssemblyReference.cache
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\Utilities\obj\Debug\Utilities.dll
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\Utilities\obj\Debug\Utilities.pdb
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\Utilities\bin\Debug\Utilities.dll
-C:\Users\emehiel.CALPOLY\Documents\GitHub\Horizon\Utilities\bin\Debug\Utilities.pdb

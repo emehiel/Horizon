@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Universe;
-namespace System_H
+namespace HSFSystem
 {
-    class Asset
+    public class Asset
     {
         public DynamicState _assetPosition{ get; private set; } //was protected, why?
         //TODO:make isTaskable mean something

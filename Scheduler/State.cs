@@ -10,19 +10,19 @@ namespace HSFScheduler
     public class State
     {
         /** The previous state, upon which this state is based */
-        public State _previous { get; private set; }
+        public State Previous { get; private set; }
 
         /** The start of the event associated with this State */
-        public double _eventStart{get; set;}
+        public double EventStart{get; set;}
 
         /** The start of the task associated with this State */
-        public double _taskStart { get; set; }
+        public double TaskStart { get; set; }
 
         /** The end of the task associated with this State */
-        public double _taskEnd { get; set; }
+        public double TaskEnd { get; set; }
 
         /** The end of the event associated with this State */
-        public double _eventEnd { get; set; }
+        public double EventEnd { get; set; }
 
         /** The Dictionary of integer Profiles. */
         private Dictionary<StateVarKey, HSFProfile<int>> idata { get; }

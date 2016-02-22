@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 #include "horizon/log/Logger.h"
 
 */
-namespace System_H
+namespace HSFSystem
 {
     class Constraint{
         private List<SubsystemNode> _subsystemNodes{get; private set;}

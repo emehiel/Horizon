@@ -4,30 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Universe;
-namespace System_H
+namespace HSFSystem
 {
     class SystemClass
     {
-        public List<Asset> _assets{get; private set;}
-        public List<SubsystemNode> _subsystemNodes{get; private set;}
-        public List<Constraint> _constraints{get; private set;}
-        public Universe.Universe _environment{get; private set;}
-        public int _threadNum{get; private set;}
+        public List<Asset> Assets{get; private set;}
+        public List<SubsystemNode> SubsystemNodes{get; private set;}
+        public List<Constraint> Constraints{get; private set;}
+        public Universe.Universe Environment{get; private set;}
+        public int ThreadNum{get; private set;}
 
         public SystemClass() { 
             
         }
         
-        public SystemClass(List<Asset> assets, List<SubsystemNode> subsystems
+        public SystemClass(List<Asset> assets, List<SubsystemNode> subsystems,
                          List<Constraint> constraints, Universe.Universe environment){
-            _assets = assets;
-            _subsystemNodes = subsystems;
-            _constraints = constraints;
-            _environment = environment;
-            foreach (SubsystemNode nIt in _subsystemNodes)
+            Assets = assets;
+            SubsystemNodes = subsystems;
+            Constraints = constraints;
+            Environment = environment;
+            foreach (SubsystemNode nIt in SubsystemNodes)
             {
-                for(int nAsset = 0; nAsset<_assets.Count; nAsset++){
-                    if(nIt._asset == _assets[nAsset])
+                for(int nAsset = 0; nAsset<Assets.Count; nAsset++){
+                    if(nIt._asset == Assets[nAsset])
                         nIt._nAsset = nAsset;
                 }
             }
@@ -35,10 +35,10 @@ namespace System_H
         
         public SystemClass(System other){
             // First make a deep copy of the SubsystemNode's
-            _assets = other.assets;
-            _environment = other.environment;
+            Assets = other.assets;
+            Environment = other.environment;
             foreach(SubsystemNode oSubIt in other._subsystemNodes){
-                _subsystemNodes.push_back(new SubstemNode(oSubIt));
+                SubsystemNodes.push_back(new SubstemNode(oSubIt));
             }
             // Now need to fill in the preceeding nodes
 	        // Iterate through original subsystems
@@ -60,7 +60,7 @@ namespace System_H
                     //index = pos - other.subsystemNodes.beginNode()
                     //TODO: add preceding node at index
                 }
-                _constraints.push_back(newConstraint);
+                Constraints.push_back(newConstraint);
             }
 
                 
@@ -68,10 +68,10 @@ namespace System_H
         }
         
         public bool canPerform(systemSchedule sysSched){
-            foreach(SubsystemNode subNodeIt in _subsystemNodes){
+            foreach(SubsystemNode subNodeIt in SubsystemNodes){
                 subNodeIt.reset();
             }
-            foreach(Constraint constrainIt in _constraints){
+            foreach(Constraint constrainIt in Constraints){
                 if(!checkSubs(constraintIt._subsystemNodes(), sysSched, true))
                     return false;
                 if(!constrainIt.accepts(sysSched))
@@ -85,7 +85,7 @@ namespace System_H
         
         public bool checkForCircularDependencies(){
             bool hasCircDep = flase;
-            foreach(SubsystemNode nodeIt in _subsystemNodes){
+            foreach(SubsystemNode nodeIt in SubsystemNodes){
                 SubsystemNode currNode = nodeIt;
                 hasCircDep |= checkSubForCircularDependencies(nodeIt, nodeIt);
                 if(hasCircDep)

@@ -8,7 +8,7 @@ using HSFScheduler;
 using Universe;
 namespace Subsystem
 {
-		class Subsystem{
+		public class Subsystem{
 			protected string _name{get; private set;}
             protected List<StateVarKey> ikeys { get; private set; }
             protected List<StateVarKey> dkeys { get; private set; }

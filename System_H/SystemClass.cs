@@ -11,7 +11,7 @@ namespace System_H
         public List<Asset> _assets{get; private set;}
         public List<SubsystemNode> _subsystemNodes{get; private set;}
         public List<Constraint> _constraints{get; private set;}
-        public Universe.Environment _environment{get; private set;}
+        public Universe.Universe _environment{get; private set;}
         public int _threadNum{get; private set;}
 
         public SystemClass() { 
@@ -19,7 +19,7 @@ namespace System_H
         }
         
         public SystemClass(List<Asset> assets, List<SubsystemNode> subsystems
-                         List<Constraint> constraints, Universe.Environment environment){
+                         List<Constraint> constraints, Universe.Universe environment){
             _assets = assets;
             _subsystemNodes = subsystems;
             _constraints = constraints;

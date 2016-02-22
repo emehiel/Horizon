@@ -25,22 +25,22 @@ namespace HSFScheduler
         public double EventEnd { get; set; }
 
         /** The Dictionary of integer Profiles. */
-        private Dictionary<StateVarKey, HSFProfile<int>> idata { get; }
+        public Dictionary<StateVarKey, HSFProfile<int>> Idata { get; private set; }
 
         /** The Dictionary of double precision Profiles. */
-        private Dictionary<StateVarKey, HSFProfile<double>> ddata { get; }
+        public Dictionary<StateVarKey, HSFProfile<double>> Ddata { get; private set; }
 
         /** The Dictionary of floating point value Profiles. */
-        private Dictionary<StateVarKey, HSFProfile<float>> fdata { get; }
+        public Dictionary<StateVarKey, HSFProfile<float>> Fdata { get; private set; }
 
         /** The Dictionary of boolean Profiles. */
-        private Dictionary<StateVarKey, HSFProfile<bool>> bdata { get; }
+        public Dictionary<StateVarKey, HSFProfile<bool>> Bdata { get; private set; }
 
         /** The Dictionary of Matrix Profiles. */
-        private Dictionary<StateVarKey, HSFProfile<Matrix>> mdata { get; }
+        public Dictionary<StateVarKey, HSFProfile<Matrix>> Mdata { get; private set; }
 
         /** The Dictionary of Quaternion Profiles. */
-        private Dictionary<StateVarKey, HSFProfile<Quat>> qdata { get; }
+        public Dictionary<StateVarKey, HSFProfile<Quat>> Qdata { get; private set; }
 
 
         /**
@@ -48,11 +48,11 @@ namespace HSFScheduler
          */
         State()
         {
-            _previous = null;
-            _eventStart = 0;
-            _eventEnd = 0;
-            _taskEnd = 0;
-            _taskStart = 0;
+            Previous = null;
+            EventStart = 0;
+            EventEnd = 0;
+            TaskEnd = 0;
+            TaskStart = 0;
         }
 
         /**
@@ -60,17 +60,17 @@ namespace HSFScheduler
          */
         State(State initialStateToCopy)
         {
-            _previous = initialStateToCopy._previous;
-            _eventStart = initialStateToCopy._eventStart;
-            _taskStart = initialStateToCopy._taskStart;
-            _taskEnd = initialStateToCopy._taskEnd;
-            _eventEnd = initialStateToCopy._eventEnd;
+            Previous = initialStateToCopy.Previous;
+            EventStart = initialStateToCopy.EventStart;
+            TaskStart = initialStateToCopy.TaskStart;
+            TaskEnd = initialStateToCopy.TaskEnd;
+            EventEnd = initialStateToCopy.EventEnd;
             idata = initialStateToCopy.idata;
-            ddata = initialStateToCopy.ddata;
+            Ddata = initialStateToCopy.Ddata;
             fdata = initialStateToCopy.fdata;
             bdata = initialStateToCopy.bdata;
-            mdata = initialStateToCopy.mdata;
-            qdata = initialStateToCopy.qdata;
+            Mdata = initialStateToCopy.Mdata;
+            Qdata = initialStateToCopy.Qdata;
         }
 
         /**
@@ -78,11 +78,11 @@ namespace HSFScheduler
          */
         State(State previous, double newTaskStart)
         {
-            _previous = previous;
-            _eventStart = previous._eventEnd; // start from end of previous State
-            _taskStart = newTaskStart;
-            _taskEnd = newTaskStart;
-            _eventEnd = newTaskStart;
+            Previous = previous;
+            EventStart = previous.EventEnd; // start from end of previous State
+            TaskStart = newTaskStart;
+            TaskEnd = newTaskStart;
+            EventEnd = newTaskStart;
         }
 
 
@@ -100,7 +100,7 @@ namespace HSFScheduler
                 if (idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut.Last(); //found it, return it TODO: return last value or pair?
 		    }
-            return _previous.getLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
+            return Previous.getLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
         }
         /** 
          * Gets the integer value of the state at a certain time. If the exact time is not found, the data is
@@ -115,7 +115,7 @@ namespace HSFScheduler
                 if (idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut.DataAtTime(time);
             }
-		    return  _previous.getValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
+		    return  Previous.getValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
         }
 
         /** 
@@ -130,7 +130,7 @@ namespace HSFScheduler
                 if (idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut;
             }
-		    return _previous.getProfile(key); // This isn't the right profile, go back one and try it out!
+		    return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
 	    }
 
         /** TODO: make sure valueOut is a good replacement for iterator.second
@@ -142,13 +142,13 @@ namespace HSFScheduler
             HSFProfile<int> valueOut = new HSFProfile<int>();
 		    if(idata.Count != 0)  { // Are there any Profiles in there?
                 if (idata.TryGetValue(key, out valueOut)) { //see if our key is in there
-                    if (_previous != null) // Check whether we are at the first state
-					    return HSFProfile<int>.MergeProfiles(valueOut, _previous.getFullProfile(key));
+                    if (Previous != null) // Check whether we are at the first state
+					    return HSFProfile<int>.MergeProfiles(valueOut, Previous.getFullProfile(key));
 				    return valueOut;				
 			    }
             }
-		    if(_previous != null)
-			    return _previous.getFullProfile(key); // If no data, return profile from previous states
+		    if(Previous != null)
+			    return Previous.getFullProfile(key); // If no data, return profile from previous states
 		    return valueOut; //return empty profile
 	   }
 

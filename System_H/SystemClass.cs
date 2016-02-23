@@ -12,7 +12,7 @@ namespace HSFSystem
     {
         public List<Asset> Assets{get; private set;}
         public Stack<SubsystemNode> SubsystemNodes{get; private set;}
-        public List<Constraint> Constraints{get; private set;}
+        public Stack<Constraint> Constraints{get; private set;}
         public Universe.Universe Environment{get; private set;}
         public int ThreadNum{get; private set;}
 
@@ -35,7 +35,7 @@ namespace HSFSystem
             Assets = other.Assets;
             Environment = other.Environment;
             foreach(SubsystemNode oSubIt in other.SubsystemNodes){
-                SubsystemNodes.Push(new SubstemNode(oSubIt));
+                SubsystemNodes.Push(new SubsystemNode(oSubIt));
             }
             // Now need to fill in the preceeding nodes
 	        // Iterate through original subsystems
@@ -48,16 +48,16 @@ namespace HSFSystem
             }
             // Next create a copy of the constraints (using clone() interface) and resetting previous nodes
 	        // In outer loop make a deep copy of the Constraint's
-            foreach(Constraint oConIt in other.constraints){
+            foreach(Constraint oConIt in other.Constraints){
                 Constraint newConstraint oConIt.clone(); 
                 // In inner loop reset the constrained nodes
 		        // Loop through constrained nodes
-                foreach(SubsystemNode oConNodeIt in oConIt._subsystemNodes()){//TODO: check this
+                foreach(SubsystemNode oConNodeIt in oConIt.SubsystemNodes()){//TODO: check this
                     //TODO: need to find index of current sub
                     //index = pos - other.subsystemNodes.beginNode()
                     //TODO: add preceding node at index
                 }
-                Constraints.push_back(newConstraint);
+                Constraints.Push(newConstraint);
             }
 
                 

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Universe;
 using Subsystem;
+using Utilities;
 
 namespace HSFSystem
 {
@@ -18,12 +19,11 @@ namespace HSFSystem
 
         
         public SystemClass(List<Asset> assets, Stack<SubsystemNode> subsystems,
-                         List<Constraint> constraints, Universe.Universe environment){
+                         Stack<Constraint> constraints, Universe.Universe environment){
             Assets = assets;
             SubsystemNodes = subsystems;
             Constraints = constraints;
             Environment = environment;
-            SubsystemNodes = subsystems;
             foreach (SubsystemNode nIt in subsystems)
             {
                 SubsystemNodes.Push(nIt);
@@ -31,37 +31,12 @@ namespace HSFSystem
         }
         
         public SystemClass(SystemClass other){
-            // First make a deep copy of the SubsystemNode's
-            Assets = other.Assets;
-            Environment = other.Environment;
-            foreach(SubsystemNode oSubIt in other.SubsystemNodes){
-                SubsystemNodes.Push(new SubsystemNode(oSubIt));
-            }
-            // Now need to fill in the preceeding nodes
-	        // Iterate through original subsystems
-            var both = other.SubsystemNodes.Zip(SubsystemNodes (a, b) => new 
-                        {Other = a, This = b}));
-            foreach(var it in both){
-                List<SubsystemNode> preceedingNodes = both.Other._preceedingNodes();
-                foreach(SubsystemNode prevSubIt in preceedingNodes){
-                    
-            }
-            // Next create a copy of the constraints (using clone() interface) and resetting previous nodes
-	        // In outer loop make a deep copy of the Constraint's
-            foreach(Constraint oConIt in other.Constraints){
-                Constraint newConstraint oConIt.clone(); 
-                // In inner loop reset the constrained nodes
-		        // Loop through constrained nodes
-                foreach(SubsystemNode oConNodeIt in oConIt.SubsystemNodes()){//TODO: check this
-                    //TODO: need to find index of current sub
-                    //index = pos - other.subsystemNodes.beginNode()
-                    //TODO: add preceding node at index
-                }
-                Constraints.Push(newConstraint);
-            }
-
-                
-            }
+            SystemClass copy = DeepCopy.Copy<SystemClass>(other);
+            Assets = copy.Assets;
+            SubsystemNodes = copy.SubsystemNodes;
+            Constraints = copy.Constraints;
+            Environment = copy.Environment;
+            ThreadNum = copy.ThreadNum;
         }
         
         public bool canPerform(systemSchedule sysSched){

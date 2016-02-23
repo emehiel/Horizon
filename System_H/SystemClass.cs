@@ -4,45 +4,42 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Universe;
+using Subsystem;
+
 namespace HSFSystem
 {
     class SystemClass
     {
         public List<Asset> Assets{get; private set;}
-        public List<SubsystemNode> SubsystemNodes{get; private set;}
+        public Stack<SubsystemNode> SubsystemNodes{get; private set;}
         public List<Constraint> Constraints{get; private set;}
         public Universe.Universe Environment{get; private set;}
         public int ThreadNum{get; private set;}
 
-        public SystemClass() { 
-            
-        }
         
-        public SystemClass(List<Asset> assets, List<SubsystemNode> subsystems,
+        public SystemClass(List<Asset> assets, Stack<SubsystemNode> subsystems,
                          List<Constraint> constraints, Universe.Universe environment){
             Assets = assets;
             SubsystemNodes = subsystems;
             Constraints = constraints;
             Environment = environment;
-            foreach (SubsystemNode nIt in SubsystemNodes)
+            SubsystemNodes = subsystems;
+            foreach (SubsystemNode nIt in subsystems)
             {
-                for(int nAsset = 0; nAsset<Assets.Count; nAsset++){
-                    if(nIt._asset == Assets[nAsset])
-                        nIt._nAsset = nAsset;
-                }
+                SubsystemNodes.Push(nIt);
             }
         }
         
-        public SystemClass(System other){
+        public SystemClass(SystemClass other){
             // First make a deep copy of the SubsystemNode's
-            Assets = other.assets;
-            Environment = other.environment;
-            foreach(SubsystemNode oSubIt in other._subsystemNodes){
-                SubsystemNodes.push_back(new SubstemNode(oSubIt));
+            Assets = other.Assets;
+            Environment = other.Environment;
+            foreach(SubsystemNode oSubIt in other.SubsystemNodes){
+                SubsystemNodes.Push(new SubstemNode(oSubIt));
             }
             // Now need to fill in the preceeding nodes
 	        // Iterate through original subsystems
-            var both = other._subsystemNodes.Zip(_subsystemNodes (a, b) => new 
+            var both = other.SubsystemNodes.Zip(SubsystemNodes (a, b) => new 
                         {Other = a, This = b}));
             foreach(var it in both){
                 List<SubsystemNode> preceedingNodes = both.Other._preceedingNodes();

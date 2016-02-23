@@ -46,6 +46,10 @@
     <Compile Include="SystemClass.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Subsystem\Subsystem.csproj">
+      <Project>{2006798b-5974-4838-aa6d-29340fb171d2}</Project>
+      <Name>Subsystem</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Universe\Universe.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
       <Name>Universe</Name>

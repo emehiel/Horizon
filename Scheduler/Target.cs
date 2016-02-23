@@ -13,33 +13,33 @@ namespace Scheduler
     * A named location denoting where a task is to be performed.
     * @author Einar Pehrson
     */
-    class Target
+    public class Target
     {
         /** The name of the target */
-        public string _name { get; private set; }
+        public string Name { get; private set; }
 
         /** The type of the target */
-        public string _targetType { get; private set; }
+        public string TargetType { get; private set; }
 
         /** The position of the target */
-        protected DynamicState _dynamicState { get; private set; }
+        protected DynamicState CurrentDynamicState { get; private set; }
 
         /** The value of the target */
-        protected int _value { get; private set; }
+        protected int Value { get; private set; }
 
-        protected int minQualCM;
+        protected int MinQualCM;
 
-        protected int freq_days;
+        protected int Freq_days;
         protected string CC;
         protected string WX_Reg;
-        protected string Comment { get }
+        protected string Comment { get; }
 
-        public Target(String name, TargetType type, DynamicState dynamicState, int value)
+        public Target(String name, string type, DynamicState dynamicState, int value)
         {
-            _name = name;
-            _targetType = type;
-            _dynamicState = dynamicState;
-            _value = value;
+            Name = name;
+            TargetType = type;
+            CurrentDynamicState = dynamicState;
+            Value = value;
         }
 
         /**

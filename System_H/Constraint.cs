@@ -1,5 +1,5 @@
 using System;
-using System.Collections.Generic;
+using System.Collections.Generic.Stack;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,15 +13,15 @@ using System.Threading.Tasks;
 namespace HSFSystem
 {
     class Constraint{
-        private List<SubsystemNode> _subsystemNodes{get; private set;}
+        public Stack<SubsystemNode> SubsystemNodes{get; private set;}
         public Constraint(){}
         public void addConstrainedSubNode(SubsystemNode node){
-            subsystemNodes.push_back(node);
+            SubsystemNodes.Push(node);
         }
-        
-        virtual bool accepts(systemSchedule sched){}
-        
-        virtual Constrain clone(){}
+
+        public virtual bool accepts(systemSchedule sched);
+
+        public virtual Constraint clone();
 
     }
 }

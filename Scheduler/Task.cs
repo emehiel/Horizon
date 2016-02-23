@@ -13,13 +13,13 @@ namespace Scheduler
     public class Task
     {
         /* the type of task being performed */
-        taskType Type { get; }
+         public taskType Type { get; private set; }
 
         /* the target associated with the task */
-        Target Target { get; }
+        public Target Target { get; private set; }
 
         /** The maximum number of times the task should be performed by the ENTIRE SYSTEM (all assets count towards this)*/
-        int MaxTimesToPerform { get; }
+        public int MaxTimesToPerform { get; private set; }
 
 
         /**

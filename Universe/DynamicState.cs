@@ -27,7 +27,6 @@ namespace Universe
     */
     public class DynamicState
     {
-<<<<<<< HEAD
         private SortedList<Double, Matrix> _stateData;
 
         private DynamicStateType _type { get; }
@@ -97,8 +96,9 @@ namespace Universe
         public Matrix PositionECI(double simTime)
         {
             Matrix initState = _stateData[0];
-            double JD = simTime / 86400.0 + simParams::SIMSTART_JD();
-            bool hasrun = !(posData.size() == 1);
+            double JD = simTime / 86400.0 + SimParameters._simStartJD;
+
+            bool hasrun = !(_stateData.Count == 1);
 
             if (_type == DynamicStateType.STATIC_LLA )
                 return LLA2ECI(initState, JD);

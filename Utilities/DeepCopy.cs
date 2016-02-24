@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 namespace Utilities
 {
     public class DeepCopy
-    { 
+    {
         //Make a deep copy of any class as long as it is marked as [Serializable]
+        //http://www.codeproject.com/Articles/28952/Shallow-Copy-vs-Deep-Copy-in-NET
         public static T Copy<T>(T item)
         {
             BinaryFormatter formatter = new BinaryFormatter();

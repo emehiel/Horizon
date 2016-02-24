@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CloudCover.cs" />
-    <Compile Include="DynamicState.cs" />
+    <Compile Include="DynamicStateOLDMY.cs" />
     <Compile Include="Universe.cs" />
     <Compile Include="geomAccess.cs" />
     <Compile Include="geomUtil.cs" />

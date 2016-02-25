@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace Universe
+namespace Utilities
 {
     public static class SimParameters
     {
@@ -49,5 +49,7 @@ namespace Universe
             else
                 return false;
         }
+
+        public static double EARTH_RADIUS = 6378.137; //km
     }
 }

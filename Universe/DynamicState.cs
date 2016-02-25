@@ -101,7 +101,7 @@ namespace Universe
             bool hasrun = !(_stateData.Count == 1);
 
             if (_type == DynamicStateType.STATIC_LLA)
-                return LLA2ECI(initState, JD);
+                return GeometryUtilities.LLA2ECI(initState, JD);
             else if (_type == DynamicStateType.STATIC_ECI)
                 return initState;
             else if (_type == DynamicStateType.PREDETERMINED_LLA)
@@ -109,12 +109,12 @@ namespace Universe
                 if (hasrun)
                 {
                     //return LLA2ECI((posData.lower_bound(simTime))->second, JD);
-                    return LLA2ECI(this->getStateAtTime(simTime), JD);
+                    return GeometryUtilities.LLA2ECI(this[simTime], JD);
                 }
                 else
                 {
-                    cout << "Integrating and resampling position data... " << endl;
-                    double vals[2] = { 0, simParams::SIMEND_SECONDS() };
+                    Console.WriteLine("Integrating and resampling position data... ");
+                    double[] vals = new double[2] { 0, SimParameters._simEndSeconds };
                     Integrator solver;
                     bool rk45;
                     // Update the integrator parameters using the information in the XML Node
@@ -123,33 +123,34 @@ namespace Universe
                     if (rk45)
                     {
                         solver.setParam("nsteps", (vals[1] - vals[0]) / schedParams::SIMSTEP_SECONDS());
-                        posData = solver.rk45(eomsObject, Matrix(2, 1, vals), initState).ODE_RESULT;
+                        _stateData = solver.rk45(eomsObject, new Matrix(vals), initState).ODE_RESULT;
                     }
                     else
                     {
-                        cout << "Using rk4 integrator..." << endl;
-                        posData = solver.rk4(eomsObject, Matrix(2, 1, vals), initState).ODE_RESULT;
+                        Console.WriteLine("Using rk4 integrator...");
+                        _stateData = solver.rk4(eomsObject, new Matrix(2, 1, vals), initState).ODE_RESULT;
                     }
-                    cout << "DONE!" << endl;
+                    Console.WriteLine("DONE!");
                     //return LLA2ECI((posData.lower_bound(simTime))->second, JD);			
-                    return LLA2ECI(this->getStateAtTime(simTime), JD);
+                    return GeometryUtilities.LLA2ECI(this[simTime], JD);
                 }
             }
-            else if (posType == POSITION_TYPE_PREDETERMINED_ECI)
+            else if (_type == DynamicStateType.PREDETERMINED_ECI)
             {
                 if (hasrun)
                 {
                     //return (posData.lower_bound(simTime))->second;
-                    return this->getStateAtTime(simTime);
+                    return this[simTime];
                 }
                 else
                 {
-                    cout << "Integrating and resampling position data... " << endl;
+                    Console.WriteLine("Integrating and resampling position data... ");
                     this->setPropagationModel();
 
+                    double[] vals = new double[2] { 0, SimParameters._simEndSeconds };
                     if (this->propagatorType == RK45)
                     {
-                        double vals[2] = { 0, simParams::SIMEND_SECONDS() };
+                        
                         Integrator solver;
 
                         // Update the integrator parameters using the information in the XML Node
@@ -157,28 +158,27 @@ namespace Universe
 
                         solver.setParam("nsteps", (vals[1] - vals[0]) / schedParams::SIMSTEP_SECONDS());
 
-                        cout << "Using rk45 integrator..." << endl;
-                        posData = solver.rk45(eomsObject, Matrix(2, 1, vals), initState).ODE_RESULT;
+                        Console.WriteLine("Using rk45 integrator...");
+                        _stateData = solver.rk45(eomsObject, new Matrix(2, 1, vals), initState).ODE_RESULT;
                     }
                     else if (this->propagatorType == RK4)
                     {
-                        double vals[2] = { 0, simParams::SIMEND_SECONDS() };
-                        Integrator solver;
+                          Integrator solver;
 
                         // Update the integrator parameters using the information in the XML Node
                         setIntegratorParams(solver);
 
-                        cout << "Using rk4 integrator..." << endl;
-                        posData = solver.rk4(eomsObject, Matrix(2, 1, vals), initState).ODE_RESULT;
+                        Console.WriteLine("Using rk4 integrator...");
+                        _stateData = solver.rk4(eomsObject, new Matrix(2, 1, vals), initState).ODE_RESULT;
                     }
                     else if (this->propagatorType == SGP4)
                     {
-                        cout << "Using sgp4 integrator..." << endl;
+                        _stateData"Using sgp4 integrator... which is not implemented...");
                         // creat an sgp4 object and propagate
                     }
-                    cout << "DONE!" << endl;
-                    //return (posData.lower_bound(simTime))->second;
-                    return this->getStateAtTime(simTime);
+                    Console.WriteLine("DONE!");
+
+                    return this[simTime];
                 }
             }
             else
@@ -199,11 +199,11 @@ namespace Universe
             get
             {
                 // TODO: if the stateData does not exist at 'simTime' interprolate...
-                return this._stateData[simTime];
+                return _stateData[simTime];
             }
             set
             {
-                this.stateData[simTime] = value;
+                _stateData[simTime] = value;
             }
         }
     }

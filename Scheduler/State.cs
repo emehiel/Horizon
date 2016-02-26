@@ -65,10 +65,10 @@ namespace HSFScheduler
             TaskStart = initialStateToCopy.TaskStart;
             TaskEnd = initialStateToCopy.TaskEnd;
             EventEnd = initialStateToCopy.EventEnd;
-            idata = initialStateToCopy.idata;
+            Idata = initialStateToCopy.Idata;
             Ddata = initialStateToCopy.Ddata;
-            fdata = initialStateToCopy.fdata;
-            bdata = initialStateToCopy.bdata;
+            Fdata = initialStateToCopy.Fdata;
+            Bdata = initialStateToCopy.Bdata;
             Mdata = initialStateToCopy.Mdata;
             Qdata = initialStateToCopy.Qdata;
         }
@@ -96,8 +96,8 @@ namespace HSFScheduler
          */
          KeyValuePair<double, int> getLastValue(StateVarKey key) {
             HSFProfile<int> valueOut;
-		    if(idata.Count != 0) { // Are there any Profiles in there?
-                if (idata.TryGetValue(key, out valueOut)) //see if our key is in there
+		    if(Idata.Count != 0) { // Are there any Profiles in there?
+                if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut.Last(); //found it, return it TODO: return last value or pair?
 		    }
             return Previous.getLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
@@ -111,8 +111,8 @@ namespace HSFScheduler
          */
         KeyValuePair<double, int> getValueAtTime(StateVarKey key, double time){
             HSFProfile<int> valueOut;
-            if (idata.Count != 0)  { // Are there any Profiles in there?
-                if (idata.TryGetValue(key, out valueOut)) //see if our key is in there
+            if (Idata.Count != 0)  { // Are there any Profiles in there?
+                if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut.DataAtTime(time);
             }
 		    return  Previous.getValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
@@ -126,8 +126,8 @@ namespace HSFScheduler
          */
         HSFProfile<int> getProfile(StateVarKey key){
             HSFProfile<int> valueOut;
-		    if(idata.Count != 0)  { // Are there any Profiles in there?
-                if (idata.TryGetValue(key, out valueOut)) //see if our key is in there
+		    if(Idata.Count != 0)  { // Are there any Profiles in there?
+                if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut;
             }
 		    return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
@@ -140,8 +140,8 @@ namespace HSFScheduler
          */
         HSFProfile<int> getFullProfile(StateVarKey key){
             HSFProfile<int> valueOut = new HSFProfile<int>();
-		    if(idata.Count != 0)  { // Are there any Profiles in there?
-                if (idata.TryGetValue(key, out valueOut)) { //see if our key is in there
+		    if(Idata.Count != 0)  { // Are there any Profiles in there?
+                if (Idata.TryGetValue(key, out valueOut)) { //see if our key is in there
                     if (Previous != null) // Check whether we are at the first state
 					    return HSFProfile<int>.MergeProfiles(valueOut, Previous.getFullProfile(key));
 				    return valueOut;				
@@ -160,11 +160,11 @@ namespace HSFScheduler
          */
         void setProfile(StateVarKey key, HSFProfile<int> profIn){
             HSFProfile<int> valueOut;
-            if (!idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                idata.Add(key, profIn); 
+            if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Idata.Add(key, profIn); 
 		    else { // Otherwise, erase whatever is there, and insert a new one.
-			    idata.Remove(key);
-			    idata.Add(key, profIn); 
+			    Idata.Remove(key);
+			    Idata.Add(key, profIn); 
 		    }
         }
 
@@ -178,8 +178,8 @@ namespace HSFScheduler
         void addValue(StateVarKey key, KeyValuePair<double, int> pairIn){
             HSFProfile<int> valueIn = new HSFProfile<int>(pairIn);
             HSFProfile<int> valueOut;
-            if (!idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                idata.Add(key, valueIn); 
+            if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Idata.Add(key, valueIn); 
 		    else // Otherwise, add this data point to the existing Profile.
 			    valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
 	    }
@@ -192,8 +192,8 @@ namespace HSFScheduler
          */
         void addValue(StateVarKey key, HSFProfile<int> profIn){
 		    HSFProfile<int> valueOut;
-            if (!idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-			    idata.Add(key, profIn); 
+            if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+			    Idata.Add(key, profIn); 
 		    else // Otherwise, add this data point to the existing Profile.
 			    valueOut.Add(profIn);
 	    }

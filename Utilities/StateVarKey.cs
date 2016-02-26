@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    public class StateVarKey
+    public class StateVarKey<T>
     {
         private string _varName { get; set; }
 
         public StateVarKey(string varName)
         {
             _varName = varName;
+
         }
 
         // override object.Equals

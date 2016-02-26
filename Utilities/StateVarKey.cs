@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    public class StateVarKey
+    public class StateVarKey<T>
     {
         private string _varName { get; set; }
 
@@ -23,17 +23,17 @@ namespace Utilities
                 return false;
             }
 
-            StateVarKey p = obj as StateVarKey;
+            StateVarKey<T> p = obj as StateVarKey<T>;
             return _varName == p._varName;
 
         }
 
-        public static bool operator ==(StateVarKey p1, StateVarKey p2)
+        public static bool operator ==(StateVarKey<T> p1, StateVarKey<T> p2)
         {
             return p1.Equals(p2);
         }
 
-        public static bool operator !=(StateVarKey p1, StateVarKey p2)
+        public static bool operator !=(StateVarKey<T> p1, StateVarKey<T> p2)
         {
             return !(p1 == p2);
         }

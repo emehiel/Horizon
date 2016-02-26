@@ -44,6 +44,8 @@
     <Compile Include="DeepCopy.cs" />
     <Compile Include="EOMS.cs" />
     <Compile Include="GeometryUtilities.cs" />
+    <Compile Include="Integrator.cs" />
+    <Compile Include="IntegratorOptions.cs" />
     <Compile Include="Math\MyClass.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="MatrixIndex.cs" />

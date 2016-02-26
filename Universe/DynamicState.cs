@@ -85,7 +85,7 @@ namespace Universe
 
         public void Add(Double simTime, Matrix dynamicState)
         {
-            this._stateData.Add(simTime, dynamicState);
+            _stateData.Add(simTime, dynamicState);
         }
 
         /// <summary>
@@ -114,15 +114,18 @@ namespace Universe
                 else
                 {
                     Console.WriteLine("Integrating and resampling position data... ");
-                    double[] vals = new double[2] { 0, SimParameters._simEndSeconds };
-                    Integrator solver;
-                    bool rk45;
+                    Matrix tSpan = new Matrix(new double[1, 2] { { 0, SimParameters._simEndSeconds } });
                     // Update the integrator parameters using the information in the XML Node
+
                     setIntegratorParams(solver);
 
                     if (rk45)
                     {
                         solver.setParam("nsteps", (vals[1] - vals[0]) / schedParams::SIMSTEP_SECONDS());
+                        Matrix stateData = Integrator.RK45(_eoms, tSpan, initState);
+                        foreach (Matrix row in stateData)
+                            _stateData[row[1, 1]] = row[1, new MatrixIndex(2, row.Length)];
+
                         _stateData = solver.rk45(eomsObject, new Matrix(vals), initState).ODE_RESULT;
                     }
                     else
@@ -173,7 +176,7 @@ namespace Universe
                     }
                     else if (this->propagatorType == SGP4)
                     {
-                        _stateData"Using sgp4 integrator... which is not implemented...");
+                        Console.WriteLine("Using sgp4 integrator... which is not implemented...");
                         // creat an sgp4 object and propagate
                     }
                     Console.WriteLine("DONE!");

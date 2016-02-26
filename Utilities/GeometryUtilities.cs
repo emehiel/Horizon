@@ -8,13 +8,13 @@ namespace Utilities
 {
     public static class GeometryUtilities
     {
-        public static bool  hasLOS(Matrix posECI1, Matrix posECI2)
+        public static bool  hasLOS(Matrix<double> posECI1, Matrix<double> posECI2)
         {
             // calculate the minimum distance to the center of the earth
-            double d = Matrix.Norm(Matrix.Cross(posECI2 - posECI1, posECI1)) / Matrix.Norm(posECI2 - posECI1);
+            double d = Matrix<double>.Norm(Matrix<double>.Cross(posECI2 - posECI1, posECI1)) / Matrix<double>.Norm(posECI2 - posECI1);
             /* parameter t is is the parameter that represents where the minimum distance is
             d is a minimum at (posECI1) + t*(posECI2 - posECI1)*/
-            double t = (double) -Matrix.Dot(posECI1, posECI2 - posECI1) / System.Math.Pow(Matrix.Norm(posECI2 - posECI1), 2);
+            double t = -Matrix<double>.Dot(posECI1, posECI2 - posECI1) / System.Math.Pow(Matrix<double>.Norm(posECI2 - posECI1), 2);
             /* if t > 1 or t < 0, then the minumim distance does not occur along the line segment connecting positions 1 and 2,
             and the two positions are visible from each other*/
             if (t >= 1 || t <= 0)
@@ -23,13 +23,13 @@ namespace Utilities
             return d >= SimParameters.EARTH_RADIUS;
         }
 
-        public static Matrix LLA2ECI(Matrix LLA, double JD )
+        public static Matrix<double> LLA2ECI(Matrix<double> LLA, double JD )
         {
-            Matrix pos = new Matrix(3, 1, 0.0);
+            Matrix<double> pos = new Matrix<double>(3, 1, 0.0);
 
-            double lat = (double)LLA[1, 1]; //deg
-            double lon = (double)LLA[2, 1]; //deg
-            double alt = (double)LLA[3, 1]; //km
+            double lat = LLA[1, 1]; //deg
+            double lon = LLA[2, 1]; //deg
+            double alt = LLA[3, 1]; //km
 
             double gst = CT2LST(lon, JD); //deg
             double theta = gst * System.Math.PI / 180.0; //(lon + gst) * M_PI/180.0; //rad
@@ -43,14 +43,14 @@ namespace Utilities
             return pos;
         }
 
-    public static Matrix ECI2LLA( Matrix ECI, double JD )
+    public static Matrix<double> ECI2LLA( Matrix<double> ECI, double JD )
         {
-            Matrix pos = new Matrix(3, 1, 0.0);
-            double x = (double)ECI[1, 1];
-            double y = (double)ECI[2, 1];
-            double z = (double)ECI[3, 1];
+            Matrix<double> pos = new Matrix<double>(3, 1, 0.0);
+            double x = ECI[1, 1];
+            double y = ECI[2, 1];
+            double z = ECI[3, 1];
 
-            double r = Matrix.Norm(ECI);
+            double r = Matrix<double>.Norm(ECI);
                 double templon = 180 / System.Math.PI * System.Math.Atan2(y, x); //deg
             double diff = templon - CT2LST(templon, JD);
             double lon = templon + diff;
@@ -63,7 +63,7 @@ namespace Utilities
 
     public static double HMS2UT(uint h, uint m, double seconds)
     {
-        return (double)h + (double)m / 60.0 + seconds / 3600.0;
+        return h + m / 60.0 + seconds / 3600.0;
     }
 
     public static double YMDUT2JD( uint y, uint m, uint d, double UT)

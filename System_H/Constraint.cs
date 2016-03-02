@@ -1,8 +1,10 @@
+using Subsystem;
 using System;
-using System.Collections.Generic.Stack;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HSFSubsystem;
 
 /*
 #include "systemSchedule.h"
@@ -19,7 +21,7 @@ namespace HSFSystem
             SubsystemNodes.Push(node);
         }
 
-        public virtual bool accepts(systemSchedule sched);
+        public virtual bool accepts(SystemSchedule sched);
 
         public virtual Constraint clone();
 

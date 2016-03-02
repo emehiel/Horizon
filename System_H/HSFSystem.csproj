@@ -42,13 +42,18 @@
   <ItemGroup>
     <Compile Include="Asset.cs" />
     <Compile Include="Constraint.cs" />
+    <Compile Include="Dependencies.cs" />
+    <Compile Include="NodeDependencies.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Subsystem.cs" />
+    <Compile Include="SubsystemNode.cs" />
     <Compile Include="SystemClass.cs" />
+    <Compile Include="SystemSchedule.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Subsystem\Subsystem.csproj">
-      <Project>{2006798b-5974-4838-aa6d-29340fb171d2}</Project>
-      <Name>Subsystem</Name>
+    <ProjectReference Include="..\Scheduler\HSFScheduler.csproj">
+      <Project>{241171ab-18b2-45a0-848a-62b2ef751644}</Project>
+      <Name>HSFScheduler</Name>
     </ProjectReference>
     <ProjectReference Include="..\Universe\Universe.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>

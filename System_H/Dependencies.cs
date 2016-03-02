@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using Utilities;
+using HSFScheduler;
 
-
-namespace Subsystem
+namespace HSFSubsystem
 {
 
     /**
@@ -43,12 +43,12 @@ namespace Subsystem
      * @author Travis Lockyer
      */
 
-        class Dependencies
+        public class Dependencies
         {
             private List<State> endStates;
             private Dictionary<List<State>, int> stateMap;
             protected Dependencies() { }
-            protected Dependencies(const Dependencies);
+            protected Dependencies(Dependencies);
         //------------------------------------------------------------------------------------------------
         //--------------------------------- DECLARE DEPENDENCY COLLECTORS --------------------------------
         //------------------------------------------------------------------------------------------------
@@ -95,12 +95,12 @@ namespace Subsystem
             //------------------------------------------------------------------------------------------------
             //--------------------------------- DECLARE DEPENDENCY FUNCTIONS ---------------------------------
             //------------------------------------------------------------------------------------------------
-            public HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(State* state)
+            public HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(State state)
             {
                 StateVarKey<double> EOSENSORDATA(STATEVARNAME_PIXELS);
                 return state.getProfile(EOSENSORDATA) / 500;
             }
-            public HSFProfile<double> COMMSUB_DataRateProfile_SSDRSUB(State* state)
+            public HSFProfile<double> COMMSUB_DataRateProfile_SSDRSUB(State state)
             {
                 StateVarKey<double> dataratio(STATEVARNAME_DATABUFFERRATIO);
                 double datarate = 5000 * (state.getValueAtTime(dataratio, state._taskStart()).second - state.getValueAtTime(dataratio, state._taskEnd()).second) / (state._taskEnd() - state._taskStart());
@@ -112,7 +112,7 @@ namespace Subsystem
                 }
                 return prof1;
             }
-            public HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(State* state)
+            public HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(State state)
             {
                 HSFProfile<double> prof1;
                 prof1[state._eventStart()] = 40;
@@ -120,7 +120,7 @@ namespace Subsystem
                 prof1[state._taskEnd()] = 40;
                 return prof1;
             }
-            public HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(State* state)
+            public HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(State state)
             {
                 HSFProfile<double> prof1 = new HSFProfile<double>();
                 prof1[state._eventStart()] = 10;
@@ -132,13 +132,13 @@ namespace Subsystem
                 }
                 return prof1;
             }
-            public HSFProfile<double> POWERSUB_PowerProfile_SSDRSUB(State* state)
+            public HSFProfile<double> POWERSUB_PowerProfile_SSDRSUB(State state)
             {
                 HSFProfile<double> prof1;
                 prof1[state._eventStart()] = 15;
                 return prof1;
             }
-            public HSFProfile<double> POWERSUB_PowerProfile_COMMSUB(State* state)
+            public HSFProfile<double> POWERSUB_PowerProfile_COMMSUB(State state)
             {
                 StateVarKey<double> c1(STATEVARNAME_DATARATE);
                 return state.getProfile(c1) * 20;

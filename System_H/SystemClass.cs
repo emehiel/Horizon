@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Universe;
-using Subsystem;
+using HSFSubsystem;
 using Utilities;
 
 namespace HSFSystem
@@ -39,24 +39,27 @@ namespace HSFSystem
             ThreadNum = copy.ThreadNum;
         }
         
-        public bool canPerform(systemSchedule sysSched){
-            foreach(SubsystemNode subNodeIt in SubsystemNodes){
+        public bool canPerform(SystemSchedule sysSched){
+            // Iterate through Subsystem Nodes and set that they havent run
+            foreach (SubsystemNode subNodeIt in SubsystemNodes){
                 subNodeIt.reset();
             }
-            foreach(Constraint constrainIt in Constraints){
-                if(!checkSubs(constraintIt._subsystemNodes(), sysSched, true))
+            // Iterate through constraints
+            foreach (Constraint constraintIt in Constraints){
+                if(!checkSubs(constraintIt.SubsystemNodes, sysSched, true))
                     return false;
-                if(!constrainIt.accepts(sysSched))
+                if(!constraintIt.accepts(sysSched))
                     return false;
             }
-            if(!checkSubs(subsystemNodes, sysSched, false))
+            // Check the remaining Subsystems that aren't included in any Constraints
+            if (!checkSubs(SubsystemNodes, sysSched, false))
                 return false;
             
             return true;
         }
         
         public bool checkForCircularDependencies(){
-            bool hasCircDep = flase;
+            bool hasCircDep = false;
             foreach(SubsystemNode nodeIt in SubsystemNodes){
                 SubsystemNode currNode = nodeIt;
                 hasCircDep |= checkSubForCircularDependencies(nodeIt, nodeIt);
@@ -65,12 +68,12 @@ namespace HSFSystem
             }
             return hasCircDep;
         }
-        
-        private bool checkSubs(List<SubstemNode> subNodeList, 
-                               systemSchedule sySched, bool mustEvaluate){
+ 
+        private bool checkSubs(Stack<SubsystemNode> subNodeList, 
+                               SystemSchedule sySched, bool mustEvaluate){
             int subAssetNum;
-            foreach(SubstemNode subNodeIt in subNodeList){
-                subAssetNum = subNodeIt._nAsset;
+            foreach(SubsystemNode subNodeIt in subNodeList){
+                subAssetNum = subNodeIt.NAsset;
                 if(subNodeIt.canPerform(sysSched.getSubNewState(subAssetNum),
                                         sysSched.getSubNewTask(subAssetNum), 
                                         environment, 
@@ -84,8 +87,8 @@ namespace HSFSystem
         private bool checkSubForCircularDependencies(SubsystemNode currNode,
                                                      SubsystemNode beginNode){
             bool hasCircDep = false;
-            List<SubsystemNode> preceedingNodes = currNode._preceedingNodes;
-            if(!preceedingNodes.Any()){ //might have to write an Any method
+            Stack<SubsystemNode> preceedingNodes = currNode.PreceedingNodes;
+            if(!preceedingNodes.Any()){ 
                 foreach(SubsystemNode nodeIt in preceedingNodes){
                     hasCircDep |= nodeIt == beginNode;
                     if(hasCircDep)
@@ -97,25 +100,32 @@ namespace HSFSystem
             }
             return hasCircDep;
         }
-/*        
-        public List<Asset> getAssets(){
-            
+        void setDependencies(Dependencies deps)
+        {
+            foreach(SubsystemNode subIt in SubsystemNodes)
+            {
+                subIt.setDependencies(deps);
+            }
         }
-        
-        public List<SubsystemNode> getSubsystemNodes(){
-            
-        }
-        
-        public List<Constraint> getConstraints(){
-            
-        }
-        
-        public Environment getEnvironment(){
-            
-        }
-        */
+        /*        
+                public List<Asset> getAssets(){
 
-      
+                }
+
+                public List<SubsystemNode> getSubsystemNodes(){
+
+                }
+
+                public List<Constraint> getConstraints(){
+
+                }
+
+                public Environment getEnvironment(){
+
+                }
+                */
+
+
 
     }
 }

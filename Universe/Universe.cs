@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Xml;
 
 
-namespace Universe{
+namespace HSFUniverse{
     //Old implementation of universe. To be modified drastically by trent's thesis.
     public class Universe{
         private Sun _sun { get; set; }

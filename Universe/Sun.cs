@@ -12,7 +12,7 @@ using IO;
 * @author Seth Silva
 */
 
-namespace Universe
+namespace HSFUniverse
 {
     enum shadow_state
     {

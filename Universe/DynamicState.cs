@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using Utilities;
 
-namespace Universe
+namespace HSFUniverse
 {
     /*
      * A class that specifies the dynamic state of a given rigid body object in the system in a given coordinate frame.

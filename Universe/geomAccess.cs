@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using Scheduler;
 
-namespace Universe{
+namespace HSFUniverse{
     public class geomAccess{
         //I think this originally took in an array of List<Tasks> and and array of List<List<Dictionary>>? 
         //so I changed it to take in List<List<Task>> and List<List<List<Dictionary>>>

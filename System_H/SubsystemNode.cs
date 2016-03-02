@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 using HSFSystem;
+using UserModel;
+using HSFScheduler;
+using HSFUniverse;
 
 //namespace HSFSystem
 //{
-    namespace HSFSubsystem
-    {
-        public class SubsystemNode
+namespace HSFSubsystem
+{
+    public class SubsystemNode
         {
             public bool IsChecked { get; private set; }
             public bool ScriptingEnabled { get; private set; }
@@ -42,14 +43,6 @@ using HSFSystem;
                 SubsystemDependencies = new NodeDependencies(other.SubsystemDependencies);
             }
             #endregion Constructors
-            public void reset()
-            {
-                IsChecked = false;
-            }
-            public void setThreadNum(int threadNum)
-            {
-                SubsystemDependencies.setThreadNum();
-            }
             #region AddDependencies
 
             public void addDependency(string key, IntDependency dep)
@@ -113,26 +106,35 @@ using HSFSystem;
                 SubsystemDependencies.addQuatScriptedDependency(callKey, key);
             }
             #endregion AddDependencies
+            #region GettersAndSetters
+            public void reset()
+            {
+                IsChecked = false;
+            }
+            public void setThreadNum(int threadNum)
+            {
+                SubsystemDependencies.ThreadNum = threadNum;
+            }
             public void enableScriptingSupport()
             {
                 ScriptingEnabled = true;
-                SubsystemDependencies.enableScriptingSupport();
+                SubsystemDependencies.ScriptingEnabled = true;
             }
 
             public void disableScriptingSupport()
             {
                 ScriptingEnabled = false;
-                SubsystemDependencies.disableScriptingSupport();
+                SubsystemDependencies.ScriptingEnabled = false;
             }
 
-            public void setPyState(pyState state)
+            public void setPyState(PythonState state)
             {
-                SubsystemDependencies.setPyState(state);
+                SubsystemDependencies.PyState = DeepCopy.Copy<PythonState>(state);
             }
 
-            public void getPyState()
+            public PythonState getPyState()
             {
-                return SubsystemDependencies.getPyState();
+                return SubsystemDependencies.PyState;
             }
 
             public void addPreceedingNode(SubsystemNode node)
@@ -143,7 +145,8 @@ using HSFSystem;
             {
                 throw new NotImplementedException();
             }
-            public bool canPerform(State newState, Task task, Universe environment, double evalToTime, bool mustEvaluate)
+#endregion GettersAndSetters
+        public bool canPerform(State newState, Task task, Universe environment, double evalToTime, bool mustEvaluate)
             {
                 foreach (SubsystemNode nodeIt in PreceedingNodes)
                 {
@@ -156,14 +159,14 @@ using HSFSystem;
                 if (IsChecked)
                 {
                     IsChecked = true;
-                    if (newState.getTaskStart() >= evalToTime && task != null)
+                    if (newState.TaskStart >= evalToTime && task != null)
                     {
-                        return Subsystem.canPerform(newState.getPrevious(), newState, task, SubsystemAsset.getPos(), environment, SubsystemDependencies);
+                        return SubsystemField.canPerform(newState.Previous, newState, task, SubsystemAsset.AssetPosition, environment, SubsystemDependencies);
                     }
                     else
                     {
                         if (mustEvaluate)
-                            return Subsystem.canExtend(newState, SubsystemAsset.getPos(), environment, evalToTime, SubsystemDependencies);
+                            return SubsystemField.canExtend(newState, SubsystemAsset.AssetPosition, environment, evalToTime, SubsystemDependencies);
                         else
                             return true;
                     }

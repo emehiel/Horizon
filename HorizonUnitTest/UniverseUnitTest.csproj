@@ -54,9 +54,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Universe\Universe.csproj">
+    <ProjectReference Include="..\Universe\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
-      <Name>Universe</Name>
+      <Name>HSFUniverse</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

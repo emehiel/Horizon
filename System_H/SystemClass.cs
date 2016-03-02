@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Universe;
 using HSFSubsystem;
 using Utilities;
 
@@ -14,12 +10,12 @@ namespace HSFSystem
         public List<Asset> Assets{get; private set;}
         public Stack<SubsystemNode> SubsystemNodes{get; private set;}
         public Stack<Constraint> Constraints{get; private set;}
-        public Universe.Universe Environment{get; private set;}
+        public HSFUniverse.Universe Environment{get; private set;}
         public int ThreadNum{get; private set;}
 
         
         public SystemClass(List<Asset> assets, Stack<SubsystemNode> subsystems,
-                         Stack<Constraint> constraints, Universe.Universe environment){
+                         Stack<Constraint> constraints, HSFUniverse.Universe environment){
             Assets = assets;
             SubsystemNodes = subsystems;
             Constraints = constraints;

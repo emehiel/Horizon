@@ -4,10 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-//using Universe; causes circular dependencies
 
 
-namespace Scheduler
+namespace HSFUniverse
 {
     /**
     * A named location denoting where a task is to be performed.

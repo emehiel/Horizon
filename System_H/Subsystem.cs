@@ -5,9 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 using HSFScheduler;
-using Universe;
-//namespace HSFSystem
-//{
+using HSFUniverse;
+using HSFSystem;
     namespace HSFSubsystem
     {
         public class Subsystem {
@@ -28,7 +27,7 @@ using Universe;
             virtual bool canPerform(State oldState, State newSTate,
                                       Task task, DynamicState position,
                                       Environment environment,
-                                      NodeDependencies, dep) {
+                                      NodeDependencies dep) {
                 throw new NotImplementedException();
             }
             virtual bool canExtend(State newState, DynamicState position, Environment environment, double evalToTime,

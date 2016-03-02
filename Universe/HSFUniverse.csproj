@@ -7,8 +7,8 @@
     <ProjectGuid>{23695C61-1557-4BB3-AC04-98DB5701872A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Universe</RootNamespace>
-    <AssemblyName>Universe</AssemblyName>
+    <RootNamespace>HSFUniverse</RootNamespace>
+    <AssemblyName>HSFUniverse</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="CloudCover.cs" />
     <Compile Include="DynamicState.cs" />
+    <Compile Include="Target.cs" />
     <Compile Include="Universe.cs" />
     <Compile Include="geomAccess.cs" />
     <Compile Include="geomUtil.cs" />

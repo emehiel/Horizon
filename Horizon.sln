@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorizonMain", "Horizon\HorizonMain.csproj", "{6E6D45BA-6E13-4117-839E-469A59EEF191}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Universe", "Universe\Universe.csproj", "{23695C61-1557-4BB3-AC04-98DB5701872A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFUniverse", "Universe\HSFUniverse.csproj", "{23695C61-1557-4BB3-AC04-98DB5701872A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFSystem", "System_H\HSFSystem.csproj", "{72FA2884-1D92-4088-9FAC-60564F9971F8}"
 EndProject

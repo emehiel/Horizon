@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Asset.cs" />
+    <Compile Include="AssetScheule.cs" />
     <Compile Include="Constraint.cs" />
     <Compile Include="Dependencies.cs" />
     <Compile Include="NodeDependencies.cs" />
@@ -51,13 +52,17 @@
     <Compile Include="SystemSchedule.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\IO\UserModel.csproj">
+      <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
+      <Name>UserModel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Scheduler\HSFScheduler.csproj">
       <Project>{241171ab-18b2-45a0-848a-62b2ef751644}</Project>
       <Name>HSFScheduler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Universe\Universe.csproj">
+    <ProjectReference Include="..\Universe\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
-      <Name>Universe</Name>
+      <Name>HSFUniverse</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>

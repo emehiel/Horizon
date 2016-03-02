@@ -31,6 +31,7 @@ namespace Utilities
                 Console.WriteLine( "Loading simulation parameters... " );
 
                 _simStartJD = Convert.ToDouble(simulationXMLNode.Attributes["SimStartJD"]);
+
                 Console.WriteLine("\tSimulation Start Julian Date: {0}",_simStartJD);
 
                 if (simulationXMLNode.Attributes["SimStartSeconds"] != null)

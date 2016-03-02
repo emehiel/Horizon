@@ -9,6 +9,7 @@ using HSFUniverse;
 using HSFSystem;
     namespace HSFSubsystem
     {
+    //TODO: Make subsystem abstract
         public class Subsystem {
             protected string Name { get; private set; }
             protected Stack<StateVarKey<int>> Ikeys { get; private set; }
@@ -24,13 +25,13 @@ using HSFSystem;
                 Name = name;
             }
             virtual Subsystem clone() { }
-            virtual bool canPerform(State oldState, State newSTate,
+            public virtual bool canPerform(State oldState, State newSTate,
                                       Task task, DynamicState position,
                                       Environment environment,
                                       NodeDependencies dep) {
                 throw new NotImplementedException();
             }
-            virtual bool canExtend(State newState, DynamicState position, Environment environment, double evalToTime,
+            public virtual bool canExtend(State newState, DynamicState position, Environment environment, double evalToTime,
                                     NodeDependencies dependencies) {
                 throw new NotImplementedException();
             }

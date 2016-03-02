@@ -12,142 +12,143 @@ using HSFUniverse;
 namespace HSFSubsystem
 {
     public class SubsystemNode
+    {
+        public bool IsChecked { get; private set; }
+        public bool ScriptingEnabled { get; private set; }
+        public Subsystem SubsystemField { get; private set; }
+        public Asset SubsystemAsset { get; private set; }
+        public int NAsset { get; private set; }
+        public Stack<SubsystemNode> PreceedingNodes { get; private set; }
+        public NodeDependencies SubsystemDependencies { get; set; }
+
+        #region Constructors
+        public SubsystemNode()
         {
-            public bool IsChecked { get; private set; }
-            public bool ScriptingEnabled { get; private set; }
-            public Subsystem SubsystemField { get; private set; }
-            public Asset SubsystemAsset { get; private set; }
-            public int NAsset { get; private set; }
-            public Stack<SubsystemNode> PreceedingNodes { get; private set; }
-            public NodeDependencies SubsystemDependencies { get; set; }
+            SubsystemDependencies = new NodeDependencies();
+        }
 
-            #region Constructors
-            public SubsystemNode()
-            {
-                SubsystemDependencies = new NodeDependencies();
-            }
+        public SubsystemNode(Subsystem subsystem, Asset asset)
+        {
+            SubsystemField = subsystem;
+            SubsystemAsset = asset;
+        }
 
-            public SubsystemNode(Subsystem subsystem, Asset asset)
-            {
-                SubsystemField = subsystem;
-                SubsystemAsset = asset;
-            }
+        public SubsystemNode(SubsystemNode other)
+        {
+            IsChecked = other.IsChecked;
+            ScriptingEnabled = other.ScriptingEnabled;
+            SubsystemField = other.SubsystemField;
+            SubsystemAsset = other.SubsystemAsset;
+            NAsset = other.NAsset;
+            SubsystemDependencies = new NodeDependencies(other.SubsystemDependencies);
+        }
+        #endregion Constructors
+        #region AddDependencies
 
-            public SubsystemNode(SubsystemNode other)
-            {
-                IsChecked = other.IsChecked;
-                ScriptingEnabled = other.ScriptingEnabled;
-                SubsystemField = other.SubsystemField;
-                SubsystemAsset = other.SubsystemAsset;
-                NAsset = other.NAsset;
-                SubsystemDependencies = new NodeDependencies(other.SubsystemDependencies);
-            }
-            #endregion Constructors
-            #region AddDependencies
+        public void addDependency(string key, IntDependency dep)
+        {
+            SubsystemDependencies.addDependency(key, dep);
+        }
 
-            public void addDependency(string key, IntDependency dep)
-            {
-                SubsystemDependencies.addDependency(key, dep);
-            }
+        public void addDependency(string key, DoubleDependency dep)
+        {
+            SubsystemDependencies.addDependency(key, dep);
+        }
 
-            public void addDependency(string key, DoubleDependency dep)
-            {
-                SubsystemDependencies.addDependency(key, dep);
-            }
+        public void addDependency(string key, FloatDependency dep)
+        {
+            SubsystemDependencies.addDependency(key, dep);
+        }
 
-            public void addDependency(string key, FloatDependency dep)
-            {
-                SubsystemDependencies.addDependency(key, dep);
-            }
+        public void addDependency(string key, BoolDependency dep)
+        {
+            SubsystemDependencies.addDependency(key, dep);
+        }
 
-            public void addDependency(string key, BoolDependency dep)
-            {
-                SubsystemDependencies.addDependency(key, dep);
-            }
+        public void addDependency(string key, MatrixDependency dep)
+        {
+            SubsystemDependencies.addDependency(key, dep);
+        }
 
-            public void addDependency(string key, MatrixDependency dep)
-            {
-                SubsystemDependencies.addDependency(key, dep);
-            }
+        public void addDependency(string key, QuatDependency dep)
+        {
+            SubsystemDependencies.addDependency(key, dep);
+        }
 
-            public void addDependency(string key, QuatDependency dep)
-            {
-                SubsystemDependencies.addDependency(key, dep);
-            }
-
-            public void addIntScriptedDependency(string callKey, string key)
-            {
-                SubsystemDependencies.addIntScriptedDependency(callKey, key);
-            }
+        public void addIntScriptedDependency(string callKey, string key)
+        {
+            SubsystemDependencies.addIntScriptedDependency(callKey, key);
+        }
 
 
-            public void addDoubleScriptedDependency(string callKey, string key)
-            {
-                SubsystemDependencies.addDoubleScriptedDependency(callKey, key);
-            }
+        public void addDoubleScriptedDependency(string callKey, string key)
+        {
+            SubsystemDependencies.addDoubleScriptedDependency(callKey, key);
+        }
 
-            public void addFloatScriptedDependency(string callKey, string key)
-            {
-                SubsystemDependencies.addFloatScriptedDependency(callKey, key);
-            }
+        public void addFloatScriptedDependency(string callKey, string key)
+        {
+            SubsystemDependencies.addFloatScriptedDependency(callKey, key);
+        }
 
-            public void addBoolScriptedDependency(string callKey, string key)
-            {
-                SubsystemDependencies.addBoolScriptedDependency(callKey, key);
-            }
+        public void addBoolScriptedDependency(string callKey, string key)
+        {
+            SubsystemDependencies.addBoolScriptedDependency(callKey, key);
+        }
 
-            public void addMatrixScriptedDependency(string callKey, string key)
-            {
-                SubsystemDependencies.addMatrixScriptedDependency(callKey, key);
-            }
+        public void addMatrixScriptedDependency(string callKey, string key)
+        {
+            SubsystemDependencies.addMatrixScriptedDependency(callKey, key);
+        }
 
-            public void addQuatScriptedDependency(string callKey, string key)
-            {
-                SubsystemDependencies.addQuatScriptedDependency(callKey, key);
-            }
-            #endregion AddDependencies
-            #region GettersAndSetters
-            public void reset()
-            {
-                IsChecked = false;
-            }
-            public void setThreadNum(int threadNum)
-            {
-                SubsystemDependencies.ThreadNum = threadNum;
-            }
-            public void enableScriptingSupport()
-            {
-                ScriptingEnabled = true;
-                SubsystemDependencies.ScriptingEnabled = true;
-            }
+        public void addQuatScriptedDependency(string callKey, string key)
+        {
+            SubsystemDependencies.addQuatScriptedDependency(callKey, key);
+        }
+        #endregion AddDependencies
+        #region GettersAndSetters
+        public void reset()
+        {
+            IsChecked = false;
+        }
+        public void setThreadNum(int threadNum)
+        {
+            SubsystemDependencies.ThreadNum = threadNum;
+        }
+        public void enableScriptingSupport()
+        {
+            ScriptingEnabled = true;
+            SubsystemDependencies.ScriptingEnabled = true;
+        }
 
-            public void disableScriptingSupport()
-            {
-                ScriptingEnabled = false;
-                SubsystemDependencies.ScriptingEnabled = false;
-            }
+        public void disableScriptingSupport()
+        {
+            ScriptingEnabled = false;
+            SubsystemDependencies.ScriptingEnabled = false;
+        }
 
-            public void setPyState(PythonState state)
-            {
-                SubsystemDependencies.PyState = DeepCopy.Copy<PythonState>(state);
-            }
+        public void setPyState(PythonState state)
+        {
+            SubsystemDependencies.PyState = DeepCopy.Copy<PythonState>(state);
+        }
 
-            public PythonState getPyState()
-            {
-                return SubsystemDependencies.PyState;
-            }
+        public PythonState getPyState()
+        {
+            return SubsystemDependencies.PyState;
+        }
 
-            public void addPreceedingNode(SubsystemNode node)
-            {
-                PreceedingNodes.Push(node);
-            }
-            public void setDependencies(Dependencies deps)
-            {
-                throw new NotImplementedException();
-            }
+        public void addPreceedingNode(SubsystemNode node)
+        {
+            PreceedingNodes.Push(node);
+        }
+        public void setDependencies(Dependencies deps)
+        {
+            throw new NotImplementedException();
+        }
 #endregion GettersAndSetters
         public bool canPerform(State newState, Task task, Universe environment, double evalToTime, bool mustEvaluate)
             {
+            //TODO: Make sure to go backwards through tree
                 foreach (SubsystemNode nodeIt in PreceedingNodes)
                 {
                     if (!(nodeIt.IsChecked))

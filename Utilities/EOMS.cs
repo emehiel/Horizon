@@ -20,7 +20,7 @@ namespace Utilities
         /// <param name="t">the time at which to evaluate the function</param>
         /// <param name="y">the current state of the object</param>
         /// <returns>dy the matrix result</returns>
-        public abstract Matrix this[double t, Matrix y]
+        public abstract Matrix<double> this[double t, Matrix<double> y]
         {
             get;
         }

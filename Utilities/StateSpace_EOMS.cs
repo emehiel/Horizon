@@ -6,13 +6,17 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    class StateSpace_EOMS:EOMS
+    public class StateSpace_EOMS:EOMS
     {
-        public override Matrix this[double t, Matrix y]
+        public override Matrix<double> this[double t, Matrix<double> y]
         {
             get
             {
-                return new Matrix((int)y.Size[1, 1], (int)y.Size[1, 2]);
+                Matrix<double> dy = new Matrix<double>(2, 1);
+                dy[1] = y[2];
+                dy[2] = -1 * y[1] - 4 * y[2];
+
+                return dy;
             }
         }
     }

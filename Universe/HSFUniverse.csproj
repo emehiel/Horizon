@@ -45,7 +45,6 @@
     <Compile Include="Target.cs" />
     <Compile Include="Universe.cs" />
     <Compile Include="geomAccess.cs" />
-    <Compile Include="geomUtil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Sun.cs" />
   </ItemGroup>

@@ -8,7 +8,7 @@ namespace HSFSystem
         public List<AssetScheule> AssetSched;
         public double ScheduleValue;
 
-        public sysystemSchedule(List<State> initialstates) 
+        public SystemSchedule(List<State> initialstates) 
         {
             ScheduleValue = 0;
             for (vector<State*>::const_iterator stIt = initialstates.begin(); stIt != initialstates.end(); stIt++)
@@ -17,7 +17,7 @@ namespace HSFSystem
             }
         }
 
-        systemSchedule::systemSchedule(const systemSchedule* oldSchedule, const vector<const Task*>& newTaskList, double newTaskStartTime) : scheduleValue(0)
+        public SystemSchedule(SystemSchedule oldSchedule, List<Task> newTaskList, double newTaskStartTime)
         {
             vector <const Task*>::const_iterator tIt = newTaskList.begin();
             for (vector<assetSchedule*>::const_iterator assSchedIt = oldSchedule->assetscheds.begin(); assSchedIt != oldSchedule->assetscheds.end(); assSchedIt++, tIt++)

@@ -16,7 +16,10 @@ namespace Utilities
         {
             get
             {
-                return (this.Upper - this.Lower) / this.Step + 1;
+                if (Upper == Lower)
+                    return 1;
+                else
+                    return (this.Upper - this.Lower) / this.Step + 1;
             }
         }
 
@@ -24,7 +27,7 @@ namespace Utilities
         {
             this.Lower = 1;
             this.Upper = 1;
-            this.Step = 1;
+            this.Step = 0;
         }
 
         public MatrixIndex(int upperLower)

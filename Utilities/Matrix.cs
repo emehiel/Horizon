@@ -218,16 +218,15 @@ namespace Utilities
         /// <returns>string</returns>
         public override string ToString()
         {
-            string s = Environment.NewLine + Environment.NewLine;
+            string s = "";
 
             foreach(List<T> row in _elements)
             {
                 foreach (T element in row)
-                    s += element.ToString() + ", ";
+                    s += element.ToString() + "," + "\t";
                 s = s.Substring(0, s.Length - 2) + ";" + Environment.NewLine;
             }
 
-            s = s.Substring(0, s.Length - 3) + Environment.NewLine;
             return s;
         }
 
@@ -524,6 +523,7 @@ namespace Utilities
         /// <returns>C = A / B</returns>
         public static Matrix<T> operator /(Matrix<T> A, Matrix<T> B)
         {
+            // TODO: Throw exception if A and B are different shape
             Matrix<T> C = new Matrix<T>(A.NumRows, A.NumCols);
             int i = 1;
 
@@ -660,7 +660,7 @@ namespace Utilities
         /// <param name="A"></param>
         public void Horzcat(Matrix<T> A)
         {
-            if (NumCols == A.NumCols)
+            if (NumRows == A.NumRows)
             {
                 int origNumCols = NumCols;
                 for (int i = 1; i <= A.NumCols; i++)
@@ -841,9 +841,9 @@ namespace Utilities
             if (A.IsColumnVector() || A.IsRowVector())
             {
                 T max = A[1];
+
                 foreach (T c in A)
-                    if ((dynamic)c >= max)
-                        max = c;
+                    max = System.Math.Max((dynamic)max, (dynamic)c);
                 return new Matrix<T>(1, 1, max);
             }
             else
@@ -860,7 +860,16 @@ namespace Utilities
 
         public static Matrix<T> Max(Matrix<T> A, Matrix<T> B)
         {
-            throw new NotImplementedException("Matrix<T>.Max(Matrix<T> A, Matrix<T> B)");
+            Matrix<T> C = new Matrix<T>(A.NumRows, A.NumCols);
+
+            int i = 1;
+            foreach (T c in A)
+            {
+                C[i] = (T)System.Math.Max((dynamic)A[i], (dynamic)B[i]);
+                i++;
+            }
+
+            return C;
         }
 
         /// <summary>
@@ -875,11 +884,11 @@ namespace Utilities
             int i = 1;
             foreach (T c in A)
             {
-                A[i] = (T)Max(A[i], b);
+                C[i] = (T)System.Math.Max((dynamic)A[i], (dynamic)b);
                 i++;
             }
 
-            return A;
+            return C;
         }
         public static Matrix<T> Min(Matrix<T> A)
         {
@@ -887,8 +896,8 @@ namespace Utilities
             {
                 T min = A[1];
                 foreach (T c in A)
-                    if ((dynamic)c <= min)
-                        min = c;
+                    min = System.Math.Min((dynamic)min, (dynamic)c);
+
                 return min;
             }
             else
@@ -903,13 +912,46 @@ namespace Utilities
             }
         }
 
+        public static Matrix<T> Min(Matrix<T> A, Matrix<T> B)
+        {
+            Matrix<T> C = new Matrix<T>(A.NumCols, A.NumRows);
+
+            int i = 1;
+            foreach (T c in A)
+            {
+                C[i] = (T)System.Math.Min((dynamic)A[i], (dynamic)B[i]);
+                i++;
+            }
+
+            return C;
+        }
+
+        /// <summary>
+        /// Returns a Matrix<T> whos elements are the minimum of {A[i,j], b}.
+        /// </summary>
+        /// <param name="A"></param>
+        /// <param name="b"></param>
+        /// <returns></returns>
+        public static Matrix<T> Min(Matrix<T> A, T b)
+        {
+            Matrix<T> C = (Matrix<T>)A.Clone();
+            int i = 1;
+            foreach (T c in A)
+            {
+                C[i] = (T)System.Math.Min((dynamic)A[i], (dynamic)b);
+                i++;
+            }
+
+            return C;
+        }
+
         public static Matrix<T> Abs(Matrix<T> A)
         {
             Matrix<T> R = (Matrix<T>)A.Clone();
             int i = 1;
             foreach (T c in A)
             {
-                R[i] = (T)Abs(c);
+                R[i] = (T)System.Math.Abs((dynamic)c);
                 i++;
             }
 
@@ -1145,6 +1187,55 @@ namespace Utilities
             }
         }
 
+        public Matrix<T> this[string r, MatrixIndex c]
+        {
+            get
+            {
+                if (r.ToUpper() == "ALL" || r.ToUpper() == ":")
+                    return this[new MatrixIndex(1, this.NumRows), c];
+                else
+                    throw new IndexOutOfRangeException("Column - No column selected");
+            }
+            set
+            {
+                if (c.Length == value.NumCols)
+                {
+                    if (r.ToUpper() == "ALL" || r.ToUpper() == ":")
+                    {
+                        this[new MatrixIndex(1, this.NumRows), c] = value;
+                    }
+                    else
+                        throw new IndexOutOfRangeException("Row - No Row Selected");
+                }
+                else
+                    throw new IndexOutOfRangeException("Column - Number of rows in Matrix<T> is not the same as new column");
+            }
+        }
+
+        public Matrix<T> this[MatrixIndex r, string c]
+        {
+            get
+            {
+                if (c.ToUpper() == "ALL" || c.ToUpper() == ":")
+                    return this[r, new MatrixIndex(1, NumCols)];
+                else
+                    throw new IndexOutOfRangeException("Column - No column selected");
+            }
+            set
+            {
+                if (r.Length == value.NumRows)
+                {
+                    if (c.ToUpper() == "ALL" || c.ToUpper() == ":")
+                    {
+                        this[r, new MatrixIndex(1, NumCols)] = value;
+                    }
+                    else
+                        throw new IndexOutOfRangeException("Row - No Row Selected");
+                }
+                else
+                    throw new IndexOutOfRangeException("Column - Number of rows in Matrix<T> is not the same as new column");
+            }
+        }
         /// <summary>
         /// Returns the elements of a Matrix<T> using the Matrix<T> Index object
         /// </summary>
@@ -1186,7 +1277,7 @@ namespace Utilities
 
         public MatrixEnum(Matrix<T> data)
         {
-            Matrix<T>Data = data;
+            MatrixData = data;
         }
 
         public bool MoveNext()

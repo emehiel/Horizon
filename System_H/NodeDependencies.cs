@@ -18,9 +18,9 @@ namespace HSFSystem
 
         Dictionary<string, HSFProfile<int>> IntDependencies;
         Dictionary<string, HSFProfile<double>> DoubleDependencies;
-        Dictionary<string, HSFProfile<float>> FloatDependencies;
+     //   Dictionary<string, HSFProfile<float>> FloatDependencies;
         Dictionary<string, HSFProfile<bool>> BoolDependencies;
-        Dictionary<string, HSFProfile<Matrix>> MatrixDependencies;
+        Dictionary<string, HSFProfile<Matrix<double>>> MatrixDependencies;
         Dictionary<string, HSFProfile<Quat>> QuatDependencies;
         Dictionary<string, string> IntDependencies_scripted;
         Dictionary<string, string> DoubleDependencies_scripted;
@@ -28,8 +28,14 @@ namespace HSFSystem
         Dictionary<string, string> BoolDependencies_scripted;
         Dictionary<string, string> MatrixDependencies_scripted;
         Dictionary<string, string> QuatDependencies_scripted;
+        private NodeDependencies subsystemDependencies;
 
-        internal void setPyState(PythonState state)
+        public NodeDependencies(NodeDependencies subsystemDependencies)
+        {
+            this.subsystemDependencies = subsystemDependencies;
+        }
+
+        void setPyState(PythonState state)
         {
             throw new NotImplementedException();
         }

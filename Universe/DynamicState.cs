@@ -27,27 +27,27 @@ namespace HSFUniverse
     */
     public class DynamicState
     {
-        private SortedList<Double, Matrix> _stateData;
+        private SortedList<Double, Matrix<double>> _stateData;
 
-        private DynamicStateType _type { get; }
+        public DynamicStateType Type { get; private set; }
 
-        private EOMS _eoms { get; }
+        public EOMS Eoms { get; private set; }
 
-        private double _stateDataTimeStep { get;  set; }
+        public double StateDataTimeStep;
 
         private XmlNode _intergratorNode;
 
-        private PropagationType _propagatorType { get; set; }
+        public PropagationType PropagatorType;
 
         public DynamicState(XmlNode dynamicStateXMLNode)
         {
             string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].ToString();
-            _type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
+            Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
 
-            Matrix ics = new Matrix(dynamicStateXMLNode.Attributes["ICs"].ToString());
+            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode.Attributes["ICs"].ToString());
             _stateData.Add(0.0, ics);
 
-            if (!(_type == DynamicStateType.STATIC_LLA || _type == DynamicStateType.STATIC_ECI))
+            if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
             {
                 // I think this should be a constructor...
                 //_eoms = createEOMSObject(dynamicStateXMLNode["EOMS"]);
@@ -56,34 +56,34 @@ namespace HSFUniverse
                 _intergratorNode = dynamicStateXMLNode["INTEGRATOR"];
 
                 if (dynamicStateXMLNode.Attributes["PosDataStep"] != null)
-                    _stateDataTimeStep = Convert.ToDouble(dynamicStateXMLNode.Attributes["PosDataStep"]);
+                    StateDataTimeStep = Convert.ToDouble(dynamicStateXMLNode.Attributes["PosDataStep"]);
                 else
-                    _stateDataTimeStep = 30.0;
+                    StateDataTimeStep = 30.0;
             }
             else
             {
-                _eoms = null;
+                Eoms = null;
                 _intergratorNode = null;
-                _stateDataTimeStep = 30.0;
+                StateDataTimeStep = 30.0;
             }
 
         }
 
-        public DynamicState(SortedList<double, Matrix> stateData, DynamicStateType type, EOMS eoms, double stateDataTimeStep, XmlNode integratorNode)
+        public DynamicState(SortedList<double, Matrix<double>> stateData, DynamicStateType type, EOMS eoms, double stateDataTimeStep, XmlNode integratorNode)
         {
             _stateData = stateData;
-            _type = type;
-            _eoms = eoms;
-            _stateDataTimeStep = stateDataTimeStep;
+            Type = type;
+            Eoms = eoms;
+            StateDataTimeStep = stateDataTimeStep;
             _intergratorNode = integratorNode;
         }
 
-        public Matrix IC()
+        public Matrix<double> IC()
         {
             return _stateData[0.0];
         }
 
-        public void Add(Double simTime, Matrix dynamicState)
+        public void Add(Double simTime, Matrix<double> dynamicState)
         {
             _stateData.Add(simTime, dynamicState);
         }
@@ -93,18 +93,18 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Matrix PositionECI(double simTime)
+        public Matrix<double> PositionECI(double simTime)
         {
-            Matrix initState = _stateData[0];
+            Matrix<double> initState = _stateData[0];
             double JD = simTime / 86400.0 + SimParameters._simStartJD;
 
             bool hasrun = !(_stateData.Count == 1);
 
-            if (_type == DynamicStateType.STATIC_LLA)
+            if (Type == DynamicStateType.STATIC_LLA)
                 return GeometryUtilities.LLA2ECI(initState, JD);
-            else if (_type == DynamicStateType.STATIC_ECI)
+            else if (Type == DynamicStateType.STATIC_ECI)
                 return initState;
-            else if (_type == DynamicStateType.PREDETERMINED_LLA)
+            else if (Type == DynamicStateType.PREDETERMINED_LLA)
             {
                 if (hasrun)
                 {
@@ -114,7 +114,7 @@ namespace HSFUniverse
                 else
                 {
                     Console.WriteLine("Integrating and resampling position data... ");
-                    Matrix tSpan = new Matrix(new double[1, 2] { { 0, SimParameters._simEndSeconds } });
+                    Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { 0, SimParameters._simEndSeconds } });
                     // Update the integrator parameters using the information in the XML Node
 
                     setIntegratorParams(solver);
@@ -122,7 +122,7 @@ namespace HSFUniverse
                     if (rk45)
                     {
                         solver.setParam("nsteps", (vals[1] - vals[0]) / schedParams::SIMSTEP_SECONDS());
-                        Matrix stateData = Integrator.RK45(_eoms, tSpan, initState);
+                        Matrix stateData = Integrator.RK45(Eoms, tSpan, initState);
                         foreach (Matrix row in stateData)
                             _stateData[row[1, 1]] = row[1, new MatrixIndex(2, row.Length)];
 
@@ -138,7 +138,7 @@ namespace HSFUniverse
                     return GeometryUtilities.LLA2ECI(this[simTime], JD);
                 }
             }
-            else if (_type == DynamicStateType.PREDETERMINED_ECI)
+            else if (Type == DynamicStateType.PREDETERMINED_ECI)
             {
                 if (hasrun)
                 {
@@ -188,7 +188,12 @@ namespace HSFUniverse
                 return null;
         }
 
- 
+        public Matrix<double> getPosECI(double simTime)
+        {
+            throw new NotImplementedException();
+        }
+
+
         /// <summary>
         /// Gets and Sets the dynamic state of an asset in inertial coordinates at the given simulation time.
         /// This method overwrites any existing state data at simTime.
@@ -197,7 +202,7 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime">The simulation time key</param>
         /// <returns>The inertial dynamic state date of the asset</returns>
-        public Matrix this[Double simTime]
+        public Matrix<double> this[Double simTime]
         {
             get
             {

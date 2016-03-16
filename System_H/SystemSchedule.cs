@@ -6,7 +6,7 @@ namespace HSFSystem
 {
     public class SystemSchedule
     {
-        public Stack<AssetSchedule> AssetSched;
+        public List<AssetSchedule> AssetScheds; //pop never gets used so just use list
         public double ScheduleValue;
 
         public SystemSchedule(List<State> initialstates) 
@@ -14,14 +14,14 @@ namespace HSFSystem
             ScheduleValue = 0;
             foreach(State stIt in initialstates)
             {
-                AssetSched.Push(new AssetSchedule(stIt));
+                AssetScheds.Add(new AssetSchedule(stIt));
             }
         }
 
         public SystemSchedule(SystemSchedule oldSchedule, List<Task> newTaskList, double newTaskStartTime)
         {
             int i = 0;
-            foreach(AssetSchedule assSchedIt in oldSchedule.AssetSched)
+            foreach(AssetSchedule assSchedIt in oldSchedule.AssetScheds)
             {
                 Task tIt = newTaskList[i];
                 if (tIt == null)
@@ -31,7 +31,7 @@ namespace HSFSystem
                    // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
                 }
                 else
-                    AssetSched.Push(DeepCopy.Copy<AssetSchedule>(assSchedIt));
+                    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(assSchedIt));
                 i++;
             }
             
@@ -39,71 +39,70 @@ namespace HSFSystem
 
         public bool canAddTasks(Stack<Task> newTaskList, double newTaskStartTime)
         {
-            size_t count = 0;
-                vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
-	        for(vector<const Task*>::const_iterator tIt = newTaskList.begin(); tIt != newTaskList.end(); tIt++, asIt2++) {
-		        if(*tIt != NULL) {
-			        for(vector<assetSchedule*>::iterator asIt = assetscheds.begin(); asIt != assetscheds.end(); asIt++) {
-				        count += (*asIt)->timesCompletedTask(*tIt);
-            }
-			        if(count >= (* tIt)->getMaxTimesPerformable())
+            int count = 0;
+            // vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
+            int asIt2 = 0;
+	        foreach( Task tIt in newTaskList) {
+		        if(tIt != null)
+                {
+			        foreach(AssetSchedule asIt in AssetScheds)
+                    {
+				        count += asIt.timesCompletedTask(tIt);
+                    }
+			        if(count >= tIt.getMaxTimesPerformable())
 				        return false;
-			        if(!(* asIt2)->empty()) {
-				        if((* asIt2)->getLastState()->getEventEnd() > newTaskStartTime)
+			        if(!AssetScheds[asIt2].isEmpty())
+                    {
+				        if(AssetScheds[asIt2].getLastState().EventEnd > newTaskStartTime)
 					        return false;
 			        }
 		        }
-	    }
-	    return true;
+	        }
+	        return true;
         }
 
-        const size_t systemSchedule::getTotalNumEvents()
+        public int getTotalNumEvents()
         {
-            size_t count = 0;
-            for (vector<assetSchedule*>::iterator asIt = assetscheds.begin(); asIt != assetscheds.end(); asIt++)
-                count += (*asIt)->size();
+            int count = 0;
+            foreach(AssetSchedule asIt in AssetScheds)
+                count += asIt.size();
             return count;
         }
 
-        State* systemSchedule::getSubNewState(size_t assetNum)
+        public State getSubNewState(int assetNum)
         {
-            if (assetscheds[assetNum]->empty())
-                return assetscheds[assetNum]->getInitialState();
+            if (AssetScheds[assetNum].isEmpty())
+                return AssetScheds[assetNum].InitialState;
             else
-                return assetscheds[assetNum]->getLastState();
+                return AssetScheds[assetNum].getLastState();
         }
 
-        const Task* systemSchedule::getSubNewTask(size_t assetNum)
+        public Task getSubNewTask(int assetNum)
         {
-            if (assetscheds[assetNum]->empty())
-                return NULL;
+            if (AssetScheds[assetNum].isEmpty())
+                return null;
             else
-                return assetscheds[assetNum]->getLastTask();
+                return AssetScheds[assetNum].getLastTask();
         }
 
-        const double systemSchedule::getLastTaskStart() const {
+        public double getLastTaskStart() {
 	        double lasttime = 0;
-	        for(vector<assetSchedule*>::const_iterator aIt = assetscheds.begin(); aIt != assetscheds.end(); aIt++)
-		        if(!(* aIt)->empty())
-			        lasttime = lasttime > (* aIt)->getLastState()->getTaskStart() ? lasttime : (* aIt)->getLastState()->getTaskStart();
+            foreach(AssetSchedule aIt in AssetScheds)
+		        if(!aIt.isEmpty())
+			        lasttime = lasttime > aIt.getLastState().TaskStart ? lasttime : aIt.getLastState().TaskStart;
 	        return lasttime;
         }
 
-        const vector<State*> systemSchedule::getEndStates() const {
-	        vector<State*> endStates;
-	        for(vector<assetSchedule*>::const_iterator assSchedIt = assetscheds.begin(); assSchedIt != assetscheds.end(); assSchedIt++)
-		        endStates.push_back((* assSchedIt)->getLastState());
+        public List<State> getEndStates(){
+	        List<State> endStates = new List<State>();
+            foreach(AssetSchedule asIt in AssetScheds)
+		        endStates.Add(asIt.getLastState());
 	        return endStates;
         }
 
-        void systemSchedule::setScheduleValue(double value)
+        bool schedGreater(SystemSchedule elem1, SystemSchedule elem2)
         {
-            scheduleValue = value;
-        }
-
-        bool schedGreater(systemSchedule* elem1, systemSchedule* elem2)
-        {
-            return elem1->getScheduleValue() > elem2->getScheduleValue();
+            return elem1.ScheduleValue > elem2.ScheduleValue;
         }
 
     }

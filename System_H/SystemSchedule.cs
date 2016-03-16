@@ -20,18 +20,20 @@ namespace HSFSystem
 
         public SystemSchedule(SystemSchedule oldSchedule, List<Task> newTaskList, double newTaskStartTime)
         {
-            int i = 0;
-            foreach(AssetSchedule assSchedIt in oldSchedule.AssetScheds)
+            int i = 0; //need a double iterator
+            foreach(AssetSchedule asIt in oldSchedule.AssetScheds)
             {
                 Task tIt = newTaskList[i];
                 if (tIt == null)
                 {
-                    //TODO:
+                    Event eventToAdd = new Event(tIt, new State(asIt.getLastState(), newTaskStartTime));
+                    AssetScheds.Add(new AssetSchedule(asIt, eventToAdd));
+                    //TODO: double check c# implementation
                    // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
                    // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
                 }
                 else
-                    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(assSchedIt));
+                    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(asIt));
                 i++;
             }
             

@@ -6,17 +6,17 @@ using System.Threading.Tasks;
 using System.Xml;
 
 
-namespace Universe{
+namespace HSFUniverse{
     //Old implementation of universe. To be modified drastically by trent's thesis.
     public class Universe{
-        private Sun _sun { get; set; }
+        public Sun Sun { get; private set; }
         
         public Universe(){
-            _sun = new Sun(false);
+            Sun = new Sun(false);
         }
         public Universe(Sun sun)
         {
-            _sun = sun;
+            Sun = sun;
         }
 
         public Universe(XmlNode environmentNode){
@@ -31,12 +31,12 @@ namespace Universe{
                 if(sunNode.Attributes["isSunVectConstant"] != null)
                 {
                     bool sunVecConst = Convert.ToBoolean(sunNode.Attributes["isSunVecConstant"]);
-                    _sun = new Sun(sunVecConst);
+                    Sun = new Sun(sunVecConst);
                 }
-                _sun = new Sun();
+                Sun = new Sun();
             }
             else{
-                _sun = new Sun();
+                Sun = new Sun();
             }
         }
         

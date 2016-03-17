@@ -5,7 +5,7 @@ using System.Text;
 using System.Xml;
 using Utilities;
 
-namespace Universe
+namespace HSFUniverse
 {
     /*
      * A class that specifies the dynamic state of a given rigid body object in the system in a given coordinate frame.
@@ -32,17 +32,17 @@ namespace Universe
         /// </summary>
         private SortedList<double, Matrix<double>> _stateData;
 
-        private DynamicStateType _type { get; }
+        private DynamicStateType _type;
 
-        private EOMS _eoms { get; }
+        private EOMS _eoms;
 
         //private double _stateDataTimeStep { get;  set; }
 
         private XmlNode _integratorNode;
 
-        private PropagationType _propagatorType { get; set; }
+        private PropagationType _propagatorType;
 
-        private IntegratorOptions _integratorOptions { get; set; }
+        private IntegratorOptions _integratorOptions;
 
         public DynamicState(XmlNode dynamicStateXMLNode)
         {

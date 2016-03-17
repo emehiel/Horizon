@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Universe;
+using HSFUniverse;
 using Utilities;
 
 namespace UniverseUnitTest

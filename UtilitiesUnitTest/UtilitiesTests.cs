@@ -12,9 +12,9 @@ namespace UtilitiesUnitTest
         public void IntegratorTest()
         {
             StateSpace_EOMS dynamics = new StateSpace_EOMS();
-            Matrix tspan = new Matrix(new Double[1, 2] { { 0, 20 } });
-            Matrix y0 = new Matrix(new Double[1, 2] { { 1, 0 } });
-            Matrix result = Integrator.RK45(dynamics, tspan, y0);
+            Matrix<double> tspan = new Matrix<double>(new Double[1, 2] { { 0, 20 } });
+            Matrix<double> y0 = new Matrix<double>(new Double[1, 2] { { 1, 0 } });
+            Matrix<double> result = Integrator.RK45(dynamics, tspan, y0);
 
             Console.WriteLine(result);
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
-using Scheduler;
+using HSFUniverse;
 
-namespace HSFUniverse{
+namespace HSFScheduler{
     public class geomAccess{
         //I think this originally took in an array of List<Tasks> and and array of List<List<Dictionary>>? 
         //so I changed it to take in List<List<Task>> and List<List<List<Dictionary>>>
@@ -44,7 +44,7 @@ namespace HSFUniverse{
            }
        }
 
-       public List< List< Dictionary<double, bool> > > pregenerateAccesses(System system, vector<Task> tasks, double stepLength, double endTime){
+       public List< List< Dictionary<double, bool> > > pregenerateAccesses(SystemClass system, List<Task> tasks, double stepLength, double endTime){
            
        }
 

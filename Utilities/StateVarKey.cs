@@ -8,11 +8,11 @@ namespace Utilities
 {
     public class StateVarKey<T>
     {
-        private string _varName { get; set; }
+        public string VarName { get; set; }
 
         public StateVarKey(string varName)
         {
-            _varName = varName;
+            VarName = varName;
         }
 
         // override object.Equals
@@ -24,7 +24,7 @@ namespace Utilities
             }
 
             StateVarKey<T> p = obj as StateVarKey<T>;
-            return _varName == p._varName;
+            return VarName == p.VarName;
 
         }
 
@@ -42,7 +42,7 @@ namespace Utilities
         public override int GetHashCode()
         {
             // TODO: write your implementation of GetHashCode() here
-            return -_varName.GetHashCode();
+            return -VarName.GetHashCode();
         }
     }
 }

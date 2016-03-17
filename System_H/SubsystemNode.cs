@@ -14,7 +14,7 @@ namespace HSFSubsystem
     {
         public bool IsChecked { get; private set; }
         public bool ScriptingEnabled { get; private set; }
-        public Subsystem SubsystemField { get; private set; }
+        public Subsystem Subsystem { get; private set; }
         public Asset SubsystemAsset { get; private set; }
         public int NAsset { get; private set; }
         public Stack<SubsystemNode> PreceedingNodes { get; private set; }
@@ -24,7 +24,7 @@ namespace HSFSubsystem
 
         public SubsystemNode(Subsystem subsystem, Asset asset)
         {
-            SubsystemField = subsystem;
+            Subsystem = subsystem;
             SubsystemAsset = asset;
         }
 
@@ -32,7 +32,7 @@ namespace HSFSubsystem
         {
             IsChecked = other.IsChecked;
             ScriptingEnabled = other.ScriptingEnabled;
-            SubsystemField = other.SubsystemField;
+            Subsystem = other.Subsystem;
             SubsystemAsset = other.SubsystemAsset;
             NAsset = other.NAsset;
             SubsystemDependencies = new NodeDependencies(other.SubsystemDependencies);
@@ -157,12 +157,12 @@ namespace HSFSubsystem
                     IsChecked = true;
                     if (newState.TaskStart >= evalToTime && task != null)
                     {
-                        return SubsystemField.canPerform(newState.Previous, newState, task, SubsystemAsset.AssetPosition, environment, SubsystemDependencies);
+                        return Subsystem.canPerform(newState.Previous, newState, task, SubsystemAsset.AssetPosition, environment, SubsystemDependencies);
                     }
                     else
                     {
                         if (mustEvaluate)
-                            return SubsystemField.canExtend(newState, SubsystemAsset.AssetPosition, environment, evalToTime, SubsystemDependencies);
+                            return Subsystem.canExtend(newState, SubsystemAsset.AssetPosition, environment, evalToTime, SubsystemDependencies);
                         else
                             return true;
                     }

@@ -52,7 +52,7 @@ namespace HSFSubsystem
         //------------------------------------------------------------------------------------------------
         //--------------------------------- DECLARE DEPENDENCY COLLECTORS --------------------------------
         //------------------------------------------------------------------------------------------------
-
+        /*Morgan Doesn't like this. This needs to be rethought out.
             public HSFProfile<double> Asset1_SSDRSUB_getNewDataProfile()
             {
                 State state = endStates[0];
@@ -91,10 +91,11 @@ namespace HSFSubsystem
                 HSFProfile<double> prof4 = POWERSUB_PowerProfile_COMMSUB(state);
                 return (prof1 + prof2 + prof3 + prof4);
             }
-
+            */
             //------------------------------------------------------------------------------------------------
             //--------------------------------- DECLARE DEPENDENCY FUNCTIONS ---------------------------------
             //------------------------------------------------------------------------------------------------
+            /* Morgan Doesn't like this. This should be rethought
             public HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(State state)
             {
                 StateVarKey<double> EOSENSORDATA(STATEVARNAME_PIXELS);
@@ -154,7 +155,8 @@ namespace HSFSubsystem
             //   public void updateStates(int thread, const List<State> newStates) { }
 
             private static Dependencies pinstance;
-            private Dictionary<Dependencies, int> pinstances;
+            private Dictionary<Dependencies, int> pinstances
+            */
     }
 }
 

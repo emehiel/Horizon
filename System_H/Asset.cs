@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using HSFUniverse;
 
 namespace HSFSystem
@@ -22,9 +23,16 @@ namespace HSFSystem
             IsTaskable = false;
         }
 
-        public Asset(XMLNode assetXMLNode)
+        public Asset(XmlNode assetXMLNode)
         {
-            AssetPosition =new DynamicState(assetXMLNode.getChildNode("POSITION"));
+            foreach(XmlNode xIt in assetXMLNode.ChildNodes)
+            {
+                if (xIt.Value.Equals("POSITION"))
+                {
+                    AssetPosition = new DynamicState(xIt);
+                }
+            }
+          //  AssetPosition =new DynamicState(assetXMLNode.getChildNode("POSITION"));
             IsTaskable = false;
         }
 

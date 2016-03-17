@@ -8,7 +8,7 @@ namespace Utilities
 {
     public static class GeometryUtilities
     {
-        public static bool  hasLOS(Matrix<double> posECI1, Matrix<double> posECI2)
+        public static bool hasLOS(Matrix<double> posECI1, Matrix<double> posECI2)
         {
             // calculate the minimum distance to the center of the earth
             double d = Matrix<double>.Norm(Matrix<double>.Cross(posECI2 - posECI1, posECI1)) / Matrix<double>.Norm(posECI2 - posECI1);
@@ -43,7 +43,7 @@ namespace Utilities
             return pos;
         }
 
-    public static Matrix<double> ECI2LLA( Matrix<double> ECI, double JD )
+        public static Matrix<double> ECI2LLA( Matrix<double> ECI, double JD )
         {
             Matrix<double> pos = new Matrix<double>(3, 1, 0.0);
             double x = ECI[1, 1];
@@ -61,32 +61,43 @@ namespace Utilities
             return pos;
         }
 
-    public static double HMS2UT(uint h, uint m, double seconds)
-    {
-        return h + m / 60.0 + seconds / 3600.0;
+        public static double HMS2UT(uint h, uint m, double seconds)
+        {
+            return h + m / 60.0 + seconds / 3600.0;
+        }
+
+        public static double YMDUT2JD( uint y, uint m, uint d, double UT)
+        {
+            return 367 * y - System.Math.Floor(7.0 * (y + System.Math.Floor((m + 9.0) / 12.0)) / 4.0) + System.Math.Floor(275.0 * m / 9.0) + d + 1721013.5 + UT / 24.0;
+        }
+
+        public static double CT2LST( double longitude, double JD)
+        {
+            double J0 = System.Math.Floor(JD + 0.5) - 0.5;
+            double UT = (JD - J0) * 24.0;
+            double T0 = (J0 - 2451545.0) / 36525.0;
+            double[] c = new double[5] { 100.4606184, 36000.77004, 0.000387933, -2.583e-8, 360.98564724 };
+            double g0 = c[0] + c[1] * T0 + c[2] * System.Math.Pow(T0, 2) + c[3] * System.Math.Pow(T0, 3);
+
+            g0 = g0 - 360.0 * System.Math.Floor(g0 / 360.0);
+
+            double gst = g0 + c[4] * UT / 24.0;
+            double lst = gst + longitude;
+
+            lst = lst - 360.0 * System.Math.Floor(lst / 360.0);
+
+            return lst;
+        }
+
+        public static Matrix<double> quat2euler(Matrix<double> q)
+        {
+            Matrix<double> eulerAngles = new Matrix<double>(3, 1);
+
+            eulerAngles[1, 1] = System.Math.Atan2(2 * (q[1] * q[2] + q[3] * q[4]), 1 - 2 * (q[1] * q[1] + q[2] * q[2]));
+            eulerAngles[2, 1] = System.Math.Asin(2 * (q[1] * q[3] - q[4] * q[1]));
+            eulerAngles[3, 1] = System.Math.Atan2(2 * (q[1] * q[4] + q[2] * q[3]), 1 - 2 * (q[3] * q[3] + q[4] * q[4]));
+
+            return eulerAngles;
+        }
     }
-
-    public static double YMDUT2JD( uint y, uint m, uint d, double UT)
-    {
-        return 367 * y - System.Math.Floor(7.0 * (y + System.Math.Floor((m + 9.0) / 12.0)) / 4.0) + System.Math.Floor(275.0 * m / 9.0) + d + 1721013.5 + UT / 24.0;
-    }
-
-    public static double CT2LST( double longitude, double JD)
-    {
-        double J0 = System.Math.Floor(JD + 0.5) - 0.5;
-        double UT = (JD - J0) * 24.0;
-        double T0 = (J0 - 2451545.0) / 36525.0;
-        double[] c = new double[5] { 100.4606184, 36000.77004, 0.000387933, -2.583e-8, 360.98564724 };
-        double g0 = c[0] + c[1] * T0 + c[2] * System.Math.Pow(T0, 2) + c[3] * System.Math.Pow(T0, 3);
-
-        g0 = g0 - 360.0 * System.Math.Floor(g0 / 360.0);
-
-        double gst = g0 + c[4] * UT / 24.0;
-        double lst = gst + longitude;
-
-        lst = lst - 360.0 * System.Math.Floor(lst / 360.0);
-
-        return lst;
-    }
-}
 }

@@ -227,6 +227,7 @@ namespace Utilities
                 s = s.Substring(0, s.Length - 2) + ";" + Environment.NewLine;
             }
 
+            s = s.Substring(0, s.Length - 2);
             return s;
         }
 
@@ -1307,6 +1308,47 @@ namespace Utilities
         }
     }
 
+
+    // TODO:  How to enumerate? element, row or column?
+    /*
+    public class MatrixColumnEnum<T> : IEnumerator
+    {
+        public Matrix<T> MatrixData;
+
+        int position = -1;
+
+        public MatrixColumnEnum(Matrix<T> data)
+        {
+            MatrixData = data;
+        }
+
+        public bool MoveNext()
+        {
+            position++;
+            return (position < MatrixData.NumCols);
+        }
+
+        public void Reset()
+        {
+            position = -1;
+        }
+
+        public object Current
+        {
+            get
+            {
+                try
+                {
+                    return MatrixData.GetColumn(position + 1);
+                }
+                catch (IndexOutOfRangeException)
+                {
+                    throw new InvalidOperationException();
+                }
+            }
+        }
+    }
+    */
     public class MatrixSize
     {
         public int NumRows { get; set; }

@@ -44,7 +44,7 @@ namespace Universe{
            }
        }
 
-       public List< List< Dictionary<double, bool> > > pregenerateAccesses(System system, vector<Task> tasks, double stepLength, double endTime){
+       public List< List< Dictionary<double, bool> > > pregenerateAccesses(HSFSystem system, vector<Task> tasks, double stepLength, double endTime){
            
        }
 

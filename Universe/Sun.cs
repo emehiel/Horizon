@@ -24,7 +24,7 @@ namespace Universe
     {
         public static readonly int solar_Constant = 1366;
         private bool _isSunVecConstant;
-        private Matrix esVec;
+        private Matrix<double> esVec;
 
         /**
         * The constructor for the Sun class.
@@ -55,11 +55,11 @@ namespace Universe
         * @param simTime the simulation time at which the Earth-Sun vector is required
         * @return a Matrix containing the Earth-Sun vector in ECI.
         */
-        public Matrix getEarSunVec(double simTime){
+        public Matrix<double> getEarSunVec(double simTime){
             if (_isSunVecConstant && esVec.NumCols != 0 && esVec.NumRows != 0) // != Matrix()
                 return esVec;
 
-            Matrix RSun = new Matrix(3, 1, 0.0);
+            Matrix<double> RSun = new Matrix<double>(3, 1, 0.0);
             double eclLong, meanLongSun, MASun, obl, rSun, TUt1, TTdb;
             double JDUt1 = (simTime / 86400) + SimParams.simStart_JD;
 
@@ -151,21 +151,21 @@ namespace Universe
             const double rEar = 6378.137;
 
             // Get earth-sun vector
-            Matrix rSun = getEarSunVec(simTime);
+            Matrix<double> rSun = getEarSunVec(simTime);
             // Get the vector from the earth to the object
-            Matrix assetPosAtTime = pos.getPosECI(simTime); //TODO: this method is not yet implemented
-            Complex dot_p = Matrix.Dot((-rSun), assetPosAtTime);
+            Matrix<double> assetPosAtTime = pos.PositionECI(simTime); //TODO: this method is not yet implemented
+            double dot_p = Matrix<double>.Dot((-rSun), assetPosAtTime);
             // Calculate the cosine of the angle between the position vector
             // and the axis the earth-sun vector lies on
-            Complex argC = (dot_p) / (Matrix.Norm(-rSun) * Matrix.Norm(assetPosAtTime));
-            double arg = argC.Re;
+            double arg = (dot_p) / (Matrix<double>.Norm(-rSun) * Matrix<double>.Norm(assetPosAtTime));
+
 	        //fix argument, must be between -1 and 1
 	        if(Math.Abs(arg) > 1)
 		        arg = arg/Math.Abs(arg)*Math.Floor(Math.Abs(arg));
 	        sigma = Math.Acos(arg);
             // Calculate the distance from the 
-            satHoriz = Matrix.Norm(assetPosAtTime)*Math.Cos(sigma);
-            satVert  = Matrix.Norm(assetPosAtTime)*Math.Sin(sigma);
+            satHoriz = Matrix<double>.Norm(assetPosAtTime)*Math.Cos(sigma);
+            satVert  = Matrix<double>.Norm(assetPosAtTime)*Math.Sin(sigma);
 
             // Calculate distance away from earth-sun axis where penumbra ends
             penVert = rEar + Math.Tan(alphaPen* rad)*satHoriz;

@@ -46,6 +46,7 @@
     <Compile Include="GeometryUtilities.cs" />
     <Compile Include="Integrator.cs" />
     <Compile Include="IntegratorOptions.cs" />
+    <Compile Include="CollectionExtentions.cs" />
     <Compile Include="Math\MyClass.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="MatrixIndex.cs" />

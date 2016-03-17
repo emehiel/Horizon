@@ -27,65 +27,98 @@ namespace Universe
     */
     public class DynamicState
     {
-        private SortedList<Double, Matrix> _stateData;
+        /// <summary>
+        /// SortedList with time and the state data at that time stored in a double Matrix
+        /// </summary>
+        private SortedList<double, Matrix<double>> _stateData;
 
         private DynamicStateType _type { get; }
 
         private EOMS _eoms { get; }
 
-        private double _stateDataTimeStep { get;  set; }
+        //private double _stateDataTimeStep { get;  set; }
 
-        private XmlNode _intergratorNode;
+        private XmlNode _integratorNode;
 
         private PropagationType _propagatorType { get; set; }
 
+        private IntegratorOptions _integratorOptions { get; set; }
+
         public DynamicState(XmlNode dynamicStateXMLNode)
         {
+            // TODO add a line to pre-propagate to simEndTime if the type is predetermined
+            // TODO catch exception if _type or initial conditions are not set from teh XML file
             string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].ToString();
             _type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
 
-            Matrix ics = new Matrix(dynamicStateXMLNode.Attributes["ICs"].ToString());
+            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode.Attributes["ICs"].ToString());
             _stateData.Add(0.0, ics);
 
             if (!(_type == DynamicStateType.STATIC_LLA || _type == DynamicStateType.STATIC_ECI))
             {
                 // I think this should be a constructor...
                 //_eoms = createEOMSObject(dynamicStateXMLNode["EOMS"]);
-
+                
                 // Returns a null reference if INTEGRATOR is not set in XML
-                _intergratorNode = dynamicStateXMLNode["INTEGRATOR"];
+                _integratorNode = dynamicStateXMLNode["INTEGRATOR"];
 
-                if (dynamicStateXMLNode.Attributes["PosDataStep"] != null)
-                    _stateDataTimeStep = Convert.ToDouble(dynamicStateXMLNode.Attributes["PosDataStep"]);
-                else
-                    _stateDataTimeStep = 30.0;
+                _integratorOptions = new IntegratorOptions();
+
+                if (_integratorNode != null)
+                {
+                    if (_integratorNode.Attributes["h"] != null)
+                    {
+                        double h = Convert.ToDouble(_integratorNode.Attributes["h"]);
+                        _integratorOptions.h = h;
+                    }
+                    if (_integratorNode.Attributes["rtol"] != null)
+                    {
+                        double rtol = Convert.ToDouble(_integratorNode.Attributes["rtol"]);
+                        _integratorOptions.rtol = rtol;
+                    }
+                    if (_integratorNode.Attributes["atol"] != null)
+                    {
+                        double atol = Convert.ToDouble(_integratorNode.Attributes["atol"]);
+                        _integratorOptions.atol = atol;
+                    }
+                    if (_integratorNode.Attributes["eps"] != null)
+                    {
+                        double eps = Convert.ToDouble(_integratorNode.Attributes["eps"]);
+                        _integratorOptions.eps = eps;
+                    }
+                }
             }
             else
             {
                 _eoms = null;
-                _intergratorNode = null;
-                _stateDataTimeStep = 30.0;
+                _integratorNode = null;
+                //_stateDataTimeStep = 30.0;
             }
 
         }
 
-        public DynamicState(SortedList<double, Matrix> stateData, DynamicStateType type, EOMS eoms, double stateDataTimeStep, XmlNode integratorNode)
+        public DynamicState(DynamicStateType type, EOMS eoms)
         {
-            _stateData = stateData;
+            _stateData = null;
             _type = type;
             _eoms = eoms;
-            _stateDataTimeStep = stateDataTimeStep;
-            _intergratorNode = integratorNode;
+            //_stateDataTimeStep = stateDataTimeStep;
+            _integratorNode = null;
         }
 
-        public Matrix IC()
+        public Matrix<double> InitialConditions()
         {
             return _stateData[0.0];
         }
 
-        public void Add(Double simTime, Matrix dynamicState)
+        public void Add(double simTime, Matrix<double> dynamicState)
         {
             _stateData.Add(simTime, dynamicState);
+        }
+
+        public Matrix<double> DynamicStateECI(double simTime)
+        {
+            return _stateData[simTime];
         }
 
         /// <summary>
@@ -93,101 +126,46 @@ namespace Universe
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Matrix PositionECI(double simTime)
+        public Matrix<double> PositionECI(double simTime)
         {
-            Matrix initState = _stateData[0];
-            double JD = simTime / 86400.0 + SimParameters._simStartJD;
-
-            bool hasrun = !(_stateData.Count == 1);
-
-            if (_type == DynamicStateType.STATIC_LLA)
-                return GeometryUtilities.LLA2ECI(initState, JD);
-            else if (_type == DynamicStateType.STATIC_ECI)
-                return initState;
-            else if (_type == DynamicStateType.PREDETERMINED_LLA)
-            {
-                if (hasrun)
-                {
-                    //return LLA2ECI((posData.lower_bound(simTime))->second, JD);
-                    return GeometryUtilities.LLA2ECI(this[simTime], JD);
-                }
-                else
-                {
-                    Console.WriteLine("Integrating and resampling position data... ");
-                    Matrix tSpan = new Matrix(new double[1, 2] { { 0, SimParameters._simEndSeconds } });
-                    // Update the integrator parameters using the information in the XML Node
-
-                    setIntegratorParams(solver);
-
-                    if (rk45)
-                    {
-                        solver.setParam("nsteps", (vals[1] - vals[0]) / schedParams::SIMSTEP_SECONDS());
-                        Matrix stateData = Integrator.RK45(_eoms, tSpan, initState);
-                        foreach (Matrix row in stateData)
-                            _stateData[row[1, 1]] = row[1, new MatrixIndex(2, row.Length)];
-
-                        _stateData = solver.rk45(eomsObject, new Matrix(vals), initState).ODE_RESULT;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Using rk4 integrator...");
-                        _stateData = solver.rk4(eomsObject, new Matrix(2, 1, vals), initState).ODE_RESULT;
-                    }
-                    Console.WriteLine("DONE!");
-                    //return LLA2ECI((posData.lower_bound(simTime))->second, JD);			
-                    return GeometryUtilities.LLA2ECI(this[simTime], JD);
-                }
-            }
-            else if (_type == DynamicStateType.PREDETERMINED_ECI)
-            {
-                if (hasrun)
-                {
-                    //return (posData.lower_bound(simTime))->second;
-                    return this[simTime];
-                }
-                else
-                {
-                    Console.WriteLine("Integrating and resampling position data... ");
-                    this->setPropagationModel();
-
-                    double[] vals = new double[2] { 0, SimParameters._simEndSeconds };
-                    if (this->propagatorType == RK45)
-                    {
-                        
-                        Integrator solver;
-
-                        // Update the integrator parameters using the information in the XML Node
-                        setIntegratorParams(solver);
-
-                        solver.setParam("nsteps", (vals[1] - vals[0]) / schedParams::SIMSTEP_SECONDS());
-
-                        Console.WriteLine("Using rk45 integrator...");
-                        _stateData = solver.rk45(eomsObject, new Matrix(2, 1, vals), initState).ODE_RESULT;
-                    }
-                    else if (this->propagatorType == RK4)
-                    {
-                          Integrator solver;
-
-                        // Update the integrator parameters using the information in the XML Node
-                        setIntegratorParams(solver);
-
-                        Console.WriteLine("Using rk4 integrator...");
-                        _stateData = solver.rk4(eomsObject, new Matrix(2, 1, vals), initState).ODE_RESULT;
-                    }
-                    else if (this->propagatorType == SGP4)
-                    {
-                        Console.WriteLine("Using sgp4 integrator... which is not implemented...");
-                        // creat an sgp4 object and propagate
-                    }
-                    Console.WriteLine("DONE!");
-
-                    return this[simTime];
-                }
-            }
-            else
-                return null;
+            return _stateData[simTime][new MatrixIndex(1, 3), 1];
         }
 
+        public Matrix<double> VelocityECI(double simTime)
+        {
+            return _stateData[simTime][new MatrixIndex(4, 6), 1];
+        }
+
+        public Matrix<double> EulerAngles(double simTime)
+        {
+            Matrix<double> eulerAngles = GeometryUtilities.quat2euler(Quaternions(simTime));
+            return eulerAngles;
+        }
+
+        public Matrix<double> Quaternions(double simTime)
+        {
+            return _stateData[simTime][new MatrixIndex(7, 10), 1];
+        }
+
+        public Matrix<double> EulerRates(double simTime)
+        {
+            return _stateData[simTime][new MatrixIndex(11, 13), 1];
+        }
+
+        private void PropagateState(double simTime)
+        {
+
+            Console.WriteLine("Integrating and resampling dynamic state data to {0} seconds... ", simTime);
+            Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
+            // Update the integrator parameters using the information in the XML Node
+
+            Matrix<double> data = Integrator.RK45(_eoms, tSpan, InitialConditions(), _integratorOptions);
+
+            for (int index = 1; index <= data.Length; index++)
+                _stateData[data[1, index]] = data[new MatrixIndex(2, data.NumRows), index];
+
+            Console.WriteLine("DONE!");
+        }
  
         /// <summary>
         /// Gets and Sets the dynamic state of an asset in inertial coordinates at the given simulation time.
@@ -197,17 +175,59 @@ namespace Universe
         /// </summary>
         /// <param name="simTime">The simulation time key</param>
         /// <returns>The inertial dynamic state date of the asset</returns>
-        public Matrix this[Double simTime]
+        private Matrix<double> this[Double simTime]
         {
             get
             {
-                // TODO: if the stateData does not exist at 'simTime' interprolate...
-                return _stateData[simTime];
+                if (_type == DynamicStateType.STATIC_LLA)
+                {
+                    // Set the JD associated with simTime
+                    double JD = simTime / 86400.0 + SimParameters._simStartJD;
+                    return GeometryUtilities.ECI2LLA(InitialConditions(), JD);
+                }
+
+                else if (_type == DynamicStateType.STATIC_ECI)
+                    return InitialConditions();
+                else if (_type == DynamicStateType.PREDETERMINED_ECI || _type == DynamicStateType.PREDETERMINED_LLA)
+                {
+                    // Is the last entry in _stateData later than simTime?  If so, the dynamic state has been propagated.  If not, we need to propagate
+                    if (_stateData.Last().Key <= simTime)
+                        PropagateState(simTime);
+                }
+                else
+                    return null; // TODO: Throw exception?
+
+
+                Matrix<double> dynamicStateAtSimTime;
+                
+                if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
+                {
+                    int lowerIndex = _stateData.Keys.LowerBoundIndex(simTime);
+                    KeyValuePair<double, Matrix<double>> lowerData = _stateData.ElementAt(lowerIndex);
+                    KeyValuePair<double, Matrix<double>> upperData = _stateData.ElementAt(lowerIndex + 1);
+
+                    double lowerTime = lowerData.Key;
+                    Matrix<double> lowerState = lowerData.Value;
+
+                    double upperTime = upperData.Key;
+                    Matrix<double> upperState = upperData.Value;
+
+                    Matrix<double> slope = (upperState - lowerState) / (upperTime - lowerTime);
+
+                    dynamicStateAtSimTime = slope * (simTime - lowerTime) + lowerState;
+                }
+
+                return dynamicStateAtSimTime;
             }
             set
             {
                 _stateData[simTime] = value;
             }
+        }
+
+        public bool hasLOSTo(Matrix<double> targetPositionECI, double simTime)
+        {
+            return GeometryUtilities.hasLOS(PositionECI(simTime), targetPositionECI);
         }
     }
 

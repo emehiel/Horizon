@@ -19,15 +19,18 @@ namespace Universe{
             _sun = sun;
         }
 
-        public Universe(XMLNode environmentNode){
+        public Universe(XmlNode environmentNode){
             // Check the XMLNode for the presence of a child SUN node
-            int nSun = environmentNode.nChildNode("SUN");
-            if (nSun >0){
+
+   
+            if (environmentNode["SUN"] != null)
+            {
                 // Create the Sun based on the XMLNode                
-                XMLNode sunNode = environmentNode.getChildNode("SUN");
+                XmlNode sunNode = environmentNode["SUN"];
                 // Check the Sun XMLNode for the attribute
-                if(sunNode.isAttributeSet("isSunVectConstant")){
-                    bool sunVecConst = atob(sunNode.getAttribute("isSunVecConstant"));
+                if(sunNode.Attributes["isSunVectConstant"] != null)
+                {
+                    bool sunVecConst = Convert.ToBoolean(sunNode.Attributes["isSunVecConstant"]);
                     _sun = new Sun(sunVecConst);
                 }
                 _sun = new Sun();

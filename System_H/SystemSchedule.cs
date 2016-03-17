@@ -28,7 +28,7 @@ namespace HSFSystem
                 {
                     Event eventToAdd = new Event(tIt, new State(asIt.getLastState(), newTaskStartTime));
                     AssetScheds.Add(new AssetSchedule(asIt, eventToAdd));
-                    //TODO: double check c# implementation
+                    //TODO: double check c# implementation above
                    // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
                    // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
                 }
@@ -51,7 +51,7 @@ namespace HSFSystem
                     {
 				        count += asIt.timesCompletedTask(tIt);
                     }
-			        if(count >= tIt.getMaxTimesPerformable())
+			        if(count >= tIt.MaxTimesToPerform)
 				        return false;
 			        if(!AssetScheds[asIt2].isEmpty())
                     {

@@ -38,10 +38,6 @@ namespace HSFScheduler
             MaxTimesToPerform = maxTimesToPerform;
         }
 
-        public int getMaxTimesPerformable()
-        {
-            throw new NotImplementedException();
-        }
     }
 
     public enum taskType { EMPTY, COMM, IMAGING }

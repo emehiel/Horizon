@@ -2,12 +2,6 @@ using System.Collections.Generic;
 using HSFSubsystem;
 using Utilities;
 
-/*
-#include "systemSchedule.h"
-#include "horizon/SubsystemNode.h"
-#include "horizon/log/Logger.h"
-
-*/
 namespace HSFSystem
 {
     public class Constraint{

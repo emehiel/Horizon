@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 
 
@@ -14,27 +19,25 @@ namespace HSFUniverse{
             Sun = sun;
         }
 
-        public Universe(XmlNode environmentNode)
-        {
-            bool nSun = false;
-            XmlNode sunNode;
-            foreach (XmlNode child in environmentNode.ChildNodes)
-            {   //no idea if this works
-                if (child.Equals("SUN")) // Check the XMLNode for the presence of a child SUN node
+        public Universe(XmlNode environmentNode){
+            // Check the XMLNode for the presence of a child SUN node
+
+   
+            if (environmentNode["SUN"] != null)
+            {
+                // Create the Sun based on the XMLNode                
+                XmlNode sunNode = environmentNode["SUN"];
+                // Check the Sun XMLNode for the attribute
+                if(sunNode.Attributes["isSunVectConstant"] != null)
                 {
-                    // Create the Sun based on the XMLNode                
-                    sunNode = child;
-                    foreach(XmlAttribute att in sunNode.Attributes)
-                    {
-                        if (att.Value.Equals("true")) //use the old isSunVectConstant value
-                            nSun = true;
-                        Sun = new Sun(nSun);
-                        return; //done
-                    }
+                    bool sunVecConst = Convert.ToBoolean(sunNode.Attributes["isSunVecConstant"]);
+                    Sun = new Sun(sunVecConst);
                 }
+                Sun = new Sun();
             }
-            //didn't find the sun or it didn't have the isSunVectConstant attribute set
-            Sun = new Sun();
+            else{
+                Sun = new Sun();
+            }
         }
         
 

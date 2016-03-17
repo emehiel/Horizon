@@ -12,9 +12,9 @@ namespace Utilities
         {
             get
             {
-                Matrix<double> dy = new Matrix<double>(2, 1);
-                dy[1] = y[2];
-                dy[2] = -1 * y[1] - 4 * y[2];
+                Matrix<double> dy = new Matrix<double>(y.Size[1], y.Size[2]);
+                dy[1,1] = y[2,1];
+                dy[2,1] = -1 * y[2,1] - 4 * y[1,1];
 
                 return dy;
             }

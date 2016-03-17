@@ -153,12 +153,12 @@ namespace HSFUniverse
             // Get earth-sun vector
             Matrix<double> rSun = getEarSunVec(simTime);
             // Get the vector from the earth to the object
-            Matrix<double> assetPosAtTime = pos.getPosECI(simTime); //TODO: this method is not yet implemented
-            Complex<double> dot_p = Matrix<double>.Dot((-rSun), assetPosAtTime);
+            Matrix<double> assetPosAtTime = pos.PositionECI(simTime); //TODO: this method is not yet implemented
+            double dot_p = Matrix<double>.Dot((-rSun), assetPosAtTime);
             // Calculate the cosine of the angle between the position vector
             // and the axis the earth-sun vector lies on
-            Complex<double> argC = (dot_p) / (Matrix<double>.Norm(-rSun) * Matrix<double>.Norm(assetPosAtTime));
-            double arg = argC.Re;
+            double arg = (dot_p) / (Matrix<double>.Norm(-rSun) * Matrix<double>.Norm(assetPosAtTime));
+
 	        //fix argument, must be between -1 and 1
 	        if(Math.Abs(arg) > 1)
 		        arg = arg/Math.Abs(arg)*Math.Floor(Math.Abs(arg));

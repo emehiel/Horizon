@@ -12,14 +12,35 @@ namespace UtilitiesUnitTest
         public void IntegratorTest()
         {
             StateSpace_EOMS dynamics = new StateSpace_EOMS();
-            Matrix<double> tspan = new Matrix<double>(new Double[1, 2] { { 0, 20 } });
-            Matrix<double> y0 = new Matrix<double>(new Double[1, 2] { { 1, 0 } });
+            Matrix<double> tspan = new Matrix<double>(new double[1, 2] { { 0, 20 } });
+            Matrix<double> y0 = new Matrix<double>(new double[2, 1] { { 1 }, { 0 } });
             Matrix<double> result = Integrator.RK45(dynamics, tspan, y0);
 
-            Console.WriteLine(result);
+            System.IO.File.WriteAllText("integratorOut.txt", result.ToString());
+            
+            Console.ReadLine();
 
 
         }
+
+        [TestMethod]
+        public void MatrixCatTest()
+        {
+            Matrix<double> A = new Matrix<double>(2, 3, 1);
+            Matrix<double> B = new Matrix<double>(2, 3, 2);
+
+            Matrix<double> C = Matrix<double>.Vertcat(A, B);
+
+        }
+
+        [TestMethod]
+        public void MatrixCumProdTest()
+        {
+            Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
+
+            Matrix<double> B = Matrix<double>.Cumprod(A);
+        }
+
         [TestMethod]
         public void DeepCopyTest()
         {

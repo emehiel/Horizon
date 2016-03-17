@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Access.cs" />
     <Compile Include="Asset.cs" />
     <Compile Include="AssetSchedule.cs" />
     <Compile Include="Constraint.cs" />

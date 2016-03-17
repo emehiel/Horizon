@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Asset.cs" />
-    <Compile Include="AssetScheule.cs" />
+    <Compile Include="AssetSchedule.cs" />
     <Compile Include="Constraint.cs" />
     <Compile Include="Dependencies.cs" />
     <Compile Include="NodeDependencies.cs" />

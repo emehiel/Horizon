@@ -48,7 +48,7 @@ namespace HSFSubsystem
             private List<State> endStates;
             private Dictionary<List<State>, int> stateMap;
             protected Dependencies() { }
-            protected Dependencies(Dependencies);
+            protected Dependencies(Dependencies dep) { }
         //------------------------------------------------------------------------------------------------
         //--------------------------------- DECLARE DEPENDENCY COLLECTORS --------------------------------
         //------------------------------------------------------------------------------------------------

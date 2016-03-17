@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using Utilities;
 using HSFSystem;
 using UserModel;
@@ -22,10 +21,6 @@ namespace HSFSubsystem
         public NodeDependencies SubsystemDependencies { get; set; }
 
         #region Constructors
-        public SubsystemNode()
-        {
-            SubsystemDependencies = new NodeDependencies();
-        }
 
         public SubsystemNode(Subsystem subsystem, Asset asset)
         {
@@ -45,32 +40,32 @@ namespace HSFSubsystem
         #endregion Constructors
         #region AddDependencies
 
-        public void addDependency(string key, IntDependency dep)
+        public void addDependency(string key, Dictionary<string, HSFProfile<int>> dep)
         {
             SubsystemDependencies.addDependency(key, dep);
         }
 
-        public void addDependency(string key, DoubleDependency dep)
+        public void addDependency(string key, Dictionary<string, HSFProfile<double>> dep)
         {
             SubsystemDependencies.addDependency(key, dep);
         }
 
-        public void addDependency(string key, FloatDependency dep)
+        //public void addDependency(string key, FloatDependency dep)
+        //{
+        //    SubsystemDependencies.addDependency(key, dep);
+        //}
+
+        public void addDependency(string key, Dictionary<string, HSFProfile<bool>> dep)
         {
             SubsystemDependencies.addDependency(key, dep);
         }
 
-        public void addDependency(string key, BoolDependency dep)
+        public void addDependency(string key, Dictionary<string, HSFProfile<Matrix<double>>> dep)
         {
             SubsystemDependencies.addDependency(key, dep);
         }
 
-        public void addDependency(string key, MatrixDependency dep)
-        {
-            SubsystemDependencies.addDependency(key, dep);
-        }
-
-        public void addDependency(string key, QuatDependency dep)
+        public void addDependency(string key, Dictionary<string, HSFProfile<Quat>> dep)
         {
             SubsystemDependencies.addDependency(key, dep);
         }

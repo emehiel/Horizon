@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Scheduler
+
+namespace HSFScheduler
 {
     /// <summary>
     /// An action to be performed at a target, with limitations and suggestions for scheduling.
@@ -36,6 +37,7 @@ namespace Scheduler
             Target = target;
             MaxTimesToPerform = maxTimesToPerform;
         }
+
     }
 
     public enum taskType { EMPTY, COMM, IMAGING }

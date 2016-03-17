@@ -31,13 +31,13 @@ namespace HSFScheduler
         public Dictionary<StateVarKey<double>, HSFProfile<double>> Ddata { get; private set; }
 
         /** The Dictionary of floating point value Profiles. */
-        public Dictionary<StateVarKey<float>, HSFProfile<float>> Fdata { get; private set; }
+     //   public Dictionary<StateVarKey<float>, HSFProfile<float>> Fdata { get; private set; }
 
         /** The Dictionary of boolean Profiles. */
         public Dictionary<StateVarKey<bool>, HSFProfile<bool>> Bdata { get; private set; }
 
         /** The Dictionary of Matrix Profiles. */
-        public Dictionary<StateVarKey<Matrix>, HSFProfile<Matrix>> Mdata { get; private set; }
+        public Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>> Mdata { get; private set; }
 
         /** The Dictionary of Quaternion Profiles. */
         public Dictionary<StateVarKey<Quat>, HSFProfile<Quat>> Qdata { get; private set; }
@@ -46,7 +46,7 @@ namespace HSFScheduler
         /**
          * Creates an initial State
          */
-        State()
+        public State()
         {
             Previous = null;
             EventStart = 0;
@@ -58,25 +58,26 @@ namespace HSFScheduler
         /**
          * Copy constructor for exact state copies
          */
-        State(State initialStateToCopy)
+        public State(State initialStateToCopy)
         {
-            Previous = initialStateToCopy.Previous;
-            EventStart = initialStateToCopy.EventStart;
-            TaskStart = initialStateToCopy.TaskStart;
-            TaskEnd = initialStateToCopy.TaskEnd;
-            EventEnd = initialStateToCopy.EventEnd;
-            Idata = initialStateToCopy.Idata;
-            Ddata = initialStateToCopy.Ddata;
-            Fdata = initialStateToCopy.Fdata;
-            Bdata = initialStateToCopy.Bdata;
-            Mdata = initialStateToCopy.Mdata;
-            Qdata = initialStateToCopy.Qdata;
+            State newState = DeepCopy.Copy<State>(initialStateToCopy);
+            Previous = newState.Previous;
+            EventStart = newState.EventStart;
+            TaskStart = newState.TaskStart;
+            TaskEnd = newState.TaskEnd;
+            EventEnd = newState.EventEnd;
+            Idata = newState.Idata;
+            Ddata = newState.Ddata;
+     //       Fdata = newState.Fdata;
+            Bdata = newState.Bdata;
+            Mdata = newState.Mdata;
+            Qdata = newState.Qdata;
         }
 
         /**
          * Creates a new State based on a previous State and a new Task start time
          */
-        State(State previous, double newTaskStart)
+        public State(State previous, double newTaskStart)
         {
             Previous = previous;
             EventStart = previous.EventEnd; // start from end of previous State
@@ -94,7 +95,7 @@ namespace HSFScheduler
          * @param key The integer state variable key that is being looked up.
          * @return A pair containing the last time the variable was set, and the integer value.
          */
-         KeyValuePair<double, int> getLastValue(StateVarKey<int> key) {
+         public KeyValuePair<double, int> getLastValue(StateVarKey<int> key) {
             HSFProfile<int> valueOut;
 		    if(Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -109,7 +110,7 @@ namespace HSFScheduler
          * @param time The time the value is looked up at.
          * @return A pair containing the last time the variable was set, and the integer value.
          */
-        KeyValuePair<double, int> getValueAtTime(StateVarKey<int> key, double time){
+        public KeyValuePair<double, int> getValueAtTime(StateVarKey<int> key, double time){
             HSFProfile<int> valueOut;
             if (Idata.Count != 0)  { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -124,7 +125,7 @@ namespace HSFScheduler
          * @param key The integer state variable key that is being looked up.
          * @return The Profile saved in the state.
          */
-        HSFProfile<int> getProfile(StateVarKey<int> key){
+        public HSFProfile<int> getProfile(StateVarKey<int> key){
             HSFProfile<int> valueOut;
 		    if(Idata.Count != 0)  { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -138,7 +139,7 @@ namespace HSFScheduler
          * @param key The integer state variable key that is being looked up.
          * @return The full Profile
          */
-        HSFProfile<int> getFullProfile(StateVarKey<int> key){
+        public HSFProfile<int> getFullProfile(StateVarKey<int> key){
             HSFProfile<int> valueOut = new HSFProfile<int>();
 		    if(Idata.Count != 0)  { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) { //see if our key is in there
@@ -158,7 +159,7 @@ namespace HSFScheduler
          * @param key The integer state variable key that is being set.\
          * @param profIn The integer Profile being saved.
          */
-        void setProfile(StateVarKey<int> key, HSFProfile<int> profIn){
+        public void setProfile(StateVarKey<int> key, HSFProfile<int> profIn){
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Idata.Add(key, profIn); 
@@ -190,20 +191,20 @@ namespace HSFScheduler
          * @param key The key corresponding to the state variable.
          * @param profIn The Profile to be added to the integer Profile.
          */
-        void addValue(StateVarKey<int> key, HSFProfile<int> profIn){
+        public void addValue(StateVarKey<int> key, HSFProfile<int> profIn){
 		    HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
 			    Idata.Add(key, profIn); 
 		    else // Otherwise, add this data point to the existing Profile.
 			    valueOut.Add(profIn);
 	    }
-         /*      
-         * Gets the last double value set for the given state variable key in the state. If no value is found
-         * it checks the previous state, continuing all the way to the initial state.
-         * @param key The double state variable key that is being looked up.
-         * @return A pair containing the last time the variable was set, and the double value.
-         */
-         KeyValuePair<double, double> getLastValue(StateVarKey<double> key) {
+        /*      
+        * Gets the last double value set for the given state variable key in the state. If no value is found
+        * it checks the previous state, continuing all the way to the initial state.
+        * @param key The double state variable key that is being looked up.
+        * @return A pair containing the last time the variable was set, and the double value.
+        */
+        public KeyValuePair<double, double> getLastValue(StateVarKey<double> key) {
             HSFProfile<double> valueOut;
 		    if(Ddata.Count != 0) { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -218,7 +219,7 @@ namespace HSFScheduler
          * @param time The time the value is looked up at.
          * @return A pair containing the last time the variable was set, and the double value.
          */
-        KeyValuePair<double, double> getValueAtTime(StateVarKey<double> key, double time){
+        public KeyValuePair<double, double> getValueAtTime(StateVarKey<double> key, double time){
             HSFProfile<double> valueOut;
             if (Ddata.Count != 0)  { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -233,7 +234,7 @@ namespace HSFScheduler
          * @param key The double state variable key that is being looked up.
          * @return The Profile saved in the state.
          */
-        HSFProfile<double> getProfile(StateVarKey<double> key){
+        public HSFProfile<double> getProfile(StateVarKey<double> key){
             HSFProfile<double> valueOut;
 		    if(Ddata.Count != 0)  { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -247,7 +248,7 @@ namespace HSFScheduler
          * @param key The double state variable key that is being looked up.
          * @return The full Profile
          */
-        HSFProfile<double> getFullProfile(StateVarKey<double> key){
+        public HSFProfile<double> getFullProfile(StateVarKey<double> key){
             HSFProfile<double> valueOut = new HSFProfile<double>();
 		    if(Ddata.Count != 0)  { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut)) { //see if our key is in there
@@ -267,7 +268,7 @@ namespace HSFScheduler
          * @param key The double state variable key that is being set.\
          * @param profIn The double Profile being saved.
          */
-        void setProfile(StateVarKey<double> key, HSFProfile<double> profIn){
+        public void setProfile(StateVarKey<double> key, HSFProfile<double> profIn){
             HSFProfile<double> valueOut;
             if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Ddata.Add(key, profIn); 
@@ -284,7 +285,7 @@ namespace HSFScheduler
 	     * @param key The key corresponding to the state variable.
 	     * @param pairIn The pair to be added to the integer Profile.
 	     */
-        void addValue(StateVarKey<double> key, KeyValuePair<double, double> pairIn){
+        public void addValue(StateVarKey<double> key, KeyValuePair<double, double> pairIn){
             HSFProfile<double> valueIn = new HSFProfile<double>(pairIn);
             HSFProfile<double>valueOut;
             if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
@@ -299,7 +300,7 @@ namespace HSFScheduler
          * @param key The key corresponding to the state variable.
          * @param profIn The Profile to be added to the double Profile.
          */
-        void addValue(StateVarKey<double> key, HSFProfile<double> profIn){
+        public void addValue(StateVarKey<double> key, HSFProfile<double> profIn){
 		    HSFProfile<double> valueOut;
             if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
 			    Ddata.Add(key, profIn); 
@@ -312,7 +313,7 @@ namespace HSFScheduler
         * @param key The boolean state variable key that is being looked up.
         * @return A pair containing the last time the variable was set, and the boolean value.
         */
-        KeyValuePair<double, bool> getLastValue(StateVarKey<bool> key)
+        public KeyValuePair<double, bool> getLastValue(StateVarKey<bool> key)
         {
             HSFProfile<bool> valueOut;
             if (Bdata.Count != 0)
@@ -329,7 +330,7 @@ namespace HSFScheduler
          * @param time The time the value is looked up at.
          * @return A pair containing the last time the variable was set, and the boolean value.
          */
-        KeyValuePair<double, bool> getValueAtTime(StateVarKey<bool> key, double time)
+        public KeyValuePair<double, bool> getValueAtTime(StateVarKey<bool> key, double time)
         {
             HSFProfile<bool> valueOut;
             if (Bdata.Count != 0)
@@ -346,7 +347,7 @@ namespace HSFScheduler
          * @param key The boolean state variable key that is being looked up.
          * @return The Profile saved in the state.
          */
-        HSFProfile<bool> getProfile(StateVarKey<bool> key)
+        public HSFProfile<bool> getProfile(StateVarKey<bool> key)
         {
             HSFProfile<bool> valueOut;
             if (Bdata.Count != 0)
@@ -356,13 +357,13 @@ namespace HSFScheduler
             }
             return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
         }
-        
-         /*
-         * Returns the boolean Profile for this state and all previous states merged into one Profile
-         * @param key The boolean state variable key that is being looked up.
-         * @return The full Profile
-         */
-        HSFProfile<bool> getFullProfile(StateVarKey<bool> key)
+
+        /*
+        * Returns the boolean Profile for this state and all previous states merged into one Profile
+        * @param key The boolean state variable key that is being looked up.
+        * @return The full Profile
+        */
+        public HSFProfile<bool> getFullProfile(StateVarKey<bool> key)
         {
             HSFProfile<bool> valueOut = new HSFProfile<bool>();
             if (Bdata.Count != 0)
@@ -385,7 +386,7 @@ namespace HSFScheduler
          * @param key The boolean state variable key that is being set.\
          * @param profIn The boolean Profile being saved.
          */
-        void setProfile(StateVarKey<bool> key, HSFProfile<bool> profIn)
+        public void setProfile(StateVarKey<bool> key, HSFProfile<bool> profIn)
         {
             HSFProfile<bool> valueOut;
             if (!Bdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
@@ -403,7 +404,7 @@ namespace HSFScheduler
 	     * @param key The key corresponding to the state variable.
 	     * @param pairIn The pair to be added to the boolean Profile.
 	     */
-        void addValue(StateVarKey<bool> key, KeyValuePair<double, bool> pairIn)
+        public void addValue(StateVarKey<bool> key, KeyValuePair<double, bool> pairIn)
         {
             HSFProfile<bool> valueIn = new HSFProfile<bool>(pairIn);
             HSFProfile<bool> valueOut;
@@ -419,7 +420,7 @@ namespace HSFScheduler
          * @param key The key corresponding to the state variable.
          * @param profIn The Profile to be added to the boolean Profile.
          */
-        void addValue(StateVarKey<bool> key, HSFProfile<bool> profIn)
+        public void addValue(StateVarKey<bool> key, HSFProfile<bool> profIn)
         {
             HSFProfile<bool> valueOut;
             if (!Bdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
@@ -428,15 +429,15 @@ namespace HSFScheduler
                 valueOut.Add(profIn);
         }
 
-        /*      
-    * Gets the last Matrix value set for the given state variable key in the state. If no value is found
-    * it checks the previous state, continuing all the way to the initial state.
-    * @param key The Matrix state variable key that is being looked up.
-    * @return A pair containing the last time the variable was set, and the Matrix value.
-    */
-        KeyValuePair<double, Matrix> getLastValue(StateVarKey<Matrix> key)
+        /**      
+        * Gets the last Matrix value set for the given state variable key in the state. If no value is found
+        * it checks the previous state, continuing all the way to the initial state.
+        * @param key The Matrix state variable key that is being looked up.
+        * @return A pair containing the last time the variable was set, and the Matrix value.
+        */
+        public KeyValuePair<double, Matrix<double>> getLastValue(StateVarKey<Matrix<double>> key)
         {
-            HSFProfile<Matrix> valueOut;
+            HSFProfile<Matrix<double>> valueOut;
             if (Mdata.Count != 0)
             { // Are there any Profiles in there?
                 if (Mdata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -451,9 +452,9 @@ namespace HSFScheduler
          * @param time The time the value is looked up at.
          * @return A pair containing the last time the variable was set, and the matrix value.
          */
-        KeyValuePair<double, Matrix> getValueAtTime(StateVarKey<Matrix> key, double time)
+        public KeyValuePair<double, Matrix<double>> getValueAtTime(StateVarKey<Matrix<double>> key, double time)
         {
-            HSFProfile<Matrix> valueOut;
+            HSFProfile<Matrix<double>> valueOut;
             if (Mdata.Count != 0)
             { // Are there any Profiles in there?
                 if (Mdata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -468,9 +469,9 @@ namespace HSFScheduler
          * @param key The Matrix state variable key that is being looked up.
          * @return The Profile saved in the state.
          */
-        HSFProfile<Matrix> getProfile(StateVarKey<Matrix> key)
+        public HSFProfile<Matrix<double>> getProfile(StateVarKey<Matrix<double>> key)
         {
-            HSFProfile<Matrix> valueOut;
+            HSFProfile<Matrix<double>> valueOut;
             if (Mdata.Count != 0)
             { // Are there any Profiles in there?
                 if (Mdata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -484,15 +485,15 @@ namespace HSFScheduler
         * @param key The Matrix state variable key that is being looked up.
         * @return The full Profile
         */
-        HSFProfile<Matrix> getFullProfile(StateVarKey<Matrix> key)
+        public HSFProfile<Matrix<double>> getFullProfile(StateVarKey<Matrix<double>> key)
         {
-            HSFProfile<Matrix> valueOut = new HSFProfile<Matrix>();
+            HSFProfile<Matrix<double>> valueOut = new HSFProfile<Matrix<double>>();
             if (Mdata.Count != 0)
             { // Are there any Profiles in there?
                 if (Mdata.TryGetValue(key, out valueOut))
                 { //see if our key is in there
                     if (Previous != null) // Check whether we are at the first state
-                        return HSFProfile<Matrix>.MergeProfiles(valueOut, Previous.getFullProfile(key));
+                        return HSFProfile<Matrix<double>>.MergeProfiles(valueOut, Previous.getFullProfile(key));
                     return valueOut;
                 }
             }
@@ -507,9 +508,9 @@ namespace HSFScheduler
          * @param key The Matrix state variable key that is being set.\
          * @param profIn The Matrix Profile being saved.
          */
-        void setProfile(StateVarKey<Matrix> key, HSFProfile<Matrix> profIn)
+        public void setProfile(StateVarKey<Matrix<double>> key, HSFProfile<Matrix<double>> profIn)
         {
-            HSFProfile<Matrix> valueOut;
+            HSFProfile<Matrix<double>> valueOut;
             if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Mdata.Add(key, profIn);
             else { // Otherwise, erase whatever is there, and insert a new one.
@@ -525,10 +526,10 @@ namespace HSFScheduler
 	     * @param key The key corresponding to the state variable.
 	     * @param pairIn The pair to be added to the matrix Profile.
 	     */
-        void addValue(StateVarKey<Matrix> key, KeyValuePair<double, Matrix> pairIn)
+        public void addValue(StateVarKey<Matrix<double>> key, KeyValuePair<double, Matrix<double>> pairIn)
         {
-            HSFProfile<Matrix> valueIn = new HSFProfile<Matrix>(pairIn);
-            HSFProfile<Matrix> valueOut;
+            HSFProfile<Matrix<double>> valueIn = new HSFProfile<Matrix<double>>(pairIn);
+            HSFProfile<Matrix<double>> valueOut;
             if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Mdata.Add(key, valueIn);
             else // Otherwise, add this data point to the existing Profile.
@@ -541,9 +542,9 @@ namespace HSFScheduler
          * @param key The key corresponding to the state variable.
          * @param profIn The Profile to be added to the boolean Profile.
          */
-        void addValue(StateVarKey<Matrix> key, HSFProfile<Matrix> profIn)
+        public void addValue(StateVarKey<Matrix<double>> key, HSFProfile<Matrix<double>> profIn)
         {
-            HSFProfile<Matrix> valueOut;
+            HSFProfile<Matrix<double>> valueOut;
             if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Mdata.Add(key, profIn);
             else // Otherwise, add this data point to the existing Profile.

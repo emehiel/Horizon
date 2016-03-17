@@ -1,40 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 
 namespace HSFUniverse{
     //Old implementation of universe. To be modified drastically by trent's thesis.
     public class Universe{
-        private Sun _sun { get; set; }
+        public Sun Sun { get; private set; }
         
         public Universe(){
-            _sun = new Sun(false);
+            Sun = new Sun(false);
         }
         public Universe(Sun sun)
         {
-            _sun = sun;
+            Sun = sun;
         }
 
-        public Universe(XMLNode environmentNode){
-            // Check the XMLNode for the presence of a child SUN node
-            int nSun = environmentNode.nChildNode("SUN");
-            if (nSun >0){
-                // Create the Sun based on the XMLNode                
-                XMLNode sunNode = environmentNode.getChildNode("SUN");
-                // Check the Sun XMLNode for the attribute
-                if(sunNode.isAttributeSet("isSunVectConstant")){
-                    bool sunVecConst = atob(sunNode.getAttribute("isSunVecConstant"));
-                    _sun = new Sun(sunVecConst);
+        public Universe(XmlNode environmentNode)
+        {
+            bool nSun = false;
+            XmlNode sunNode;
+            foreach (XmlNode child in environmentNode.ChildNodes)
+            {   //no idea if this works
+                if (child.Equals("SUN")) // Check the XMLNode for the presence of a child SUN node
+                {
+                    // Create the Sun based on the XMLNode                
+                    sunNode = child;
+                    foreach(XmlAttribute att in sunNode.Attributes)
+                    {
+                        if (att.Value.Equals("true")) //use the old isSunVectConstant value
+                            nSun = true;
+                        Sun = new Sun(nSun);
+                        return; //done
+                    }
                 }
-                _sun = new Sun();
             }
-            else{
-                _sun = new Sun();
-            }
+            //didn't find the sun or it didn't have the isSunVectConstant attribute set
+            Sun = new Sun();
         }
         
 

@@ -1,35 +1,110 @@
 ﻿using HSFScheduler;
 using System.Collections.Generic;
+using Utilities;
 
 namespace HSFSystem
 {
     public class SystemSchedule
     {
-        public List<AssetScheule> AssetSched;
+        public List<AssetSchedule> AssetScheds; //pop never gets used so just use list
         public double ScheduleValue;
 
         public SystemSchedule(List<State> initialstates) 
         {
             ScheduleValue = 0;
-            for (vector<State*>::const_iterator stIt = initialstates.begin(); stIt != initialstates.end(); stIt++)
+            foreach(State stIt in initialstates)
             {
-                assetscheds.push_back(new assetSchedule(*stIt));
+                AssetScheds.Add(new AssetSchedule(stIt));
             }
         }
 
         public SystemSchedule(SystemSchedule oldSchedule, List<Task> newTaskList, double newTaskStartTime)
         {
-            vector <const Task*>::const_iterator tIt = newTaskList.begin();
-            for (vector<assetSchedule*>::const_iterator assSchedIt = oldSchedule->assetscheds.begin(); assSchedIt != oldSchedule->assetscheds.end(); assSchedIt++, tIt++)
+            int i = 0; //need a double iterator
+            foreach(AssetSchedule asIt in oldSchedule.AssetScheds)
             {
-                if (*tIt != NULL)
+                Task tIt = newTaskList[i];
+                if (tIt == null)
                 {
-                    shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
-                    assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
+                    Event eventToAdd = new Event(tIt, new State(asIt.getLastState(), newTaskStartTime));
+                    AssetScheds.Add(new AssetSchedule(asIt, eventToAdd));
+                    //TODO: double check c# implementation above
+                   // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
+                   // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
                 }
                 else
-                    assetscheds.push_back(new assetSchedule(*assSchedIt));
+                    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(asIt));
+                i++;
             }
+            
+        }
+
+        public bool canAddTasks(Stack<Task> newTaskList, double newTaskStartTime)
+        {
+            int count = 0;
+            // vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
+            int asIt2 = 0;
+	        foreach( Task tIt in newTaskList) {
+		        if(tIt != null)
+                {
+			        foreach(AssetSchedule asIt in AssetScheds)
+                    {
+				        count += asIt.timesCompletedTask(tIt);
+                    }
+			        if(count >= tIt.MaxTimesToPerform)
+				        return false;
+			        if(!AssetScheds[asIt2].isEmpty())
+                    {
+				        if(AssetScheds[asIt2].getLastState().EventEnd > newTaskStartTime)
+					        return false;
+			        }
+		        }
+	        }
+	        return true;
+        }
+
+        public int getTotalNumEvents()
+        {
+            int count = 0;
+            foreach(AssetSchedule asIt in AssetScheds)
+                count += asIt.size();
+            return count;
+        }
+
+        public State getSubNewState(int assetNum)
+        {
+            if (AssetScheds[assetNum].isEmpty())
+                return AssetScheds[assetNum].InitialState;
+            else
+                return AssetScheds[assetNum].getLastState();
+        }
+
+        public Task getSubNewTask(int assetNum)
+        {
+            if (AssetScheds[assetNum].isEmpty())
+                return null;
+            else
+                return AssetScheds[assetNum].getLastTask();
+        }
+
+        public double getLastTaskStart() {
+	        double lasttime = 0;
+            foreach(AssetSchedule aIt in AssetScheds)
+		        if(!aIt.isEmpty())
+			        lasttime = lasttime > aIt.getLastState().TaskStart ? lasttime : aIt.getLastState().TaskStart;
+	        return lasttime;
+        }
+
+        public List<State> getEndStates(){
+	        List<State> endStates = new List<State>();
+            foreach(AssetSchedule asIt in AssetScheds)
+		        endStates.Add(asIt.getLastState());
+	        return endStates;
+        }
+
+        bool schedGreater(SystemSchedule elem1, SystemSchedule elem2)
+        {
+            return elem1.ScheduleValue > elem2.ScheduleValue;
         }
 
     }

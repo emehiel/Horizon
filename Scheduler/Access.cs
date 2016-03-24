@@ -21,7 +21,7 @@ namespace HSFScheduler
             int num_assets = access_pregen[0].Count;
             // initialize vector to hold tasks each asset has access to
             List<Stack<Task>> assetTasks = new Stack<List<Task>>(num_assets); //TODO double check this
-                                                                              // iterate through each task that acces has been pregenerated for
+                                                                              // iterate through each task that access has been pregenerated for
                                                                               //foreach (List<Dictionary<double, bool> accessPregenIt in access_pregen)
             int i = 0, j;
             List<List<Dictionary<double, bool>>> accessPregenIt = new List<List<Dictionary<double, bool>>>();
@@ -56,7 +56,7 @@ namespace HSFScheduler
             }
         }
 
-        public List<List<Dictionary<double, bool>>> pregenerateAccesses(System system, vector<Task> tasks, double stepLength, double endTime)
+        public List<List<Dictionary<double, bool>>> pregenerateAccesses(HSFSystem system, vector<Task> tasks, double stepLength, double endTime)
         {
 
         }

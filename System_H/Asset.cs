@@ -25,7 +25,7 @@ namespace HSFSystem
 
         public Asset(XmlNode assetXMLNode)
         {
-            foreach(XmlNode xIt in assetXMLNode.ChildNodes)
+            foreach(XmlNode xIt in assetXMLNode.ChildNodes)// xmlnode node = assetXMLNode["Position"] dynamic state has constructor to take in xml node
             {
                 if (xIt.Value.Equals("POSITION"))
                 {

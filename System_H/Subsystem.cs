@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Utilities;
-using HSFScheduler;
+//using HSFScheduler;
 using HSFUniverse;
 using HSFSystem;
     namespace HSFSubsystem
@@ -22,13 +22,13 @@ using HSFSystem;
             public virtual Subsystem clone() {
                 throw new NotImplementedException();
             }
-            public virtual bool canPerform(State oldState, State newSTate,
+            public virtual bool canPerform(DynamicState oldState, DynamicState newSTate,
                                       Task task, DynamicState position,
                                       Universe environment,
                                       NodeDependencies dep) {
                 throw new NotImplementedException();
             }
-            public virtual bool canExtend(State newState, DynamicState position, Universe environment, double evalToTime,
+            public virtual bool canExtend(DynamicState newState, DynamicState position, Universe environment, double evalToTime,
                                     NodeDependencies dependencies) {
                 throw new NotImplementedException();
             }

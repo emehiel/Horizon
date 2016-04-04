@@ -13,7 +13,7 @@ namespace HSFScheduler
         public Task Task { get; private set; }
 
         /** The time history of the Asset State during the current Event. */
-        public State State { get; private set; }
+        public SystemState State { get; private set; }
 
         /**
 	     * Creates an Event, in which the Task was performed by an Asset, and the time history 
@@ -21,7 +21,7 @@ namespace HSFScheduler
 	     * @param task The Task that was performed.
 	     * @param state The time history of the Asset State during the Event.
 	     */
-        public Event(Task task, State state)
+        public Event(Task task, SystemState state)
         {
             Task = task;
             State = state;

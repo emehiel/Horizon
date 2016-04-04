@@ -1,19 +1,18 @@
-﻿using HSFScheduler;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Utilities;
 
-namespace HSFSystem
+namespace HSFScheduler
 {
     public class AssetSchedule
     {
-        public State InitialState { get; private set; }
+        public SystemState InitialState { get; private set; }
         public Stack<Event> Events { get; private set; }
 
         /**
          * Creates a new empty schedule with the given initial state.
          * @param initialState the initial state of the system for which the schedule applies
          */
-        public AssetSchedule(State state)
+        public AssetSchedule(SystemState state)
         {
             InitialState = state;
         }
@@ -48,7 +47,7 @@ namespace HSFSystem
         * Returns the last State in the schedule
         * @return the last State in the schedule
         */
-        public State getLastState()
+        public SystemState getLastState()
         {
             if (isEmpty() == false) //TODO: check this is what we actually want to do
             {

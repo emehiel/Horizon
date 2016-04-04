@@ -32,7 +32,7 @@ namespace HSFUniverse
         /// </summary>
         private SortedList<double, Matrix<double>> _stateData;
 
-        private DynamicStateType _type;
+        public DynamicStateType Type { get; private set; }
 
         private EOMS _eoms;
 
@@ -49,12 +49,12 @@ namespace HSFUniverse
             // TODO add a line to pre-propagate to simEndTime if the type is predetermined
             // TODO catch exception if _type or initial conditions are not set from teh XML file
             string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].ToString();
-            _type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
+            Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
 
             Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode.Attributes["ICs"].ToString());
             _stateData.Add(0.0, ics);
 
-            if (!(_type == DynamicStateType.STATIC_LLA || _type == DynamicStateType.STATIC_ECI))
+            if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
             {
                 // I think this should be a constructor...
                 //_eoms = createEOMSObject(dynamicStateXMLNode["EOMS"]);
@@ -100,7 +100,7 @@ namespace HSFUniverse
         public DynamicState(DynamicStateType type, EOMS eoms)
         {
             _stateData = null;
-            _type = type;
+            Type = type;
             _eoms = eoms;
             //_stateDataTimeStep = stateDataTimeStep;
             _integratorNode = null;
@@ -179,16 +179,16 @@ namespace HSFUniverse
         {
             get
             {
-                if (_type == DynamicStateType.STATIC_LLA)
+                if (Type == DynamicStateType.STATIC_LLA)
                 {
                     // Set the JD associated with simTime
-                    double JD = simTime / 86400.0 + SimParameters._simStartJD;
+                    double JD = simTime / 86400.0 + SimParameters.SimStartJD;
                     return GeometryUtilities.ECI2LLA(InitialConditions(), JD);
                 }
 
-                else if (_type == DynamicStateType.STATIC_ECI)
+                else if (Type == DynamicStateType.STATIC_ECI)
                     return InitialConditions();
-                else if (_type == DynamicStateType.PREDETERMINED_ECI || _type == DynamicStateType.PREDETERMINED_LLA)
+                else if (Type == DynamicStateType.PREDETERMINED_ECI || Type == DynamicStateType.PREDETERMINED_LLA)
                 {
                     // Is the last entry in _stateData later than simTime?  If so, the dynamic state has been propagated.  If not, we need to propagate
                     if (_stateData.Last().Key <= simTime)

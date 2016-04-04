@@ -5,7 +5,7 @@ using Utilities;
 
 namespace HSFSystem
 {
-    class SystemClass
+    public class SystemClass
     {
         public List<Asset> Assets{get; private set;}
         public Stack<SubsystemNode> SubsystemNodes{get; private set;}

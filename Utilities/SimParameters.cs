@@ -1,49 +1,45 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 
 namespace Utilities
 {
     public static class SimParameters
     {
-        public static double _simStartJD { get; private set; }
+        public static double SimStartJD { get; private set; }
 
-        public static double _simStartSeconds { get; private set; }
+        public static double SimStartSeconds { get; private set; }
 
-        public static double _simEndSeconds { get; private set; }
+        public static double SimEndSeconds { get; private set; }
 
-        public static string _scenarioName { get; private set; }
+        public static string ScenarioName { get; private set; }
         
-        public static string _outputDirector { get; private set; }
+        public static string OutputDirector { get; private set; }
 
-        public static bool isInitialized { get; private set; }
+        private static bool _isInitialized = false;
 
         public static bool LoadSimParameters(XmlNode simulationXMLNode, string scenarioName)
         {
-            if (!isInitialized)
+            if (!_isInitialized)
             {
-                isInitialized = true;
+                _isInitialized = true;
 
-                _scenarioName = scenarioName;
+                ScenarioName = scenarioName;
                 Console.WriteLine( "Loading simulation parameters... " );
 
-                _simStartJD = Convert.ToDouble(simulationXMLNode.Attributes["SimStartJD"]);
+                SimStartJD = Convert.ToDouble(simulationXMLNode.Attributes["SimStartJD"]);
 
-                Console.WriteLine("\tSimulation Start Julian Date: {0}",_simStartJD);
+                Console.WriteLine("\tSimulation Start Julian Date: {0}",SimStartJD);
 
                 if (simulationXMLNode.Attributes["SimStartSeconds"] != null)
-                    _simStartSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimStartSeconds"]);
+                    SimStartSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimStartSeconds"]);
                 else
-                    _simStartSeconds = 0;
-                Console.WriteLine("\tStart Epoch: {0} seconds", _simStartSeconds);
+                    SimStartSeconds = 0;
+                Console.WriteLine("\tStart Epoch: {0} seconds", SimStartSeconds);
 
-                _simEndSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimEndSeconds"]);
-                Console.WriteLine("\tEnd Epoch: {0} seconds", _simEndSeconds);
+                SimEndSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimEndSeconds"]);
+                Console.WriteLine("\tEnd Epoch: {0} seconds", SimEndSeconds);
 
-                _outputDirector = Convert.ToString(simulationXMLNode.Attributes["OutputDirectory"]);
+                OutputDirector = Convert.ToString(simulationXMLNode.Attributes["OutputDirectory"]);
 
                 return true;
             }

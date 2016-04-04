@@ -24,11 +24,12 @@ namespace HSFSystem
          * @param state a partially updated state
          * @return true if the state passes the constraint check
          */
+         /*
         public virtual bool accepts(SystemSchedule sched)
         {
             return false;
         }
-
+        */
         public virtual Constraint clone()
         {
             return DeepCopy.Copy<Constraint>(this);

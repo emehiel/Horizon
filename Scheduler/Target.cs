@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using HSFUniverse;
 
 
-namespace HSFUniverse
+namespace HSFScheduler
 {
     /**
     * A named location denoting where a task is to be performed.
@@ -18,26 +19,26 @@ namespace HSFUniverse
         public string Name { get; private set; }
 
         /** The type of the target */
-        public string TargetType { get; private set; }
+        public TargetType Type { get; private set; }
 
         /** The position of the target */
-        protected DynamicState CurrentDynamicState { get; private set; }
+        public DynamicState DynamicState { get; private set; }
 
         /** The value of the target */
-        protected int Value { get; private set; }
+        public int Value { get; private set; }
 
-        protected int MinQualCM;
+        private int MinQualCM;
 
         protected int Freq_days;
         protected string CC;
         protected string WX_Reg;
         protected string Comment { get; }
 
-        public Target(String name, string type, DynamicState dynamicState, int value)
+        public Target(String name, TargetType type, DynamicState dynamicState, int value)
         {
             Name = name;
-            TargetType = type;
-            CurrentDynamicState = dynamicState;
+            Type = type;
+            DynamicState = dynamicState;
             Value = value;
         }
 
@@ -47,7 +48,11 @@ namespace HSFUniverse
         */
         public Target(XmlNode targetXmlNode)
         {
-
+            Name = targetXmlNode.Attributes["TargetName"].ToString();
+            string typeString = targetXmlNode.Attributes["TargetType"].ToString();
+            Type = (TargetType)Enum.Parse(typeof(TargetType), typeString);
+            DynamicState = new DynamicState(targetXmlNode["DynamicState"]);
+            Value = Convert.ToInt32(targetXmlNode.Attributes["value"]);
         }
 
     }

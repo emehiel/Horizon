@@ -1,18 +1,17 @@
-﻿using HSFScheduler;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Utilities;
 
-namespace HSFSystem
+namespace HSFScheduler
 {
     public class SystemSchedule
     {
         public List<AssetSchedule> AssetScheds; //pop never gets used so just use list
         public double ScheduleValue;
 
-        public SystemSchedule(List<State> initialstates) 
+        public SystemSchedule(List<SystemState> initialstates) 
         {
             ScheduleValue = 0;
-            foreach(State stIt in initialstates)
+            foreach(SystemState stIt in initialstates)
             {
                 AssetScheds.Add(new AssetSchedule(stIt));
             }
@@ -26,7 +25,7 @@ namespace HSFSystem
                 Task tIt = newTaskList[i];
                 if (tIt == null)
                 {
-                    Event eventToAdd = new Event(tIt, new State(asIt.getLastState(), newTaskStartTime));
+                    Event eventToAdd = new Event(tIt, new SystemState(asIt.getLastState(), newTaskStartTime));
                     AssetScheds.Add(new AssetSchedule(asIt, eventToAdd));
                     //TODO: double check c# implementation above
                    // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
@@ -71,7 +70,7 @@ namespace HSFSystem
             return count;
         }
 
-        public State getSubNewState(int assetNum)
+        public SystemState getSubNewState(int assetNum)
         {
             if (AssetScheds[assetNum].isEmpty())
                 return AssetScheds[assetNum].InitialState;
@@ -95,8 +94,8 @@ namespace HSFSystem
 	        return lasttime;
         }
 
-        public List<State> getEndStates(){
-	        List<State> endStates = new List<State>();
+        public List<SystemState> getEndStates(){
+	        List<SystemState> endStates = new List<SystemState>();
             foreach(AssetSchedule asIt in AssetScheds)
 		        endStates.Add(asIt.getLastState());
 	        return endStates;

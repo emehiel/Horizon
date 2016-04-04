@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Utilities;
 using HSFSystem;
 using UserModel;
-using HSFScheduler;
+//using HSFScheduler;
 using HSFUniverse;
 
 //namespace HSFSystem
@@ -157,12 +157,12 @@ namespace HSFSubsystem
                     IsChecked = true;
                     if (newState.TaskStart >= evalToTime && task != null)
                     {
-                        return SubsystemField.canPerform(newState.Previous, newState, task, SubsystemAsset.AssetPosition, environment, SubsystemDependencies);
+                        return SubsystemField.canPerform(newState.Previous, newState, task, SubsystemAsset.AssetDynamicState, environment, SubsystemDependencies);
                     }
                     else
                     {
                         if (mustEvaluate)
-                            return SubsystemField.canExtend(newState, SubsystemAsset.AssetPosition, environment, evalToTime, SubsystemDependencies);
+                            return SubsystemField.canExtend(newState, SubsystemAsset.AssetDynamicState, environment, evalToTime, SubsystemDependencies);
                         else
                             return true;
                     }

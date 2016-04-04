@@ -7,10 +7,10 @@ using Utilities;
 
 namespace HSFScheduler
 {
-    public class State
+    public class SystemState
     {
         /** The previous state, upon which this state is based */
-        public State Previous { get; private set; }
+        public SystemState Previous { get; private set; }
 
         /** The start of the event associated with this State */
         public double EventStart{get; set;}
@@ -46,7 +46,7 @@ namespace HSFScheduler
         /**
          * Creates an initial State
          */
-        public State()
+        public SystemState()
         {
             Previous = null;
             EventStart = 0;
@@ -58,9 +58,9 @@ namespace HSFScheduler
         /**
          * Copy constructor for exact state copies
          */
-        public State(State initialStateToCopy)
+        public SystemState(SystemState initialStateToCopy)
         {
-            State newState = DeepCopy.Copy<State>(initialStateToCopy);
+            SystemState newState = DeepCopy.Copy<SystemState>(initialStateToCopy);
             Previous = newState.Previous;
             EventStart = newState.EventStart;
             TaskStart = newState.TaskStart;
@@ -77,7 +77,7 @@ namespace HSFScheduler
         /**
          * Creates a new State based on a previous State and a new Task start time
          */
-        public State(State previous, double newTaskStart)
+        public SystemState(SystemState previous, double newTaskStart)
         {
             Previous = previous;
             EventStart = previous.EventEnd; // start from end of previous State

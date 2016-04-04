@@ -1,30 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HSFUniverse;
+﻿using HSFUniverse;
+using System.Xml;
 
 namespace HSFSystem
 {
     public class Asset
     {
-        public DynamicState AssetPosition{ get; private set; } //was protected, why?
+        public DynamicState AssetDynamicState{ get; private set; } //was protected, why?
         //TODO:make isTaskable mean something
         public bool IsTaskable{ get; private set; }//was protected, why?
 
         public Asset() {
             IsTaskable = false;
         }
-        public Asset(DynamicState pos)
+        public Asset(DynamicState dynamicState)
         {
-            AssetPosition = pos;
+            AssetDynamicState = dynamicState;
             IsTaskable = false;
         }
 
-        public Asset(XMLNode assetXMLNode)
+        public Asset(XmlNode assetXMLNode)
         {
-            AssetPosition =new DynamicState(assetXMLNode.getChildNode("POSITION"));
+            AssetDynamicState =new DynamicState(assetXMLNode["DynamicState"]);  // XmlInput Change - position => DynamicState
             IsTaskable = false;
         }
 

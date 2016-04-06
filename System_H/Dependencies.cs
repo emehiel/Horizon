@@ -49,7 +49,7 @@ namespace HSFSubsystem
         //TODO(MORGAN): Make sure dependency can be singleton if it has these endstates and stateMap fields
         static Dependencies _instance = null;
         private List<State> endStates;
-        private Dictionary<List<State>, int> stateMap;
+        //private Dictionary<List<State>, int> stateMap;
         private Dictionary<string, Delegate> DependencyFunctions;
         private Dependencies()
         {

@@ -26,20 +26,20 @@ namespace Utilities
                 ScenarioName = scenarioName;
                 Console.WriteLine( "Loading simulation parameters... " );
 
-                SimStartJD = Convert.ToDouble(simulationXMLNode.Attributes["SimStartJD"]);
+                SimStartJD = Convert.ToDouble(simulationXMLNode.Attributes["SimStartJD"].Value);
 
                 Console.WriteLine("\tSimulation Start Julian Date: {0}",SimStartJD);
 
                 if (simulationXMLNode.Attributes["SimStartSeconds"] != null)
-                    SimStartSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimStartSeconds"]);
+                    SimStartSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimStartSeconds"].Value);
                 else
                     SimStartSeconds = 0;
                 Console.WriteLine("\tStart Epoch: {0} seconds", SimStartSeconds);
 
-                SimEndSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimEndSeconds"]);
+                SimEndSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimEndSeconds"].Value);
                 Console.WriteLine("\tEnd Epoch: {0} seconds", SimEndSeconds);
 
-                OutputDirector = Convert.ToString(simulationXMLNode.Attributes["OutputDirectory"]);
+                //OutputDirector = simulationXMLNode.Attributes["OutputDirectory"].Value;
 
                 return true;
             }

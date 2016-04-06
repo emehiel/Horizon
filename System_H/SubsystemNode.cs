@@ -39,7 +39,7 @@ namespace HSFSubsystem
         }
         #endregion Constructors
         #region AddDependencies
-
+        /*
         public void addDependency(string key, Dictionary<string, HSFProfile<int>> dep)
         {
             SubsystemDependencies.addDependency(key, dep);
@@ -100,6 +100,7 @@ namespace HSFSubsystem
         {
             SubsystemDependencies.addQuatScriptedDependency(callKey, key);
         }
+        */
         #endregion AddDependencies
         #region GettersAndSetters
         public void reset()
@@ -141,6 +142,7 @@ namespace HSFSubsystem
             throw new NotImplementedException();
         }
 #endregion GettersAndSetters
+        /*
         public bool canPerform(State newState, Task task, Universe environment, double evalToTime, bool mustEvaluate)
             {
             //TODO: Make sure to go backwards through tree
@@ -170,6 +172,7 @@ namespace HSFSubsystem
                 else
                     return true;
             }
+            */
         }// end class SubsystemNode
     }//end namespace Subsystem
 //}// end namespace HSFSystem

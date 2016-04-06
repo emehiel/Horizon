@@ -34,7 +34,7 @@ namespace HSFUniverse
 
         public DynamicStateType Type { get; private set; }
 
-        private EOMS _eoms;
+        public EOMS Eoms { get; set; }
 
         //private double _stateDataTimeStep { get;  set; }
 
@@ -48,15 +48,16 @@ namespace HSFUniverse
         {
             // TODO add a line to pre-propagate to simEndTime if the type is predetermined
             // TODO catch exception if _type or initial conditions are not set from teh XML file
-            string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].ToString();
+            string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value;
             Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
 
-            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode.Attributes["ICs"].ToString());
+            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode["ICs"]["Matrix"]);
+            _stateData = new SortedList<double, Matrix<double>>();
             _stateData.Add(0.0, ics);
 
-            if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
+            if (!(Type == DynamicStateType.StaticLLA || Type == DynamicStateType.StaticECI))
             {
-                // I think this should be a constructor...
+                // I think this should be a constructor...  The EOMS should be some sort of delegate function which can be generated from the xml...
                 //_eoms = createEOMSObject(dynamicStateXMLNode["EOMS"]);
                 
                 // Returns a null reference if INTEGRATOR is not set in XML
@@ -67,41 +68,29 @@ namespace HSFUniverse
                 if (_integratorNode != null)
                 {
                     if (_integratorNode.Attributes["h"] != null)
-                    {
-                        double h = Convert.ToDouble(_integratorNode.Attributes["h"]);
-                        _integratorOptions.h = h;
-                    }
+                        _integratorOptions.h = Convert.ToDouble(_integratorNode.Attributes["h"].Value);
                     if (_integratorNode.Attributes["rtol"] != null)
-                    {
-                        double rtol = Convert.ToDouble(_integratorNode.Attributes["rtol"]);
-                        _integratorOptions.rtol = rtol;
-                    }
+                        _integratorOptions.rtol = Convert.ToDouble(_integratorNode.Attributes["rtol"].Value);
                     if (_integratorNode.Attributes["atol"] != null)
-                    {
-                        double atol = Convert.ToDouble(_integratorNode.Attributes["atol"]);
-                        _integratorOptions.atol = atol;
-                    }
+                        _integratorOptions.atol = Convert.ToDouble(_integratorNode.Attributes["atol"].Value);
                     if (_integratorNode.Attributes["eps"] != null)
-                    {
-                        double eps = Convert.ToDouble(_integratorNode.Attributes["eps"]);
-                        _integratorOptions.eps = eps;
-                    }
+                        _integratorOptions.eps = Convert.ToDouble(_integratorNode.Attributes["eps"].Value);
                 }
             }
             else
             {
-                _eoms = null;
+                Eoms = null;
                 _integratorNode = null;
                 //_stateDataTimeStep = 30.0;
             }
 
         }
 
-        public DynamicState(DynamicStateType type, EOMS eoms)
+        public DynamicState(DynamicStateType type, EOMS eoms, Matrix<double> initialConditions)
         {
-            _stateData = null;
+            _stateData.Add(0.0, initialConditions);
             Type = type;
-            _eoms = eoms;
+            Eoms = eoms;
             //_stateDataTimeStep = stateDataTimeStep;
             _integratorNode = null;
         }
@@ -128,7 +117,7 @@ namespace HSFUniverse
         /// <returns></returns>
         public Matrix<double> PositionECI(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(1, 3), 1];
+            return this[simTime][new MatrixIndex(1, 3), 1];
         }
 
         public Matrix<double> VelocityECI(double simTime)
@@ -159,7 +148,7 @@ namespace HSFUniverse
             Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
             // Update the integrator parameters using the information in the XML Node
 
-            Matrix<double> data = Integrator.RK45(_eoms, tSpan, InitialConditions(), _integratorOptions);
+            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions);
 
             for (int index = 1; index <= data.Length; index++)
                 _stateData[data[1, index]] = data[new MatrixIndex(2, data.NumRows), index];
@@ -179,45 +168,47 @@ namespace HSFUniverse
         {
             get
             {
-                if (Type == DynamicStateType.STATIC_LLA)
+                
+                if (Type == DynamicStateType.StaticLLA)
                 {
                     // Set the JD associated with simTime
                     double JD = simTime / 86400.0 + SimParameters.SimStartJD;
-                    return GeometryUtilities.ECI2LLA(InitialConditions(), JD);
+                    return GeometryUtilities.LLA2ECI(InitialConditions(), JD);
                 }
 
-                else if (Type == DynamicStateType.STATIC_ECI)
+                else if (Type == DynamicStateType.StaticECI)
                     return InitialConditions();
-                else if (Type == DynamicStateType.PREDETERMINED_ECI || Type == DynamicStateType.PREDETERMINED_LLA)
+                else if (Type == DynamicStateType.PredeterminedECI || Type == DynamicStateType.PredeterminedLLA)
                 {
-                    // Is the last entry in _stateData later than simTime?  If so, the dynamic state has been propagated.  If not, we need to propagate
-                    if (_stateData.Last().Key <= simTime)
-                        PropagateState(simTime);
+                    bool hasNotPropagated = _stateData.Count() == 1;
+                    if (hasNotPropagated)
+                        PropagateState(SimParameters.SimEndSeconds);
+
+                    Matrix<double> dynamicStateAtSimTime;
+
+                    if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
+                    {
+                        int lowerIndex = _stateData.Keys.LowerBoundIndex(simTime);
+                        KeyValuePair<double, Matrix<double>> lowerData = _stateData.ElementAt(lowerIndex);
+                        KeyValuePair<double, Matrix<double>> upperData = _stateData.ElementAt(lowerIndex + 1);
+
+                        double lowerTime = lowerData.Key;
+                        Matrix<double> lowerState = lowerData.Value;
+
+                        double upperTime = upperData.Key;
+                        Matrix<double> upperState = upperData.Value;
+
+                        Matrix<double> slope = (upperState - lowerState) / (upperTime - lowerTime);
+
+                        dynamicStateAtSimTime = slope * (simTime - lowerTime) + lowerState;
+                    }
+
+                return dynamicStateAtSimTime;
+
                 }
                 else
                     return null; // TODO: Throw exception?
 
-
-                Matrix<double> dynamicStateAtSimTime;
-                
-                if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
-                {
-                    int lowerIndex = _stateData.Keys.LowerBoundIndex(simTime);
-                    KeyValuePair<double, Matrix<double>> lowerData = _stateData.ElementAt(lowerIndex);
-                    KeyValuePair<double, Matrix<double>> upperData = _stateData.ElementAt(lowerIndex + 1);
-
-                    double lowerTime = lowerData.Key;
-                    Matrix<double> lowerState = lowerData.Value;
-
-                    double upperTime = upperData.Key;
-                    Matrix<double> upperState = upperData.Value;
-
-                    Matrix<double> slope = (upperState - lowerState) / (upperTime - lowerTime);
-
-                    dynamicStateAtSimTime = slope * (simTime - lowerTime) + lowerState;
-                }
-
-                return dynamicStateAtSimTime;
             }
             set
             {
@@ -231,6 +222,6 @@ namespace HSFUniverse
         }
     }
 
-    public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
+    public enum DynamicStateType { StaticLLA, StaticECI, PredeterminedLLA, PredeterminedECI, DynamicLLA, DynamicECI };
     public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };
 }

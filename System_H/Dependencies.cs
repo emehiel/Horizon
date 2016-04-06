@@ -45,6 +45,7 @@ namespace HSFSubsystem
 
         public class Dependencies
         {
+        /*
             private List<State> endStates;
             private Dictionary<List<State>, int> stateMap;
             protected Dependencies() { }
@@ -155,6 +156,7 @@ namespace HSFSubsystem
 
             private static Dependencies pinstance;
             private Dictionary<Dependencies, int> pinstances;
+            */
     }
 }
 

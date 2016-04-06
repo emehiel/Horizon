@@ -6,18 +6,18 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    class Orbital_EOMS: EOMS
+    public class Orbital_EOMS: EOMS
     {
-        public double Mu { get; set; }
-        public Matrix<double> A { get; set; }
+        private double _mu;
+        private Matrix<double> _A;
 
-        public Orbital_EOMS(double Mu, Matrix<double> A)
+        public Orbital_EOMS()
         {
-            Mu = 398600.4418;
-            A = new Matrix<double>(6);
-            A[1, 4] = 1.0;
-            A[2, 5] = 1.0;
-            A[3, 6] = 1.0;
+            _mu = 398600.4418;
+            _A = new Matrix<double>(6);
+            _A[1, 4] = 1.0;
+            _A[2, 5] = 1.0;
+            _A[3, 6] = 1.0;
 
         }
 
@@ -25,14 +25,14 @@ namespace Utilities
         {
             get
             {
-                double r3 = System.Math.Pow(Matrix<double>.Norm(y[1, new MatrixIndex(1, 3)]), 3);
-                double mur3 = -Mu / r3;
+                double r3 = System.Math.Pow(Matrix<double>.Norm(y[new MatrixIndex(1, 3), 1]), 3);
+                double mur3 = -_mu / r3;
 
-                A[4, 1] = mur3;
-                A[5, 2] = mur3;
-                A[6, 3] = mur3;
+                _A[4, 1] = mur3;
+                _A[5, 2] = mur3;
+                _A[6, 3] = mur3;
 
-                Matrix<double> dy = A * y;
+                Matrix<double> dy = _A * y;
 
                 return dy;
             }

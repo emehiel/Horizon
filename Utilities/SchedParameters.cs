@@ -19,13 +19,13 @@ namespace Utilities
 
                 Console.WriteLine("Loading scheduler parameters... ");
 
-                SimStepSeconds = Convert.ToDouble(schedulerXMLNode.Attributes["simStepSeconds"]);
+                SimStepSeconds = Convert.ToDouble(schedulerXMLNode.Attributes["simStepSeconds"].Value);
                 Console.WriteLine("  Scheduler time step: {0} seconds", SimStepSeconds);
 
-                MaxNumScheds = Convert.ToInt32(schedulerXMLNode.Attributes["maxNumSchedules"]);
+                MaxNumScheds = Convert.ToInt32(schedulerXMLNode.Attributes["maxNumSchedules"].Value);
                 Console.WriteLine("  Maximum number of schedules: {0}", MaxNumScheds);
 
-                NumSchedCropTo = Convert.ToInt32(schedulerXMLNode.Attributes["numSchedCropTo"]);
+                NumSchedCropTo = Convert.ToInt32(schedulerXMLNode.Attributes["numSchedCropTo"].Value);
                 Console.WriteLine("  Number of schedules to crop to: {0}", NumSchedCropTo);
 
                 return true;

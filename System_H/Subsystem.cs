@@ -23,7 +23,7 @@ using HSFSystem;
                 throw new NotImplementedException();
             }
             public virtual bool canPerform(DynamicState oldState, DynamicState newSTate,
-                                      Task task, DynamicState position,
+                                      /*Task task,*/ DynamicState position,
                                       Universe environment,
                                       NodeDependencies dep) {
                 throw new NotImplementedException();

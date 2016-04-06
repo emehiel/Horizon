@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HSFSystem;
+using Utilities;
 
 namespace HSFScheduler
 {
@@ -16,8 +17,8 @@ namespace HSFScheduler
     {
         public Asset Asset { get; private set; }
         public Task Task { get; private set; }
-        public double AccessStart { get; private set; }
-        public double AccessEnd { get; private set; }
+        public double AccessStart { get; set; }
+        public double AccessEnd { get; set; }
 
         public Access(Asset asset, Task task)
         {
@@ -28,12 +29,12 @@ namespace HSFScheduler
         public static Stack<Access> getCurrentAccessesForAsset(Stack<Access> accesses, Asset asset, double currentTime)
         {
             Stack<Access> allAccesses = Access.getCurrentAccesses(accesses, currentTime);
-            return (Stack<Access>) allAccesses.Where(item => item.Asset == asset);
+            return new Stack<Access>(allAccesses.Where(item => item.Asset == asset));
         }
 
         public static Stack<Access> getCurrentAccesses(Stack<Access> accesses, double currentTime)
         {
-              return (Stack<Access>)accesses.Where(item => (item.AccessStart <= currentTime && item.AccessEnd >= currentTime));
+              return new Stack<Access>(accesses.Where(item => (item.AccessStart <= currentTime && item.AccessEnd >= currentTime)));
         }
 
         /// <summary>
@@ -55,13 +56,17 @@ namespace HSFScheduler
                 foreach (Task task in tasks)
                 {
                     // ...for all time....    
-                    for (double accessTime = startTime; accessTime <= endTime; accessTime += stepTime)
+                    for (double accessTime = SimParameters.SimStartSeconds; accessTime <= SimParameters.SimEndSeconds; accessTime += SchedParameters.SimStepSeconds)
                     {
                         // create a new access, or extend the access endTime if this is an update to an existing access
                         bool hasAccess = Utilities.GeometryUtilities.hasLOS(asset.AssetDynamicState.PositionECI(accessTime), task.Target.DynamicState.PositionECI(accessTime));
                         if (hasAccess)
                         {
-                            bool isNewAccess = (accessTime - accessesByAsset.Peek().AccessEnd) >= stepTime;
+                            bool isNewAccess;
+                            if (accessesByAsset.Count == 0 || accessTime == SimParameters.SimStartSeconds || accessesByAsset.Peek().Task.Target.Name != task.Target.Name)
+                                isNewAccess = true;
+                            else
+                                isNewAccess = (accessTime - accessesByAsset.Peek().AccessEnd) > SchedParameters.SimStepSeconds;
                             if (isNewAccess)
                             {
                                 Access newAccess = new Access(asset, task);
@@ -76,6 +81,11 @@ namespace HSFScheduler
                 }
             }
             return accessesByAsset;
+        }
+
+        public override string ToString()
+        {
+            return Asset.Name + "_to_" + Task.Target.Name;
         }
     }
 }

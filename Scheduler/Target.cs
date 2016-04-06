@@ -48,14 +48,18 @@ namespace HSFScheduler
         */
         public Target(XmlNode targetXmlNode)
         {
-            Name = targetXmlNode.Attributes["TargetName"].ToString();
-            string typeString = targetXmlNode.Attributes["TargetType"].ToString();
+            Name = targetXmlNode.Attributes["TargetName"].Value;
+            string typeString = targetXmlNode.Attributes["TargetType"].Value;
             Type = (TargetType)Enum.Parse(typeof(TargetType), typeString);
             DynamicState = new DynamicState(targetXmlNode["DynamicState"]);
-            Value = Convert.ToInt32(targetXmlNode.Attributes["value"]);
+            Value = Convert.ToInt32(targetXmlNode.Attributes["Value"].Value);
         }
 
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 
-    public enum TargetType { FACILITY, LOCATION }
+    public enum TargetType { FacilityTarget, LocationTarget }
 }

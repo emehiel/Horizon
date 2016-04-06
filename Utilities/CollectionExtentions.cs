@@ -41,7 +41,7 @@ namespace Utilities
                 else
                     begin = index + 1;
             }
-            return end + 1;
+            return end - 1;
         }
     }
 }

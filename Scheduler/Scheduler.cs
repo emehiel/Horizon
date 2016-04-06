@@ -41,14 +41,13 @@ namespace HSFScheduler
             _numSchedCropTo = SchedParameters.NumSchedCropTo;
         }
 
-        /*
         virtual List<SystemSchedule> generateSchedules(SystemClass system, Stack<Task> tasks, Stack<SystemState> initialStateList, Evaluator.Evaluator schedVals)
         {
-            
+
             //system.setThreadNum(1);
             //DWORD startTickCount = GetTickCount();
             //accumSchedTimeMs = 0;
-            
+
             // get the global dependencies object
             HSFSubsystem.Dependencies dependencies = HSFSubsystem.Dependencies.Instance();
 
@@ -61,17 +60,18 @@ namespace HSFScheduler
             // if all asset position types are not dynamic types, can pregenerate accesses for the simulation
             bool canPregenAccess = true;
             foreach (Asset asset in system.Assets)
-                canPregenAccess &= asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_ECI && asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_LLA;
+                canPregenAccess &= asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DynamicECI && asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DynamicLLA;
 
 
             // if accesses can be pregenerated, do it now
             Stack<Access> preGeneratedAccesses = new Stack<Access>();
+
             if (canPregenAccess)
             {
                 Console.Write("Pregenerating Accesses...");
                 //DWORD startPregenTickCount = GetTickCount();
-                
-                preGeneratedAccesses = Access.pregenerateAccesses(system, tasks, _startTime, _endTime, _stepLength);
+
+                preGeneratedAccesses = Access.pregenerateAccessesByAsset(system, tasks, _startTime, _endTime, _stepLength);
                 //DWORD endPregenTickCount = GetTickCount();
                 //pregenTimeMs = endPregenTickCount - startPregenTickCount;
                 //writeAccessReport(access_pregen, tasks); - TODO:  Finish this code - EAM
@@ -90,66 +90,73 @@ namespace HSFScheduler
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
             Stack<Access> currentAccesses = new Stack<Access>();
+            Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
             for (double currenttime = _startTime; currenttime < _endTime; currenttime += _stepLength)
             {
                 // if accesses are pregenerated, look up the access information and update assetTaskList
                 if (canPregenAccess)
                 {
                     currentAccesses = Access.getCurrentAccesses(preGeneratedAccesses, currenttime);
-                    assetTaskList = genExhaustiveSystemSchedules(assetTasks);
+                    scheduleCombos = generateExhaustiveSystemSchedules(assetTasks);
                 }
 
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
-                if (systemSchedules.Count >_maxNumSchedules)
+                if (systemSchedules.Count > _maxNumSchedules)
                     cropSchedules(systemSchedules, schedVals, emptySchedule);
 
                 // Create a new system schedule list by adding each of the new Task commands for the Assets onto each of the old schedules
                 List<SystemSchedule> newSysScheds = new List<SystemSchedule>();
                 for (list<systemSchedule*>::iterator oldSchedIt = systemSchedules.begin(); oldSchedIt != systemSchedules.end(); oldSchedIt++)
+                { 
+                    for (vector < vector <const Task*> >::const_iterator newTaskListIt = scheduleCombos.begin(); newTaskListIt != scheduleCombos.end(); newTaskListIt++)
+                    {
+                        // Checks whether the System is allowed to perform the Task again and the Tasks are scheduled after the previous Events end
+                        if ((*oldSchedIt)->canAddTasks(*newTaskListIt, currenttime))
+                        {
+                            // Creates new systemSchedule based on previous systemSchedule and new Event list
+                            newSysScheds.push_back(new systemSchedule(*oldSchedIt, *newTaskListIt, currenttime));
+                        }
+                    }
+
+
+
+            // Start timing
+            //DWORD startAccumCount = GetTickCount();
+
+            // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
+            /// \todo TODO: Parallelize this.
+
+            Stack<bool> systemCanPerformList;
+            for (list<systemSchedule*>::iterator newSchedIt = newSysScheds.begin(); newSchedIt != newSysScheds.end(); newSchedIt++)
+            {
+                //dependencies->updateStates(1, (*newSchedIt)->getEndStates());
+                //dependencies->setThreadState(1);
+                dependencies->updateStates((*newSchedIt)->getEndStates());
+                systemCanPerformList.push_back(system.canPerform(*newSchedIt));
+            }
+
+            // End timing
+            //DWORD endAccumCount = GetTickCount();
+            //accumSchedTimeMs += endAccumCount - startAccumCount;
+
+            // delete systemSchedules (and corresponding lower level classes) that are not possible
+            list<systemSchedule*>::iterator eraseIt = newSysScheds.begin();
+            for (vector<bool>::iterator successIt = systemCanPerformList.begin(); successIt != systemCanPerformList.end(); successIt++)
+            {
+                if (*successIt) { eraseIt++; }
+                else
                 {
-                    for (vector < vector <const Task*> >::const_iterator newTaskListIt = assetTaskList.begin(); newTaskListIt != assetTaskList.end(); newTaskListIt++) {
-                // Checks whether the System is allowed to perform the Task again and the Tasks are scheduled after the previous Events end
-                if ((*oldSchedIt)->canAddTasks(*newTaskListIt, currenttime))
-                {
-                    // Creates new systemSchedule based on previous systemSchedule and new Event list
-                    newSysScheds.push_back(new systemSchedule(*oldSchedIt, *newTaskListIt, currenttime));
+                    delete* eraseIt;
+                    eraseIt = newSysScheds.erase(eraseIt);
                 }
             }
+
+            // Merge old and new systemSchedules
+            sysScheds.insert(sysScheds.begin(), newSysScheds.begin(), newSysScheds.end());
+
+            // Print completion percentage in command window
+            printf("Scheduler Status: %4.2f%% done; %i schedules generated.\r", 100 * currenttime / endTime, sysScheds.size());
         }
-
-        // Start timing
-        DWORD startAccumCount = GetTickCount();
-
-        // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
-        /// \todo TODO: Parallelize this.
-        vector<bool> systemCanPerformList;
-		for(list<systemSchedule*>::iterator newSchedIt = newSysScheds.begin(); newSchedIt != newSysScheds.end(); newSchedIt++) {
-			//dependencies->updateStates(1, (*newSchedIt)->getEndStates());
-			//dependencies->setThreadState(1);
-			dependencies->updateStates((*newSchedIt)->getEndStates());
-			systemCanPerformList.push_back(system.canPerform(*newSchedIt));
-		}
-
-    // End timing
-    DWORD endAccumCount = GetTickCount();
-    accumSchedTimeMs += endAccumCount - startAccumCount;
-
-		// delete systemSchedules (and corresponding lower level classes) that are not possible
-		list<systemSchedule*>::iterator eraseIt = newSysScheds.begin();
-		for(vector<bool>::iterator successIt = systemCanPerformList.begin(); successIt != systemCanPerformList.end(); successIt++) {
-			if(* successIt) {eraseIt++;}
-			else {
-				delete* eraseIt;
-eraseIt = newSysScheds.erase(eraseIt);
-			}
-		}
-
-		// Merge old and new systemSchedules
-		sysScheds.insert(sysScheds.begin(), newSysScheds.begin(), newSysScheds.end());
-
-        // Print completion percentage in command window
-        printf("Scheduler Status: %4.2f%% done; %i schedules generated.\r", 100*currenttime/endTime, sysScheds.size());
-	}
 
     cropSchedules(sysScheds, schedVals);
 
@@ -162,10 +169,10 @@ eraseIt = newSysScheds.erase(eraseIt);
 		for(vector<SubsystemNode*>::const_iterator subNodeIt = system.getSubsystemNodes().begin(); subNodeIt !=system.getSubsystemNodes().end(); subNodeIt++)
 			(* subNodeIt)->reset();
 
-size_t subAssetNum;
+        size_t subAssetNum;
 		for(vector<SubsystemNode*>::const_iterator subNodeIt = system.getSubsystemNodes().begin(); subNodeIt != system.getSubsystemNodes().end(); subNodeIt++) {
 			subAssetNum = (* subNodeIt)->getAssetNum();
-canExtendUntilEnd &= (** subNodeIt).canPerform((*schedIt)->getSubNewState(subAssetNum), (* schedIt)->getSubNewTask(subAssetNum), system.getEnvironment(), endTime, true);
+        canExtendUntilEnd &= (** subNodeIt).canPerform((*schedIt)->getSubNewState(subAssetNum), (* schedIt)->getSubNewTask(subAssetNum), system.getEnvironment(), endTime, true);
 		}
 		// Iterate through constraints
 		for(vector<const Constraint*>::const_iterator constraintIt = system.getConstraints().begin(); constraintIt != system.getConstraints().end(); constraintIt++)
@@ -185,7 +192,6 @@ totalTimeMs = endTickCount - startTickCount;
 
 	return sysScheds;
         }
-    
 
         /*
         void cropSchedules(list<systemSchedule*>& schedsToCrop, const ScheduleEvaluator* schedVals, systemSchedule* emptySched = 0);
@@ -193,17 +199,15 @@ totalTimeMs = endTickCount - startTickCount;
 	void writeAccessReport(vector<vector<map<double, bool>>>& access_pregen, vector<const Task*>& tasks);
     */
 
-        // Return all possible combinations of performing Tasks by Asset
-        Stack<Stack<Access>> generateExhaustiveSystemSchedules(Stack<Access> currentAccess, SystemClass system, double currentTime)
+        // Return all possible combinations of performing Tasks by Asset at current simulation time
+        public static Stack<Stack<Access>> generateExhaustiveSystemSchedules(Stack<Access> currentAccess, SystemClass system, double currentTime)
         {
             // A stack of accesses stacked by asset
-            Stack<Stack<Access>> accessesByAsset = new Stack<Stack<Access>>();
+            Stack<Stack<Access>> currentAccessesByAsset = new Stack<Stack<Access>>();
             foreach (Asset asset in system.Assets)
-                accessesByAsset.Push(Access.getCurrentAccessesForAsset(currentAccess, asset, currentTime));
+                currentAccessesByAsset.Push(Access.getCurrentAccessesForAsset(currentAccess, asset, currentTime));
 
-            accessesByAsset.CartesianProduct();
-
-            return (Stack<Stack<Access>>)accessesByAsset.CartesianProduct();
+            return (Stack<Stack<Access>>)currentAccessesByAsset.CartesianProduct();
 
         }
     }

@@ -34,7 +34,7 @@ namespace HSFSystem
             Environment = copy.Environment;
             ThreadNum = copy.ThreadNum;
         }
-        
+        /*
         public bool canPerform(SystemSchedule sysSched){
             // Iterate through Subsystem Nodes and set that they havent run
             foreach (SubsystemNode subNodeIt in SubsystemNodes){

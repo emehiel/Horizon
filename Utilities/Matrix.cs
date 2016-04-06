@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
+using System.Xml;
 
 namespace Utilities
 {
@@ -181,7 +182,7 @@ namespace Utilities
         /// <summary>
         /// Creates a new Matrix<double> from a string representing the Matrix<double>
         /// </summary>
-        /// <param name="MatrixString">A string representing the Matrix<double> elements.  Use Matlab format</param>
+        /// <param name="MatrixString">A string representing the Matrix<double> elements.</param>
         public Matrix(string MatrixString)
         {
             string[] rows = MatrixString.Split(';');
@@ -208,10 +209,25 @@ namespace Utilities
                 
         }
 
+        public Matrix(XmlNode matrixXmlNode)
+        {
+            NumRows = Convert.ToInt32(matrixXmlNode.Attributes["NumRows"].Value);
+            NumCols = Convert.ToInt32(matrixXmlNode.Attributes["NumCols"].Value);
+            string[] elementStrings = matrixXmlNode.Attributes["_elements"].Value.Split(',');
+
+            _elements = new List<List<T>>(NumRows);
+            for (int r = 0; r < NumRows; r++)
+            {
+                _elements.Add(new List<T>(NumCols));
+                for (int c = 0; c < NumCols; c++)
+                    _elements[r].Add((T)Convert.ChangeType(elementStrings[c + r * NumCols], typeof(T)));
+            }
+
+        }
         #endregion
 
         #region Overrrides
-
+        // TOD) (Eric):  This should match the constructor based on a string...
         /// <summary>
         /// Converts a Matrix<T> to a string
         /// </summary>

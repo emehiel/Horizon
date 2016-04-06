@@ -38,6 +38,11 @@ namespace HSFScheduler
             MaxTimesToPerform = maxTimesToPerform;
         }
 
+        public override string ToString()
+        {
+            return Target.Name;
+        }
+
     }
 
     public enum taskType { EMPTY, COMM, IMAGING }

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Utilities;
-//using HSFScheduler;
+using HSFScheduler;
+using System;
 
 namespace HSFSubsystem
 {
@@ -42,17 +43,46 @@ namespace HSFSubsystem
      * @author Cory O'Connor
      * @author Travis Lockyer
      */
-
-        public class Dependencies
+    //a singleton class
+    public class Dependencies
+    {
+        //TODO(MORGAN): Make sure dependency can be singleton if it has these endstates and stateMap fields
+        static Dependencies _instance = null;
+        private List<State> endStates;
+        //private Dictionary<List<State>, int> stateMap;
+        private Dictionary<string, Delegate> DependencyFunctions;
+        private Dependencies()
         {
-        /*
-            private List<State> endStates;
-            private Dictionary<List<State>, int> stateMap;
-            protected Dependencies() { }
-            protected Dependencies(Dependencies dep) { }
+            DependencyFunctions = new Dictionary<string, Delegate>();
+        }
+        public static Dependencies Instance
+        {
+            get
+            {
+                if(_instance == null)
+                {
+                    _instance = new Dependencies();
+                }
+                return _instance;
+            }
+        }
+
+        public void Add(string callKey, Delegate func)
+        {
+            DependencyFunctions.Add(callKey, func);
+        }
+        public Delegate getDependencyFunc(string callKey)
+        {
+            Delegate ret;
+            if(DependencyFunctions.TryGetValue(callKey, out ret))
+                return ret;
+            throw new KeyNotFoundException();
+        }
         //------------------------------------------------------------------------------------------------
         //--------------------------------- DECLARE DEPENDENCY COLLECTORS --------------------------------
         //------------------------------------------------------------------------------------------------
+        /*Morgan Doesn't like this. This needs to be rethought out.
+        Dependency collectors just need to cast to right type and accumulate if necessary
 
             public HSFProfile<double> Asset1_SSDRSUB_getNewDataProfile()
             {
@@ -92,10 +122,12 @@ namespace HSFSubsystem
                 HSFProfile<double> prof4 = POWERSUB_PowerProfile_COMMSUB(state);
                 return (prof1 + prof2 + prof3 + prof4);
             }
-
+            */
             //------------------------------------------------------------------------------------------------
             //--------------------------------- DECLARE DEPENDENCY FUNCTIONS ---------------------------------
             //------------------------------------------------------------------------------------------------
+            /* Morgan Doesn't like this. This should be rethought
+            define dependency functions in their respective classes and subsystems add them so subsystemNode, subsystemNode adds to Dependency dictionary in this class
             public HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(State state)
             {
                 StateVarKey<double> EOSENSORDATA(STATEVARNAME_PIXELS);
@@ -155,7 +187,7 @@ namespace HSFSubsystem
             //   public void updateStates(int thread, const List<State> newStates) { }
 
             private static Dependencies pinstance;
-            private Dictionary<Dependencies, int> pinstances;
+            private Dictionary<Dependencies, int> pinstances
             */
     }
 }

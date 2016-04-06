@@ -8,13 +8,13 @@ namespace HSFSystem
     public class SystemClass
     {
         public List<Asset> Assets{get; private set;}
-        public Stack<SubsystemNode> SubsystemNodes{get; private set;}
+        public List<SubsystemNode> SubsystemNodes{get; private set;}
         public Stack<Constraint> Constraints{get; private set;}
         public HSFUniverse.Universe Environment{get; private set;}
         public int ThreadNum{get; private set;}
 
         
-        public SystemClass(List<Asset> assets, Stack<SubsystemNode> subsystems,
+        public SystemClass(List<Asset> assets, List<SubsystemNode> subsystems,
                          Stack<Constraint> constraints, HSFUniverse.Universe environment){
             Assets = assets;
             SubsystemNodes = subsystems;
@@ -22,7 +22,7 @@ namespace HSFSystem
             Environment = environment;
             foreach (SubsystemNode nIt in subsystems)
             {
-                SubsystemNodes.Push(nIt);
+                SubsystemNodes.Add(nIt);
             }
         }
         
@@ -65,15 +65,15 @@ namespace HSFSystem
             return hasCircDep;
         }
  
-        private bool checkSubs(Stack<SubsystemNode> subNodeList, 
+        private bool checkSubs(List<SubsystemNode> subNodeList, 
                                SystemSchedule sySched, bool mustEvaluate){
             int subAssetNum;
             foreach(SubsystemNode subNodeIt in subNodeList){
                 subAssetNum = subNodeIt.NAsset;
-                if(subNodeIt.canPerform(sysSched.getSubNewState(subAssetNum),
-                                        sysSched.getSubNewTask(subAssetNum), 
-                                        environment, 
-                                        sysSched.getLatTastStart(),
+                if(subNodeIt.canPerform(sySched.getSubNewState(subAssetNum),
+                                        sySched.getSubNewTask(subAssetNum), 
+                                        Environment, 
+                                        sySched.getLastTaskStart(),
                                         mustEvaluate))
                     return false;
             }

@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using Utilities;
-using HSFScheduler;
 using System;
+using MissionElements;
 
-namespace HSFSubsystem
+namespace HSFSystem
 {
 
     /**
@@ -48,7 +48,7 @@ namespace HSFSubsystem
     {
         //TODO(MORGAN): Make sure dependency can be singleton if it has these endstates and stateMap fields
         static Dependencies _instance = null;
-        private List<State> endStates;
+        private List<SystemState> endStates;
         //private Dictionary<List<State>, int> stateMap;
         private Dictionary<string, Delegate> DependencyFunctions;
         private Dependencies()

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using Utilities;
 using HSFSystem;
 using UserModel;
-using HSFScheduler;
 using HSFUniverse;
+using MissionElements;
 
 //namespace HSFSystem
 //{
@@ -15,14 +15,13 @@ namespace HSFSubsystem
         public bool IsChecked { get; private set; }
   //      public bool ScriptingEnabled { get; private set; }
         public Subsystem Subsystem { get; private set; }
-        public Asset SubsystemAsset { get; private set; }
+        public Asset SubsystemAsset { get; private set; } //to get postion because Asset hold position of a group of subsystems
         public int NAsset { get; private set; }
         public List<SubsystemNode> PreceedingNodes { get; private set; }
         public PythonState PyState;
-      //  public NodeDependencies SubsystemDependencies { get; set; }
+        //  public NodeDependencies SubsystemDependencies { get; set; }
 
         #region Constructors
-
         public SubsystemNode(Subsystem subsystem, Asset asset, Dependencies dependencies)
         {
             Subsystem = subsystem;
@@ -87,7 +86,7 @@ namespace HSFSubsystem
             throw new NotImplementedException();
         }
 #endregion GettersAndSetters
-        public bool canPerform(State newState, Task task, Universe environment, double evalToTime, bool mustEvaluate, Dependencies dep)
+        public bool canPerform(SystemState newState, Task task, Universe environment, double evalToTime, bool mustEvaluate, Dependencies dep)
             {
             //TODO: Make sure to go backwards through tree
                 foreach (SubsystemNode nodeIt in PreceedingNodes)
@@ -103,12 +102,12 @@ namespace HSFSubsystem
                     IsChecked = true;
                     if (newState.TaskStart >= evalToTime && task != null)
                     {
-                        return Subsystem.canPerform(newState.Previous, newState, task, SubsystemAsset.AssetPosition, environment, dep);
+                        return Subsystem.canPerform(newState.Previous, newState, task, SubsystemAsset.AssetDynamicState, environment, dep);
                     }
                     else
                     {
                         if (mustEvaluate)
-                            return Subsystem.canExtend(newState, SubsystemAsset.AssetPosition, environment, evalToTime, dep);
+                            return Subsystem.canExtend(newState, SubsystemAsset.AssetDynamicState, environment, evalToTime, dep);
                         else
                             return true;
                     }

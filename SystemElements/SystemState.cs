@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 
-namespace HSFScheduler
+namespace MissionElements
 {
     public class SystemState
     {

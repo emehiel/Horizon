@@ -62,6 +62,10 @@
       <Project>{241171ab-18b2-45a0-848a-62b2ef751644}</Project>
       <Name>HSFScheduler</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SystemElements\MissionElements.csproj">
+      <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
+      <Name>MissionElements</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Universe\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
       <Name>HSFUniverse</Name>

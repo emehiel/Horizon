@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Utilities;
-using HSFScheduler;
 using HSFUniverse;
 using HSFSystem;
+using MissionElements;
     namespace HSFSubsystem
     {
         public abstract class Subsystem {
@@ -22,11 +22,11 @@ using HSFSystem;
         public virtual Subsystem clone() {
             throw new NotImplementedException();
         }
-        public abstract bool canPerform(State oldState, State newSTate,
+        public abstract bool canPerform(SystemState oldState, SystemState newSTate,
                                   Task task, DynamicState position,
                                   Universe environment,
                                   Dependencies dep);
-        public abstract bool canExtend(State newState, DynamicState position, Universe environment, double evalToTime,
+        public abstract bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime,
                                 Dependencies dep);
 
         void addKey(StateVarKey<int> keyIn) {

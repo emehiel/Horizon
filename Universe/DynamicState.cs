@@ -55,7 +55,7 @@ namespace HSFUniverse
             _stateData = new SortedList<double, Matrix<double>>();
             _stateData.Add(0.0, ics);
 
-            if (!(Type == DynamicStateType.StaticLLA || Type == DynamicStateType.StaticECI))
+            if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
             {
                 // I think this should be a constructor...  The EOMS should be some sort of delegate function which can be generated from the xml...
                 //_eoms = createEOMSObject(dynamicStateXMLNode["EOMS"]);
@@ -169,16 +169,16 @@ namespace HSFUniverse
             get
             {
                 
-                if (Type == DynamicStateType.StaticLLA)
+                if (Type == DynamicStateType.STATIC_LLA)
                 {
                     // Set the JD associated with simTime
                     double JD = simTime / 86400.0 + SimParameters.SimStartJD;
                     return GeometryUtilities.LLA2ECI(InitialConditions(), JD);
                 }
 
-                else if (Type == DynamicStateType.StaticECI)
+                else if (Type == DynamicStateType.STATIC_ECI)
                     return InitialConditions();
-                else if (Type == DynamicStateType.PredeterminedECI || Type == DynamicStateType.PredeterminedLLA)
+                else if (Type == DynamicStateType.PREDETERMINED_ECI || Type == DynamicStateType.PREDETERMINED_LLA)
                 {
                     bool hasNotPropagated = _stateData.Count() == 1;
                     if (hasNotPropagated)
@@ -222,6 +222,6 @@ namespace HSFUniverse
         }
     }
 
-    public enum DynamicStateType { StaticLLA, StaticECI, PredeterminedLLA, PredeterminedECI, DynamicLLA, DynamicECI };
+    public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
     public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };
 }

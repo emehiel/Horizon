@@ -6,6 +6,8 @@ using System.Xml;
 using HSFScheduler;
 //using HSFSystem;
 using Utilities;
+using MissionElements;
+using UserModel;
 
 namespace Horizon
 {
@@ -15,11 +17,11 @@ namespace Horizon
         {
             // Get the input filenames
             //string simulationInputFilePath = args[1];
-            //string targetDeckFileName = args[2];
+            //string targetDeckFilePath = args[2];
             //string modelInputFileName = args[3];
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
-           
+            var targetDeckFilePath = ;
             // Initialize critical section for dependencies ??Morgan Doesn't know what this does
             // InitializeCriticalSection(&horizon::sub::dep::NodeDependencies::cs);
 
@@ -47,14 +49,21 @@ namespace Horizon
             bool paramsLoaded = SchedParameters.LoadSchedParameters(schedParametersXMLNode);
             Scheduler systemScheduler = new Scheduler();
             //MultiThreadedScheduler* systemScheduler = new MultiThreadedScheduler;
-            Console.ReadKey();
 
-            /*
+
+
             // Load the target deck into the targets list from the XML target deck input file
-            XMLNode targetDeckXMLNode = XMLNode::openFileHelper(targetDeckFileName.c_str(), "TARGETDECK");
-            vector <const Task*> *systemTasks = new vector<const Task*>;
-            bool targetsLoaded = loadTargetsIntoTaskList(targetDeckXMLNode, systemTasks);
-
+          //  var XmlDoc = new XmlDocument();
+            XmlDoc.Load(targetDeckFilePath);
+            XmlNodeList targetDeckXMLNodeList = XmlDoc.GetElementsByTagName("TARGETDECK");
+            XmlEnum = targetDeckXMLNodeList.GetEnumerator();
+            XmlEnum.MoveNext();
+            var targetDeckXMLNode = (XmlNode)XmlEnum.Current;
+            List<Task> systemTasks = new List<Task>();
+          //TODO:Morgan  bool targetsLoaded = loadTargetsIntoTaskList(targetDeckXMLNode, systemTasks);
+            Console.WriteLine("  Initial states set");
+            Console.ReadKey();
+            /*
             // Find the main model node from the XML model input file
             XMLNode modelInputXMLNode = XMLNode::openFileHelper(modelInputFileName.c_str(), "MODEL");
 

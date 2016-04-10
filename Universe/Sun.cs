@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Utilities;
-using IO;
+using UserModel;
 /**
 * Creates a Sun model able to compute the Sun Vector to the Earth as well as 
 * determining whether the spacecraft is in the shadow of the Earth.
@@ -61,7 +61,7 @@ namespace HSFUniverse
 
             Matrix<double> RSun = new Matrix<double>(3, 1, 0.0);
             double eclLong, meanLongSun, MASun, obl, rSun, TUt1, TTdb;
-            double JDUt1 = (simTime / 86400) + SimParams.simStart_JD;
+            double JDUt1 = (simTime / 86400) + SimParameters.SimStartJD;
 
             const double aU = 149597870.0;
             const double rad = Math.PI / 180;

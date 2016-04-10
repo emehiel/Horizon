@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml;
 using Utilities;
+using UserModel;
 
 namespace HSFUniverse
 {
@@ -222,6 +223,7 @@ namespace HSFUniverse
         }
     }
 
+   
     public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
     public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };
 }

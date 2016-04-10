@@ -47,6 +47,10 @@
     <Compile Include="Task.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\IO\UserModel.csproj">
+      <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
+      <Name>UserModel</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Universe\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
       <Name>HSFUniverse</Name>

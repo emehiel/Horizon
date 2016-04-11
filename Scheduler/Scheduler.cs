@@ -40,8 +40,8 @@ namespace HSFScheduler
             _maxNumSchedules = SchedParameters.MaxNumScheds;
             _numSchedCropTo = SchedParameters.NumSchedCropTo;
         }
-
-        virtual List<SystemSchedule> generateSchedules(SystemClass system, Stack<Task> tasks, Stack<SystemState> initialStateList, Evaluator.Evaluator schedVals)
+        /*
+        public virtual List<SystemSchedule> generateSchedules(SystemClass system, Stack<Task> tasks, Stack<SystemState> initialStateList, Evaluator.Evaluator schedVals)
         {
 
             //system.setThreadNum(1);
@@ -119,7 +119,7 @@ namespace HSFScheduler
                     }
 
 
-
+/*
             // Start timing
             //DWORD startAccumCount = GetTickCount();
 

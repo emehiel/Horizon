@@ -12,7 +12,8 @@ namespace UniverseUnitTest
         public void PositionECIUnitTest()
         {
             StateSpace_EOMS msd = new StateSpace_EOMS();
-            DynamicState dynamicState = new DynamicState(DynamicStateType.PREDETERMINED_ECI, msd);
+            var initialConditions = new Matrix<double>();
+            DynamicState dynamicState = new DynamicState(DynamicStateType.PREDETERMINED_ECI, msd, initialConditions);
         }
     }
 }

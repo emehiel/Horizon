@@ -58,8 +58,6 @@
     <Compile Include="Orbital_EOMS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Quat.cs" />
-    <Compile Include="SchedParameters.cs" />
-    <Compile Include="SimParameters.cs" />
     <Compile Include="StateSpace_EOMS.cs" />
     <Compile Include="StateVarKey.cs" />
   </ItemGroup>

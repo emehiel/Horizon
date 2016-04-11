@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Xml;
 using Utilities;
 using HSFUniverse;
-using HSFScheduler;
+using MissionElements;
 
 namespace HSFSchedulerUnitTest
 {

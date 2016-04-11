@@ -8,11 +8,6 @@ namespace HSFSystem
         //List of subsystem nodes on which the Constraint operates
         public List<SubsystemNode> SubsystemNodes{get; private set;}
 
-        public void addConstrainedSubNode(SubsystemNode node){
-            SubsystemNodes.Add(node);
-        }
-
-
         public void AddConstrainedSubNode(SubsystemNode node)
         {
             SubsystemNodes.Add(node);

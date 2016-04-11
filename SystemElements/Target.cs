@@ -7,7 +7,7 @@ using System.Xml;
 using HSFUniverse;
 
 
-namespace HSFScheduler
+namespace MissionElements
 {
     /**
     * A named location denoting where a task is to be performed.

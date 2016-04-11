@@ -47,11 +47,12 @@
     <Compile Include="Evaluator.cs" />
     <Compile Include="Scheduler.cs" />
     <Compile Include="SystemSchedule.cs" />
-    <Compile Include="SystemState.cs" />
-    <Compile Include="Target.cs" />
-    <Compile Include="Task.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SystemElements\MissionElements.csproj">
+      <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
+      <Name>MissionElements</Name>
+    </ProjectReference>
     <ProjectReference Include="..\System_H\HSFSystem.csproj">
       <Project>{72fa2884-1d92-4088-9fac-60564f9971f8}</Project>
       <Name>HSFSystem</Name>

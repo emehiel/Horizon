@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Xml;
 
-namespace Utilities
+namespace UserModel
 {
     public static class SchedParameters
     {

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Utilities;
+using MissionElements;
 
 namespace HSFScheduler
 {

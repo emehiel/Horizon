@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Utilities;
+using System.Xml;
+using UserModel;
 
-namespace HSFScheduler
+namespace MissionElements
 {
     public class SystemState
     {
@@ -549,6 +551,74 @@ namespace HSFScheduler
                 Mdata.Add(key, profIn);
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
+        }
+        public static bool setInitialSystemState(XmlNode modelInputXMLNode, List<SystemState> initialStateList)
+        {
+            Console.WriteLine("Setting initial state... ");
+            // Set up Subsystem Nodes, first loop through the assets in the XML model input file
+            //int n = modelInputXMLNode.ChildNode("ASSET");
+            foreach (XmlNode assetNode in modelInputXMLNode["ASSET"].ChildNodes)
+            {
+                // Get the current Asset XML Node, create a new State corresponding to this Asset
+                SystemState state = new SystemState();
+                // Loop through all the of the Subsystems for this Asset
+                foreach (XmlNode subNode in assetNode["SUBSYSTEM"].ChildNodes)
+                {
+                    // Loop through all the IC's in the current Subsystem XML Node, determine their type
+                    // create the StateVarKey for it, and add the IC to the initial state
+                    foreach (XmlNode ICNode in subNode["IC"].ChildNodes)
+                    {
+                        string type = ICNode.Attributes["type"].ToString();
+                        string key = ICNode.Attributes["key"].ToString();
+                        if (type.Equals("Int"))
+                        {
+                            int val;
+                            Int32.TryParse(ICNode.Attributes["value"].ToString(), out val);
+                            StateVarKey<int> svk = new StateVarKey<int>(key);
+                            state.addValue(svk, new KeyValuePair<double, int>(SimParameters.SimStartSeconds, val));
+                        }
+                        else if (type.Equals("Float"))
+                        {
+                            float val;
+                            float.TryParse(ICNode.Attributes["value"].ToString(), out val);
+                            StateVarKey<double> svk = new StateVarKey<double>(key);
+                            state.addValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
+                        }
+                        //else if (type.Equals("Double"))
+                        //{
+                        //    double val;
+                        //    Double.TryParse(ICNode.Attributes["value"].ToString(), out val);
+                        //    StateVarKey<float> svk = new StateVarKey<float>(key);
+                        //    state.addValue(svk, new KeyValuePair<double, float>(SimParameters.SimStartSeconds, val));
+                        //}
+                        else if (type.Equals("Bool"))
+                        {
+                            string val = ICNode.Attributes["value"].ToString();
+                            bool val_ = false;
+                            if (val.Equals("True")|| val.Equals("1"))
+                                val_ = true;
+                            StateVarKey<bool> svk = new StateVarKey<bool>(key);
+                            state.addValue(svk, new KeyValuePair<double, bool>(SimParameters.SimStartSeconds, val_));
+                        }
+                        else if (type.Equals("Matrix"))
+                        {
+                            Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"]);
+                            StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(key);
+                            state.addValue(svk, new KeyValuePair<double, Matrix<double>>(SimParameters.SimStartSeconds, val));
+                        }
+                        else if (type.Equals("Quat"))
+                        {
+                            // Quaternions still need an initializer from a string, like Matrices
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
+                initialStateList.Add(state);
+            }
+
+            return true;
         }
     }
 }

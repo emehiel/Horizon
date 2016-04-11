@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 
-namespace HSFScheduler
+namespace MissionElements
 {
     /// <summary>
     /// An action to be performed at a target, with limitations and suggestions for scheduling.

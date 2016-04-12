@@ -98,7 +98,7 @@ namespace HSFSchedulerUnitTest
             //public static Stack<Access> getCurrentAccessesForAsset(Stack<Access> accesses, Asset asset, double currentTime)
             Stack<Access> allCurrentAccesses = new Stack<Access>(accessesByAsset.Where(item => (item.AccessStart <= currentTime && item.AccessEnd >= currentTime)));
 
-
+          
 
             //Stack<Stack<Access>> generateExhaustiveSystemSchedules(Stack<Access> currentAccess, SystemClass system, double currentTime)
             Stack<Stack<Access>> currentAccessesByAsset = new Stack<Stack<Access>>();

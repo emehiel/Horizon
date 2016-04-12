@@ -71,6 +71,12 @@
   <ItemGroup>
     <Folder Include="bin\Release\" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IO\UserModel.csproj">
+      <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
+      <Name>UserModel</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

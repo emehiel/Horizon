@@ -11,7 +11,7 @@ using UserModel;
 
 namespace Horizon
 {
-    public class Program
+    class Program
     {
         static void Main(string[] args)
         {
@@ -21,7 +21,7 @@ namespace Horizon
             //string modelInputFileName = args[3];
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
-            var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
+            var targetDeckFilePath = "";
             // Initialize critical section for dependencies ??Morgan Doesn't know what this does
             // InitializeCriticalSection(&horizon::sub::dep::NodeDependencies::cs);
 

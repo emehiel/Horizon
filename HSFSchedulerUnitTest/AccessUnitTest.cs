@@ -6,6 +6,7 @@ using System.Xml;
 using Utilities;
 using HSFUniverse;
 using MissionElements;
+using UserModel;
 
 namespace HSFSchedulerUnitTest
 {

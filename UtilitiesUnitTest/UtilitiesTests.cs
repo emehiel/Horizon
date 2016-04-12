@@ -1,25 +1,25 @@
 ﻿using System; 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Utilities;
-
+using System.Xml;
 
 namespace UtilitiesUnitTest
 { 
    [TestClass] 
    public class UtilitiesTests
-    { 
-        //[TestMethod] 
-        //public void IntegratorTest()
-        //{
-        //    StateSpace_EOMS dynamics = new StateSpace_EOMS();
-        //    Matrix<double> tspan = new Matrix<double>(new double[1, 2] { { 0, 20 } });
-        //    Matrix<double> y0 = new Matrix<double>(new double[2, 1] { { 1 }, { 0 } });
-        //    Matrix<double> result = Integrator.RK45(dynamics, tspan, y0);
+    {
+        [TestMethod]
+        public void IntegratorTest()
+        {
+            StateSpace_EOMS dynamics = new StateSpace_EOMS();
+            Matrix<double> tspan = new Matrix<double>(new double[1, 2] { { 0, 20 } });
+            Matrix<double> y0 = new Matrix<double>(new double[2, 1] { { 1 }, { 0 } });
+            Matrix<double> result = Integrator.RK45(dynamics, tspan, y0);
 
-        //    System.IO.File.WriteAllText("integratorOut.txt", result.ToString());
-            
-        //    Console.ReadLine();
-        //}
+            System.IO.File.WriteAllText("integratorOut.txt", result.ToString());
+
+            Console.ReadLine();
+        }
 
         [TestMethod]
         public void MatrixCatTest()
@@ -31,13 +31,13 @@ namespace UtilitiesUnitTest
 
         }
 
-        //[TestMethod]
-        //public void MatrixCumProdTest()
-        //{
-        //    Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
+        [TestMethod]
+        public void MatrixCumProdTest()
+        {
+            Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
 
-        //    Matrix<double> B = Matrix<double>.Cumprod(A);
-        //}
+            Matrix<double> B = Matrix<double>.Cumprod(A);
+        }
 
         [TestMethod]
         public void DeepCopyTest()

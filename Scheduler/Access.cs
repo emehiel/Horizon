@@ -5,6 +5,7 @@ using System.Text;
 using HSFSystem;
 using Utilities;
 using MissionElements;
+using UserModel;
 
 namespace HSFScheduler
 {

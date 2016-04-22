@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Utilities;
 using MissionElements;
 
@@ -18,44 +20,45 @@ namespace HSFScheduler
             }
         }
 
-        public SystemSchedule(SystemSchedule oldSchedule, List<Task> newTaskList, double newTaskStartTime)
+        public SystemSchedule(SystemSchedule oldSchedule, Stack<Access> newAccessList, double newTaskStartTime)
         {
-            int i = 0; //need a double iterator
-            foreach(AssetSchedule asIt in oldSchedule.AssetScheds)
+            // TODO (EAM):  Changed this so we need to double check/test
+            //int i = 0; //need a double iterator
+            foreach(var assetSchedAccess in oldSchedule.AssetScheds.Zip(newAccessList, Tuple.Create))
             {
-                Task tIt = newTaskList[i];
-                if (tIt == null)
+                Task task = assetSchedAccess.Item2.Task;
+                if (task != null)
                 {
-                    Event eventToAdd = new Event(tIt, new SystemState(asIt.getLastState(), newTaskStartTime));
-                    AssetScheds.Add(new AssetSchedule(asIt, eventToAdd));
+                    Event eventToAdd = new Event(task, new SystemState(assetSchedAccess.Item1.getLastState(), newTaskStartTime));
+                    AssetScheds.Add(new AssetSchedule(assetSchedAccess.Item1, eventToAdd));
                     //TODO: double check c# implementation above
                    // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
                    // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
                 }
                 else
-                    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(asIt));
+                    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(assetSchedAccess.I));
                 i++;
             }
             
         }
 
-        public bool canAddTasks(Stack<Task> newTaskList, double newTaskStartTime)
+        public bool canAddTasks(Stack<Access> newAccessList, double newTaskStartTime)
         {
             int count = 0;
             // vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
-            int asIt2 = 0;
-	        foreach( Task tIt in newTaskList) {
-		        if(tIt != null)
+            //int asIt2 = 0;
+	        foreach(var accessAssetSched in newAccessList.Zip(AssetScheds, Tuple.Create) {
+		        if(accessAssetSched.Item1 != null)
                 {
-			        foreach(AssetSchedule asIt in AssetScheds)
+			        foreach(var assetSchedule in AssetScheds)
                     {
-				        count += asIt.timesCompletedTask(tIt);
+				        count += assetSchedule.timesCompletedTask(accessAssetSched.Item1.Task);
                     }
-			        if(count >= tIt.MaxTimesToPerform)
+			        if(count >= accessAssetSched.Item1.Task.MaxTimesToPerform)
 				        return false;
-			        if(!AssetScheds[asIt2].isEmpty())
+			        if(!accessAssetSched.Item2.isEmpty())
                     {
-				        if(AssetScheds[asIt2].getLastState().EventEnd > newTaskStartTime)
+				        if(accessAssetSched.Item2.getLastState().EventEnd > newTaskStartTime)
 					        return false;
 			        }
 		        }

@@ -51,7 +51,7 @@ namespace HSFScheduler
             //accumSchedTimeMs = 0;
 
             // get the global dependencies object
-            Dependencies dependencies = new Dependencies().Instance();
+            //Dependencies dependencies = new Dependencies().Instance();
 
             Console.WriteLine("SIMULATING... ");
             // Create empty systemSchedule with initial state set
@@ -67,6 +67,7 @@ namespace HSFScheduler
 
             // if accesses can be pregenerated, do it now
             Stack<Access> preGeneratedAccesses = new Stack<Access>();
+            Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
 
             if (canPregenAccess)
             {
@@ -80,10 +81,22 @@ namespace HSFScheduler
                 Console.WriteLine(" DONE!");
             }
             // otherwise generate an exhaustive list of possibilities for assetTaskList
-            else {
+            else
+            {
                 Console.Write("Generating Exhaustive Task Combinations... ");
-                //vector < vector <const Task*> > exhaustive(system.getAssets().size(), tasks);
-                //assetTaskList = genExhaustiveSystemSchedules(exhaustive);
+                Stack<Stack<Access>> exhaustive = new Stack<Stack<Access>>();
+                Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
+
+                foreach (var asset in system.Assets)
+                {
+                    foreach (var task in tasks)
+                        allAccesses.Push(new Access(asset, task));
+
+                    exhaustive.Push(allAccesses);
+                    allAccesses.Clear();
+                }
+            
+                scheduleCombos = (Stack<Stack<Access>>)exhaustive.CartesianProduct();
                 Console.WriteLine(" DONE!");
             }
 
@@ -91,8 +104,6 @@ namespace HSFScheduler
 
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
-            Stack<Access> currentAccesses = new Stack<Access>();
-            Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
 
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
             {
@@ -119,7 +130,7 @@ namespace HSFScheduler
                 //for (list<systemSchedule*>::iterator newSchedIt = newSysScheds.begin(); newSchedIt != newSysScheds.end(); newSchedIt++)
                 foreach(var newSchedule in newSystemSchedules)
                 {
-                    dependencies.updateStates(newSchedule.getEndStates());
+                    //dependencies.updateStates(newSchedule.getEndStates());
                     systemCanPerformList.Push(system.canPerform(newSchedule));
                 }
 

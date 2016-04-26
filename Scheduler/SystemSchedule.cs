@@ -47,7 +47,8 @@ namespace HSFScheduler
             int count = 0;
             // vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
             //int asIt2 = 0;
-	        foreach(var accessAssetSched in newAccessList.Zip(AssetScheds, Tuple.Create) {
+	        foreach(var accessAssetSched in newAccessList.Zip(AssetScheds, Tuple.Create))
+            {
 		        if(accessAssetSched.Item1 != null)
                 {
 			        foreach(var assetSchedule in AssetScheds)

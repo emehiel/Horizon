@@ -61,7 +61,7 @@ namespace HSFScheduler
 
             // if all asset position types are not dynamic types, can pregenerate accesses for the simulation
             bool canPregenAccess = true;
-            foreach (Asset asset in system.Assets)
+            foreach (var asset in system.Assets)
                 canPregenAccess &= asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_ECI && asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_LLA;
 
 
@@ -116,32 +116,49 @@ namespace HSFScheduler
                     cropSchedules(systemSchedules, scheduleEvaluator, emptySchedule);
 
                 // Create a new system schedule list by adding each of the new Task commands for the Assets onto each of the old schedules
-                List<SystemSchedule> newSystemSchedules = new List<SystemSchedule>();
+                // Start timing
+                // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
+                //TODO: Parallelize this.
+
+                List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
 
                 foreach (var oldSystemSchedule in systemSchedules)
                     foreach (var newAccessStack in scheduleCombos)
                         if (oldSystemSchedule.canAddTasks(newAccessStack, currentTime))
-                            newSystemSchedules.Add(new SystemSchedule(oldSystemSchedule, newAccessStack, currentTime));
+                            potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule, newAccessStack, currentTime));
 
-                // Start timing
-                // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
-                //TODO: Parallelize this.
-                Stack<bool> systemCanPerformList = new Stack<bool>();
+                
+                // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.
+                List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
                 //for (list<systemSchedule*>::iterator newSchedIt = newSysScheds.begin(); newSchedIt != newSysScheds.end(); newSchedIt++)
-                foreach(var newSchedule in newSystemSchedules)
+                foreach(var potentialSchedule in potentialSystemSchedules)
                 {
+                    if (system.canPerform(potentialSchedule))
+                        systemCanPerformList.Add(potentialSchedule);
                     //dependencies.updateStates(newSchedule.getEndStates());
-                    systemCanPerformList.Push(system.canPerform(newSchedule));
+                    //systemCanPerformList.Push(system.canPerform(potentialSchedule));
                 }
 
                 // End timing
 
+                /*
+                // delete systemSchedules (and corresponding lower level classes) that are not possible
+                list<systemSchedule*>::iterator eraseIt = newSysScheds.begin();
+                for (vector<bool>::iterator successIt = systemCanPerformList.begin(); successIt != systemCanPerformList.end(); successIt++)
+                {
+                    if (*successIt) { eraseIt++; }
+                    else {
+                        delete* eraseIt;
+                        eraseIt = newSysScheds.erase(eraseIt);
+                    }
+                }
+                */
 
                 // Merge old and new systemSchedules
-                systemSchedules.InsertRange(0, newSystemSchedules);
+                systemSchedules.InsertRange(0, potentialSystemSchedules);
 
                 // Print completion percentage in command window
-                Console.Write("Scheduler Status: {0} done; {1} schedules generated.\r", 100 * currentTime / _endTime, systemSchedules.Count);
+                Console.Write("Scheduler Status: {0} done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
             }
 
 
@@ -167,7 +184,7 @@ namespace HSFScheduler
                 // Iterate through constraints
                 foreach (var constraint in system.Constraints)
                 {
-                    canExtendUntilEnd &= constraint.accepts(schedule)
+                    canExtendUntilEnd &= constraint.accepts(schedule);
                 }
                 //                for (vector <const Constraint*>::const_iterator constraintIt = system.getConstraints().begin(); constraintIt != system.getConstraints().end(); constraintIt++)
                 //            canExtendUntilEnd &= (*constraintIt)->accepts(*schedIt);

@@ -8,28 +8,28 @@ namespace HSFSystem
     public class SystemClass
     {
         public List<Asset> Assets{get; private set;}
-        public List<SubsystemNode> SubsystemNodes{get; private set;}
+        public List<Subsystem> Subsystems{get; private set;}
         public Stack<Constraint> Constraints{get; private set;}
         public HSFUniverse.Universe Environment{get; private set;}
         public int ThreadNum{get; private set;}
 
         
-        public SystemClass(List<Asset> assets, List<SubsystemNode> subsystems,
+        public SystemClass(List<Asset> assets, List<Subsystem> subsystems,
                          Stack<Constraint> constraints, HSFUniverse.Universe environment){
             Assets = assets;
-            SubsystemNodes = subsystems;
+            Subsystems = subsystems;
             Constraints = constraints;
             Environment = environment;
-            foreach (SubsystemNode nIt in subsystems)
+            foreach (Subsystem nIt in subsystems)
             {
-                SubsystemNodes.Add(nIt);
+                Subsystems.Add(nIt);
             }
         }
         
         public SystemClass(SystemClass other){
             SystemClass copy = DeepCopy.Copy<SystemClass>(other);
             Assets = copy.Assets;
-            SubsystemNodes = copy.SubsystemNodes;
+            Subsystems = copy.Subsystems;
             Constraints = copy.Constraints;
             Environment = copy.Environment;
             ThreadNum = copy.ThreadNum;
@@ -37,18 +37,18 @@ namespace HSFSystem
         /*
         public bool canPerform(SystemSchedule sysSched){
             // Iterate through Subsystem Nodes and set that they havent run
-            foreach (SubsystemNode subNodeIt in SubsystemNodes){
+            foreach (Subsystem subNodeIt in Subsystems){
                 subNodeIt.reset();
             }
             // Iterate through constraints
             foreach (Constraint constraintIt in Constraints){
-                if(!checkSubs(constraintIt.SubsystemNodes, sysSched, true))
+                if(!checkSubs(constraintIt.Subsystems, sysSched, true))
                     return false;
                 if(!constraintIt.accepts(sysSched))
                     return false;
             }
             // Check the remaining Subsystems that aren't included in any Constraints
-            if (!checkSubs(SubsystemNodes, sysSched, false))
+            if (!checkSubs(Subsystems, sysSched, false))
                 return false;
             
             return true;
@@ -56,8 +56,8 @@ namespace HSFSystem
         
         public bool checkForCircularDependencies(){
             bool hasCircDep = false;
-            foreach(SubsystemNode nodeIt in SubsystemNodes){
-                SubsystemNode currNode = nodeIt;
+            foreach(Subsystem nodeIt in Subsystems){
+                Subsystem currNode = nodeIt;
                 hasCircDep |= checkSubForCircularDependencies(nodeIt, nodeIt);
                 if(hasCircDep)
                     break;
@@ -65,10 +65,10 @@ namespace HSFSystem
             return hasCircDep;
         }
  
-        private bool checkSubs(List<SubsystemNode> subNodeList, 
+        private bool checkSubs(List<Subsystem> subNodeList, 
                                SystemSchedule sySched, bool mustEvaluate){
             int subAssetNum;
-            foreach(SubsystemNode subNodeIt in subNodeList){
+            foreach(Subsystem subNodeIt in subNodeList){
                 subAssetNum = subNodeIt.NAsset;
                 if(subNodeIt.canPerform(sySched.getSubNewState(subAssetNum),
                                         sySched.getSubNewTask(subAssetNum), 
@@ -80,12 +80,12 @@ namespace HSFSystem
             return true;                           
         }
         
-        private bool checkSubForCircularDependencies(SubsystemNode currNode,
-                                                     SubsystemNode beginNode){
+        private bool checkSubForCircularDependencies(Subsystem currNode,
+                                                     Subsystem beginNode){
             bool hasCircDep = false;
-            Stack<SubsystemNode> preceedingNodes = currNode.PreceedingNodes;
+            Stack<Subsystem> preceedingNodes = currNode.PreceedingNodes;
             if(!preceedingNodes.Any()){ 
-                foreach(SubsystemNode nodeIt in preceedingNodes){
+                foreach(Subsystem nodeIt in preceedingNodes){
                     hasCircDep |= nodeIt == beginNode;
                     if(hasCircDep)
                          break;
@@ -98,7 +98,7 @@ namespace HSFSystem
         }
         void setDependencies(Dependencies deps)
         {
-            foreach(SubsystemNode subIt in SubsystemNodes)
+            foreach(Subsystem subIt in Subsystems)
             {
                 subIt.setDependencies(deps);
             }
@@ -108,7 +108,7 @@ namespace HSFSystem
 
                 }
 
-                public List<SubsystemNode> getSubsystemNodes(){
+                public List<Subsystem> getSubsystems(){
 
                 }
 

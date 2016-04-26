@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Xml;
 
 
 namespace MissionElements
@@ -14,7 +15,7 @@ namespace MissionElements
     public class Task
     {
         /* the type of task being performed */
-         public taskType Type { get; private set; }
+         public TaskType Type { get; private set; }
 
         /* the target associated with the task */
         public Target Target { get; private set; }
@@ -23,15 +24,14 @@ namespace MissionElements
         public int MaxTimesToPerform { get; private set; }
 
 
-        /**
-        * Creates a new task to be performed at the given target, with the given
-        * scheduling limitations
-        * @param Type the type of task to perform
-        * @param Target the target at which the task is to be performed
-        * @param MaxTimesToPerform the maximum number of times the task should be performed
-        */
-        // ToDo: convert taskType to an extensable enumeration
-        public Task(taskType taskType, Target target, int maxTimesToPerform)
+
+        /// <summary>
+        /// Creates a new task to be performed at the given target, with the given scheduling limitations
+        /// </summary>
+        /// <param name="taskType"></param>
+        /// <param name="target"></param>
+        /// <param name="maxTimesToPerform"></param>
+        public Task(TaskType taskType, Target target, int maxTimesToPerform)
         {
             Type = taskType;
             Target = target;
@@ -43,7 +43,38 @@ namespace MissionElements
             return Target.Name;
         }
 
-    }
+        public static bool loadTargetsIntoTaskList(XmlNode targetDeckXMLNode, ref Stack<Task> tasks)
+        {
+            Console.WriteLine("Loading target deck...");
+            int maxTimesPerform = 1;
+            bool allLoaded = true;
+            string targetType, taskType;
+            foreach (XmlNode targetNode in targetDeckXMLNode.ChildNodes)
+            {
+                if (targetNode.Attributes["TaskType"] != null)
+                    taskType = targetNode.Attributes["TaskType"].Value.ToString();
+                else {
+                    return false;
+                }
+                var taskTypeEnum = (TaskType)Enum.Parse(typeof(TaskType), taskType);
+                if (targetNode.Attributes["MaxTimes"] != null)
+                {
+                    Int32.TryParse(targetNode.Attributes["MaxTimes"].Value.ToString(), out maxTimesPerform);
+                    tasks.Push(new Task(taskTypeEnum, new Target(targetNode), maxTimesPerform));
+                }
+                else
+                    tasks.Push(new Task(taskTypeEnum, new Target(targetNode), maxTimesPerform));
 
-    public enum taskType { EMPTY, COMM, IMAGING }
+                // USER - Add other target properties in Target Constructor using XML input
+            }
+            Console.WriteLine("Number of Targets Loaded: ");
+
+            return allLoaded;
+        }
+    }
+    // ToDo: convert taskType to an extensable enumeration. <-- Still?.... 
+
+    public enum TaskType { EMPTY, COMM, IMAGING }
+
+  
 }

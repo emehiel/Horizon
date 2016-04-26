@@ -8,6 +8,7 @@ using HSFScheduler;
 using Utilities;
 using MissionElements;
 using UserModel;
+using HSFUniverse;
 
 namespace Horizon
 {
@@ -22,6 +23,7 @@ namespace Horizon
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
+            var modelInputFilePath = @"..\..\..\Model_Static.xml";
             // Initialize critical section for dependencies ??Morgan Doesn't know what this does
             // InitializeCriticalSection(&horizon::sub::dep::NodeDependencies::cs);
 
@@ -56,49 +58,57 @@ namespace Horizon
           //  var XmlDoc = new XmlDocument();
             XmlDoc.Load(targetDeckFilePath);
             XmlNodeList targetDeckXMLNodeList = XmlDoc.GetElementsByTagName("TARGETDECK");
+            int numTargets = XmlDoc.GetElementsByTagName("TARGET").Count;
             XmlEnum = targetDeckXMLNodeList.GetEnumerator();
             XmlEnum.MoveNext();
             var targetDeckXMLNode = (XmlNode)XmlEnum.Current;
-            List<Task> systemTasks = new List<Task>();
-          //TODO:Morgan  bool targetsLoaded = loadTargetsIntoTaskList(targetDeckXMLNode, systemTasks);
+            Stack<Task> systemTasks = new Stack<Task>();
+            bool targetsLoaded = Task.loadTargetsIntoTaskList(targetDeckXMLNode, ref systemTasks);
             Console.WriteLine("  Initial states set");
-            Console.ReadKey();
-            /*
+            
+            
             // Find the main model node from the XML model input file
-            XMLNode modelInputXMLNode = XMLNode::openFileHelper(modelInputFileName.c_str(), "MODEL");
-
+            XmlDoc.Load(modelInputFilePath);
+            XmlNodeList modelXMLNodeList = XmlDoc.GetElementsByTagName("MODEL");
+            XmlEnum = modelXMLNodeList.GetEnumerator();
+            XmlEnum.MoveNext();
+            var modelInputXMLNode = (XmlNode)XmlEnum.Current;
+           
+            
             // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
-            Environment* systemEnvironment;
-            int nEnv = modelInputXMLNode.nChildNode("ENVIRONMENT");
-            if (nEnv != 0)
+            Universe SystemUniverse = null;
+            foreach (XmlNode node in modelInputXMLNode.ChildNodes)
             {
-                // Create the Environment based on the XMLNode
-                XMLNode environmentNode = modelInputXMLNode.getChildNode("ENVIRONMENT");
-                systemEnvironment = new Environment(environmentNode);
+                if(node.Attributes["ENVIRONMENT"] != null)
+                {
+                    // Create the Environment based on the XMLNode
+                    SystemUniverse = new Universe(node);
+                }
             }
-            else
-                systemEnvironment = new Environment();
+            if (SystemUniverse == null)
+                SystemUniverse = new Universe();
+            Console.ReadKey();
 
             // Initialize NetworkDataClient
-            int nDataClient = modelInputXMLNode.nChildNode("NETWORK_DATA_CLIENT");
-            if (nDataClient != 0)
-            {
-                XMLNode NetworkDataClientNode = modelInputXMLNode.getChildNode("NETWORK_DATA_CLIENT");
-                if (NetworkDataClientNode.isAttributeSet("host"))
-                {
-                    NetworkDataClient::setHost(NetworkDataClientNode.getAttribute("host"));
-                }
-                if (NetworkDataClientNode.isAttributeSet("port"))
-                {
-                    NetworkDataClient::setPort(atoi(NetworkDataClientNode.getAttribute("port")));
-                }
-                if (NetworkDataClientNode.isAttributeSet("connect"))
-                {
-                    if (atob(NetworkDataClientNode.getAttribute("connect")))
-                        NetworkDataClient::Connect();
-                }
-            }
-
+            //int nDataClient = modelInputXMLNode.nChildNode("NETWORK_DATA_CLIENT");
+            //if (nDataClient != 0)
+            //{
+            //    XMLNode NetworkDataClientNode = modelInputXMLNode.getChildNode("NETWORK_DATA_CLIENT");
+            //    if (NetworkDataClientNode.isAttributeSet("host"))
+            //    {
+            //        NetworkDataClient::setHost(NetworkDataClientNode.getAttribute("host"));
+            //    }
+            //    if (NetworkDataClientNode.isAttributeSet("port"))
+            //    {
+            //        NetworkDataClient::setPort(atoi(NetworkDataClientNode.getAttribute("port")));
+            //    }
+            //    if (NetworkDataClientNode.isAttributeSet("connect"))
+            //    {
+            //        if (atob(NetworkDataClientNode.getAttribute("connect")))
+            //            NetworkDataClient::Connect();
+            //    }
+            //}
+            /*
             // Initialize the SubsystemAdapter
             SubsystemAdapter subAdapter;
             subAdapter.initialize();
@@ -106,7 +116,7 @@ namespace Horizon
             // Initialize the ConstraintAdapter
             ConstraintAdapter constraintAdapter;
             constraintAdapter.initialize();
-
+            
             // Initialize the Dependency Adapter (for static dependencies)
             DependencyAdapter depAdapter;
             depAdapter.addDoubleDependency("Asset1_COMMSUB_getDataRateProfile", &Dependencies::Asset1_COMMSUB_getDataRateProfile);

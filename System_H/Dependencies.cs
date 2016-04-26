@@ -78,6 +78,13 @@ namespace HSFSystem
                 return ret;
             throw new KeyNotFoundException();
         }
+        public void Append(Dictionary<string, Delegate> newDeps)
+        {
+            foreach (var dep in newDeps)
+            {
+                DependencyFunctions.Add(dep.Key, dep.Value);
+            }
+        }
         //------------------------------------------------------------------------------------------------
         //--------------------------------- DECLARE DEPENDENCY COLLECTORS --------------------------------
         //------------------------------------------------------------------------------------------------

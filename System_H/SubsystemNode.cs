@@ -5,7 +5,7 @@ using HSFSystem;
 using UserModel;
 using HSFUniverse;
 using MissionElements;
-
+/*
 //namespace HSFSystem
 //{
 namespace HSFSubsystem
@@ -118,3 +118,5 @@ namespace HSFSubsystem
         }// end class SubsystemNode
     }//end namespace Subsystem
 //}// end namespace HSFSystem
+
+    */

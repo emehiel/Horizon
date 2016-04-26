@@ -4,9 +4,12 @@ using Utilities;
 using HSFUniverse;
 using HSFSystem;
 using MissionElements;
-    namespace HSFSubsystem
-    {
-        public abstract class Subsystem {
+namespace HSFSubsystem
+{
+    public abstract class Subsystem : ISubsystem{
+        public bool IsChecked { get; set; }
+        public Asset Asset { get; set; }
+        public List<ISubsystem> DepenedentSubsystems { get; protected set; } 
         public string Name { get; protected set; }
         public Dictionary<string, Delegate> SubsystemDependencyFunctions { get; private set; }
         public List<StateVarKey<int>> Ikeys { get; protected set; }
@@ -20,14 +23,35 @@ using MissionElements;
             Name = name;
         }
         public virtual Subsystem clone() {
-            throw new NotImplementedException();
+            return DeepCopy.Copy<Subsystem>(this);
         }
-        public abstract bool canPerform(SystemState oldState, SystemState newSTate,
-                                  Task task, DynamicState position,
-                                  Universe environment,
-                                  Dependencies dep);
-        public abstract bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime,
-                                Dependencies dep);
+        public virtual bool canPerform(SystemState oldState, ref SystemState newState,
+                            Task task, DynamicState position,
+                            Universe environment) //Dependencies dep); doesn't need dependecies anymoere
+        {
+            foreach (var sub in DepenedentSubsystems)
+            {
+                if (sub.canPerform(oldState, ref newState, task, position, environment) == false)
+                    return false;
+                //use new state to update state. pass updated state to dependency collector
+            }
+            return true;
+        }
+
+        public abstract bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime); // Dependencies dep);
+
+        //public virtual static HSFProfile<T> DependencyCollector() //in order to return profile needs to be a templated class
+        //{
+        //    throw new NotImplementedException();
+        //}
+
+        public void CollectDependencyFuncs(Dependencies Deps, List<string> FuncNames)
+        {
+            foreach (var Func in FuncNames)
+            {
+                SubsystemDependencyFunctions.Add(Func, Deps.getDependencyFunc(Func));
+            }
+        }
 
         void addKey(StateVarKey<int> keyIn) {
             Ikeys.Add(keyIn);

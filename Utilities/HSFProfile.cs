@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Utilities
 {
-    public class HSFProfile<T>
+    public class HSFProfile<T> : IHSFProfile   
     {
         // Class Data
 

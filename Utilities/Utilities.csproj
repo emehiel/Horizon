@@ -45,6 +45,7 @@
     <Compile Include="DeepCopy.cs" />
     <Compile Include="EOMS.cs" />
     <Compile Include="GeometryUtilities.cs" />
+    <Compile Include="IHSFProfile.cs" />
     <Compile Include="Integrator.cs" />
     <Compile Include="IntegratorOptions.cs" />
     <Compile Include="CollectionExtentions.cs" />

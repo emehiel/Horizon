@@ -49,9 +49,9 @@ namespace MissionElements
         public Target(XmlNode targetXmlNode)
         {
             Name = targetXmlNode.Attributes["TargetName"].Value;
-            string typeString = targetXmlNode.Attributes["TargetType"].Value;
+            string typeString = targetXmlNode.Attributes["TargetType"].Value.ToString();
             Type = (TargetType)Enum.Parse(typeof(TargetType), typeString);
-            DynamicState = new DynamicState(targetXmlNode["DynamicState"]);
+            DynamicState = new DynamicState(targetXmlNode.ChildNodes.Item(0));
             Value = Convert.ToInt32(targetXmlNode.Attributes["Value"].Value);
         }
 

@@ -49,10 +49,12 @@ namespace HSFUniverse
         {
             // TODO add a line to pre-propagate to simEndTime if the type is predetermined
             // TODO catch exception if _type or initial conditions are not set from teh XML file
-            string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value;
-            Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
-
-            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode["ICs"]["Matrix"]);
+            if (dynamicStateXMLNode.Attributes["DynamicStateType"] != null)
+            {
+                string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value.ToString();
+                Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
+            }
+            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode.Attributes["ICs"].Value);
             _stateData = new SortedList<double, Matrix<double>>();
             _stateData.Add(0.0, ics);
 

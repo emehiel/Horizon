@@ -10,7 +10,7 @@ namespace HSFSystem
 {
     public interface ISubsystem
     {
-        bool canPerform(SystemState oldState, ref SystemState newState,
+        bool canPerform(SystemState oldState, SystemState newState,
                       Task task, DynamicState position,
                       Universe environment);//Dependencies dep); doesn't need dependecies anymoere
         bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime); // Dependencies dep);

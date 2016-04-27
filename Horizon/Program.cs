@@ -9,6 +9,8 @@ using Utilities;
 using MissionElements;
 using UserModel;
 using HSFUniverse;
+using HSFSubsystem;
+using HSFSystem;
 
 namespace Horizon
 {
@@ -87,6 +89,11 @@ namespace Horizon
             }
             if (SystemUniverse == null)
                 SystemUniverse = new Universe();
+
+            Dependencies dependencies = Dependencies.Instance;
+
+            var ADCSSub = new ADCS();
+            var PowerSub = new Power(dependencies);
             Console.ReadKey();
 
             // Initialize NetworkDataClient

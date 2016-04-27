@@ -6,11 +6,12 @@ namespace HSFSystem
 {
     public class Constraint{
         //List of subsystem nodes on which the Constraint operates
-        public List<Subsystem> SubsystemNodes{get; private set;}
+        public List<Subsystem> Subsystem{get; private set;}
+      //  public Guid ID;
 
         public void AddConstrainedSubNode(Subsystem node)
         {
-            SubsystemNodes.Add(node);
+            Subsystem.Add(node);
         }
 
         /**

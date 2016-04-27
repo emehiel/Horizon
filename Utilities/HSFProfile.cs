@@ -123,6 +123,98 @@ namespace Utilities
         {
             return data.First().Value;
         }
+        //TODO: (morgan ask mehiel) THis should be templated
+        public HSFProfile<double> limitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, double upperBound, ref bool exceeded_lower, ref bool exceeded_upper, T iv, double ic)
+        {
+            HSFProfile<double> prof = new HSFProfile<double>();
+            double last = ic;
+            double result;
+            double time;
+            for (time = start + saveFreq; time < end; time += saveFreq)
+            {
+                Double.TryParse(Integrate(time - saveFreq, time, iv).ToString(), out result); //Morgan isn't sure about this
+                result += last;
+                if (result.CompareTo(upperBound) >=0)
+                {
+                    result = upperBound;
+                    exceeded_upper = true;
+                }
+                if (result < lowerBound)
+                {
+                    result = lowerBound;
+                    exceeded_lower = true;
+                }
+                if (result != last)
+                {
+                    prof[time] = result;
+                }
+                last = result;
+            }
+            Double.TryParse(Integrate(time -= saveFreq, end, iv).ToString(), out result); //Morgan isn't sure about this
+            result += last;
+            if (result > upperBound)
+            {
+                result = upperBound;
+                exceeded_upper = true;
+            }
+            if (result < lowerBound)
+            {
+                result = lowerBound;
+                exceeded_lower = true;
+            }
+            if (result != last)
+                prof[end] = result;
+
+            if (prof.Empty())
+                prof[start] = ic;
+            return prof;
+
+        }
+        /// <summary>
+        ///  Integrates the Profile with a lower limit given an initial value and condition from the start to end time
+        ///  If the integral falls below the lower limit, the value for the integral is set to the lower limit
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="saveFreq"></param>
+        /// <param name="lowerBound"></param>
+        /// <param name="exceeded"></param>
+        /// <param name="iv"></param>
+        /// <param name="ic"></param>
+        /// <returns></returns>
+        public HSFProfile<double> lowerLimitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, ref bool exceeded, T iv, double ic)
+        {
+            HSFProfile<double> prof = new HSFProfile<double>();
+            double last = ic, time, result = 0;
+            for (time = start + saveFreq; time < end; time += saveFreq)
+            {
+                Double.TryParse(Integrate(time - saveFreq, time, iv).ToString(), out result); //TODO: Morgan isn't sure about this
+                result += last;
+                if (result < lowerBound)
+                {
+                    result = lowerBound;
+                    exceeded = true;
+                }
+                if (result != last)
+                {
+                    prof[time] = result;
+                }
+                last = result;
+            }
+            Double.TryParse(Integrate(time -= saveFreq, end, iv).ToString(), out result); //TODO: Morgan isn't sure about this
+            result += last;
+            if (result < lowerBound)
+            {
+                result = lowerBound;
+                exceeded = true;
+            }
+            if (result != last)
+                prof[end] = result;
+
+            if (prof.Empty())
+                prof[start] = ic;
+            return prof;
+        }
 
         /// <summary>
         /// Returns the time of the first data point in the profile
@@ -458,10 +550,10 @@ namespace Utilities
             return data.GetHashCode();
         }
 
-        public T integrate(double startTime, double endTime, T initialValue)
+        public T Integrate(double startTime, double endTime, T initialValue)
         {
             if (endTime < startTime)
-                return -1.0 * (dynamic)integrate(startTime, endTime, initialValue);
+                return -1.0 * (dynamic)Integrate(startTime, endTime, initialValue);
             if (Count() == 0 || endTime <= data.First().Key)
                 return (endTime - startTime) * (dynamic)initialValue;
             if (endTime == startTime)

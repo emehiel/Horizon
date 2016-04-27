@@ -14,7 +14,7 @@ using UserModel;
 
 namespace HSFUniverse
 {
-    enum shadow_state
+    public enum ShadowState
     {
         NO_SHADOW,
         UMBRA,
@@ -136,14 +136,14 @@ namespace HSFUniverse
         * @param time the simulation time that the shadow determination is requested
         * @returns UMBRA, PENUMBRA, or NO_SHADOW depending on the case.
         */
-        shadow_state castShadowOnPos(DynamicState pos, double simTime)
+        public ShadowState castShadowOnPos(DynamicState pos, double simTime)
         {
             double penVert;
             double satHoriz;
             double satVert;
             double sigma;
             double umbVert;
-            shadow_state shadow;
+            ShadowState shadow;
 
             const double alphaPen = 0.26900424;
             const double alphaUmb = 0.26411888;
@@ -173,15 +173,15 @@ namespace HSFUniverse
             // determine the shadow state of the position
             if (dot_p > 0 && satVert <= penVert)
             {
-                shadow = shadow_state.PENUMBRA;
+                shadow = ShadowState.PENUMBRA;
                 //Calculate distance away from earth-sun axis where umbra ends
                 umbVert = rEar - Math.Tan(alphaUmb * rad) * satHoriz;
 
                 if (satVert <= umbVert)
-                    shadow = shadow_state.UMBRA;
+                    shadow = ShadowState.UMBRA;
             }
             else
-                shadow = shadow_state.NO_SHADOW;
+                shadow = ShadowState.NO_SHADOW;
 
 	        return(shadow);
         }//End castShadowOnPos method

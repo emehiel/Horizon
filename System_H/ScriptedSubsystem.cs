@@ -31,7 +31,7 @@ namespace HSFSubsystem
             dependencies.Append(newDependencies);
             SubsystemDependencyFunctions = PythonInstance.getDependencyDictionary();
         }
-        public bool canPerform(SystemState oldState, ref SystemState newState,
+        public bool canPerform(SystemState oldState, SystemState newState,
                           Task task, DynamicState position,
                           Universe environment)
         {

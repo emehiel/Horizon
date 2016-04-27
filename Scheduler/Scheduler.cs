@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using Utilities;
 using HSFSystem;
@@ -131,7 +133,26 @@ namespace HSFScheduler
                 // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.
                 List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
                 //for (list<systemSchedule*>::iterator newSchedIt = newSysScheds.begin(); newSchedIt != newSysScheds.end(); newSchedIt++)
-                foreach(var potentialSchedule in potentialSystemSchedules)
+                // The parallel version
+                // Should we use a Partitioner?
+                // Need to test this...
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+                Parallel.ForEach(potentialSystemSchedules, (currentSchedule) =>
+                {
+                    if (system.canPerform(currentSchedule))
+                        systemCanPerformList.Add(currentSchedule);
+                    Console.WriteLine("Processing {0} on thread {1}", currentSchedule.ToString(), Thread.CurrentThread.ManagedThreadId);
+                } );
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                // Format and display the TimeSpan value.
+                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                    ts.Hours, ts.Minutes, ts.Seconds,
+                    ts.Milliseconds / 10);
+                Console.WriteLine("Parallel Scheduler RunTime: " + elapsedTime);
+
+                foreach (var potentialSchedule in potentialSystemSchedules)
                 {
                     if (system.canPerform(potentialSchedule))
                         systemCanPerformList.Add(potentialSchedule);

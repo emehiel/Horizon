@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CartesianProduct.cs" />
     <Compile Include="Complex.cs" />
     <Compile Include="DeepCopy.cs" />
     <Compile Include="EOMS.cs" />

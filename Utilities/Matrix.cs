@@ -961,7 +961,11 @@ namespace Utilities
 
             return C;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="A"></param>
+        /// <returns></returns>
         public static Matrix<T> Abs(Matrix<T> A)
         {
             Matrix<T> R = (Matrix<T>)A.Clone();

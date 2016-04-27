@@ -88,5 +88,20 @@ namespace HSFScheduler
         {
             return Asset.Name + "_to_" + Task.Target.Name;
         }
+
+        public static void writeAccessReport(Stack<Stack<Access>> pregeneratedAccesses)
+        {
+            string outputDir = SimParameters.OutputDirector;
+            string filename = "AccessReport.csv";
+            string fullFilename = outputDir + "\\" + filename;
+
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(fullFilename))
+            {
+                foreach (var accessByAsset in pregeneratedAccesses)
+                    foreach (var access in accessByAsset)
+                        file.WriteLine(access.Asset.Name + ',' + access.Task.Target.Name + ',' + access.AccessStart + ',' + access.AccessEnd);
+            }
+        }
+
     }
 }

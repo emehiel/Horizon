@@ -31,7 +31,7 @@ namespace Utilities
         * h = 0.1
         * rtol = 1e-3
         * atol = 1e-6
-        * eps = Double.Epsilon;
+        * eps = double.Epsilon;
         * nSteps = 100
         */
         public IntegratorOptions()
@@ -39,7 +39,7 @@ namespace Utilities
             h = 0.1;
             rtol = 0.001;
             atol = 0.000001;
-            eps = Double.Epsilon;
+            eps = double.Epsilon;
             nSteps = 100;
         }
 

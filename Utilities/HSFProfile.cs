@@ -273,21 +273,21 @@ namespace Utilities
                     }
                     else
                     {
-                        Console.WriteLine("DataAtTime: Attempting to reference time before first data point in profile");
+                        Console.WriteLine("WARNING - DataAtTime: Attempting to reference time before first data point in profile");
                         return data.Single(item => item.Key == data.Keys.Min());
                     }
 
                 }
                 else
                 {
-                    Console.WriteLine("DataAtTime: Attemping to get data point from empty profile.Returning null pair.");
+                    Console.WriteLine("WARNING - DataAtTime: Attemping to get data point from empty profile. Returning null pair.");
                     return new KeyValuePair<double, T>();  // TODO:  What to return if profile is empty?
                 }
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
-                Console.WriteLine("attempt to find data point in profile failed");
-                return new KeyValuePair<double, T>();
+                Console.WriteLine("attempt to find data point in profile failed at time {0} failed", time);
+                throw;
             }
         }
 

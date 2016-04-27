@@ -50,11 +50,7 @@ namespace HSFSubsystem
 
         public abstract bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime); // Dependencies dep);
 
-        //public virtual static HSFProfile<T> DependencyCollector() //in order to return profile needs to be a templated class
-        //{
-        //    throw new NotImplementedException();
-        //}
-
+        //make a logger method
         public void CollectDependencyFuncs(Dependencies Deps, List<string> FuncNames)
         {
             foreach (var Func in FuncNames)

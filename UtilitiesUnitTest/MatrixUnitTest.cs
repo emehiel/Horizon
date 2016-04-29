@@ -16,7 +16,7 @@ namespace UtilitiesUnitTest
             double answer = 24;
 
 
-            Assert.AreEqual(Matrix<double>.(A, B), answer);
+            Assert.AreEqual(Matrix<double>.Dot(A, B), answer);
         }
     }
 }

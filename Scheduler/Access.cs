@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Xml;
 using HSFSystem;
 using Utilities;
 using MissionElements;
@@ -25,6 +25,11 @@ namespace HSFScheduler
         {
             Asset = asset;
             Task = task;
+        }
+
+        public Access(XmlNode AccessXmlNode)
+        {
+
         }
 
         public static Stack<Access> getCurrentAccessesForAsset(Stack<Access> accesses, Asset asset, double currentTime)

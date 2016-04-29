@@ -54,7 +54,7 @@ namespace HSFUniverse
                 string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value.ToString();
                 Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
             }
-            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode.Attributes["ICs"].Value);
+            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
             _stateData = new SortedList<double, Matrix<double>>();
             _stateData.Add(0.0, ics);
 

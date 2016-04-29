@@ -9,7 +9,8 @@ using System.Xml;
 namespace HSFSubsystem
 {
     public abstract class Subsystem : ISubsystem{
-        public bool IsChecked { get; set; }
+        #region Attributes
+        public bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
         public List<ISubsystem> DepenedentSubsystems { get; protected set; } 
         public string Name { get; protected set; }
@@ -20,7 +21,9 @@ namespace HSFSubsystem
         public List<StateVarKey<bool>> Bkeys { get; protected set; }
         public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
         public List<StateVarKey<Quat>> Qkeys { get; protected set; }
-        
+        #endregion Attributes
+
+        #region Constructors
         public Subsystem()
         {
 
@@ -28,10 +31,17 @@ namespace HSFSubsystem
         public Subsystem(string name) {
             Name = name;
         }
-        public Subsystem(XmlNode xmlNode)
+        public Subsystem(XmlNode xmlNode, Asset asset)
         {
 
         }
+        public Subsystem(XmlNode xmlNode, Dependencies deps, Asset asset)
+        {
+
+        }
+        #endregion
+
+        #region Methods
         public virtual Subsystem clone() {
             return DeepCopy.Copy<Subsystem>(this);
         }
@@ -106,6 +116,6 @@ namespace HSFSubsystem
             }
             Qkeys.Add(keyIn);
         }
+        #endregion
     }
 }//HSFSubsystem
-//}//HSFSystem

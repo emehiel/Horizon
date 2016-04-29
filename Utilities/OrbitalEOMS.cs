@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    public class Orbital_EOMS: EOMS
+    public class OrbitalEOMS: EOMS
     {
         private double _mu;
         private Matrix<double> _A;
 
-        public Orbital_EOMS()
+        public OrbitalEOMS()
         {
             _mu = 398600.4418;
             _A = new Matrix<double>(6);

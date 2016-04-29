@@ -40,11 +40,11 @@ namespace HSFSchedulerUnitTest
             foreach (XmlNode xmlNode in assetXmlNodes)
             {
                 Asset newAsset = new Asset(xmlNode);
-                newAsset.AssetDynamicState.Eoms = new Orbital_EOMS();
+                newAsset.AssetDynamicState.Eoms = new OrbitalEOMS();
                 assets.Add(newAsset);
             }
 
-            SystemClass system = new SystemClass(assets);
+            SystemClass system = new SystemClass();// assets);
 
             XmlDocument targetDeckDoc = new XmlDocument();
             targetDeckDoc.Load("..\\..\\v2.2-300targets.xml");
@@ -54,7 +54,7 @@ namespace HSFSchedulerUnitTest
             foreach (XmlNode xmlNode in targetDeckXmlNodes)
             {
                 Target newTarget = new Target(xmlNode);
-                Task newTask = new Task(taskType.EMPTY, newTarget, 1);
+                Task newTask = new Task(TaskType.EMPTY, newTarget, 1);
                 tasks.Push(newTask);
             }
 

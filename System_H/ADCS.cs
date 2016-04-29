@@ -11,7 +11,11 @@ namespace HSFSubsystem
 {
     public class ADCS : Subsystem
     {
+        #region Attributes
         public static StateVarKey<Matrix<double>> POINTVEC_KEY = new StateVarKey<Matrix<double>>("ECI_Pointing_Vector(XYZ)");
+        #endregion Attributes
+
+        #region Constructors
         public ADCS()
         {
             base.Name = "ADCS";
@@ -27,8 +31,11 @@ namespace HSFSubsystem
         }
         public ADCS(XmlNode ADCSNode) //TODO: (Morgan) Change this to actually parse the XmlNode
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
+        #endregion Constructors
+
+        #region Methods
         public bool canPerform(SystemState oldState, SystemState newState, Task task, DynamicState position,
                                         Universe environment)
         {
@@ -63,5 +70,6 @@ namespace HSFSubsystem
                 State.EventEnd = evalToTime;
             return true;
         }
+        #endregion Methods
     }
 }

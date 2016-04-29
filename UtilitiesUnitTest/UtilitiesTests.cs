@@ -11,7 +11,7 @@ namespace UtilitiesUnitTest
         [TestMethod]
         public void IntegratorTest()
         {
-            StateSpace_EOMS dynamics = new StateSpace_EOMS();
+            StateSpaceEOMS dynamics = new StateSpaceEOMS();
             Matrix<double> tspan = new Matrix<double>(new double[1, 2] { { 0, 20 } });
             Matrix<double> y0 = new Matrix<double>(new double[2, 1] { { 1 }, { 0 } });
             Matrix<double> result = Integrator.RK45(dynamics, tspan, y0);

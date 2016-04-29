@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    public class StateSpace_EOMS:EOMS
+    public class StateSpaceEOMS:EOMS
     {
         public override Matrix<double> this[double t, Matrix<double> y]
         {

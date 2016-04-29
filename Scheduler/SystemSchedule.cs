@@ -35,9 +35,9 @@ namespace HSFScheduler
                    // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
                    // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
                 }
-                else
-                    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(assetSchedAccess.I));
-                i++;
+                //else
+                //    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(assetSchedAccess.I));
+                //i++;
             }
             
         }

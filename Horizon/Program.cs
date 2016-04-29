@@ -40,7 +40,7 @@ namespace Horizon
             var scenarioName = simulationInputXMLNode.Attributes["scenarioName"].InnerXml;
             Console.Write("EXECUITING SCENARIO: ");
             Console.WriteLine(scenarioName);
-       
+
             // Load the simulation parameters from the XML simulation input file
             XmlNode simParametersXMLNode = simulationInputXMLNode["SIMULATION_PARAMETERS"];
             bool simParamsLoaded = SimParameters.LoadSimParameters(simParametersXMLNode, scenarioName);
@@ -57,7 +57,7 @@ namespace Horizon
 
 
             // Load the target deck into the targets list from the XML target deck input file
-          //  var XmlDoc = new XmlDocument();
+            //var XmlDoc = new XmlDocument();
             XmlDoc.Load(targetDeckFilePath);
             XmlNodeList targetDeckXMLNodeList = XmlDoc.GetElementsByTagName("TARGETDECK");
             int numTargets = XmlDoc.GetElementsByTagName("TARGET").Count;
@@ -66,22 +66,22 @@ namespace Horizon
             var targetDeckXMLNode = (XmlNode)XmlEnum.Current;
             Stack<Task> systemTasks = new Stack<Task>();
             bool targetsLoaded = Task.loadTargetsIntoTaskList(targetDeckXMLNode, ref systemTasks);
-            Console.WriteLine("  Initial states set");
-            
-            
+            Console.WriteLine("Initial states set");
+
+
             // Find the main model node from the XML model input file
             XmlDoc.Load(modelInputFilePath);
             XmlNodeList modelXMLNodeList = XmlDoc.GetElementsByTagName("MODEL");
             XmlEnum = modelXMLNodeList.GetEnumerator();
             XmlEnum.MoveNext();
             var modelInputXMLNode = (XmlNode)XmlEnum.Current;
-           
-            
+
+
             // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
             Universe SystemUniverse = null;
             foreach (XmlNode node in modelInputXMLNode.ChildNodes)
             {
-                if(node.Attributes["ENVIRONMENT"] != null)
+                if (node.Attributes["ENVIRONMENT"] != null)
                 {
                     // Create the Environment based on the XMLNode
                     SystemUniverse = new Universe(node);
@@ -90,11 +90,12 @@ namespace Horizon
             if (SystemUniverse == null)
                 SystemUniverse = new Universe();
 
+            //Create singleton dependency dictionary
             Dependencies dependencies = Dependencies.Instance;
 
-            var ADCSSub = new ADCS();
-            var PowerSub = new Power(dependencies);
-            Console.ReadKey();
+      //      var ADCSSub = new ADCS();
+       //     var PowerSub = new Power(dependencies);
+
 
             // Initialize NetworkDataClient
             //int nDataClient = modelInputXMLNode.nChildNode("NETWORK_DATA_CLIENT");
@@ -132,96 +133,89 @@ namespace Horizon
             depAdapter.addDoubleDependency("Asset2_COMMSUB_getDataRateProfile", &Dependencies::Asset2_COMMSUB_getDataRateProfile);
             depAdapter.addDoubleDependency("Asset2_POWERSUB_getPowerProfile", &Dependencies::Asset2_POWERSUB_getPowerProfile);
             depAdapter.addDoubleDependency("Asset2_SSDRSUB_getNewDataProfile", &Dependencies::Asset2_SSDRSUB_getNewDataProfile);
-
-            // Initialize vectors to hold assets and subsystem nodes
-            vector <const Asset*> assetList;
-            vector<SubsystemNode*> subNodeList;
+            */
+            // Initialize List to hold assets and subsystem nodes
+            List<Asset> assetList = new List<Asset>();
+            List<Subsystem> subNodeList = new List<Subsystem>();
 
             // Maps used to set up preceeding nodes
-            map<SubsystemNode*, XMLNode> subsystemNodeXMLNodeMap;
-            map<int, SubsystemNode*> subsystemNodeMap;
+            Dictionary<ISubsystem, XmlNode> subsystemXMLNodeMap = new Dictionary<ISubsystem, XmlNode>();
+            Dictionary<string, Subsystem> subsystemMap = new Dictionary<string, Subsystem>();
+           // Dictionary<string, ScriptedSubsystem> scriptedSubNames = new Dictionary<string, ScriptedSubsystem>();
 
-            // Create Constraint list here
-            vector <const Constraint*> constraintsList;
+            // Create Constraint list 
+            List<Constraint> constraintsList = new List<Constraint>();
 
-            // Enable Lua scripting support, add additional functions defined in input file
+            // Create new Subsystem Factory
+            SubsystemFactory subsystemFactory = new SubsystemFactory();
+
+            // Enable Python scripting support, add additional functions defined in input file
             bool enableScripting = false;
-            int n = modelInputXMLNode.nChildNode("LUA");
-            if (n != 0)
+            // Set up Subsystem Nodes, first loop through the assets in the XML model input file
+            foreach (XmlNode childNodeAsset in modelInputXMLNode.ChildNodes)
             {
-                XMLNode luaXMLNode = modelInputXMLNode.getChildNode("LUA");
-                if (luaXMLNode.isAttributeSet("enableScripting"))
+                if (childNodeAsset.Name.Equals("PYTHON"))
                 {
-                    if (_strcmpi(luaXMLNode.getAttribute("enableScripting"), "False") != 0)
-                        enableScripting = true;
-                }
-                // Loop through all the of the file nodes
-                int m = luaXMLNode.nChildNode("LUA_FILE");
-                for (int i = 0; i < m; i++)
-                {
-                    XMLNode luaFileXMLNode = luaXMLNode.getChildNode("LUA_FILE", i);
-                    // If scripting is enabled, parse the script file designated by the src attribute
-                    if (enableScripting)
+                    if (childNodeAsset.Attributes["enableScripting"] != null)
                     {
-                        // Parse script file if the 'src' attribute exists
-                        if (luaFileXMLNode.isAttributeSet("src"))
+                        if (childNodeAsset.Attributes["enableScripting"].Value.ToString().ToLower().Equals("true"))
+                            enableScripting = true;
+                    }
+                    // Loop through all the of the file nodes -- TODO (Morgan) What other types of things might be scripted
+                    foreach (XmlNode fileXmlNode in childNodeAsset.ChildNodes)
+                    {
+                        // If scripting is enabled, parse the script file designated by the attribute
+                        if (enableScripting)
                         {
-                            string filename = luaFileXMLNode.getAttribute("src");
-                            bool loaded = loadLuaFunctionsFromFile(::lua::L, filename);
-                            horizon::script::addLuaFile(filename);
+                            // Parse script file if the attribute exists
+                            if (fileXmlNode.ChildNodes[0].Name.Equals("EOMS_FILE"))
+                            {
+                                string fileName = fileXmlNode.ChildNodes[0].Attributes["src"].Value.ToString();
+                                ScriptedEOMS eoms = new ScriptedEOMS(fileName);
+                            }
                         }
-                        // Parse all lua functions in the body of the XML node
-                        int n = luaFileXMLNode.nText();
-                        if (n != 0)
-                        {
-                            string text = luaFileXMLNode.getText();
-                            bool loaded = loadLuaFunctionsFromString(lua::L, text);
+                    }
+                }
+                if (childNodeAsset.Name.Equals("ASSET"))
+                {
+                    // Loop through all the of the ChildNodess for this Asset
+                    foreach (XmlNode childNode in childNodeAsset.ChildNodes)
+                    {
+                        //Create a new asset from the position and add it to the list
+                        if (childNode.Name.Equals("POSITION"))
+                            assetList.Add(new Asset(childNodeAsset.ChildNodes[0]));
+
+                        // Get the current Subsystem XML Node, and create it using the SubsystemAdapter
+                        if (childNode.Name.Equals("SUBSYSTEM"))
+                        {  //is this how we want to do this?
+                            // Check if the type of the Subsystem is scripted, networked, or other
+                            subsystemFactory.GetSubsystem(childNode, enableScripting, dependencies, subsystemMap);
+
+                            //else if (_strcmpi(currSubsystemXmlLNode.getAttribute("Type"), "networked") == 0)
+                            //{
+                            //    // Subsytem is a NetworkedSubsytem, get the infor needed to connect to server
+                            //    string subName = currSubsystemXmlLNode.getAttribute("Name");
+                            //    string host = currSubsystemXmlLNode.getAttribute("host");
+                            //    int port = atoi(currSubsystemXmlLNode.getAttribute("port"));
+                            //    try
+                            //    {
+                            //        currSubsystem = new NetworkedSubsystem(host, port, subName);
+                            //    }
+                            //    catch (SocketException&se) {
+                            //        cout << "Error connecting to subsystem " << subName;
+                            //        cout << " on subystem server at " << host << ":" << port << endl;
+                            //        cout << se.what() << endl;
+                            //        return -1;
+                            //    }
+                            //    }
+                            //}
                         }
                     }
                 }
             }
 
-            // Set up Subsystem Nodes, first loop through the assets in the XML model input file
-            n = modelInputXMLNode.nChildNode("ASSET");
-            for (int i = 0; i < n; i++)
-            {
-                // Get the current Asset XML Node and initialize a new Asset with it
-                XMLNode currAssetXMLNode = modelInputXMLNode.getChildNode("ASSET", i);
-                Asset* currAsset = new Asset(currAssetXMLNode);
-                assetList.push_back(currAsset);
-                // Loop through all the of the Subsystems for this Asset
-                int m = currAssetXMLNode.nChildNode("SUBSYSTEM");
-                for (int j = 0; j < m; j++)
-                {
-                    // Get the current Subsystem XML Node, and create it using the SubsystemAdapter
-                    XMLNode currSubsystemXMLNode = currAssetXMLNode.getChildNode("SUBSYSTEM", j);
-                    Subsystem* currSubsystem = NULL;
-                    // Check if the type of the Subsystem is scripted, networked, or other
-                    if (_strcmpi(currSubsystemXMLNode.getAttribute("Type"), "scripted") == 0)
-                    {
-                        // Subsytem is a ScriptedSubsytem, get the LUA functions for the Subsytem
-                        string subName = currSubsystemXMLNode.getAttribute("Name");
-                        string initLUAFcn = currSubsystemXMLNode.getAttribute("initLUAFcn");
-                        string canPerformLUAFcn = currSubsystemXMLNode.getAttribute("canPerformLUAFcn");
-                        string canExtendLUAFcn = currSubsystemXMLNode.getAttribute("canExtendLUAFcn");
-                        currSubsystem = new ScriptedSubsystem(/*L, subName, initLUAFcn, canPerformLUAFcn, canExtendLUAFcn);
-                    }
-                    else if (_strcmpi(currSubsystemXMLNode.getAttribute("Type"), "networked") == 0)
-                    {
-                        // Subsytem is a NetworkedSubsytem, get the infor needed to connect to server
-                        string subName = currSubsystemXMLNode.getAttribute("Name");
-                        string host = currSubsystemXMLNode.getAttribute("host");
-                        int port = atoi(currSubsystemXMLNode.getAttribute("port"));
-                        try
-                        {
-                            currSubsystem = new NetworkedSubsystem(host, port, subName);
-                        }
-                        catch (SocketException&se) {
-                cout << "Error connecting to subsystem " << subName;
-                cout << " on subystem server at " << host << ":" << port << endl;
-                cout << se.what() << endl;
-                return -1;
-            }
+            Console.ReadKey();
+                /*
             int nKey = currSubsystemXMLNode.nChildNode("KEY");
             for (int k = 0; k < nKey; k++)
             {

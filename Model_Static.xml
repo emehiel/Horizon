@@ -5,8 +5,8 @@
 
 	<ASSET>
 		<POSITION
-			PositionType="PredeterminedECI"
-			ICs="[7378.137, 0.0, 0.0 0.0, 6.02088, 4.215866])">
+			DynamicStateType="PREDETERMINED_ECI"
+			ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866])">
 			<EOMS
 				EOMSType="orbital_EOMS">
 			</EOMS>

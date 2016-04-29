@@ -13,15 +13,16 @@ namespace HSFSubsystem
 {
     public class Power : Subsystem
     {
+        #region Attributes
         private double _batterySize;
         private double _fullSolarPanelPower;
         private double _penumbraSolarPanelPower;
 
-
-
         public static StateVarKey<double> DOD_KEY = new StateVarKey<double>("DepthOfDischarge");
         public static StateVarKey<double> POWIN_KEY = new StateVarKey<double>("SolarPanelPowerIn");
+        #endregion Attributes
 
+        #region Constructors
         public Power(Dependencies dependencies)
         {
             base.Name = "Power";
@@ -45,10 +46,13 @@ namespace HSFSubsystem
             base.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             dependencies.Add("PowerFromADCS", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
         }
-        public Power(XmlNode PowerNode) //
+        public Power(XmlNode PowerNode, Dependencies dependencies) //
         {
-            throw new NotImplementedException();
+           // throw new NotImplementedException();
         }
+        #endregion Constructors
+
+        #region Methods
         private double getSolarPanelPower(ShadowState shadow)
         {
             switch (shadow)
@@ -157,6 +161,7 @@ namespace HSFSubsystem
             }
             return outProf;
         }
+        #endregion Methods
     }
 
 }

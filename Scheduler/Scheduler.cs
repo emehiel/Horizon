@@ -140,7 +140,7 @@ namespace HSFScheduler
                 stopWatch.Start();
                 Parallel.ForEach(potentialSystemSchedules, (currentSchedule) =>
                 {
-                    if (system.canPerform(currentSchedule))
+                    if (system.canPerform())//currentSchedule)) TODO: mehiel fixing this
                         systemCanPerformList.Add(currentSchedule);
                     Console.WriteLine("Processing {0} on thread {1}", currentSchedule.ToString(), Thread.CurrentThread.ManagedThreadId);
                 } );
@@ -154,7 +154,7 @@ namespace HSFScheduler
 
                 foreach (var potentialSchedule in potentialSystemSchedules)
                 {
-                    if (system.canPerform(potentialSchedule))
+                    if (system.canPerform()) //(potentialSchedule)) TODO: mehiel fixing this
                         systemCanPerformList.Add(potentialSchedule);
                     //dependencies.updateStates(newSchedule.getEndStates());
                     //systemCanPerformList.Push(system.canPerform(potentialSchedule));
@@ -189,30 +189,31 @@ namespace HSFScheduler
             // extend all schedules to the end of the simulation
             foreach(var schedule in systemSchedules)
             {
-                dependencies.updateStates(schedule.getEndStates());
-                bool canExtendUntilEnd = true;
-                // Iterate through Subsystem Nodes and set that they havent run
-                foreach (var subsystemNode in system.SubsystemNodes)
-                    subsystemNode.reset();
+                //MORGAN commented this out to be able to build
+                //dependencies.updateStates(schedule.getEndStates());
+                //bool canExtendUntilEnd = true;
+                //// Iterate through Subsystem Nodes and set that they havent run
+                //foreach (var subsystemNode in system.SubsystemNodes)
+                //    subsystemNode.reset();
 
-                int subAssetNum;
-                foreach(var subsystemNode in system.SubsystemNodes)
-                {
-                    subAssetNum = subsystemNode.NAsset;
-                    canExtendUntilEnd &= subsystemNode.canPerform(schedule.getSubNewState(subAssetNum), schedule.getSubNewTask(subAssetNum), system.Environment, _endTime, true);
-                }
+                //int subAssetNum;
+                //foreach(var subsystemNode in system.SubsystemNodes)
+                //{
+                //    subAssetNum = subsystemNode.NAsset;
+                //    canExtendUntilEnd &= subsystemNode.canPerform(schedule.getSubNewState(subAssetNum), schedule.getSubNewTask(subAssetNum), system.Environment, _endTime, true);
+                //}
 
-                // Iterate through constraints
-                foreach (var constraint in system.Constraints)
-                {
-                    canExtendUntilEnd &= constraint.accepts(schedule);
-                }
-                //                for (vector <const Constraint*>::const_iterator constraintIt = system.getConstraints().begin(); constraintIt != system.getConstraints().end(); constraintIt++)
-                //            canExtendUntilEnd &= (*constraintIt)->accepts(*schedIt);
-                if (!canExtendUntilEnd) {
-                    //delete *schedIt;
-                    Console.WriteLine("Schedule may not be valid");
-                }
+                //// Iterate through constraints
+                //foreach (var constraint in system.Constraints)
+                //{
+                //    canExtendUntilEnd &= constraint.accepts(schedule);
+                //}
+                ////                for (vector <const Constraint*>::const_iterator constraintIt = system.getConstraints().begin(); constraintIt != system.getConstraints().end(); constraintIt++)
+                ////            canExtendUntilEnd &= (*constraintIt)->accepts(*schedIt);
+                //if (!canExtendUntilEnd) {
+                //    //delete *schedIt;
+                //    Console.WriteLine("Schedule may not be valid");
+                //}
             }
 
             //DWORD endSchedTickCount = GetTickCount();

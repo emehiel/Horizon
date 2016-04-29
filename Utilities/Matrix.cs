@@ -193,20 +193,21 @@ namespace Utilities
             int rowNumber = 0;
 
             _elements = new List<List<T>>(NumRows);
-
-            foreach (string row in rows)
+            if (rows[0].Contains(","))
             {
-                dRows = Array.ConvertAll(row.Split(','), new Converter<string, double>(Double.Parse));
-                NumCols = dRows.Length;
+                foreach (string row in rows)
+                {
+                    dRows = Array.ConvertAll(row.Split(','), new Converter<string, double>(Double.Parse));
+                    NumCols = dRows.Length;
 
-                _elements.Add(new List<T>(NumCols));
+                    _elements.Add(new List<T>(NumCols));
 
-                for (int j = 0; j < NumCols; j++)
-                   _elements[rowNumber].Add((T)Convert.ChangeType(dRows[j], typeof(T)));
+                    for (int j = 0; j < NumCols; j++)
+                        _elements[rowNumber].Add((T)Convert.ChangeType(dRows[j], typeof(T)));
 
-                rowNumber++;
-            }
-                
+                    rowNumber++;
+                }
+            }   
         }
 
         public Matrix(XmlNode matrixXmlNode)

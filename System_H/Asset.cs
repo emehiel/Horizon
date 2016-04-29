@@ -5,11 +5,14 @@ namespace HSFSystem
 {
     public class Asset
     {
+        #region Attributes
         public DynamicState AssetDynamicState{ get; private set; } //was protected, why?
         public string Name { get; private set; }
         //TODO:make isTaskable mean something
         public bool IsTaskable{ get; private set; }//was protected, why?
+        #endregion
 
+        #region Constructors
         public Asset() {
             IsTaskable = false;
         }
@@ -20,12 +23,14 @@ namespace HSFSystem
             IsTaskable = false;
         }
 
-        public Asset(XmlNode assetXMLNode)
+        public Asset(XmlNode positionXMLNode)
         {
-            Name = assetXMLNode.Attributes["name"].Value;
-            AssetDynamicState =new DynamicState(assetXMLNode["DynamicState"]);  // XmlInput Change - position => DynamicState
+            if(positionXMLNode.Attributes["name"] != null)
+                Name = positionXMLNode.Attributes["name"].Value.ToString();
+            AssetDynamicState =new DynamicState(positionXMLNode);  // XmlInput Change - position => DynamicState
             IsTaskable = false;
         }
+        #endregion
 
     }
 }

@@ -50,7 +50,7 @@ namespace HSFScheduler
         */
         public SystemState getLastState()
         {
-            if (isEmpty() == false) //TODO: check this is what we actually want to do
+            if (!isEmpty()) //TODO: check this is what we actually want to do
             {
                 return Events.Peek().State;
             }

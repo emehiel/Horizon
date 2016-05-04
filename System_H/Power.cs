@@ -14,41 +14,37 @@ namespace HSFSubsystem
     public class Power : Subsystem
     {
         #region Attributes
-        private double _batterySize;
-        private double _fullSolarPanelPower;
-        private double _penumbraSolarPanelPower;
+        //Some Defaults
+        private double _batterySize = 1000000;
+        private double _fullSolarPanelPower = 150;
+        private double _penumbraSolarPanelPower = 75;
 
         public static StateVarKey<double> DOD_KEY = new StateVarKey<double>("DepthOfDischarge");
         public static StateVarKey<double> POWIN_KEY = new StateVarKey<double>("SolarPanelPowerIn");
         #endregion Attributes
 
         #region Constructors
-        public Power(Dependencies dependencies)
+        /// <summary>
+        /// Create a new power node. Defaults: batterySize = 1000000, fullSolarPanelPower =150, penumbraSolarPanelPower = 75
+        /// </summary>
+        /// <param name="PowerNode"></param>
+        /// <param name="dependencies"></param>
+        public Power(XmlNode PowerNode, Dependencies dependencies, Asset asset) 
         {
-            base.Name = "Power";
-            _batterySize = 1000000;
-            _fullSolarPanelPower = 150;
-            _penumbraSolarPanelPower = 75;
+            DefaultSubName = "Power";
+            Asset = asset;
+            getSubNameFromXmlNode(PowerNode);
             addKey(DOD_KEY);
             addKey(POWIN_KEY);
-            base.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             dependencies.Add("PowerFromADCS", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
-        }
-
-        public Power(string name, Dependencies dependencies)
-        {
-            base.Name = name;
-            _batterySize = 1000000;
-            _fullSolarPanelPower = 150;
-            _penumbraSolarPanelPower = 75;
-            addKey(DOD_KEY);
-            addKey(POWIN_KEY);
-            base.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            dependencies.Add("PowerFromADCS", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
-        }
-        public Power(XmlNode PowerNode, Dependencies dependencies) //
-        {
-           // throw new NotImplementedException();
+            if (PowerNode.Attributes["batterySize"] != null)
+                _batterySize = (double)Convert.ChangeType(PowerNode.Attributes["batterySize"].Value, typeof(double));
+            if (PowerNode.Attributes["fullSolarPower"] != null)
+                _fullSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["fullSolarPower"].Value, typeof(double));
+            if(PowerNode.Attributes["penumbraSolarPower"] != null)
+                _penumbraSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["penumbraSolarPower"].Value, typeof(double));
+            // throw new NotImplementedException();
         }
         #endregion Constructors
 
@@ -86,9 +82,9 @@ namespace HSFSubsystem
             return solarPanelPowerProfile;
         }
         public bool canPerform(SystemState oldState, SystemState newState, Task task, DynamicState position,
-                            Universe universe)
+                            Universe universe, List<SystemState> allStates)
         {
-            if (base.canPerform(oldState, newState, task, position, universe) == false) //Make sure everyone you need has been evaluated
+            if (base.canPerform(oldState, newState, task, position, universe, allStates) == false) //Make sure everyone you need has been evaluated
                 return false;
             double es = newState.EventStart;
             double te = newState.TaskEnd;
@@ -102,7 +98,7 @@ namespace HSFSubsystem
             double olddod = oldState.getLastValue(Dkeys.First()).Value; //TODO: (Morgan check front is same as first
 
             // collect power profile out
-            HSFProfile<double> powerOut = DependencyCollector(newState); // deps->callDoubleDependency("POWERSUB_getPowerProfile");
+            HSFProfile<double> powerOut = DependencyCollector(allStates); // deps->callDoubleDependency("POWERSUB_getPowerProfile");
             powerOut = powerOut + powerSubPowerOut;
             // collect power profile in
             HSFProfile<double> powerIn = calcSolarPanelPowerProfile(es, te, ref newState, position, universe);
@@ -152,8 +148,9 @@ namespace HSFSubsystem
             prof1[currentState.TaskEnd] = 40;
             return prof1;
         }
-        private HSFProfile<double> DependencyCollector(SystemState currentState)
+        private HSFProfile<double> DependencyCollector(List<SystemState> allStates)
         {
+            SystemState currentState = allStates[0];
             HSFProfile<double> outProf = new HSFProfile<double>();
             foreach (var dep in SubsystemDependencyFunctions)
             {

@@ -53,6 +53,11 @@ namespace Utilities
             data.Add(pointIn.Key, pointIn.Value);
         }
 
+        public HSFProfile<double> upperLimitIntegrateToProf(double ts, double te, int v1, int v2, ref bool exceeded, int v3, double oldbufferratio)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Create a new Profile fron an initial point
         /// as two different input parameters timeIn, valIn
@@ -323,7 +328,7 @@ namespace Utilities
         }
 
         /// <summary>
-        /// Used to determine if the profile is empty or not
+        /// Returns true if a profile is empty
         /// </summary>
         /// <returns>A boolean, true for empty, false for not empty</returns>
         public bool Empty()

@@ -16,30 +16,20 @@ namespace HSFSubsystem
         #endregion Attributes
 
         #region Constructors
-        public ADCS()
-        {
-            base.Name = "ADCS";
-            base.addKey(POINTVEC_KEY);
-            base.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-        }
-        public ADCS(string name)
-        {
-            base.Name = name;
-            base.addKey(POINTVEC_KEY);
-            base.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-
-        }
         public ADCS(XmlNode ADCSNode) //TODO: (Morgan) Change this to actually parse the XmlNode
         {
-            //throw new NotImplementedException();
+            DefaultSubName = "Adcs";
+            getSubNameFromXmlNode(ADCSNode);
+            addKey(POINTVEC_KEY);
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
         }
         #endregion Constructors
-
+        
         #region Methods
         public bool canPerform(SystemState oldState, SystemState newState, Task task, DynamicState position,
-                                        Universe environment)
+                                        Universe environment, List<SystemState> allStates)
         {
-            if (base.canPerform(oldState, newState, task, position, environment) == false)
+            if (base.canPerform(oldState, newState, task, position, environment, allStates) == false)
                 return false;
             //double timetoslew = (rand()%5)+8;
             double timetoslew = 10;

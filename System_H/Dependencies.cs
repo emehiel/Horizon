@@ -48,13 +48,18 @@ namespace HSFSystem
     {
         //TODO(MORGAN): Make sure dependency can be singleton if it has these endstates and stateMap fields
         static Dependencies _instance = null;
-        private List<SystemState> endStates;
+        public List<SystemState> endStates {get; private set;}
         //private Dictionary<List<State>, int> stateMap;
         private Dictionary<string, Delegate> DependencyFunctions;
+
         private Dependencies()
         {
             DependencyFunctions = new Dictionary<string, Delegate>();
+            endStates = new List<SystemState>();
         }
+        /// <summary>
+        /// Create a singleton instance of the Dependency dictionary
+        /// </summary>
         public static Dependencies Instance
         {
             get
@@ -66,11 +71,20 @@ namespace HSFSystem
                 return _instance;
             }
         }
-
+        /// <summary>
+        /// Add a new dependency function and its call key to the dictionary
+        /// </summary>
+        /// <param name="callKey"></param>
+        /// <param name="func"></param>
         public void Add(string callKey, Delegate func)
         {
             DependencyFunctions.Add(callKey, func);
         }
+        /// <summary>
+        /// Retrieve a specific Delegate dependency function from the dictionary.
+        /// </summary>
+        /// <param name="callKey"></param>
+        /// <returns></returns>
         public Delegate getDependencyFunc(string callKey)
         {
             Delegate ret;
@@ -78,11 +92,29 @@ namespace HSFSystem
                 return ret;
             throw new KeyNotFoundException();
         }
+
+        /// <summary>
+        /// Append a Dictionary of dependency functions to the already existing dictionary
+        /// </summary>
+        /// <param name="newDeps"></param>
         public void Append(Dictionary<string, Delegate> newDeps)
         {
             foreach (var dep in newDeps)
             {
                 DependencyFunctions.Add(dep.Key, dep.Value);
+            }
+        }
+        /// <summary>
+        /// Update the endStates Attribute of dependencies so that the dependency functions can have access
+        /// to all states of the system.
+        /// </summary>
+        /// <param name="assetStates"></param>
+        public void UpdateStates(List<SystemState> assetStates)
+        {
+            endStates.Clear();
+            foreach (SystemState newState  in assetStates)
+            {
+                endStates.Add(newState);
             }
         }
         //------------------------------------------------------------------------------------------------

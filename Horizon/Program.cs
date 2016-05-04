@@ -149,6 +149,11 @@ namespace Horizon
             // Create new Subsystem Factory
             SubsystemFactory subsystemFactory = new SubsystemFactory();
 
+            //Create Lists to hold all the initial condition and dependency nodes to be parsed later
+            List<XmlNode> ICNodes = new List<XmlNode>();
+            List<XmlNode> DepNodes = new List<XmlNode>();
+            List<SystemState> initialSysStates = new List<SystemState>();
+
             // Enable Python scripting support, add additional functions defined in input file
             bool enableScripting = false;
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
@@ -178,6 +183,7 @@ namespace Horizon
                 }
                 if (childNodeAsset.Name.Equals("ASSET"))
                 {
+                    Asset asset = new Asset();
                     // Loop through all the of the ChildNodess for this Asset
                     foreach (XmlNode childNode in childNodeAsset.ChildNodes)
                     {
@@ -185,69 +191,37 @@ namespace Horizon
                         if (childNode.Name.Equals("POSITION"))
                             assetList.Add(new Asset(childNodeAsset.ChildNodes[0]));
 
-                        // Get the current Subsystem XML Node, and create it using the SubsystemAdapter
+                        // Get the current Subsystem XML Node, and create it using the SubsystemFactory
                         if (childNode.Name.Equals("SUBSYSTEM"))
                         {  //is this how we want to do this?
                             // Check if the type of the Subsystem is scripted, networked, or other
-                            subsystemFactory.GetSubsystem(childNode, enableScripting, dependencies, subsystemMap);
+                            subsystemFactory.GetSubsystem(childNode, enableScripting, dependencies, asset, subsystemMap);
+                            foreach (XmlNode ICorDepNode in childNode.ChildNodes)
+                            {
+                                if(ICorDepNode.Name.Equals("IC"))
+                                    ICNodes.Add(ICorDepNode);
+                                if (ICorDepNode.Name.Equals("DEPENDENCY"))
+                                    DepNodes.Add(ICorDepNode);
 
-                            //else if (_strcmpi(currSubsystemXmlLNode.getAttribute("Type"), "networked") == 0)
-                            //{
-                            //    // Subsytem is a NetworkedSubsytem, get the infor needed to connect to server
-                            //    string subName = currSubsystemXmlLNode.getAttribute("Name");
-                            //    string host = currSubsystemXmlLNode.getAttribute("host");
-                            //    int port = atoi(currSubsystemXmlLNode.getAttribute("port"));
-                            //    try
-                            //    {
-                            //        currSubsystem = new NetworkedSubsystem(host, port, subName);
-                            //    }
-                            //    catch (SocketException&se) {
-                            //        cout << "Error connecting to subsystem " << subName;
-                            //        cout << " on subystem server at " << host << ":" << port << endl;
-                            //        cout << se.what() << endl;
-                            //        return -1;
-                            //    }
-                            //    }
-                            //}
+                            }
+                            //Parse the initial condition nodes
+
+
+                        }
+                        //Create a new Constraint
+                        if (childNode.Name.Equals("CONSTRAINT"))
+                        {
+
                         }
                     }
+                    if (ICNodes.Count > 0)
+                        initialSysStates.Add(SystemState.setInitialSystemState(ICNodes));
+                    ICNodes.Clear();
                 }
             }
-
             Console.ReadKey();
                 /*
-            int nKey = currSubsystemXMLNode.nChildNode("KEY");
-            for (int k = 0; k < nKey; k++)
-            {
-                XMLNode icXMLNode = currSubsystemXMLNode.getChildNode("KEY", k);
-                string type = icXMLNode.getAttribute("type");
-                string key = icXMLNode.getAttribute("key");
-                if (_strcmpi(type.c_str(), "Int") == 0)
-                {
-                    currSubsystem->addKey(StateVarKey<int>(key));
-                }
-                else if (_strcmpi(type.c_str(), "Float") == 0)
-                {
-                    currSubsystem->addKey(StateVarKey<float>(key));
-                }
-                else if (_strcmpi(type.c_str(), "Double") == 0)
-                {
-                    currSubsystem->addKey(StateVarKey<double>(key));
-                }
-                else if (_strcmpi(type.c_str(), "Bool") == 0)
-                {
-                    currSubsystem->addKey(StateVarKey<bool>(key));
-                }
-                else if (_strcmpi(type.c_str(), "Matrix") == 0)
-                {
-                    currSubsystem->addKey(StateVarKey<Matrix>(key));
-                }
-                else if (_strcmpi(type.c_str(), "Quat") == 0)
-                {
-                    currSubsystem->addKey(StateVarKey<Quat>(key));
-                }
-            }
-        }
+     
 		else {
             // Check if the XMLNode for this subsystem has attribute defaultConstructor="true".
             // If it does, call the create method of the subsystemAdapter that will call the default

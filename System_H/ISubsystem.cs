@@ -12,8 +12,8 @@ namespace HSFSystem
     {
         bool canPerform(SystemState oldState, SystemState newState,
                       Task task, DynamicState position,
-                      Universe environment);//Dependencies dep); doesn't need dependecies anymoere
-        bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime); // Dependencies dep);
+                      Universe environment, List<SystemState> allStates);
+        bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime); 
 
         void CollectDependencyFuncs(Dependencies Deps, List<string> FuncNames);
 

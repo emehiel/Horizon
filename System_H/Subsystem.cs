@@ -8,12 +8,13 @@ using System.Xml;
 
 namespace HSFSubsystem
 {
-    public abstract class Subsystem : ISubsystem{
+    public abstract class Subsystem : ISubsystem {
         #region Attributes
         public bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
-        public List<ISubsystem> DepenedentSubsystems { get; protected set; } 
+        public List<ISubsystem> DepenedentSubsystems { get; protected set; }
         public string Name { get; protected set; }
+        public static string DefaultSubName { get; protected set; }
         public Dictionary<string, Delegate> SubsystemDependencyFunctions { get; protected set; }
         public List<StateVarKey<int>> Ikeys { get; protected set; }
         public List<StateVarKey<double>> Dkeys { get; protected set; }
@@ -45,20 +46,42 @@ namespace HSFSubsystem
         public virtual Subsystem clone() {
             return DeepCopy.Copy<Subsystem>(this);
         }
+        /// <summary>
+        /// The default canPerform method. 
+        /// Should be used to check if all dependent subsystems can perform and extended by subsystem implementations.
+        /// </summary>
+        /// <param name="oldState"></param>
+        /// <param name="newState"></param>
+        /// <param name="task"></param>
+        /// <param name="position"></param>
+        /// <param name="environment"></param>
+        /// <param name="allStates"></param>
+        /// <returns></returns>
         public virtual bool canPerform(SystemState oldState, SystemState newState,
                             Task task, DynamicState position,
-                            Universe environment) //Dependencies dep); doesn't need dependecies anymoere
+                            Universe environment, List<SystemState> allStates)
         {
             foreach (var sub in DepenedentSubsystems)
             {
-                if (sub.canPerform(oldState, newState, task, position, environment) == false)
+                if (sub.canPerform(oldState, newState, task, position, environment, allStates) == false)
                     return false;
-                //use new state to update state. pass updated state to dependency collector
             }
             return true;
         }
-
-        public abstract bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime); // Dependencies dep);
+        /// <summary>
+        /// The default canExtend function. May be over written for additional functionality.
+        /// </summary>
+        /// <param name="newState"></param>
+        /// <param name="position"></param>
+        /// <param name="environment"></param>
+        /// <param name="evalToTime"></param>
+        /// <returns></returns>
+        public virtual bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime)
+        {
+            if (newState.EventEnd < evalToTime)
+                newState.EventEnd = evalToTime;
+            return true;
+        }
 
         //make a logger method
         public void CollectDependencyFuncs(Dependencies Deps, List<string> FuncNames)
@@ -73,6 +96,28 @@ namespace HSFSubsystem
         {
             DepenedentSubsystems = deps;
         }
+
+        public void getSubNameFromXmlNode(XmlNode subXmlNode)
+        {
+            if (subXmlNode.Attributes["subsystemName"] != null)
+                Name = subXmlNode.Attributes["subsystemName"].Value.ToString();
+            else if (DefaultSubName != null)
+                Name = DefaultSubName;
+            else if (subXmlNode.Attributes["type"] != null)
+                Name = subXmlNode.Attributes["type"].Value.ToString();
+            else
+                throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
+        }
+
+        //public void getInitialStateFromXmlNode(XmlNode ICXmlNode)
+        //{
+        //    Type keyType = Type.GetType(ICXmlNode.Attributes["type"].Value.ToString());
+        //    string key = ICXmlNode.Attributes["key"].Value.ToString();
+        //    string value = ICXmlNode.Attributes["value"].ToString();
+        //    if(keyType)
+        //    StateVarKey <keyType.GetType()> = new StateVarKey<keyType.GetType() > (key);
+        //    .ChangeType(value, keyType);
+        //}
 
         public void addKey(StateVarKey<int> keyIn) {
             if (Ikeys == null) //Only construct what you need
@@ -116,6 +161,7 @@ namespace HSFSubsystem
             }
             Qkeys.Add(keyIn);
         }
+
         #endregion
     }
 }//HSFSubsystem

@@ -56,9 +56,9 @@ namespace HSFSubsystem
         #region Methods
         public override bool canPerform(SystemState oldState, SystemState newState,
                           Task task, DynamicState position,
-                          Universe environment)
+                          Universe environment, List<SystemState> allStates)
         {
-            if (!base.canPerform(oldState, newState, task, position, environment)) //checks all the dependent subsystems
+            if (!base.canPerform(oldState, newState, task, position, environment, allStates)) //checks all the dependent subsystems
                 return false;
 
             dynamic perform = PythonInstance.canPerform(oldState, newState, task, position, environment);

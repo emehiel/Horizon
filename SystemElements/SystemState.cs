@@ -15,7 +15,7 @@ namespace MissionElements
         public SystemState Previous { get; private set; }
 
         /** The start of the event associated with this State */
-        public double EventStart{get; set;}
+        public double EventStart { get; set; }
 
         /** The start of the task associated with this State */
         public double TaskStart { get; set; }
@@ -33,7 +33,7 @@ namespace MissionElements
         public Dictionary<StateVarKey<double>, HSFProfile<double>> Ddata { get; private set; }
 
         /** The Dictionary of floating point value Profiles. */
-     //   public Dictionary<StateVarKey<float>, HSFProfile<float>> Fdata { get; private set; }
+        //   public Dictionary<StateVarKey<float>, HSFProfile<float>> Fdata { get; private set; }
 
         /** The Dictionary of boolean Profiles. */
         public Dictionary<StateVarKey<bool>, HSFProfile<bool>> Bdata { get; private set; }
@@ -55,6 +55,11 @@ namespace MissionElements
             EventEnd = 0;
             TaskEnd = 0;
             TaskStart = 0;
+            Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>();
+            Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
+            Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
+            Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
+            Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
         }
 
         /**
@@ -70,7 +75,7 @@ namespace MissionElements
             EventEnd = newState.EventEnd;
             Idata = newState.Idata;
             Ddata = newState.Ddata;
-     //       Fdata = newState.Fdata;
+            //       Fdata = newState.Fdata;
             Bdata = newState.Bdata;
             Mdata = newState.Mdata;
             Qdata = newState.Qdata;
@@ -86,6 +91,11 @@ namespace MissionElements
             TaskStart = newTaskStart;
             TaskEnd = newTaskStart;
             EventEnd = newTaskStart;
+            Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>();
+            Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
+            Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
+            Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
+            Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
         }
 
 
@@ -97,12 +107,12 @@ namespace MissionElements
          * @param key The integer state variable key that is being looked up.
          * @return A pair containing the last time the variable was set, and the integer value.
          */
-         public KeyValuePair<double, int> getLastValue(StateVarKey<int> key) {
+        public KeyValuePair<double, int> getLastValue(StateVarKey<int> key) {
             HSFProfile<int> valueOut;
-		    if(Idata.Count != 0) { // Are there any Profiles in there?
+            if (Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut.Last(); //found it, return it TODO: return last value or pair?
-		    }
+            }
             return Previous.getLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
         }
         /** 
@@ -112,13 +122,13 @@ namespace MissionElements
          * @param time The time the value is looked up at.
          * @return A pair containing the last time the variable was set, and the integer value.
          */
-        public KeyValuePair<double, int> getValueAtTime(StateVarKey<int> key, double time){
+        public KeyValuePair<double, int> getValueAtTime(StateVarKey<int> key, double time) {
             HSFProfile<int> valueOut;
-            if (Idata.Count != 0)  { // Are there any Profiles in there?
+            if (Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut.DataAtTime(time);
             }
-		    return  Previous.getValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
+            return Previous.getValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
         }
 
         /** 
@@ -127,33 +137,33 @@ namespace MissionElements
          * @param key The integer state variable key that is being looked up.
          * @return The Profile saved in the state.
          */
-        public HSFProfile<int> getProfile(StateVarKey<int> key){
+        public HSFProfile<int> getProfile(StateVarKey<int> key) {
             HSFProfile<int> valueOut;
-		    if(Idata.Count != 0)  { // Are there any Profiles in there?
+            if (Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut;
             }
-		    return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
-	    }
+            return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
+        }
 
         /** TODO: make sure valueOut is a good replacement for iterator.second
          * Returns the integer Profile for this state and all previous states merged into one Profile
          * @param key The integer state variable key that is being looked up.
          * @return The full Profile
          */
-        public HSFProfile<int> getFullProfile(StateVarKey<int> key){
+        public HSFProfile<int> getFullProfile(StateVarKey<int> key) {
             HSFProfile<int> valueOut = new HSFProfile<int>();
-		    if(Idata.Count != 0)  { // Are there any Profiles in there?
+            if (Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) { //see if our key is in there
                     if (Previous != null) // Check whether we are at the first state
-					    return HSFProfile<int>.MergeProfiles(valueOut, Previous.getFullProfile(key));
-				    return valueOut;				
-			    }
+                        return HSFProfile<int>.MergeProfiles(valueOut, Previous.getFullProfile(key));
+                    return valueOut;
+                }
             }
-		    if(Previous != null)
-			    return Previous.getFullProfile(key); // If no data, return profile from previous states
-		    return valueOut; //return empty profile
-	   }
+            if (Previous != null)
+                return Previous.getFullProfile(key); // If no data, return profile from previous states
+            return valueOut; //return empty profile
+        }
 
         /** 
          * Sets the integer Profile in the state with its matching key. If a Profile is found already under
@@ -161,14 +171,14 @@ namespace MissionElements
          * @param key The integer state variable key that is being set.\
          * @param profIn The integer Profile being saved.
          */
-        public void setProfile(StateVarKey<int> key, HSFProfile<int> profIn){
+        public void setProfile(StateVarKey<int> key, HSFProfile<int> profIn) {
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Idata.Add(key, profIn); 
-		    else { // Otherwise, erase whatever is there, and insert a new one.
-			    Idata.Remove(key);
-			    Idata.Add(key, profIn); 
-		    }
+                Idata.Add(key, profIn);
+            else { // Otherwise, erase whatever is there, and insert a new one.
+                Idata.Remove(key);
+                Idata.Add(key, profIn);
+            }
         }
 
         /** 
@@ -178,14 +188,14 @@ namespace MissionElements
 	     * @param key The key corresponding to the state variable.
 	     * @param pairIn The pair to be added to the integer Profile.
 	     */
-        void addValue(StateVarKey<int> key, KeyValuePair<double, int> pairIn){
+        void addValue(StateVarKey<int> key, KeyValuePair<double, int> pairIn) {
             HSFProfile<int> valueIn = new HSFProfile<int>(pairIn);
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Idata.Add(key, valueIn); 
-		    else // Otherwise, add this data point to the existing Profile.
-			    valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
-	    }
+                Idata.Add(key, valueIn);
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
+        }
 
         /** 
          * Adds a integer Profile to the state with the given key. If no Profile exists, a new Profile is created
@@ -193,13 +203,13 @@ namespace MissionElements
          * @param key The key corresponding to the state variable.
          * @param profIn The Profile to be added to the integer Profile.
          */
-        public void addValue(StateVarKey<int> key, HSFProfile<int> profIn){
-		    HSFProfile<int> valueOut;
+        public void addValue(StateVarKey<int> key, HSFProfile<int> profIn) {
+            HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-			    Idata.Add(key, profIn); 
-		    else // Otherwise, add this data point to the existing Profile.
-			    valueOut.Add(profIn);
-	    }
+                Idata.Add(key, profIn);
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(profIn);
+        }
         /*      
         * Gets the last double value set for the given state variable key in the state. If no value is found
         * it checks the previous state, continuing all the way to the initial state.
@@ -208,10 +218,10 @@ namespace MissionElements
         */
         public KeyValuePair<double, double> getLastValue(StateVarKey<double> key) {
             HSFProfile<double> valueOut;
-		    if(Ddata.Count != 0) { // Are there any Profiles in there?
+            if (Ddata.Count != 0) { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut.Last(); //found it, return it TODO: return last value or pair?
-		    }
+            }
             return Previous.getLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
         }
         /** 
@@ -221,13 +231,13 @@ namespace MissionElements
          * @param time The time the value is looked up at.
          * @return A pair containing the last time the variable was set, and the double value.
          */
-        public KeyValuePair<double, double> getValueAtTime(StateVarKey<double> key, double time){
+        public KeyValuePair<double, double> getValueAtTime(StateVarKey<double> key, double time) {
             HSFProfile<double> valueOut;
-            if (Ddata.Count != 0)  { // Are there any Profiles in there?
+            if (Ddata.Count != 0) { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut.DataAtTime(time);
             }
-		    return  Previous.getValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
+            return Previous.getValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
         }
 
         /** 
@@ -236,33 +246,33 @@ namespace MissionElements
          * @param key The double state variable key that is being looked up.
          * @return The Profile saved in the state.
          */
-        public HSFProfile<double> getProfile(StateVarKey<double> key){
+        public HSFProfile<double> getProfile(StateVarKey<double> key) {
             HSFProfile<double> valueOut;
-		    if(Ddata.Count != 0)  { // Are there any Profiles in there?
+            if (Ddata.Count != 0) { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut;
             }
-		    return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
-	    }
+            return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
+        }
 
         /** TODO: make sure valueOut is a good replacement for iterator.second
          * Returns the double Profile for this state and all previous states merged into one Profile
          * @param key The double state variable key that is being looked up.
          * @return The full Profile
          */
-        public HSFProfile<double> getFullProfile(StateVarKey<double> key){
+        public HSFProfile<double> getFullProfile(StateVarKey<double> key) {
             HSFProfile<double> valueOut = new HSFProfile<double>();
-		    if(Ddata.Count != 0)  { // Are there any Profiles in there?
+            if (Ddata.Count != 0) { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut)) { //see if our key is in there
                     if (Previous != null) // Check whether we are at the first state
-					    return HSFProfile<double>.MergeProfiles(valueOut, Previous.getFullProfile(key));
-				    return valueOut;				
-			    }
+                        return HSFProfile<double>.MergeProfiles(valueOut, Previous.getFullProfile(key));
+                    return valueOut;
+                }
             }
-		    if(Previous != null)
-			    return Previous.getFullProfile(key); // If no data, return profile from previous states
-		    return valueOut; //return empty profile
-	   }
+            if (Previous != null)
+                return Previous.getFullProfile(key); // If no data, return profile from previous states
+            return valueOut; //return empty profile
+        }
 
         /** 
          * Sets the double Profile in the state with its matching key. If a Profile is found already under
@@ -270,14 +280,14 @@ namespace MissionElements
          * @param key The double state variable key that is being set.\
          * @param profIn The double Profile being saved.
          */
-        public void setProfile(StateVarKey<double> key, HSFProfile<double> profIn){
+        public void setProfile(StateVarKey<double> key, HSFProfile<double> profIn) {
             HSFProfile<double> valueOut;
             if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Ddata.Add(key, profIn); 
-		    else { // Otherwise, erase whatever is there, and insert a new one.
-			    Ddata.Remove(key);
-			    Ddata.Add(key, profIn); 
-		    }
+                Ddata.Add(key, profIn);
+            else { // Otherwise, erase whatever is there, and insert a new one.
+                Ddata.Remove(key);
+                Ddata.Add(key, profIn);
+            }
         }
 
         /** 
@@ -287,14 +297,14 @@ namespace MissionElements
 	     * @param key The key corresponding to the state variable.
 	     * @param pairIn The pair to be added to the integer Profile.
 	     */
-        public void addValue(StateVarKey<double> key, KeyValuePair<double, double> pairIn){
+        public void addValue(StateVarKey<double> key, KeyValuePair<double, double> pairIn) {
             HSFProfile<double> valueIn = new HSFProfile<double>(pairIn);
-            HSFProfile<double>valueOut;
+            HSFProfile<double> valueOut;
             if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Ddata.Add(key, valueIn); 
-		    else // Otherwise, add this data point to the existing Profile.
-			    valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
-	    }
+                Ddata.Add(key, valueIn);
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
+        }
 
         /** 
          * Adds a double Profile to the state with the given key. If no Profile exists, a new Profile is created
@@ -302,13 +312,13 @@ namespace MissionElements
          * @param key The key corresponding to the state variable.
          * @param profIn The Profile to be added to the double Profile.
          */
-        public void addValue(StateVarKey<double> key, HSFProfile<double> profIn){
-		    HSFProfile<double> valueOut;
+        public void addValue(StateVarKey<double> key, HSFProfile<double> profIn) {
+            HSFProfile<double> valueOut;
             if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-			    Ddata.Add(key, profIn); 
-		    else // Otherwise, add this data point to the existing Profile.
-			    valueOut.Add(profIn);
-	    }
+                Ddata.Add(key, profIn);
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(profIn);
+        }
         /*      
         * Gets the last boolean value set for the given state variable key in the state. If no value is found
         * it checks the previous state, continuing all the way to the initial state.
@@ -531,7 +541,7 @@ namespace MissionElements
         public void addValue(StateVarKey<Matrix<double>> key, KeyValuePair<double, Matrix<double>> pairIn)
         {
             HSFProfile<Matrix<double>> valueIn = new HSFProfile<Matrix<double>>(pairIn);
-            HSFProfile<Matrix<double>> valueOut;
+            HSFProfile<Matrix<double>> valueOut = new HSFProfile<Matrix<double>>();
             if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Mdata.Add(key, valueIn);
             else // Otherwise, add this data point to the existing Profile.
@@ -552,73 +562,59 @@ namespace MissionElements
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
         }
-        public static bool setInitialSystemState(XmlNode modelInputXMLNode, List<SystemState> initialStateList)
+        //maybe add this functionality to subsystem? but then we would need to pass the state to the constructor
+        public static SystemState setInitialSystemState(List<XmlNode> ICNodes)
         {
-            Console.WriteLine("Setting initial state... ");
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
             //int n = modelInputXMLNode.ChildNode("ASSET");
-            foreach (XmlNode assetNode in modelInputXMLNode["ASSET"].ChildNodes)
+            SystemState state = new SystemState();
+            foreach (XmlNode ICNode in ICNodes)
             {
-                // Get the current Asset XML Node, create a new State corresponding to this Asset
-                SystemState state = new SystemState();
-                // Loop through all the of the Subsystems for this Asset
-                foreach (XmlNode subNode in assetNode["SUBSYSTEM"].ChildNodes)
+                string type = ICNode.Attributes["type"].Value.ToString();
+                string key = ICNode.Attributes["key"].Value.ToString();
+                if (type.Equals("Int"))
                 {
-                    // Loop through all the IC's in the current Subsystem XML Node, determine their type
-                    // create the StateVarKey for it, and add the IC to the initial state
-                    foreach (XmlNode ICNode in subNode["IC"].ChildNodes)
-                    {
-                        string type = ICNode.Attributes["type"].ToString();
-                        string key = ICNode.Attributes["key"].ToString();
-                        if (type.Equals("Int"))
-                        {
-                            int val;
-                            Int32.TryParse(ICNode.Attributes["value"].ToString(), out val);
-                            StateVarKey<int> svk = new StateVarKey<int>(key);
-                            state.addValue(svk, new KeyValuePair<double, int>(SimParameters.SimStartSeconds, val));
-                        }
-                        else if (type.Equals("Float"))
-                        {
-                            float val;
-                            float.TryParse(ICNode.Attributes["value"].ToString(), out val);
-                            StateVarKey<double> svk = new StateVarKey<double>(key);
-                            state.addValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
-                        }
-                        //else if (type.Equals("Double"))
-                        //{
-                        //    double val;
-                        //    Double.TryParse(ICNode.Attributes["value"].ToString(), out val);
-                        //    StateVarKey<float> svk = new StateVarKey<float>(key);
-                        //    state.addValue(svk, new KeyValuePair<double, float>(SimParameters.SimStartSeconds, val));
-                        //}
-                        else if (type.Equals("Bool"))
-                        {
-                            string val = ICNode.Attributes["value"].ToString();
-                            bool val_ = false;
-                            if (val.Equals("True")|| val.Equals("1"))
-                                val_ = true;
-                            StateVarKey<bool> svk = new StateVarKey<bool>(key);
-                            state.addValue(svk, new KeyValuePair<double, bool>(SimParameters.SimStartSeconds, val_));
-                        }
-                        else if (type.Equals("Matrix"))
-                        {
-                            Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"]);
-                            StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(key);
-                            state.addValue(svk, new KeyValuePair<double, Matrix<double>>(SimParameters.SimStartSeconds, val));
-                        }
-                        else if (type.Equals("Quat"))
-                        {
-                            // Quaternions still need an initializer from a string, like Matrices
-                        }
-                        else {
-                            return false;
-                        }
-                    }
+                    int val;
+                    Int32.TryParse(ICNode.Attributes["value"].Value.ToString(), out val);
+                    StateVarKey<int> svk = new StateVarKey<int>(key);
+                    state.addValue(svk, new KeyValuePair<double, int>(SimParameters.SimStartSeconds, val));
                 }
-                initialStateList.Add(state);
+                //else if (type.Equals("Float"))
+                //{
+                //    float val;
+                //    float.TryParse(ICNode.Attributes["value"].Value.ToString(), out val);
+                //    StateVarKey<double> svk = new StateVarKey<double>(key);
+                //    state.addValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
+                //}
+                else if (type.Equals("Double"))
+                {
+                    double val;
+                    Double.TryParse(ICNode.Attributes["value"].ToString(), out val);
+                    StateVarKey<double> svk = new StateVarKey<double>(key);
+                    state.addValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
+                }
+                else if (type.Equals("Bool"))
+                {
+                    string val = ICNode.Attributes["value"].Value.ToString();
+                    bool val_ = false;
+                    if (val.Equals("True") || val.Equals("1"))
+                        val_ = true;
+                    StateVarKey<bool> svk = new StateVarKey<bool>(key);
+                    state.addValue(svk, new KeyValuePair<double, bool>(SimParameters.SimStartSeconds, val_));
+                }
+                else if (type.Equals("Matrix"))
+                {
+                    Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"].ToString());
+                    StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(key);
+                    state.addValue(svk, new KeyValuePair<double, Matrix<double>>(SimParameters.SimStartSeconds, val));
+                }
+                else if (type.Equals("Quat"))
+                {
+                    // Quaternions still need an initializer from a string, like Matrices
+                }
             }
-
-            return true;
+            return state;
         }
+        
     }
 }

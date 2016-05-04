@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Utilities;
 using MissionElements;
+using HSFSystem;
 
 namespace HSFScheduler
 {
@@ -29,20 +30,19 @@ namespace HSFScheduler
                 Task task = assetSchedAccess.Item2.Task;
                 if (task != null)
                 {
-                    Event eventToAdd = new Event(task, new SystemState(assetSchedAccess.Item1.getLastState(), newTaskStartTime));
-                    AssetScheds.Add(new AssetSchedule(assetSchedAccess.Item1, eventToAdd));
+                    Event eventToAdd = new Event(task, new SystemState(assetSchedAccess.Item1.GetLastState(), newTaskStartTime));
+                    AssetScheds.Add(new AssetSchedule(assetSchedAccess.Item1, eventToAdd, assetSchedAccess.Item2.Asset));
                     //TODO: double check c# implementation above
                    // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
                    // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
                 }
                 else
-                    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(assetSchedAccess.I));
-                i++;
+                    AssetScheds.Add(DeepCopy.Copy<AssetSchedule>(assetSchedAccess.Item1));
             }
             
         }
 
-        public bool canAddTasks(Stack<Access> newAccessList, double newTaskStartTime)
+        public bool CanAddTasks(Stack<Access> newAccessList, double newTaskStartTime)
         {
             int count = 0;
             // vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
@@ -59,7 +59,7 @@ namespace HSFScheduler
 				        return false;
 			        if(!accessAssetSched.Item2.isEmpty())
                     {
-				        if(accessAssetSched.Item2.getLastState().EventEnd > newTaskStartTime)
+				        if(accessAssetSched.Item2.GetLastState().EventEnd > newTaskStartTime)
 					        return false;
 			        }
 		        }
@@ -75,34 +75,35 @@ namespace HSFScheduler
             return count;
         }
 
-        public SystemState getSubNewState(int assetNum)
+        public SystemState getSubsystemNewState(Asset asset)
         {
-            if (AssetScheds[assetNum].isEmpty())
-                return AssetScheds[assetNum].InitialState;
-            else
-                return AssetScheds[assetNum].getLastState();
+            return GetAssetSchedule(asset).GetLastState();
         }
 
-        public Task getSubNewTask(int assetNum)
+        public Task getSubsytemNewTask(Asset asset)
         {
-            if (AssetScheds[assetNum].isEmpty())
-                return null;
-            else
-                return AssetScheds[assetNum].getLastTask();
+            return GetAssetSchedule(asset).GetLastTask();
         }
 
-        public double getLastTaskStart() {
+        public AssetSchedule GetAssetSchedule(Asset asset)
+        {
+            return AssetScheds.Find(item => item.Asset == asset);
+        }
+
+        public double getLastTaskStart()
+        {
 	        double lasttime = 0;
-            foreach(AssetSchedule aIt in AssetScheds)
-		        if(!aIt.isEmpty())
-			        lasttime = lasttime > aIt.getLastState().TaskStart ? lasttime : aIt.getLastState().TaskStart;
+            foreach(var assetSchedule in AssetScheds)
+		        if(!assetSchedule.isEmpty())
+			        lasttime = lasttime > assetSchedule.GetLastState().TaskStart ? lasttime : assetSchedule.GetLastState().TaskStart;
 	        return lasttime;
         }
 
-        public List<SystemState> getEndStates(){
+        public List<SystemState> GetEndStates()
+        {
 	        List<SystemState> endStates = new List<SystemState>();
             foreach(AssetSchedule asIt in AssetScheds)
-		        endStates.Add(asIt.getLastState());
+		        endStates.Add(asIt.GetLastState());
 	        return endStates;
         }
 

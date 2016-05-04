@@ -2,6 +2,7 @@
 using System.Linq;
 using HSFSubsystem;
 using Utilities;
+using MissionElements;
 
 namespace HSFSystem
 {
@@ -34,26 +35,8 @@ namespace HSFSystem
             Environment = copy.Environment;
             ThreadNum = copy.ThreadNum;
         }
-        /*
-        public bool canPerform(SystemSchedule sysSched){
-            // Iterate through Subsystem Nodes and set that they havent run
-            foreach (Subsystem subNodeIt in Subsystems){
-                subNodeIt.reset();
-            }
-            // Iterate through constraints
-            foreach (Constraint constraintIt in Constraints){
-                if(!checkSubs(constraintIt.Subsystems, sysSched, true))
-                    return false;
-                if(!constraintIt.accepts(sysSched))
-                    return false;
-            }
-            // Check the remaining Subsystems that aren't included in any Constraints
-            if (!checkSubs(Subsystems, sysSched, false))
-                return false;
-            
-            return true;
-        }
         
+        /*
         public bool checkForCircularDependencies(){
             bool hasCircDep = false;
             foreach(Subsystem nodeIt in Subsystems){
@@ -64,22 +47,9 @@ namespace HSFSystem
             }
             return hasCircDep;
         }
- 
-        private bool checkSubs(List<Subsystem> subNodeList, 
-                               SystemSchedule sySched, bool mustEvaluate){
-            int subAssetNum;
-            foreach(Subsystem subNodeIt in subNodeList){
-                subAssetNum = subNodeIt.NAsset;
-                if(subNodeIt.canPerform(sySched.getSubNewState(subAssetNum),
-                                        sySched.getSubNewTask(subAssetNum), 
-                                        Environment, 
-                                        sySched.getLastTaskStart(),
-                                        mustEvaluate))
-                    return false;
-            }
-            return true;                           
-        }
-        
+ */
+
+        /*
         private bool checkSubForCircularDependencies(Subsystem currNode,
                                                      Subsystem beginNode){
             bool hasCircDep = false;
@@ -103,6 +73,7 @@ namespace HSFSystem
                 subIt.setDependencies(deps);
             }
         }
+        */
         /*        
                 public List<Asset> getAssets(){
 

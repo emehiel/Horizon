@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using HSFSystem;
-using Utilities;
 using MissionElements;
 using UserModel;
+using HSFSystem;
 
 namespace HSFScheduler
 {
@@ -47,7 +46,7 @@ namespace HSFScheduler
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
         /// <param name="stepTime"></param>
-        public static Stack<Access> pregenerateAccessesByAsset(SystemClass system, Stack<Task> tasks, double startTime, double endTime, double stepTime)
+        public static Stack<Access> pregenerateAccessesByAsset(HSFSystem.SystemClass system, Stack<Task> tasks, double startTime, double endTime, double stepTime)
         {
             Stack<Access> accessesByAsset = new Stack<Access>();
             // For all assets...

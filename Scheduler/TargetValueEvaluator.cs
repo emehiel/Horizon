@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace HSFScheduler
 {
-    class TargetValueSchedulerEvaluator : ScheduleEvaluator
+    class TargetValueEvaluator : Evaluator
     {
-        public override double evaluate(SystemSchedule schedule)
+        public override double Evaluate(SystemSchedule schedule)
         {
             double sum = 0;
             foreach (AssetSchedule asset in schedule.AssetScheds)

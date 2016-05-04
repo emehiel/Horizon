@@ -54,7 +54,7 @@ namespace HSFSchedulerUnitTest
             foreach (XmlNode xmlNode in targetDeckXmlNodes)
             {
                 Target newTarget = new Target(xmlNode);
-                Task newTask = new Task(taskType.EMPTY, newTarget, 1);
+                Task newTask = new Task(TaskType.EMPTY, newTarget, 1);
                 tasks.Push(newTask);
             }
 
@@ -87,6 +87,8 @@ namespace HSFSchedulerUnitTest
 
             Console.ReadLine();
         }
+
+
 
     }
 }

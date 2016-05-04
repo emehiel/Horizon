@@ -1,17 +1,20 @@
 using System.Collections.Generic;
 using HSFSubsystem;
 using Utilities;
+using MissionElements;
 
 namespace HSFSystem
 {
-    public class Constraint{
+    public abstract class Constraint
+    {
         //List of subsystem nodes on which the Constraint operates
-        public List<Subsystem> Subsystem{get; private set;}
+        public List<Subsystem> Subsystems { get; private set; }
       //  public Guid ID;
 
+        // TODO (EAM): What is this used for?
         public void AddConstrainedSubNode(Subsystem node)
         {
-            Subsystem.Add(node);
+            Subsystems.Add(node);
         }
 
         /**
@@ -20,12 +23,12 @@ namespace HSFSystem
          * @param state a partially updated state
          * @return true if the state passes the constraint check
          */
-         /*
-        public virtual bool accepts(SystemSchedule sched)
+        
+        public virtual bool Accepts(SystemState state)
         {
             return false;
         }
-        */
+        
         public virtual Constraint clone()
         {
             return DeepCopy.Copy<Constraint>(this);

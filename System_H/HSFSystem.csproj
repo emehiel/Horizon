@@ -77,6 +77,7 @@
     <Compile Include="CanPerformReturn.cs" />
     <Compile Include="Constraint.cs" />
     <Compile Include="Dependencies.cs" />
+    <Compile Include="GenericConstraint.cs" />
     <Compile Include="ISubsystem.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="NodeDependencies.cs" />

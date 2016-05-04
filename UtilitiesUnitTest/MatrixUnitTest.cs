@@ -18,5 +18,11 @@ namespace UtilitiesUnitTest
 
             Assert.AreEqual(Matrix<double>.Dot(A, B), answer);
         }
+
+        [TestMethod]
+        public void testDot2()
+        {
+
+        }
     }
 }

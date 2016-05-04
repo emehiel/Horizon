@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Utilities;
 using MissionElements;
+using HSFSystem;
 
 namespace HSFScheduler
 {
@@ -8,6 +9,7 @@ namespace HSFScheduler
     {
         public SystemState InitialState { get; private set; }
         public Stack<Event> Events { get; private set; }
+        public Asset Asset { get; private set; }
 
         /**
          * Creates a new empty schedule with the given initial state.
@@ -34,12 +36,13 @@ namespace HSFScheduler
 	     * @param oldSchedule the old schedule to base this schedule off of
 	     * @param newEvent the new event to add to the schedule
 	     */
-        public AssetSchedule(AssetSchedule oldSchedule, Event newEvent)
+        public AssetSchedule(AssetSchedule oldSchedule, Event newEvent, Asset newAsset)
         {
             AssetSchedule newAssetSched = DeepCopy.Copy<AssetSchedule>(oldSchedule);
             InitialState = newAssetSched.InitialState;
             Events = newAssetSched.Events;
             Events.Push(newEvent);
+            Asset = newAssetSched.Asset;
 
         }
 
@@ -48,7 +51,7 @@ namespace HSFScheduler
         * Returns the last State in the schedule
         * @return the last State in the schedule
         */
-        public SystemState getLastState()
+        public SystemState GetLastState()
         {
             if (!isEmpty()) //TODO: check this is what we actually want to do
             {
@@ -62,7 +65,7 @@ namespace HSFScheduler
         * Returns the last Task in the schedule
         * @return the last Task in the schedule
         */
-        public Task getLastTask()
+        public Task GetLastTask()
         {
             if (isEmpty() == false) //TODO: check that this is actually what we want to do.
             {

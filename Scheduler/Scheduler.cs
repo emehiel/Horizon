@@ -111,11 +111,11 @@ namespace HSFScheduler
             {
                 // if accesses are pregenerated, look up the access information and update assetTaskList
                 if (canPregenAccess)
-                    scheduleCombos = generateExhaustiveSystemSchedules(preGeneratedAccesses, system, currentTime);
+                    scheduleCombos = GenerateExhaustiveSystemSchedules(preGeneratedAccesses, system, currentTime);
 
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
                 if (systemSchedules.Count > _maxNumSchedules)
-                    cropSchedules(systemSchedules, scheduleEvaluator, emptySchedule);
+                    CropSchedules(systemSchedules, scheduleEvaluator, emptySchedule);
 
                 // Create a new system schedule list by adding each of the new Task commands for the Assets onto each of the old schedules
                 // Start timing
@@ -186,9 +186,11 @@ namespace HSFScheduler
 
 
             if (systemSchedules.Count > _maxNumSchedules)
-                cropSchedules(systemSchedules, scheduleEvaluator, emptySchedule);
+                CropSchedules(systemSchedules, scheduleEvaluator, emptySchedule);
 
+            // THIS GOES AWAY IF CAN EXTEND HAPPENS IN THE SUBSYSTEM - EAM
             // extend all schedules to the end of the simulation
+            /*
             foreach (var schedule in systemSchedules)
             {
 
@@ -213,6 +215,7 @@ namespace HSFScheduler
                     Console.WriteLine("Schedule may not be valid");
                 }
             }
+            */
 
             //DWORD endSchedTickCount = GetTickCount();
             //schedTimeMs = endSchedTickCount - startSchedTickCount;
@@ -224,7 +227,7 @@ namespace HSFScheduler
         }
 
 
-        void cropSchedules(List<SystemSchedule> schedulesToCrop, Evaluator scheduleEvaluator, SystemSchedule emptySched)
+        void CropSchedules(List<SystemSchedule> schedulesToCrop, Evaluator scheduleEvaluator, SystemSchedule emptySched)
         {
             // Evaluate the schedules and set their values
             foreach (SystemSchedule systemSchedule in schedulesToCrop)
@@ -243,7 +246,7 @@ namespace HSFScheduler
         }
 
 // Return all possible combinations of performing Tasks by Asset at current simulation time
-public static Stack<Stack<Access>> generateExhaustiveSystemSchedules(Stack<Access> currentAccessForAllAssets, HSFSystem.SystemClass system, double currentTime)
+public static Stack<Stack<Access>> GenerateExhaustiveSystemSchedules(Stack<Access> currentAccessForAllAssets, SystemClass system, double currentTime)
         {
             // A stack of accesses stacked by asset
             Stack<Stack<Access>> currentAccessesByAsset = new Stack<Stack<Access>>();

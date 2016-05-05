@@ -100,7 +100,6 @@ namespace MissionElements
 
 
         //took out setters and getters becuase they're public fields
-
         /** TODO: figure out if this can all be done with dictionary stuff
          * Gets the last int value set for the given state variable key in the state. If no value is found
          * it checks the previous state, continuing all the way to the initial state.
@@ -137,15 +136,39 @@ namespace MissionElements
          * @param key The integer state variable key that is being looked up.
          * @return The Profile saved in the state.
          */
-        public HSFProfile<int> getProfile(StateVarKey<int> key) {
+        public HSFProfile<int> getProfile(StateVarKey<int> key)
+        {
             HSFProfile<int> valueOut;
-            if (Idata.Count != 0) { // Are there any Profiles in there?
+            if (Idata.Count != 0)
+            { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
                     return valueOut;
             }
             return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
         }
 
+        /// <summary>
+        /// TODO: EAM attempt to templatize these methods...  need to look to see what happens with (dynamic)valueOut...
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="_key"></param>
+        /// <returns></returns>
+        public HSFProfile<T> getProfile<T>(StateVarKey<T> _key)
+        {
+            if (_key.GetType() == typeof(StateVarKey<int>))
+            {
+                StateVarKey<int> _intKey = new StateVarKey<int>(_key.VarName);
+                HSFProfile<int> valueOut;
+                if (Idata.Count != 0)
+                { // Are there any Profiles in there?
+                    if (Idata.TryGetValue(_intKey, out valueOut)) //see if our key is in there
+                        return (dynamic)valueOut;
+                    return Previous.getProfile(_key); // This isn't the right profile, go back one and try it out!
+                }
+            }
+                throw new NotImplementedException();
+        }
+        
         /** TODO: make sure valueOut is a good replacement for iterator.second
          * Returns the integer Profile for this state and all previous states merged into one Profile
          * @param key The integer state variable key that is being looked up.

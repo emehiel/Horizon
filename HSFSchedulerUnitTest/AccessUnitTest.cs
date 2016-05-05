@@ -9,6 +9,7 @@ using MissionElements;
 using HSFScheduler;
 using UserModel;
 using HSFSystem;
+using HSFSubsystem;
 
 namespace HSFSchedulerUnitTest
 {
@@ -18,6 +19,7 @@ namespace HSFSchedulerUnitTest
         [TestMethod]
         public void PregenAccessUnitTest()
         {
+            /*
             XmlDocument scenarioDoc = new XmlDocument();
             scenarioDoc.Load("..\\..\\SimulationInput.xml");
 
@@ -44,7 +46,7 @@ namespace HSFSchedulerUnitTest
                 assets.Add(newAsset);
             }
 
-            SystemClass system = new SystemClass();// assets);
+            SystemClass system = new SystemClass(assets, subsystems, constraints, environment);// assets);
 
             XmlDocument targetDeckDoc = new XmlDocument();
             targetDeckDoc.Load("..\\..\\v2.2-300targets.xml");
@@ -86,6 +88,7 @@ namespace HSFSchedulerUnitTest
                 combo.ToString();
 
             Console.ReadLine();
+            */
         }
 
 

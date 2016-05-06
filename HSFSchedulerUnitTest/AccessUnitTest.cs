@@ -22,7 +22,7 @@ namespace HSFSchedulerUnitTest
 
             List<int> newList = new List<int>();
 
-            Console.Write("dfkalj", )
+            Console.Write("dfkalj");
             /*
             XmlDocument scenarioDoc = new XmlDocument();
             scenarioDoc.Load("..\\..\\SimulationInput.xml");

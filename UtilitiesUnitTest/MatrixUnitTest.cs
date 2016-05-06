@@ -8,21 +8,15 @@ namespace UtilitiesUnitTest
     public class MatrixUnitTest
     {
         [TestMethod]
-        public void TestDot()
+        public void TestCumProd1()
         {
-            Matrix<double> A = new Matrix<double>(3, 1, 2);
-            Matrix<double> B = new Matrix<double>(3, 1, 4);
+            double[,] elements = { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
+            Matrix<double> A = new Matrix<double>(elements);
 
-            double answer = 24;
+            double[,] result = { { 1, 2, 4 }, { 4, 10, 18 }, { 28, 80, 162 } };
+            Matrix<double> R = new Matrix<double>(result);
 
-
-            Assert.AreEqual(Matrix<double>.Dot(A, B), answer);
-        }
-
-        [TestMethod]
-        public void testDot2()
-        {
-
+            Assert.AreEqual(R, Matrix<double>.Cumprod(A));
         }
     }
 }

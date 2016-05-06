@@ -50,6 +50,7 @@ namespace HSFScheduler
 
                 // Check all subsystems to see if they canPerform the task
                 // Recursion of the subsystem dependencies is managed by the subsystems
+                //canPerform(SystemState oldState, SystemState newState, Dictionary<Asset, Task> proposedTasks, Universe environment)
                 if (!subsystem.canPerform(oldState, newState, proposedTask, assetDynamicState, environment))
                     return false;
 

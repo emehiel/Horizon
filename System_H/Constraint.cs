@@ -12,7 +12,7 @@ namespace HSFSystem
       //  public Guid ID;
 
         // TODO (EAM): What is this used for?
-        public void AddConstrainedSubNode(Subsystem node)
+        public void AddConstrainedSub(Subsystem node)
         {
             Subsystems.Add(node);
         }

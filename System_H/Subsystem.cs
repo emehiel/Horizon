@@ -57,13 +57,13 @@ namespace HSFSubsystem
         /// <param name="environment"></param>
         /// <param name="allStates"></param>
         /// <returns></returns>
-        public virtual bool canPerform(SystemState oldState, SystemState newState,
+        public virtual bool canPerform(List<SystemState> oldStates, List<SystemState> newStates,
                             Task task, DynamicState position,
-                            Universe environment, List<SystemState> allStates)
+                            Universe environment)
         {
             foreach (var sub in DepenedentSubsystems)
             {
-                if (sub.canPerform(oldState, newState, task, position, environment, allStates) == false)
+                if (sub.canPerform(oldStates, newStates, task, position, environment) == false)
                     return false;
             }
             return true;
@@ -76,8 +76,9 @@ namespace HSFSubsystem
         /// <param name="environment"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
-        public virtual bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime)
+        public virtual bool canExtend(List<SystemState> newStates, DynamicState position, Universe environment, double evalToTime)
         {
+            SystemState newState = newStates.Find(item => item.Asset == asset);
             if (newState.EventEnd < evalToTime)
                 newState.EventEnd = evalToTime;
             return true;

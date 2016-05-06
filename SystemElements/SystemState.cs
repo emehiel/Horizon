@@ -44,6 +44,8 @@ namespace MissionElements
         /** The Dictionary of Quaternion Profiles. */
         public Dictionary<StateVarKey<Quat>, HSFProfile<Quat>> Qdata { get; private set; }
 
+        //public Dictionary<StateVarKey<T>, HSFProfile<T>> TData { get; set; }
+
 
         /**
          * Creates an initial State
@@ -136,6 +138,7 @@ namespace MissionElements
          * @param key The integer state variable key that is being looked up.
          * @return The Profile saved in the state.
          */
+         /*
         public HSFProfile<int> getProfile(StateVarKey<int> key)
         {
             HSFProfile<int> valueOut;
@@ -146,7 +149,7 @@ namespace MissionElements
             }
             return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
         }
-
+        */
         /// <summary>
         /// TODO: EAM attempt to templatize these methods...  need to look to see what happens with (dynamic)valueOut...
         /// </summary>
@@ -166,7 +169,51 @@ namespace MissionElements
                     return Previous.getProfile(_key); // This isn't the right profile, go back one and try it out!
                 }
             }
-                throw new NotImplementedException();
+            else if (_key.GetType() == typeof(StateVarKey<double>))
+            {
+                StateVarKey<double> _intKey = new StateVarKey<double>(_key.VarName);
+                HSFProfile<double> valueOut;
+                if (Ddata.Count != 0)
+                { // Are there any Profiles in there?
+                    if (Ddata.TryGetValue(_intKey, out valueOut)) //see if our key is in there
+                        return (dynamic)valueOut;
+                    return Previous.getProfile(_key); // This isn't the right profile, go back one and try it out!
+                }
+            }
+            else if (_key.GetType() == typeof(StateVarKey<bool>))
+            {
+                StateVarKey<bool> _intKey = new StateVarKey<bool>(_key.VarName);
+                HSFProfile<bool> valueOut;
+                if (Ddata.Count != 0)
+                { // Are there any Profiles in there?
+                    if (Bdata.TryGetValue(_intKey, out valueOut)) //see if our key is in there
+                        return (dynamic)valueOut;
+                    return Previous.getProfile(_key); // This isn't the right profile, go back one and try it out!
+                }
+            }
+            else if (_key.GetType() == typeof(StateVarKey<Matrix<double>>))
+            {
+                StateVarKey<Matrix<double>> _intKey = new StateVarKey<Matrix<double>>(_key.VarName);
+                HSFProfile<Matrix<double>> valueOut;
+                if (Ddata.Count != 0)
+                { // Are there any Profiles in there?
+                    if (Mdata.TryGetValue(_intKey, out valueOut)) //see if our key is in there
+                        return (dynamic)valueOut;
+                    return Previous.getProfile(_key); // This isn't the right profile, go back one and try it out!
+                }
+            }
+            else if (_key.GetType() == typeof(StateVarKey<Quat>))
+            {
+                StateVarKey<Quat> _intKey = new StateVarKey<Quat>(_key.VarName);
+                HSFProfile<Quat> valueOut;
+                if (Ddata.Count != 0)
+                { // Are there any Profiles in there?
+                    if (Qdata.TryGetValue(_intKey, out valueOut)) //see if our key is in there
+                        return (dynamic)valueOut;
+                    return Previous.getProfile(_key); // This isn't the right profile, go back one and try it out!
+                }
+            }
+            throw new ArgumentException("Profile Type Not Found");
         }
         
         /** TODO: make sure valueOut is a good replacement for iterator.second
@@ -269,6 +316,7 @@ namespace MissionElements
          * @param key The double state variable key that is being looked up.
          * @return The Profile saved in the state.
          */
+         /*
         public HSFProfile<double> getProfile(StateVarKey<double> key) {
             HSFProfile<double> valueOut;
             if (Ddata.Count != 0) { // Are there any Profiles in there?
@@ -277,7 +325,7 @@ namespace MissionElements
             }
             return Previous.getProfile(key); // This isn't the right profile, go back one and try it out!
         }
-
+        */
         /** TODO: make sure valueOut is a good replacement for iterator.second
          * Returns the double Profile for this state and all previous states merged into one Profile
          * @param key The double state variable key that is being looked up.

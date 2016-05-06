@@ -19,6 +19,10 @@ namespace HSFSchedulerUnitTest
         [TestMethod]
         public void PregenAccessUnitTest()
         {
+
+            List<int> newList = new List<int>();
+
+            Console.Write("dfkalj", )
             /*
             XmlDocument scenarioDoc = new XmlDocument();
             scenarioDoc.Load("..\\..\\SimulationInput.xml");

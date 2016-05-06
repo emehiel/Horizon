@@ -50,8 +50,8 @@ namespace HSFSubsystem
         /// The default canPerform method. 
         /// Should be used to check if all dependent subsystems can perform and extended by subsystem implementations.
         /// </summary>
-        /// <param name="oldState"></param>
-        /// <param name="newState"></param>
+        /// <param name="oldState">The previous state of the syste</param>
+        /// <param name="newState">The new state of the system determined by the Subsystem</param>
         /// <param name="task"></param>
         /// <param name="position"></param>
         /// <param name="environment"></param>

@@ -11,10 +11,10 @@ namespace HSFScheduler
         public override double Evaluate(SystemSchedule schedule)
         {
             double sum = 0;
-            foreach (AssetSchedule asset in schedule.AssetScheds)
+            foreach (StateHistory asset in schedule.AssetScheds)
                 foreach (Event envent in asset.Events)
                 {
-                    sum += 5 - envent.Task.Target.Value;
+                    sum += 5 - envent.Tasks.Target.Value;
                     /*if (env.Task.Type == MissionElements.taskType.COMM)
                     {
                        

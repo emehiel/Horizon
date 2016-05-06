@@ -2,34 +2,42 @@
 using System.Collections.Generic;
 using Utilities;
 using MissionElements;
+using HSFSystem;
 
 namespace HSFScheduler
 {
     public class Event
     {
-        /** The task that is to be performed. */
-        public Task Task { get; private set; }
-
-        /** The time history of the Asset State during the current Event. */
+        /** The task that are to be performed by each asset. */
+        public Dictionary<Asset, Task> Tasks { get; private set; }
+        public Access ;
+        /** The time history of the State during the current Event. */
         public SystemState State { get; private set; }
 
-        /**
-	     * Creates an Event, in which the Task was performed by an Asset, and the time history 
-	     * of the pertinent State information was saved.
-	     * @param task The Task that was performed.
-	     * @param state The time history of the Asset State during the Event.
-	     */
-        public Event(Task task, SystemState state)
+        /// <summary>
+        ///  Creates an Event, in which the Task was performed by an Asset, and the time history 
+	    /// of the pertinent State information was saved.
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="state"></param>
+        public Event(Dictionary<Asset, Task> task, SystemState state)
         {
-            Task = task;
-            State = state;
+            Tasks = task;
+            State = state; //Should this be a deep copy?
         }
 
     	public Event(Event eventToCopyExactly)
         {
             Event newEvent = DeepCopy.Copy<Event>(eventToCopyExactly);
-            Task = newEvent.Task;
+            Tasks = newEvent.Tasks;
             State = newEvent.State;
+        }
+
+        public Task getAssetTask(Asset asset)
+        {
+            Task currentTask;
+            Tasks.TryGetValue(asset, out currentTask);
+            return currentTask;
         }
     }
 }

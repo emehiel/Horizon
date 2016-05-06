@@ -22,6 +22,9 @@ namespace HSFSubsystem
         public List<StateVarKey<bool>> Bkeys { get; protected set; }
         public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
         public List<StateVarKey<Quat>> Qkeys { get; protected set; }
+        private SystemState _oldState;
+        private SystemState _newState;
+        private Task _task;
         #endregion Attributes
 
         #region Constructors
@@ -66,6 +69,7 @@ namespace HSFSubsystem
                 if (sub.canPerform(oldStates, newStates, task, position, environment) == false)
                     return false;
             }
+            _oldState = newState.previous.getLastValue()
             return true;
         }
         /// <summary>

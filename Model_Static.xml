@@ -5,25 +5,24 @@
 
 	<ASSET>
 		<POSITION
-			DynamicStateType="PREDETERMINED_ECI"
-			ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866])">
+			PositionType="PredeterminedECI"
+			ICs="[7378.137, 0.0, 0.0 0.0, 6.02088, 4.215866])">
 			<EOMS
 				EOMSType="orbital_EOMS">
 			</EOMS>
 		</POSITION>
 		<SUBSYSTEM
 			Type="Access"
-			SubId="1">
+			subsystemName = "Access">
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Adcs"
-			SubId="2">
+			subsystemName = "Adcs">
 			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0, 0.0, 0.0])"></IC>
-			<DEPENDENCY subId="1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="EOSensor"
-			SubId="3"
 			subsystemName = "EOSensor"
 			lowQualityNumPixels="5000"
 			midQualityNumPixels="10000"
@@ -34,27 +33,25 @@
 			<IC type="Double" key="numPixels" value="0.0"></IC>
 			<IC type="Double" key="IncidenceAngle" value="0.0"></IC>
 			<IC type="Bool" key="EOSensorOn" value="0.0"></IC>
-			<DEPENDENCY subId="2"></DEPENDENCY>
+			<DEPENDENCY subystemName="Adcs"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Ssdr"
-			SubId="4"
 			subsystemName = "SSDR"
 			bufferSize = "5000">
 			<IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
 			<DEPENDENCY_FCN scripted="False" type="double" key="Asset1_SSDRSUB_getNewDataProfile" callKey="SSDRSUB_getNewDataProfile"></DEPENDENCY_FCN>
-			<DEPENDENCY subId="3"></DEPENDENCY>
+			<DEPENDENCY subsystemName="EOSensor"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Comm"
-			SubId="5">
+			subsystemName = "Comm">
 			<IC type="Double" key="DataRate(MB/s)" value="0.0"></IC>
 			<DEPENDENCY_FCN scripted="False" type="double" key="Asset1_COMMSUB_getDataRateProfile" callKey="COMMSUB_getDataRateProfile"></DEPENDENCY_FCN>
-			<DEPENDENCY subId="4"></DEPENDENCY>
+			<DEPENDENCY subsystemName="SSDR"></DEPENDENCY>
 		</SUBSYSTEM>		
 		<SUBSYSTEM
 			Type="Power"
-			SubId="6"
 			subsystemName = "Power"
 			batterySize="1000000"
 			fullSolarPower="150"
@@ -62,17 +59,17 @@
 			<IC type="Double" key="DepthofDischarge" value="0.0"></IC>
 			<IC type="Double" key="SolarPanelPowerIn" value="0.0"></IC>
 			<DEPENDENCY_FCN scripted="False" type="double" key="Asset1_POWERSUB_getPowerProfile" callKey="POWERSUB_getPowerProfile"></DEPENDENCY_FCN>
-			<DEPENDENCY subId="5"></DEPENDENCY>
+			<DEPENDENCY subsystemName="Comm"></DEPENDENCY>
 		</SUBSYSTEM>
 		<CONSTRAINT
 			value="0.25"
-			subId="6"
+			subsystemName = "Power"
 			type="FAIL_IF_HIGHER">
 			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
 		</CONSTRAINT>
 		<CONSTRAINT
 			value="0.7"
-			subId="4"
+			subsystemName="SSDR"
 			type="FAIL_IF_HIGHER">
 			<STATEVAR type = "Double" key="DataBufferFillRatio"></STATEVAR>
 		</CONSTRAINT>

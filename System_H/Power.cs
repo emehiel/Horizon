@@ -19,6 +19,7 @@ namespace HSFSubsystem
         private double _fullSolarPanelPower = 150;
         private double _penumbraSolarPanelPower = 75;
 
+        //put these in constructor and get from xml
         public static StateVarKey<double> DOD_KEY = new StateVarKey<double>("DepthOfDischarge");
         public static StateVarKey<double> POWIN_KEY = new StateVarKey<double>("SolarPanelPowerIn");
         #endregion Attributes

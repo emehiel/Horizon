@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Access.cs" />
-    <Compile Include="AssetSchedule.cs" />
+    <Compile Include="StateHistory.cs" />
     <Compile Include="Checker.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

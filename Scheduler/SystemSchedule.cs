@@ -9,9 +9,12 @@ namespace HSFScheduler
 {
     public class SystemSchedule
     {
+        #region Attributes
         public List<AssetSchedule> AssetScheds; //pop never gets used so just use list
         public double ScheduleValue;
+        #endregion
 
+        #region Constructors
         public SystemSchedule(List<SystemState> initialstates) 
         {
             ScheduleValue = 0;
@@ -41,6 +44,7 @@ namespace HSFScheduler
             }
             
         }
+        #endregion
 
         public bool CanAddTasks(Stack<Access> newAccessList, double newTaskStartTime)
         {

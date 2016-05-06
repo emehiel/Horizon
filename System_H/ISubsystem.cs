@@ -10,9 +10,9 @@ namespace HSFSystem
 {
     public interface ISubsystem
     {
-        bool canPerform(SystemState oldState, SystemState newState,
+        bool canPerform(List<SystemState> oldState, List<SystemState> newState,
                       Task task, DynamicState position,
-                      Universe environment, List<SystemState> allStates);
+                      Universe environment);
         bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime); 
 
         void CollectDependencyFuncs(Dependencies Deps, List<string> FuncNames);

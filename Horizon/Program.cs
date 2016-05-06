@@ -141,6 +141,7 @@ namespace Horizon
             // Maps used to set up preceeding nodes
             Dictionary<ISubsystem, XmlNode> subsystemXMLNodeMap = new Dictionary<ISubsystem, XmlNode>();
             Dictionary<string, Subsystem> subsystemMap = new Dictionary<string, Subsystem>();
+            Dictionary<string, XmlNode> dependencyMap = new Dictionary<string, XmlNode>();
            // Dictionary<string, ScriptedSubsystem> scriptedSubNames = new Dictionary<string, ScriptedSubsystem>();
 
             // Create Constraint list 
@@ -189,7 +190,7 @@ namespace Horizon
                     {
                         //Create a new asset from the position and add it to the list
                         if (childNode.Name.Equals("POSITION"))
-                            assetList.Add(new Asset(childNodeAsset.ChildNodes[0]));
+                            assetList.Add(new Asset(childNode));
 
                         // Get the current Subsystem XML Node, and create it using the SubsystemFactory
                         if (childNode.Name.Equals("SUBSYSTEM"))
@@ -201,8 +202,7 @@ namespace Horizon
                                 if(ICorDepNode.Name.Equals("IC"))
                                     ICNodes.Add(ICorDepNode);
                                 if (ICorDepNode.Name.Equals("DEPENDENCY"))
-                                    DepNodes.Add(ICorDepNode);
-
+                                    dependencyMap.Add(childNode.Attributes["subsystemName"].Value.ToString(), ICorDepNode);
                             }
                             //Parse the initial condition nodes
 
@@ -211,13 +211,25 @@ namespace Horizon
                         //Create a new Constraint
                         if (childNode.Name.Equals("CONSTRAINT"))
                         {
-
+                            constraintsList.Add(ConstraintFactory.getConstraint(childNode));
+                            Subsystem constrainedSub;
+                            subsystemMap.TryGetValue(childNode.Attributes["subsystemName"].Value.ToString(), out constrainedSub);
+                            constraintsList.Last().AddConstrainedSub(constrainedSub);
                         }
                     }
                     if (ICNodes.Count > 0)
                         initialSysStates.Add(SystemState.setInitialSystemState(ICNodes));
                     ICNodes.Clear();
                 }
+            }
+            //Add all the dependent subsystems to tge dependent subsystem list of the subsystems
+            foreach (KeyValuePair<string, XmlNode> depSubXmlNode in dependencyMap)
+            {
+                Subsystem subToAddDep, depSub;
+                string depSubName = depSubXmlNode.Value.Attributes["subsystemName"].Value.ToString();
+                subsystemMap.TryGetValue(depSubXmlNode.Key, out subToAddDep);
+                subsystemMap.TryGetValue(depSubName, out depSub);
+                subToAddDep.DepenedentSubsystems.Add(depSub);
             }
             Console.ReadKey();
                 /*

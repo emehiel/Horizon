@@ -192,12 +192,11 @@ namespace HSFScheduler
             // extend all schedules to the end of the simulation
             /*
             foreach (var schedule in systemSchedules)
-            {
-
+            { 
                 bool canExtendUntilEnd = true;
                 // Iterate through Subsystem Nodes and set that they havent run
                 foreach (var subsystem in system.Subsystems)
-                    subsystem.IsChecked = false;
+                    subsystem.IsEvaluated = false;
 
                 int subAssetNum;
                 foreach (var subsystem in system.Subsystems)

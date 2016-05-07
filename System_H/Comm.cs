@@ -27,20 +27,21 @@ namespace HSFSubsystem
         #endregion
 
         #region Methods
-        public bool canPerform(SystemState oldState, SystemState newState,
-                            Task task, DynamicState position,
-                            Universe environment, List<SystemState> allStates)
+        public override bool canPerform(SystemState oldState, SystemState newState,
+                            Dictionary<Asset, Task> tasks, Universe environment)
         {
-            if (task.Type == TaskType.COMM)
+            if(!base.canPerform(oldState, newState, tasks, environment))
+                return false;
+            if (_task.Type == TaskType.COMM)
             {
-                HSFProfile<double> newProf = DependencyCollector(allStates);
+                HSFProfile<double> newProf = DependencyCollector(newState);
                 if (!newProf.Empty())
                     newState.setProfile(DATARATE_KEY, newProf);
             }
             return true;
         }
 
-        public HSFProfile<double> DependencyCollector(List<SystemState> allStates)
+        public HSFProfile<double> DependencyCollector(SystemState currentState)
         {
             throw new NotImplementedException();
         }

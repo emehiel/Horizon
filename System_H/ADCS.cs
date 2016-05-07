@@ -6,6 +6,7 @@ using Utilities;
 using System.Xml;
 using MissionElements;
 using HSFUniverse;
+using HSFSystem;
 
 namespace HSFSubsystem
 {
@@ -26,10 +27,10 @@ namespace HSFSubsystem
         #endregion Constructors
         
         #region Methods
-        public bool canPerform(SystemState oldState, SystemState newState, Task task, DynamicState position,
-                                        Universe environment, List<SystemState> allStates)
+        public override bool canPerform(SystemState oldState, SystemState newState, Dictionary<Asset, Task> tasks,
+                                        Universe environment)
         {
-            if (base.canPerform(oldState, newState, task, position, environment, allStates) == false)
+            if (base.canPerform(oldState, newState, tasks, environment) == false)
                 return false;
             //double timetoslew = (rand()%5)+8;
             double timetoslew = 10;
@@ -44,8 +45,9 @@ namespace HSFSubsystem
             }
 
             // from Brown, Pp. 99
+            DynamicState position = Asset.AssetDynamicState;
             Matrix<double> m_SC_pos_at_ts_ECI = position.PositionECI(ts);
-            Matrix<double> m_target_pos_at_ts_ECI = task.Target.DynamicState.PositionECI(ts);
+            Matrix<double> m_target_pos_at_ts_ECI = _task.Target.DynamicState.PositionECI(ts);
             Matrix<double> m_pv = m_target_pos_at_ts_ECI - m_SC_pos_at_ts_ECI;
 
             // set state data
@@ -54,12 +56,6 @@ namespace HSFSubsystem
             return true;
         }
 
-        public override bool canExtend(SystemState State, DynamicState position, Universe environment, double evalToTime)
-        {
-            if (State.EventEnd < evalToTime)
-                State.EventEnd = evalToTime;
-            return true;
-        }
         #endregion Methods
     }
 }

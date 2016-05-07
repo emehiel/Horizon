@@ -24,13 +24,21 @@ namespace HSFSubsystem
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
             addKey(DATABUFFERRATIO_KEY);
         }
-        public virtual bool canPerform(SystemState oldState, SystemState newState,
-                    Task task, DynamicState position,
-                    Universe environment, List<SystemState> allStates)
+
+        /// <summary>
+        /// An override of the subsystem canPerform method
+        /// </summary>
+        /// <param name="oldState"></param>
+        /// <param name="newState"></param>
+        /// <param name="tasks"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
+        public override bool canPerform(SystemState oldState, SystemState newState,
+                    Dictionary<Asset, Task> tasks, Universe environment)
         {
-            if (!base.canPerform(oldState, newState, task, position, environment, allStates))
+            if (!base.canPerform(oldState, newState, tasks, environment))
                 return false;
-            if (task.Type == TaskType.IMAGING)
+            if (_task.Type == TaskType.IMAGING)
             {
                 double ts = newState.TaskStart;
                 double te = newState.TaskEnd;
@@ -47,7 +55,7 @@ namespace HSFSubsystem
                 Logger.Report("SSDR");
                 return false;
             }
-            else if (task.Type == TaskType.COMM)
+            else if (_task.Type == TaskType.COMM)
             {
                 double ts = newState.TaskStart;
                 newState.TaskEnd = ts + 60.0;

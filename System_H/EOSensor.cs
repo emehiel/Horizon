@@ -51,14 +51,15 @@ namespace HSFSubsystem
         #endregion
 
         #region Methods
-        public bool canPerform(SystemState oldState, SystemState newState,
-                            Task task, DynamicState position,
-                            Universe environment, List<SystemState> allStates)
+        public override bool canPerform(SystemState oldState, SystemState newState,
+                            Dictionary<Asset, Task> tasks, Universe environment)
         {
-            if (task.Type == TaskType.IMAGING)
+            if (!canPerform(oldState, newState, tasks, environment))
+                return false;
+            if (_task.Type == TaskType.IMAGING)
             {
                 //set pixels and time to caputre based on target value
-                int value = task.Target.Value;
+                int value = _task.Target.Value;
                 double pixels = _lowQualityPixels;
                 double timetocapture = _lowQualityTime;
                 if (value <= _highQualityTime  && value >= _midQualityTime) //Morgan took out magic numbers
@@ -82,9 +83,10 @@ namespace HSFSubsystem
 
                 // calculate incidence angle
                 // from Brown, Pp. 99
+                DynamicState position = Asset.AssetDynamicState;
                 double timage = ts + timetocapture / 2;
                 Matrix<double> m_SC_pos_at_tf_ECI = position.DynamicStateECI(timage);
-                Matrix<double> m_target_pos_at_tf_ECI = task.Target.DynamicState.DynamicStateECI(timage);
+                Matrix<double> m_target_pos_at_tf_ECI = _task.Target.DynamicState.DynamicStateECI(timage);
                 Matrix<double> m_pv = m_target_pos_at_tf_ECI - m_SC_pos_at_tf_ECI;
                 Matrix<double> pos_norm = -m_SC_pos_at_tf_ECI / Matrix<double>.Norm(-m_SC_pos_at_tf_ECI);
                 Matrix<double> pv_norm = m_pv / Matrix<double>.Norm(m_pv);

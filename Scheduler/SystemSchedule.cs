@@ -67,26 +67,23 @@ namespace HSFScheduler
 
         public int getTotalNumEvents()
         {
-            int count = 0;
-            foreach(StateHistory asIt in AssetScheds)
-                count += asIt.size();
-            return count;
+            return AllStates.size();
         }
 
-        public SystemState getSubsystemNewState(Asset asset)
+        public SystemState getSubsystemNewState()
         {
-            return GetAssetSchedule(asset).GetLastState();
+            return AllStates.GetLastState();
         }
 
         public Task getSubsytemNewTask(Asset asset)
         {
-            return GetAssetSchedule(asset).GetLastTask();
+            return AllStates.GetLastTask(asset);
         }
 
-        public StateHistory GetAssetSchedule(Asset asset)
-        {
-            return AssetScheds.Find(item => item.Asset == asset);
-        }
+        //public StateHistory GetStateHistory(Asset asset)
+        //{
+        //    return AllStates.Find(item => item.Asset == asset);
+        //}
 
         public double getLastTaskStart()
         {

@@ -10,7 +10,7 @@ namespace HSFScheduler
     {
         /** The task that are to be performed by each asset. */
         public Dictionary<Asset, Task> Tasks { get; private set; }
-        public Access ;
+     //   public Access ;
         /** The time history of the State during the current Event. */
         public SystemState State { get; private set; }
 

@@ -24,7 +24,7 @@ namespace HSFSubsystem
         public List<StateVarKey<Quat>> Qkeys { get; protected set; }
         private SystemState _oldState;
         private SystemState _newState;
-        private Task _task;
+        protected Task _task;
         #endregion Attributes
 
         #region Constructors
@@ -55,21 +55,19 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="oldState"></param>
         /// <param name="newState"></param>
-        /// <param name="task"></param>
-        /// <param name="position"></param>
+        /// <param name="tasks"></param>
         /// <param name="environment"></param>
-        /// <param name="allStates"></param>
         /// <returns></returns>
-        public virtual bool canPerform(List<SystemState> oldStates, List<SystemState> newStates,
-                            Task task, DynamicState position,
-                            Universe environment)
+        public virtual bool canPerform(SystemState oldState, SystemState newState,
+                                       Dictionary<Asset, Task> tasks, Universe environment)
         {
             foreach (var sub in DepenedentSubsystems)
             {
-                if (sub.canPerform(oldStates, newStates, task, position, environment) == false)
+                if (sub.canPerform(oldState, newState, tasks, environment) == false)
                     return false;
             }
-            _oldState = newState.previous.getLastValue()
+            _task = null;
+            tasks.TryGetValue(Asset, out _task); //Find the correct task for the subsystem
             return true;
         }
         /// <summary>
@@ -80,15 +78,20 @@ namespace HSFSubsystem
         /// <param name="environment"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
-        public virtual bool canExtend(List<SystemState> newStates, DynamicState position, Universe environment, double evalToTime)
+        public virtual bool canExtend(SystemState newState,  Universe environment, double evalToTime)
         {
-            SystemState newState = newStates.Find(item => item.Asset == asset);
             if (newState.EventEnd < evalToTime)
                 newState.EventEnd = evalToTime;
             return true;
         }
 
         //make a logger method
+        /// <summary>
+        /// Go to the dependency dictionary and grab all the dependency functions with FuncNames and add it to the 
+        /// subsystem's SubsystemDependencyFunctions field
+        /// </summary>
+        /// <param name="Deps"></param>
+        /// <param name="FuncNames"></param>
         public void CollectDependencyFuncs(Dependencies Deps, List<string> FuncNames)
         {
             foreach (var Func in FuncNames)
@@ -97,19 +100,28 @@ namespace HSFSubsystem
             }
         }
 
+        /// <summary>
+        /// Add all the dependent subsystems to the DependentSubsystems field
+        /// </summary>
+        /// <param name="deps"></param>
         public void CollectDependenctSubsystems(List<ISubsystem> deps)
         {
             DepenedentSubsystems = deps;
         }
 
+        /// <summary>
+        /// Find the subsystem name field from the XMLnode and create the name of format "Asset#.SubName
+        /// </summary>
+        /// <param name="subXmlNode"></param>
         public void getSubNameFromXmlNode(XmlNode subXmlNode)
         {
+            string assetName = subXmlNode.ParentNode.Attributes["assetName"].Value.ToString();
             if (subXmlNode.Attributes["subsystemName"] != null)
-                Name = subXmlNode.Attributes["subsystemName"].Value.ToString();
+                Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString();
             else if (DefaultSubName != null)
-                Name = DefaultSubName;
+                Name = assetName + "." + DefaultSubName;
             else if (subXmlNode.Attributes["type"] != null)
-                Name = subXmlNode.Attributes["type"].Value.ToString();
+                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString();
             else
                 throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
         }

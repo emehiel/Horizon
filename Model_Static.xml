@@ -3,8 +3,8 @@
 		enableScripting = "true">
 	</PYTHON>
 
-	<ASSET>
-		assetName="Asset1"
+	<ASSET
+		assetName="Asset1">
 		<POSITION
 			PositionType="PredeterminedECI"
 			ICs="[7378.137, 0.0, 0.0 0.0, 6.02088, 4.215866])">

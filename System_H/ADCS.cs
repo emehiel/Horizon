@@ -13,16 +13,20 @@ namespace HSFSubsystem
     public class ADCS : Subsystem
     {
         #region Attributes
-        public static StateVarKey<Matrix<double>> POINTVEC_KEY = new StateVarKey<Matrix<double>>("ECI_Pointing_Vector(XYZ)");
+        public static StateVarKey<Matrix<double>> POINTVEC_KEY; 
         #endregion Attributes
 
         #region Constructors
-        public ADCS(XmlNode ADCSNode) //TODO: (Morgan) Change this to actually parse the XmlNode
+        public ADCS(XmlNode ADCSNode, Dependencies dependencies, Asset asset) 
         {
             DefaultSubName = "Adcs";
+            Asset = asset;
             getSubNameFromXmlNode(ADCSNode);
+            POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." +"ECI_Pointing_Vector(XYZ)");
             addKey(POINTVEC_KEY);
+            DependentSubsystems = new List<ISubsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+            dependencies.Add("PowerfromADCS", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
         }
         #endregion Constructors
         
@@ -55,7 +59,19 @@ namespace HSFSubsystem
 
             return true;
         }
-
+        /// <summary>
+        /// Dependecy function for the power subsystem
+        /// </summary>
+        /// <param name="currentState"></param>
+        /// <returns></returns>
+        HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(SystemState currentState)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            prof1[currentState.EventStart] = 40;
+            prof1[currentState.TaskStart] = 60;
+            prof1[currentState.TaskEnd] = 40;
+            return prof1;
+        }
         #endregion Methods
     }
 }

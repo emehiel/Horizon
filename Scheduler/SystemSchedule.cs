@@ -21,26 +21,28 @@ namespace HSFScheduler
             AllStates = new StateHistory(initialstates);
         }
 
-        public SystemSchedule(SystemSchedule oldSchedule, Stack<Access> newAccessList, double newTaskStartTime, StateHistory oldStates)
+        public SystemSchedule(SystemSchedule oldSchedule, Stack<Access> newAccessList, double newTaskStartTime)
         {
-            // TODO (EAM):  Changed this so we need to double check/test
-            //int i = 0; //need a double iterator
-            foreach(var assetSchedAccess in newAccessList)
-            {
-                Task task = DeepCopy.Copy<Task>(assetSchedAccess.Task);
-                if (task != null)
-                {
-                    Event eventToAdd = new Event(task, new SystemState(assetSchedAccess.Item1.GetLastState(), newTaskStartTime));
-                    AssetScheds.Add(new StateHistory(assetSchedAccess.Item1, eventToAdd, assetSchedAccess.Item2.Asset));
-                    //TODO: double check c# implementation above
-                   // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
-                   // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
-                }
-                else
-                    AssetScheds.Add(DeepCopy.Copy<StateHistory>(assetSchedAccess.Item1));
-            }
-            
+            /* commented out because it doesn't work yet
+    // TODO (EAM):  Changed this so we need to double check/test
+    //int i = 0; //need a double iterator
+    foreach(var assetSchedAccess in newAccessList)
+    {
+        Task task = DeepCopy.Copy<Task>(assetSchedAccess.Task);
+        if (task != null)
+        {
+            Event eventToAdd = new Event(task, new SystemState(assetSchedAccess.Item1.GetLastState(), newTaskStartTime));
+            AssetScheds.Add(new StateHistory(assetSchedAccess.Item1, eventToAdd, assetSchedAccess.Item2.Asset));
+            //TODO: double check c# implementation above
+           // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
+           // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
         }
+        else
+            AssetScheds.Add(DeepCopy.Copy<StateHistory>(assetSchedAccess.Item1));
+    }
+            */
+        }
+
         #endregion
 
         public bool CanAddTasks(Stack<Access> newAccessList, double newTaskStartTime)
@@ -87,11 +89,13 @@ namespace HSFScheduler
 
         public double getLastTaskStart()
         {
-	        double lasttime = 0;
-            foreach(var assetSchedule in AssetScheds)
-		        if(!assetSchedule.isEmpty())
-			        lasttime = lasttime > assetSchedule.GetLastState().TaskStart ? lasttime : assetSchedule.GetLastState().TaskStart;
-	        return lasttime;
+            //TODO: This need to be fixed with the elimination of assetsched
+            //double lasttime = 0;
+            //   foreach(var assetSchedule in AssetScheds)
+            // if(!assetSchedule.isEmpty())
+            //  lasttime = lasttime > assetSchedule.GetLastState().TaskStart ? lasttime : assetSchedule.GetLastState().TaskStart;
+            //return lasttime;
+            return AllStates.Events.Peek().State.TaskStart; //This is only correct assuming we only have one asset performing a task per event
         }
 
         public SystemState GetEndState()

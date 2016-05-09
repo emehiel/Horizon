@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using HSFSystem;
 using HSFSubsystem;
 using MissionElements;
@@ -40,17 +39,18 @@ namespace HSFScheduler
             foreach (var subsystem in subsystems)
             {
                 // new system state of the proposedSchedule (by asset).  Empty to start, fully populated after Checker.CheckSchedule is done
-                SystemState newState = proposedSchedule.getSubsystemNewState(subsystem.Asset);
+                SystemState newState = proposedSchedule.AllStates.GetLastState();
                 // the system state at the end of the last event on the proposedSchedule
                 SystemState oldState = newState.Previous;
                 // the proposed Task
-                MissionElements.Task proposedTask = proposedSchedule.getSubsytemNewTask(subsystem.Asset);
+                Dictionary<Asset, Task> proposedTask = new Dictionary<Asset, Task>();
+                proposedTask.Add(subsystem.Asset, proposedSchedule.getSubsytemNewTask(subsystem.Asset));
                 // the dynamicState of the proposedSchedule
                 DynamicState assetDynamicState = subsystem.Asset.AssetDynamicState;
 
                 // Check all subsystems to see if they canPerform the task
                 // Recursion of the subsystem dependencies is managed by the subsystems
-                if (!subsystem.canPerform(oldState, newState, proposedTask, assetDynamicState, environment))
+                if (!subsystem.canPerform(oldState, newState, proposedTask, environment))
                     return false;
 
 
@@ -61,11 +61,8 @@ namespace HSFScheduler
         private static bool CheckConstraints(SystemClass system, SystemSchedule proposedSchedule, Constraint constraint)
         {
             // pass the state for checking
-            foreach (var assetSchedule in proposedSchedule.AssetScheds)
-            {
-                if (!constraint.Accepts(assetSchedule.GetLastState()))
-                    return false;
-            }
+            if (!constraint.Accepts(proposedSchedule.AllStates.GetLastState()))
+                return false;
 
             return true;
         }

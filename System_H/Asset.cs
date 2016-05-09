@@ -1,5 +1,6 @@
 ﻿using HSFUniverse;
 using System.Xml;
+using System;
 
 namespace HSFSystem
 {
@@ -23,11 +24,17 @@ namespace HSFSystem
             IsTaskable = false;
         }
 
-        public Asset(XmlNode positionXMLNode)
+        public Asset(XmlNode assetXMLNode)
         {
-            if(positionXMLNode.Attributes["name"] != null)
-                Name = positionXMLNode.Attributes["name"].Value.ToString();
-            AssetDynamicState =new DynamicState(positionXMLNode);  // XmlInput Change - position => DynamicState
+            if (assetXMLNode.Attributes["assetName"] != null)
+                Name = assetXMLNode.Attributes["assetName"].Value.ToString();
+            else
+                throw new MissingMemberException("Missing name for Asset!");
+            foreach(XmlNode child in assetXMLNode.ChildNodes)
+            {
+                if (child.Name.ToString().Equals("DynamicState"))
+                    AssetDynamicState = new DynamicState(child);
+            }  
             IsTaskable = false;
         }
         #endregion

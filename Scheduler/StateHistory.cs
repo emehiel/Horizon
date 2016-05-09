@@ -72,6 +72,8 @@ namespace HSFScheduler
             else return null;
         }
 
+        
+
         /// <summary>
         /// Returns the number of times the specified task has been completed in this schedule for a specific asset
         /// </summary>

@@ -38,7 +38,6 @@ namespace HSFSubsystem
         public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Dependencies dependencies)
         {
             Name = scriptedSubXmlNode.Attributes["Name"].Value.ToString();
-            // Subsytem is a ScriptedSubsytem, get the LUA functions for the Subsytem
             string pythonFilePath = scriptedSubXmlNode.Attributes["src"].Value.ToString();
             CollectorType = Type.GetType(scriptedSubXmlNode.Attributes["CollectorType"].Value.ToString());
             var engine = Python.CreateEngine();

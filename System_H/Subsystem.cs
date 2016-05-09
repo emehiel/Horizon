@@ -12,7 +12,7 @@ namespace HSFSubsystem
         #region Attributes
         public bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
-        public List<ISubsystem> DepenedentSubsystems { get; protected set; }
+        public List<ISubsystem> DependentSubsystems { get; protected set; }
         public string Name { get; protected set; }
         public static string DefaultSubName { get; protected set; }
         public Dictionary<string, Delegate> SubsystemDependencyFunctions { get; protected set; }
@@ -61,7 +61,7 @@ namespace HSFSubsystem
         public virtual bool canPerform(SystemState oldState, SystemState newState,
                                        Dictionary<Asset, Task> tasks, Universe environment)
         {
-            foreach (var sub in DepenedentSubsystems)
+            foreach (var sub in DependentSubsystems)
             {
                 if (sub.canPerform(oldState, newState, tasks, environment) == false)
                     return false;
@@ -99,15 +99,28 @@ namespace HSFSubsystem
                 SubsystemDependencyFunctions.Add(Func, Deps.getDependencyFunc(Func));
             }
         }
-
+        /// <summary>
+        /// Default Dependency Collector simply sums the results of the dependecy functions
+        /// </summary>
+        /// <param name="currentState"></param>
+        /// <returns></returns>
+        protected HSFProfile<double> DependencyCollector(SystemState currentState)
+        {
+            HSFProfile<double> outProf = new HSFProfile<double>();
+            foreach (var dep in SubsystemDependencyFunctions)
+            {
+                outProf += dep.Value.DynamicInvoke(currentState);
+            }
+            return outProf;
+        }
         /// <summary>
         /// Add all the dependent subsystems to the DependentSubsystems field
         /// </summary>
         /// <param name="deps"></param>
-        public void CollectDependenctSubsystems(List<ISubsystem> deps)
-        {
-            DepenedentSubsystems = deps;
-        }
+        //public void CollectDependentSubsystems(List<ISubsystem> deps)
+        //{
+        //    DepenedentSubsystems = deps;
+        //}
 
         /// <summary>
         /// Find the subsystem name field from the XMLnode and create the name of format "Asset#.SubName
@@ -115,7 +128,7 @@ namespace HSFSubsystem
         /// <param name="subXmlNode"></param>
         public void getSubNameFromXmlNode(XmlNode subXmlNode)
         {
-            string assetName = subXmlNode.ParentNode.Attributes["assetName"].Value.ToString();
+            string assetName = Asset.Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
                 Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString();
             else if (DefaultSubName != null)

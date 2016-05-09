@@ -20,8 +20,8 @@ namespace HSFSubsystem
         private double _penumbraSolarPanelPower = 75;
 
         //put these in constructor and get from xml
-        public static StateVarKey<double> DOD_KEY = new StateVarKey<double>("DepthOfDischarge");
-        public static StateVarKey<double> POWIN_KEY = new StateVarKey<double>("SolarPanelPowerIn");
+        public static StateVarKey<double> DOD_KEY;
+        public static StateVarKey<double> POWIN_KEY; 
         #endregion Attributes
 
         #region Constructors
@@ -35,10 +35,12 @@ namespace HSFSubsystem
             DefaultSubName = "Power";
             Asset = asset;
             getSubNameFromXmlNode(PowerNode);
+            DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "DepthOfDischarge");
+            POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "SolarPanelPowerIn");
             addKey(DOD_KEY);
             addKey(POWIN_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            dependencies.Add("PowerFromADCS", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
+            DependentSubsystems = new List<ISubsystem>();
             if (PowerNode.Attributes["batterySize"] != null)
                 _batterySize = (double)Convert.ChangeType(PowerNode.Attributes["batterySize"].Value, typeof(double));
             if (PowerNode.Attributes["fullSolarPower"] != null)
@@ -46,6 +48,7 @@ namespace HSFSubsystem
             if(PowerNode.Attributes["penumbraSolarPower"] != null)
                 _penumbraSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["penumbraSolarPower"].Value, typeof(double));
             
+
         }
         #endregion Constructors
 
@@ -160,24 +163,6 @@ namespace HSFSubsystem
                 return false;
             newState.addValue(DOD_KEY, dodProf);
             return true;
-        }
-
-        HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(SystemState currentState)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            prof1[currentState.EventStart] = 40;
-            prof1[currentState.TaskStart] = 60;
-            prof1[currentState.TaskEnd] = 40;
-            return prof1;
-        }
-        private HSFProfile<double> DependencyCollector(SystemState currentState)
-        {
-            HSFProfile<double> outProf = new HSFProfile<double>();
-            foreach (var dep in SubsystemDependencyFunctions)
-            {
-                outProf += dep.Value.DynamicInvoke(currentState);
-            }
-            return outProf;
         }
         #endregion Methods
     }

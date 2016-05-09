@@ -15,9 +15,9 @@ namespace HSFSubsystem
         #region Attributes
         //Default stuff
         public static string SUBNAME_EOSENSOR = "EOSensor";
-        public static StateVarKey<double> PIXELS_KEY  = new StateVarKey<double> ("numPixels");
-        public static StateVarKey<double> INCIDENCE_KEY = new StateVarKey<double>("IncidenceAngle");
-        public static StateVarKey<bool> EOON_KEY = new StateVarKey<bool>("EOSensorOn");
+        public static StateVarKey<double> PIXELS_KEY;
+        public static StateVarKey<double> INCIDENCE_KEY;
+        public static StateVarKey<bool> EOON_KEY;
         private double _lowQualityPixels = 5000;
         private double _lowQualityTime = 3;
         private double _midQualityPixels = 10000;
@@ -30,11 +30,16 @@ namespace HSFSubsystem
         public EOSensor(XmlNode EOSensorXmlNode, Dependencies dependencies, Asset asset)
         {
             DefaultSubName = "EOSensor";
-            getSubNameFromXmlNode(EOSensorXmlNode);
             Asset = asset;
+            getSubNameFromXmlNode(EOSensorXmlNode);
+            PIXELS_KEY = new StateVarKey<double>(Asset.Name +"." + "numPixels");
+            INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "IncidenceAngle");
+            EOON_KEY = new StateVarKey<bool>(Asset.Name + "." + "EOSensorOn");
             addKey(PIXELS_KEY);
             addKey(INCIDENCE_KEY);
             addKey(EOON_KEY);
+            DependentSubsystems = new List<ISubsystem>();
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
                 _lowQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityPixels"].Value.ToString(), typeof(double));
             if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
@@ -47,6 +52,7 @@ namespace HSFSubsystem
                 _highQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityPixels"].Value.ToString(), typeof(double));
             if (EOSensorXmlNode.Attributes["highQualityTime"] != null)
                 _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
+            dependencies.Add("PowerfromEOSensor", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_EOSENSORSUB));
         }
         #endregion
 
@@ -107,6 +113,27 @@ namespace HSFSubsystem
             }
             else
                 return true;
+        }
+
+        HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(SystemState currentState)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            prof1[currentState.EventStart] = 10;
+            if (currentState.getValueAtTime(EOON_KEY, currentState.TaskStart).Value)
+            {
+                prof1[currentState.TaskStart] = 60;
+                prof1[currentState.TaskEnd] = 10;
+            }
+            return prof1;
+        }
+        /// <summary>
+        /// Dependecy function for the SSDR subsystem
+        /// </summary>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(SystemState state)
+        {
+            return state.getProfile(PIXELS_KEY) / 500;
         }
         #endregion
     }

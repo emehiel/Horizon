@@ -13,16 +13,20 @@ namespace HSFSubsystem
     public class Comm : Subsystem
     {
         #region Attributes
-        public static StateVarKey<double> DATARATE_KEY = new StateVarKey<double>("DataRate(MB/s)");
+        public static StateVarKey<double> DATARATE_KEY;
         #endregion
 
         #region Constructors
         public Comm(XmlNode CommXmlNode, Dependencies dependencies, Asset asset)
         {
             DefaultSubName = "Comm";
-            getSubNameFromXmlNode(CommXmlNode);
             Asset = asset;
+            getSubNameFromXmlNode(CommXmlNode);
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+            DependentSubsystems = new List<ISubsystem>();
+            DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "DataRate(MB/s)");
             addKey(DATARATE_KEY);
+            dependencies.Add("PowerfromComm", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_COMMSUB));
         }
         #endregion
 
@@ -41,9 +45,9 @@ namespace HSFSubsystem
             return true;
         }
 
-        public HSFProfile<double> DependencyCollector(SystemState currentState)
+        HSFProfile<double> POWERSUB_PowerProfile_COMMSUB(SystemState state)
         {
-            throw new NotImplementedException();
+            return state.getProfile(DATARATE_KEY) * 20;
         }
         #endregion
     }

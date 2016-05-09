@@ -12,10 +12,12 @@ namespace HSFSubsystem
 {
     public class AccessSub : Subsystem
     {
-        public AccessSub(XmlNode subNode)
+        public AccessSub(XmlNode subNode, Asset asset)
         {
+            Asset = asset;
             DefaultSubName = "AccessToTarget";
             getSubNameFromXmlNode(subNode);
+            DependentSubsystems = new List<ISubsystem>();
         }
         public override bool canPerform(SystemState oldState, SystemState newState,
                             Dictionary<Asset, Task> tasks, Universe environment) 

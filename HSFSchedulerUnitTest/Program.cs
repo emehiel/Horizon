@@ -59,7 +59,7 @@ namespace Horizon
             XmlEnum = targetDeckXMLNodeList.GetEnumerator();
             XmlEnum.MoveNext();
             var targetDeckXMLNode = (XmlNode)XmlEnum.Current;
-            List<Task> systemTasks = new List<Task>();
+            List<MissionElements.Task> systemTasks = new List<MissionElements.Task>();
           //TODO:Morgan  bool targetsLoaded = loadTargetsIntoTaskList(targetDeckXMLNode, systemTasks);
             Console.WriteLine("  Initial states set");
             Console.ReadKey();

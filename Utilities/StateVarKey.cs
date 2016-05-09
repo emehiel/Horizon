@@ -33,6 +33,31 @@ namespace Utilities
 
         }
 
+        public static implicit operator StateVarKey<int>(StateVarKey<T> i)
+        {
+            return new StateVarKey<int>(i.VarName);
+        }
+
+        public static implicit operator StateVarKey<double>(StateVarKey<T> i)
+        {
+            return new StateVarKey<double>(i.VarName);
+        }
+
+        public static implicit operator StateVarKey<bool>(StateVarKey<T> i)
+        {
+            return new StateVarKey<bool>(i.VarName);
+        }
+
+        public static implicit operator StateVarKey<Matrix<double>>(StateVarKey<T> i)
+        {
+            return new StateVarKey<Matrix<double>>(i.VarName);
+        }
+
+        public static implicit operator StateVarKey<Quat>(StateVarKey<T> i)
+        {
+            return new StateVarKey<Quat>(i.VarName);
+        }
+
         public static bool operator ==(StateVarKey<T> p1, StateVarKey<T> p2)
         {
             return p1.Equals(p2);

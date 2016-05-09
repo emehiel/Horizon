@@ -20,8 +20,8 @@ namespace HSFSubsystem
         private double _penumbraSolarPanelPower = 75;
 
         //put these in constructor and get from xml
-        public static StateVarKey<double> DOD_KEY = new StateVarKey<double>("DepthOfDischarge");
-        public static StateVarKey<double> POWIN_KEY = new StateVarKey<double>("SolarPanelPowerIn");
+        public static StateVarKey<double> DOD_KEY;
+        public static StateVarKey<double> POWIN_KEY; 
         #endregion Attributes
 
         #region Constructors
@@ -35,17 +35,20 @@ namespace HSFSubsystem
             DefaultSubName = "Power";
             Asset = asset;
             getSubNameFromXmlNode(PowerNode);
+            DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "DepthOfDischarge");
+            POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "SolarPanelPowerIn");
             addKey(DOD_KEY);
             addKey(POWIN_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            dependencies.Add("PowerFromADCS", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
+            DependentSubsystems = new List<ISubsystem>();
             if (PowerNode.Attributes["batterySize"] != null)
                 _batterySize = (double)Convert.ChangeType(PowerNode.Attributes["batterySize"].Value, typeof(double));
             if (PowerNode.Attributes["fullSolarPower"] != null)
                 _fullSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["fullSolarPower"].Value, typeof(double));
             if(PowerNode.Attributes["penumbraSolarPower"] != null)
                 _penumbraSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["penumbraSolarPower"].Value, typeof(double));
-            // throw new NotImplementedException();
+            
+
         }
         #endregion Constructors
 
@@ -82,10 +85,20 @@ namespace HSFSubsystem
             state.addValue(POWIN_KEY, solarPanelPowerProfile);
             return solarPanelPowerProfile;
         }
-        public bool canPerform(SystemState oldState, SystemState newState, Task task, DynamicState position,
-                            Universe universe, List<SystemState> allStates)
+
+        /// <summary>
+        /// Override of the canPerform method for the power subsystem
+        /// </summary>
+        /// <param name="oldState"></param>
+        /// <param name="newState"></param>
+        /// <param name="tasks"></param>
+        /// <param name="universe"></param>
+        /// <returns></returns>
+        public override bool canPerform(SystemState oldState, SystemState newState, Dictionary<Asset, Task> tasks,
+                            Universe universe)
         {
-            if (base.canPerform(oldState, newState, task, position, universe, allStates) == false) //Make sure everyone you need has been evaluated
+            //Make sure all dependent subsystems have been evaluated
+            if (!base.canPerform(oldState, newState, tasks, universe)) 
                 return false;
             double es = newState.EventStart;
             double te = newState.TaskEnd;
@@ -99,9 +112,10 @@ namespace HSFSubsystem
             double olddod = oldState.getLastValue(Dkeys.First()).Value; //TODO: (Morgan check front is same as first
 
             // collect power profile out
-            HSFProfile<double> powerOut = DependencyCollector(allStates); // deps->callDoubleDependency("POWERSUB_getPowerProfile");
+            HSFProfile<double> powerOut = DependencyCollector(newState); // deps->callDoubleDependency("POWERSUB_getPowerProfile");
             powerOut = powerOut + powerSubPowerOut;
             // collect power profile in
+            DynamicState position = Asset.AssetDynamicState;
             HSFProfile<double> powerIn = calcSolarPanelPowerProfile(es, te, ref newState, position, universe);
             // calculate dod rate
             HSFProfile<double> dodrateofchange = ((powerOut - powerIn) / _batterySize);
@@ -113,7 +127,15 @@ namespace HSFSubsystem
             newState.addValue(DOD_KEY, dodProf);
             return true;
         }
-        public override bool canExtend(SystemState newState, DynamicState position, Universe universe, double evalToTime) { 
+
+        /// <summary>
+        /// Override of the canExtend method for the power subsystem
+        /// </summary>
+        /// <param name="newState"></param>
+        /// <param name="universe"></param>
+        /// <param name="evalToTime"></param>
+        /// <returns></returns>
+        public override bool canExtend(SystemState newState, Universe universe, double evalToTime) { 
             double ee = newState.EventEnd;
             if (ee > SimParameters.SimEndSeconds)
                 return false;
@@ -129,6 +151,7 @@ namespace HSFSubsystem
             // collect power profile out
             HSFProfile<double> powerOut = new HSFProfile<double>(te, 65);
             // collect power profile in
+            DynamicState position = Asset.AssetDynamicState;
             HSFProfile<double> powerIn = calcSolarPanelPowerProfile(te, ee, ref newState, position, universe);
             // calculate dod rate
             HSFProfile<double> dodrateofchange = ((powerOut - powerIn) / _batterySize);
@@ -140,24 +163,6 @@ namespace HSFSubsystem
                 return false;
             newState.addValue(DOD_KEY, dodProf);
             return true;
-        }
-        HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(SystemState currentState)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            prof1[currentState.EventStart] = 40;
-            prof1[currentState.TaskStart] = 60;
-            prof1[currentState.TaskEnd] = 40;
-            return prof1;
-        }
-        private HSFProfile<double> DependencyCollector(List<SystemState> allStates)
-        {
-            SystemState currentState = allStates[0];
-            HSFProfile<double> outProf = new HSFProfile<double>();
-            foreach (var dep in SubsystemDependencyFunctions)
-            {
-                outProf += dep.Value.DynamicInvoke(currentState);
-            }
-            return outProf;
         }
         #endregion Methods
     }

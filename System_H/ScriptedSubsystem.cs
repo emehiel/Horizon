@@ -38,7 +38,6 @@ namespace HSFSubsystem
         public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Dependencies dependencies)
         {
             Name = scriptedSubXmlNode.Attributes["Name"].Value.ToString();
-            // Subsytem is a ScriptedSubsytem, get the LUA functions for the Subsytem
             string pythonFilePath = scriptedSubXmlNode.Attributes["src"].Value.ToString();
             CollectorType = Type.GetType(scriptedSubXmlNode.Attributes["CollectorType"].Value.ToString());
             var engine = Python.CreateEngine();
@@ -55,30 +54,31 @@ namespace HSFSubsystem
 
         #region Methods
         public override bool canPerform(SystemState oldState, SystemState newState,
-                          Task task, DynamicState position,
-                          Universe environment, List<SystemState> allStates)
+                          Dictionary<Asset, Task> tasks,  Universe environment)
         {
-            if (!base.canPerform(oldState, newState, task, position, environment, allStates)) //checks all the dependent subsystems
+            if (!base.canPerform(oldState, newState, tasks, environment)) //checks all the dependent subsystems
                 return false;
 
-            dynamic perform = PythonInstance.canPerform(oldState, newState, task, position, environment);
+            dynamic perform = PythonInstance.canPerform(oldState, newState, tasks, environment);
             //This needs to be inside the python canPerform
             //IsEvaluated = true;
             //if ((bool)perform == false)
             //    return false;
             //var newProf = Convert.ChangeType(CollectorType, DependencyCollector());
             //newState.addValue(KEY, );
-            return true;
+            return (bool)perform;
         }
-        public override bool canExtend(SystemState newState, DynamicState position, Universe environment, double evalToTime)
+        public override bool canExtend(SystemState newState, Universe environment, double evalToTime)
         {
-            throw new NotImplementedException();
+            dynamic extend = PythonInstance.canExtend(newState, environment, evalToTime);
+            return (bool)extend;
         }
 
-        public virtual dynamic DependencyCollector()
-        {
-            return PythonInstance.DependencyCollector();
-        }
+        //don't need this if it happens in python script
+        //public virtual dynamic DependencyCollector(SystemState currentState)
+        //{
+        //    return PythonInstance.DependencyCollector(currentState);
+        //}
         #endregion
     }
 }

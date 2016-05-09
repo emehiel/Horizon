@@ -13,6 +13,18 @@ namespace HSFScheduler
         /** The time history of the State during the current Event. */
         public SystemState State { get; private set; }
 
+        /** The start of the event associated with this State */
+        public Dictionary<Asset, double> EventStarts { get; private set; }
+
+        /** The start of the task associated with this State */
+        public Dictionary<Asset, double> TaskStarts { get; set; }
+
+        /** The end of the task associated with this State */
+        public Dictionary<Asset, double> TaskEnds { get; set; }
+
+        /** The end of the event associated with this State */
+        public Dictionary<Asset, double> EventEnds { get; set; }
+
         /// <summary>
         ///  Creates an Event, in which the Task was performed by an Asset, and the time history 
 	    /// of the pertinent State information was saved.

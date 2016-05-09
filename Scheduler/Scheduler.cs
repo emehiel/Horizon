@@ -45,7 +45,7 @@ namespace HSFScheduler
             _numSchedCropTo = SchedParameters.NumSchedCropTo;
         }
 
-        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<MissionElements.Task> tasks, List<SystemState> initialStateList, Evaluator scheduleEvaluator)
+        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<MissionElements.Task> tasks, SystemState initialStateList, Evaluator scheduleEvaluator)
         {
 
             //system.setThreadNum(1);

@@ -13,36 +13,41 @@ namespace HSFSubsystem
     public class Comm : Subsystem
     {
         #region Attributes
-        public static StateVarKey<double> DATARATE_KEY = new StateVarKey<double>("DataRate(MB/s)");
+        public static StateVarKey<double> DATARATE_KEY;
         #endregion
 
         #region Constructors
         public Comm(XmlNode CommXmlNode, Dependencies dependencies, Asset asset)
         {
             DefaultSubName = "Comm";
-            getSubNameFromXmlNode(CommXmlNode);
             Asset = asset;
+            getSubNameFromXmlNode(CommXmlNode);
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+            DependentSubsystems = new List<ISubsystem>();
+            DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "DataRate(MB/s)");
             addKey(DATARATE_KEY);
+            dependencies.Add("PowerfromComm", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_COMMSUB));
         }
         #endregion
 
         #region Methods
-        public bool canPerform(SystemState oldState, SystemState newState,
-                            Task task, DynamicState position,
-                            Universe environment, List<SystemState> allStates)
+        public override bool canPerform(SystemState oldState, SystemState newState,
+                            Dictionary<Asset, Task> tasks, Universe environment)
         {
-            if (task.Type == TaskType.COMM)
+            if(!base.canPerform(oldState, newState, tasks, environment))
+                return false;
+            if (_task.Type == TaskType.COMM)
             {
-                HSFProfile<double> newProf = DependencyCollector(allStates);
+                HSFProfile<double> newProf = DependencyCollector(newState);
                 if (!newProf.Empty())
                     newState.setProfile(DATARATE_KEY, newProf);
             }
             return true;
         }
 
-        public HSFProfile<double> DependencyCollector(List<SystemState> allStates)
+        HSFProfile<double> POWERSUB_PowerProfile_COMMSUB(SystemState state)
         {
-            throw new NotImplementedException();
+            return state.GetProfile(DATARATE_KEY) * 20;
         }
         #endregion
     }

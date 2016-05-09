@@ -12,7 +12,7 @@ namespace HSFSubsystem
         #region Attributes
         public bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
-        public List<ISubsystem> DepenedentSubsystems { get; protected set; }
+        public List<ISubsystem> DependentSubsystems { get; protected set; }
         public string Name { get; protected set; }
         public static string DefaultSubName { get; protected set; }
         public Dictionary<string, Delegate> SubsystemDependencyFunctions { get; protected set; }
@@ -24,7 +24,7 @@ namespace HSFSubsystem
         public List<StateVarKey<Quat>> Qkeys { get; protected set; }
         private SystemState _oldState;
         private SystemState _newState;
-        private Task _task;
+        protected Task _task;
         #endregion Attributes
 
         #region Constructors
@@ -53,23 +53,21 @@ namespace HSFSubsystem
         /// The default canPerform method. 
         /// Should be used to check if all dependent subsystems can perform and extended by subsystem implementations.
         /// </summary>
-        /// <param name="oldState">The previous state of the syste</param>
-        /// <param name="newState">The new state of the system determined by the Subsystem</param>
-        /// <param name="task"></param>
-        /// <param name="position"></param>
+        /// <param name="oldState"></param>
+        /// <param name="newState"></param>
+        /// <param name="tasks"></param>
         /// <param name="environment"></param>
-        /// <param name="allStates"></param>
         /// <returns></returns>
-        public virtual bool canPerform(List<SystemState> oldStates, List<SystemState> newStates,
-                            Task task, DynamicState position,
-                            Universe environment)
+        public virtual bool canPerform(SystemState oldState, SystemState newState,
+                                       Dictionary<Asset, Task> tasks, Universe environment)
         {
-            foreach (var sub in DepenedentSubsystems)
+            foreach (var sub in DependentSubsystems)
             {
-                if (sub.canPerform(oldStates, newStates, task, position, environment) == false)
+                if (sub.canPerform(oldState, newState, tasks, environment) == false)
                     return false;
             }
-            _oldState = newState.previous.getLastValue()
+            _task = null;
+            tasks.TryGetValue(Asset, out _task); //Find the correct task for the subsystem
             return true;
         }
         /// <summary>
@@ -80,15 +78,20 @@ namespace HSFSubsystem
         /// <param name="environment"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
-        public virtual bool canExtend(List<SystemState> newStates, DynamicState position, Universe environment, double evalToTime)
+        public virtual bool canExtend(SystemState newState,  Universe environment, double evalToTime)
         {
-            SystemState newState = newStates.Find(item => item.Asset == asset);
             if (newState.EventEnd < evalToTime)
                 newState.EventEnd = evalToTime;
             return true;
         }
 
         //make a logger method
+        /// <summary>
+        /// Go to the dependency dictionary and grab all the dependency functions with FuncNames and add it to the 
+        /// subsystem's SubsystemDependencyFunctions field
+        /// </summary>
+        /// <param name="Deps"></param>
+        /// <param name="FuncNames"></param>
         public void CollectDependencyFuncs(Dependencies Deps, List<string> FuncNames)
         {
             foreach (var Func in FuncNames)
@@ -96,20 +99,42 @@ namespace HSFSubsystem
                 SubsystemDependencyFunctions.Add(Func, Deps.getDependencyFunc(Func));
             }
         }
-
-        public void CollectDependenctSubsystems(List<ISubsystem> deps)
+        /// <summary>
+        /// Default Dependency Collector simply sums the results of the dependecy functions
+        /// </summary>
+        /// <param name="currentState"></param>
+        /// <returns></returns>
+        protected HSFProfile<double> DependencyCollector(SystemState currentState)
         {
-            DepenedentSubsystems = deps;
+            HSFProfile<double> outProf = new HSFProfile<double>();
+            foreach (var dep in SubsystemDependencyFunctions)
+            {
+                outProf += dep.Value.DynamicInvoke(currentState);
+            }
+            return outProf;
         }
+        /// <summary>
+        /// Add all the dependent subsystems to the DependentSubsystems field
+        /// </summary>
+        /// <param name="deps"></param>
+        //public void CollectDependentSubsystems(List<ISubsystem> deps)
+        //{
+        //    DepenedentSubsystems = deps;
+        //}
 
+        /// <summary>
+        /// Find the subsystem name field from the XMLnode and create the name of format "Asset#.SubName
+        /// </summary>
+        /// <param name="subXmlNode"></param>
         public void getSubNameFromXmlNode(XmlNode subXmlNode)
         {
+            string assetName = Asset.Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
-                Name = subXmlNode.Attributes["subsystemName"].Value.ToString();
+                Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString();
             else if (DefaultSubName != null)
-                Name = DefaultSubName;
+                Name = assetName + "." + DefaultSubName;
             else if (subXmlNode.Attributes["type"] != null)
-                Name = subXmlNode.Attributes["type"].Value.ToString();
+                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString();
             else
                 throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
         }

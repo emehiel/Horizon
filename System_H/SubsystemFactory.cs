@@ -20,11 +20,11 @@ namespace HSFSubsystem
             {
                 if (type.Equals("access"))
                 {
-                    subDic.Add(type, new AccessSub(SubsystemXmlNode));
+                    subDic.Add(type, new AccessSub(SubsystemXmlNode, asset));
                 }
                 else if (type.Equals("adcs"))
                 {
-                   subDic.Add(type, new ADCS(SubsystemXmlNode));
+                   subDic.Add(type, new ADCS(SubsystemXmlNode, dependencies, asset));
                 }
                 else if (type.Equals("power"))
                 {

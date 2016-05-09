@@ -33,9 +33,9 @@ namespace MissionElementsUnitTest
             var matrixKey = new StateVarKey<Matrix<double>>("testMatrixVar");
             state.setProfile(matrixKey, matrixProf);
 
-            HSFProfile<int> newIntProf = state.getProfile(intKey);
-            HSFProfile<double> newDoubleProf = state.getProfile(doubleKey);
-            HSFProfile<Matrix<double>> newMatrixProf = state.getProfile(matrixKey);
+            HSFProfile<int> newIntProf = state.GetProfile(intKey);
+            HSFProfile<double> newDoubleProf = state.GetProfile(doubleKey);
+            HSFProfile<Matrix<double>> newMatrixProf = state.GetProfile(matrixKey);
 
             Console.WriteLine();
         }

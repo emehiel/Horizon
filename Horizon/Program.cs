@@ -116,6 +116,7 @@ namespace Horizon
             //            NetworkDataClient::Connect();
             //    }
             //}
+
             /*
             // Initialize the SubsystemAdapter
             SubsystemAdapter subAdapter;
@@ -142,6 +143,7 @@ namespace Horizon
             Dictionary<ISubsystem, XmlNode> subsystemXMLNodeMap = new Dictionary<ISubsystem, XmlNode>();
             Dictionary<string, Subsystem> subsystemMap = new Dictionary<string, Subsystem>();
             Dictionary<string, XmlNode> dependencyMap = new Dictionary<string, XmlNode>();
+            Dictionary<string, string> dependencyFcnMap = new Dictionary<string, string>();
            // Dictionary<string, ScriptedSubsystem> scriptedSubNames = new Dictionary<string, ScriptedSubsystem>();
 
             // Create Constraint list 
@@ -184,14 +186,11 @@ namespace Horizon
                 }
                 if (childNodeAsset.Name.Equals("ASSET"))
                 {
-                    Asset asset = new Asset();
+                    Asset asset = new Asset(childNodeAsset);
+                    assetList.Add(asset);
                     // Loop through all the of the ChildNodess for this Asset
                     foreach (XmlNode childNode in childNodeAsset.ChildNodes)
                     {
-                        //Create a new asset from the position and add it to the list
-                        if (childNode.Name.Equals("POSITION"))
-                            assetList.Add(new Asset(childNode));
-
                         // Get the current Subsystem XML Node, and create it using the SubsystemFactory
                         if (childNode.Name.Equals("SUBSYSTEM"))
                         {  //is this how we want to do this?
@@ -203,6 +202,9 @@ namespace Horizon
                                     ICNodes.Add(ICorDepNode);
                                 if (ICorDepNode.Name.Equals("DEPENDENCY"))
                                     dependencyMap.Add(childNode.Attributes["subsystemName"].Value.ToString(), ICorDepNode);
+                                if (ICorDepNode.Name.Equals("DEPENDENCY_FCN"))
+                                    dependencyFcnMap.Add(childNode.Attributes["subsystemName"].Value.ToString(), ICorDepNode.Attributes["fcnName"].Value.ToString());
+
                             }
                             //Parse the initial condition nodes
 
@@ -229,7 +231,15 @@ namespace Horizon
                 string depSubName = depSubXmlNode.Value.Attributes["subsystemName"].Value.ToString();
                 subsystemMap.TryGetValue(depSubXmlNode.Key, out subToAddDep);
                 subsystemMap.TryGetValue(depSubName, out depSub);
-                subToAddDep.DepenedentSubsystems.Add(depSub);
+                subToAddDep.DependentSubsystems.Add(depSub);
+            }
+
+            //give the dependency functions to all the subsytems that need them
+            foreach (KeyValuePair<string, string> depFunc in dependencyFcnMap)
+            {
+                Subsystem subToAddDep;
+                subsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
+                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.getDependencyFunc(depFunc.Value));
             }
             Console.ReadKey();
                 /*

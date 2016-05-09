@@ -14,18 +14,6 @@ namespace MissionElements
         /** The previous state, upon which this state is based */
         public SystemState Previous { get; private set; }
 
-        /** The start of the event associated with this State */
-        public double EventStart { get; set; }
-
-        /** The start of the task associated with this State */
-        public double TaskStart { get; set; }
-
-        /** The end of the task associated with this State */
-        public double TaskEnd { get; set; }
-
-        /** The end of the event associated with this State */
-        public double EventEnd { get; set; }
-
         /** The Dictionary of integer Profiles. */
         public Dictionary<StateVarKey<int>, HSFProfile<int>> Idata { get; private set; }
 
@@ -101,7 +89,6 @@ namespace MissionElements
         }
 
 
-        //took out setters and getters becuase they're public fields
         /** TODO: figure out if this can all be done with dictionary stuff
          * Gets the last int value set for the given state variable key in the state. If no value is found
          * it checks the previous state, continuing all the way to the initial state.

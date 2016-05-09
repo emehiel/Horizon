@@ -18,7 +18,7 @@ namespace HSFSystem
         {
             // use dynamic in getProfile()
 
-            HSFProfile<T> prof = state.getProfile(_key);
+            HSFProfile<T> prof = state.GetProfile(_key);
             
             switch (Type)
             {

@@ -45,6 +45,9 @@ namespace HSFScheduler
                 // the proposed Task
                 Dictionary<Asset, Task> proposedTask = new Dictionary<Asset, Task>();
                 proposedTask.Add(subsystem.Asset, proposedSchedule.getSubsytemNewTask(subsystem.Asset));
+
+                //NEED A PROPOSED EVENT-- this is just a place holder
+                Event proposedEvent = new Event(proposedTask, newState);
                 // the dynamicState of the proposedSchedule
                 DynamicState assetDynamicState = subsystem.Asset.AssetDynamicState;
 

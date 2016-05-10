@@ -41,10 +41,10 @@ namespace MissionElements
         public SystemState()
         {
             Previous = null;
-            EventStart = 0;
-            EventEnd = 0;
-            TaskEnd = 0;
-            TaskStart = 0;
+            //EventStart = 0;
+            //EventEnd = 0;
+            //TaskEnd = 0;
+            //TaskStart = 0;
             Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>();
             Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
             Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
@@ -59,10 +59,10 @@ namespace MissionElements
         {
             SystemState newState = DeepCopy.Copy<SystemState>(initialStateToCopy);
             Previous = newState.Previous;
-            EventStart = newState.EventStart;
-            TaskStart = newState.TaskStart;
-            TaskEnd = newState.TaskEnd;
-            EventEnd = newState.EventEnd;
+            //EventStart = newState.EventStart;
+            //TaskStart = newState.TaskStart;
+            //TaskEnd = newState.TaskEnd;
+            //EventEnd = newState.EventEnd;
             Idata = newState.Idata;
             Ddata = newState.Ddata;
             //       Fdata = newState.Fdata;
@@ -77,17 +77,31 @@ namespace MissionElements
         public SystemState(SystemState previous, double newTaskStart)
         {
             Previous = previous;
-            EventStart = previous.EventEnd; // start from end of previous State
-            TaskStart = newTaskStart;
-            TaskEnd = newTaskStart;
-            EventEnd = newTaskStart;
+            //EventStart = previous.EventEnd; // start from end of previous State
+            //TaskStart = newTaskStart;
+            //TaskEnd = newTaskStart;
+            //EventEnd = newTaskStart;
             Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>();
             Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
             Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
             Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
             Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
         }
-
+        /// <summary>
+        /// combine two system states by adding the states from one into the other
+        /// </summary>
+        /// <param name="moreState"></param>
+        public void Add(SystemState moreState)
+        {
+            foreach (var data in moreState.Idata)
+                addValue(data.Key, data.Value);
+            foreach (var data in moreState.Ddata)
+                addValue(data.Key, data.Value);
+            foreach (var data in moreState.Bdata)
+                addValue(data.Key, data.Value);
+            foreach (var data in moreState.Mdata)
+                addValue(data.Key, data.Value);
+        }
 
         /** TODO: figure out if this can all be done with dictionary stuff
          * Gets the last int value set for the given state variable key in the state. If no value is found

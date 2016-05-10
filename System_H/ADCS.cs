@@ -26,21 +26,20 @@ namespace HSFSubsystem
             addKey(POINTVEC_KEY);
             DependentSubsystems = new List<ISubsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            dependencies.Add("PowerfromADCS", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
+            dependencies.Add("PowerfromADCS", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
         }
         #endregion Constructors
         
         #region Methods
-        public override bool canPerform(SystemState oldState, SystemState newState, Dictionary<Asset, Task> tasks,
-                                        Universe environment)
+        public override bool canPerform(Event proposedEvent, Universe environment)
         {
-            if (base.canPerform(oldState, newState, tasks, environment) == false)
+            if (base.canPerform(proposedEvent, environment) == false)
                 return false;
             //double timetoslew = (rand()%5)+8;
             double timetoslew = 10;
 
-            double es = newState.EventStart;
-            double ts = newState.TaskStart;
+            double es = proposedEvent.GetEventStart(Asset);
+            double ts = proposedEvent.GetTaskStart(Asset);
 
             if (es + timetoslew > ts)
             {
@@ -55,21 +54,21 @@ namespace HSFSubsystem
             Matrix<double> m_pv = m_target_pos_at_ts_ECI - m_SC_pos_at_ts_ECI;
 
             // set state data
-            newState.setProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));
+            _newState.setProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));
 
             return true;
         }
         /// <summary>
         /// Dependecy function for the power subsystem
         /// </summary>
-        /// <param name="currentState"></param>
+        /// <param name="currentEvent"></param>
         /// <returns></returns>
-        HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(SystemState currentState)
+        HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
-            prof1[currentState.EventStart] = 40;
-            prof1[currentState.TaskStart] = 60;
-            prof1[currentState.TaskEnd] = 40;
+            prof1[currentEvent.GetEventStart(Asset)] = 40;
+            prof1[currentEvent.GetTaskStart(Asset)] = 60;
+            prof1[currentEvent.GetTaskEnd(Asset)] = 40;
             return prof1;
         }
         #endregion Methods

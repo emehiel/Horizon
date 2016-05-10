@@ -19,21 +19,20 @@ namespace HSFSubsystem
             getSubNameFromXmlNode(subNode);
             DependentSubsystems = new List<ISubsystem>();
         }
-        public override bool canPerform(SystemState oldState, SystemState newState,
-                            Dictionary<Asset, Task> tasks, Universe environment) 
+        public override bool canPerform(Event proposedEvent, Universe environment) 
         {
-            if (!base.canPerform(oldState, newState, tasks, environment))
+            if (!base.canPerform(proposedEvent, environment))
                 return false;
             DynamicState position = Asset.AssetDynamicState;
-            Matrix<double> assetPosECI = position.PositionECI(newState.TaskStart);
-            Matrix<double> targetPosECI = _task.Target.DynamicState.PositionECI(newState.TaskStart);
+            Matrix<double> assetPosECI = position.PositionECI(proposedEvent.GetTaskStart(Asset));
+            Matrix<double> targetPosECI = _task.Target.DynamicState.PositionECI(proposedEvent.GetTaskStart(Asset));
             return GeometryUtilities.hasLOS(assetPosECI, targetPosECI);
         }
 
-        public override bool canExtend(SystemState newState, Universe environment, double evalToTime)
+        public override bool canExtend(Event proposedEvent, Universe environment, double evalToTime)
         {
-            if (newState.EventEnd < evalToTime)
-                newState.EventEnd = evalToTime;
+            if (proposedEvent.GetEventEnd(Asset) < evalToTime)
+                proposedEvent.SetEventEnd(Asset, evalToTime);
             return true;
         }
     }

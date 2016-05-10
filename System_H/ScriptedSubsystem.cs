@@ -53,13 +53,12 @@ namespace HSFSubsystem
         #endregion
 
         #region Methods
-        public override bool canPerform(SystemState oldState, SystemState newState,
-                          Dictionary<Asset, Task> tasks,  Universe environment)
+        public override bool canPerform(Event proposedEvent,  Universe environment)
         {
-            if (!base.canPerform(oldState, newState, tasks, environment)) //checks all the dependent subsystems
+            if (!base.canPerform(proposedEvent, environment)) //checks all the dependent subsystems
                 return false;
 
-            dynamic perform = PythonInstance.canPerform(oldState, newState, tasks, environment);
+            dynamic perform = PythonInstance.canPerform(proposedEvent, environment);
             //This needs to be inside the python canPerform
             //IsEvaluated = true;
             //if ((bool)perform == false)
@@ -68,9 +67,9 @@ namespace HSFSubsystem
             //newState.addValue(KEY, );
             return (bool)perform;
         }
-        public override bool canExtend(SystemState newState, Universe environment, double evalToTime)
+        public override bool canExtend(Event proposedEvent, Universe environment, double evalToTime)
         {
-            dynamic extend = PythonInstance.canExtend(newState, environment, evalToTime);
+            dynamic extend = PythonInstance.canExtend(proposedEvent, environment, evalToTime);
             return (bool)extend;
         }
 

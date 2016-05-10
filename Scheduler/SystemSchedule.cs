@@ -47,21 +47,42 @@ namespace HSFScheduler
 
         public bool CanAddTasks(Stack<Access> newAccessList, double newTaskStartTime)
         {
+            //TODO: Mehiel double check
+            //HSF v2.3:
+            //size_t count = 0;
+            //vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
+            //for (vector <const Task*>::const_iterator tIt = newTaskList.begin(); tIt != newTaskList.end(); tIt++, asIt2++) {
+            //    if (*tIt != NULL)
+            //    {
+            //        for (vector<assetSchedule*>::iterator asIt = assetscheds.begin(); asIt != assetscheds.end(); asIt++)
+            //        {
+            //            count += (*asIt)->timesCompletedTask(*tIt);
+            //        }
+            //        if (count >= (*tIt)->getMaxTimesPerformable())
+            //            return false;
+            //        if (!(*asIt2)->empty())
+            //        {
+            //            if ((*asIt2)->getLastState()->getEventEnd() > newTaskStartTime)
+            //                return false;
+            //        }
+            //    }
+            //}
+            //return true;
             int count = 0;
             // vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
             //int asIt2 = 0;
-	        foreach(var accessAssetSched in newAccessList)
+
+	        foreach(var access in newAccessList)
             {
-		        if(accessAssetSched != null)
+                if (!AllStates.isEmpty(access.Asset)) // the ait2 check
+                    if (AllStates.GetLastEvent().GetEventEnd(access.Asset) > newTaskStartTime)
+                        return false;
+                
+		        if(access.Task != null)
                 {
-				    count += AllStates.timesCompletedTask(accessAssetSched.Task);
-			        if(count >= accessAssetSched.Task.MaxTimesToPerform)
+				    count += AllStates.timesCompletedTask(access.Task);
+			        if(count >= access.Task.MaxTimesToPerform)
 				        return false;
-			        if(!AllStates.isEmpty())
-                    {
-				        if(AllStates.GetLastState().EventEnd > newTaskStartTime)
-					        return false;
-			        }
 		        }
 	        }
 	        return true;
@@ -89,13 +110,18 @@ namespace HSFScheduler
 
         public double getLastTaskStart()
         {
-            //TODO: This need to be fixed with the elimination of assetsched
+            //TODO: Mehiel check morgan's work
             //double lasttime = 0;
             //   foreach(var assetSchedule in AssetScheds)
             // if(!assetSchedule.isEmpty())
             //  lasttime = lasttime > assetSchedule.GetLastState().TaskStart ? lasttime : assetSchedule.GetLastState().TaskStart;
             //return lasttime;
-            return AllStates.Events.Peek().State.TaskStart; //This is only correct assuming we only have one asset performing a task per event
+            double lasttime = 0;
+            foreach (KeyValuePair<Asset, double> assetTaskStarts in AllStates.GetLastEvent().TaskStartTimes)
+            {
+                lasttime = lasttime > assetTaskStarts.Value ? lasttime : assetTaskStarts.Value;
+            }
+            return lasttime;
         }
 
         public SystemState GetEndState()

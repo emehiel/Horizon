@@ -26,28 +26,27 @@ namespace HSFSubsystem
             DependentSubsystems = new List<ISubsystem>();
             DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "DataRate(MB/s)");
             addKey(DATARATE_KEY);
-            dependencies.Add("PowerfromComm", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_COMMSUB));
+            dependencies.Add("PowerfromComm", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_COMMSUB));
         }
         #endregion
 
         #region Methods
-        public override bool canPerform(SystemState oldState, SystemState newState,
-                            Dictionary<Asset, Task> tasks, Universe environment)
+        public override bool canPerform(Event proposedEvent, Universe environment)
         {
-            if(!base.canPerform(oldState, newState, tasks, environment))
+            if(!base.canPerform(proposedEvent, environment))
                 return false;
             if (_task.Type == TaskType.COMM)
             {
-                HSFProfile<double> newProf = DependencyCollector(newState);
+                HSFProfile<double> newProf = DependencyCollector(proposedEvent);
                 if (!newProf.Empty())
-                    newState.setProfile(DATARATE_KEY, newProf);
+                    proposedEvent.State.setProfile(DATARATE_KEY, newProf);
             }
             return true;
         }
 
-        HSFProfile<double> POWERSUB_PowerProfile_COMMSUB(SystemState state)
+        HSFProfile<double> POWERSUB_PowerProfile_COMMSUB(Event currentEvent)
         {
-            return state.GetProfile(DATARATE_KEY) * 20;
+            return currentEvent.State.getProfile(DATARATE_KEY) * 20;
         }
         #endregion
     }

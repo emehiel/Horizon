@@ -74,7 +74,6 @@
   <ItemGroup>
     <Compile Include="AccessSub.cs" />
     <Compile Include="ADCS.cs" />
-    <Compile Include="Asset.cs" />
     <Compile Include="CanPerformReturn.cs" />
     <Compile Include="Comm.cs" />
     <Compile Include="Constraint.cs" />
@@ -91,7 +90,6 @@
     <Compile Include="SSDR.cs" />
     <Compile Include="Subsystem.cs" />
     <Compile Include="SubsystemFactory.cs" />
-    <Compile Include="SubsystemNode.cs" />
     <Compile Include="SystemClass.cs" />
   </ItemGroup>
   <ItemGroup>

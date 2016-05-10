@@ -19,7 +19,6 @@
 			Type="Adcs"
 			subsystemName = "Adcs">
 			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0, 0.0, 0.0])"></IC>
-			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="EOSensor"
@@ -33,22 +32,18 @@
 			<IC type="Double" key="numPixels" value="0.0"></IC>
 			<IC type="Double" key="IncidenceAngle" value="0.0"></IC>
 			<IC type="Bool" key="EOSensorOn" value="0.0"></IC>
-			<DEPENDENCY subystemName="Adcs"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Ssdr"
 			subsystemName = "SSDR"
 			bufferSize = "5000">
 			<IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
-			<DEPENDENCY_FCN scripted="False" type="double" key="Asset1_SSDRSUB_getNewDataProfile" callKey="SSDRSUB_getNewDataProfile"></DEPENDENCY_FCN>
-			<DEPENDENCY subsystemName="EOSensor"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Comm"
 			subsystemName = "Comm">
 			<IC type="Double" key="DataRate(MB/s)" value="0.0"></IC>
-			<DEPENDENCY_FCN scripted="False" type="double" key="Asset1_COMMSUB_getDataRateProfile" callKey="COMMSUB_getDataRateProfile"></DEPENDENCY_FCN>
-			<DEPENDENCY subsystemName="SSDR"></DEPENDENCY>
+			<DEPENDENCY subsystemName="SSDR" fcnName="CommfromSSDR"></DEPENDENCY>
 		</SUBSYSTEM>		
 		<SUBSYSTEM
 			Type="Power"
@@ -58,8 +53,10 @@
 			penumbraSolarPower="75">
 			<IC type="Double" key="DepthofDischarge" value="0.0"></IC>
 			<IC type="Double" key="SolarPanelPowerIn" value="0.0"></IC>
-			<DEPENDENCY_FCN scripted="False" type="double" key="Asset1_POWERSUB_getPowerProfile" callKey="POWERSUB_getPowerProfile"></DEPENDENCY_FCN>
-			<DEPENDENCY subsystemName="Comm"></DEPENDENCY>
+			<DEPENDENCY subsystemName="Comm" fcnName="PowerfromComm"></DEPENDENCY>
+			<DEPENDENCY subsystemName="Adcs" fcnName="PowerfromADCS"></DEPENDENCY>
+			<DEPENDENCY subsystemName="EOSensor" fcnName="PowerfromEOSensor"></DEPENDENCY>
+			<DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR"></DEPENDENCY>
 		</SUBSYSTEM>
 		<CONSTRAINT
 			value="0.25"

@@ -45,12 +45,15 @@ namespace HSFScheduler
                 // the proposed Task
                 Dictionary<Asset, Task> proposedTask = new Dictionary<Asset, Task>();
                 proposedTask.Add(subsystem.Asset, proposedSchedule.getSubsytemNewTask(subsystem.Asset));
+
+                //NEED A PROPOSED EVENT-- this is just a place holder
+                Event proposedEvent = new Event(proposedTask, newState);
                 // the dynamicState of the proposedSchedule
                 DynamicState assetDynamicState = subsystem.Asset.AssetDynamicState;
 
                 // Check all subsystems to see if they canPerform the task
                 // Recursion of the subsystem dependencies is managed by the subsystems
-                if (!subsystem.canPerform(oldState, newState, proposedTask, environment))
+                if (!subsystem.canPerform(proposedEvent, environment))
                     return false;
 
 

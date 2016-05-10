@@ -6,6 +6,7 @@ using HSFSystem;
 using MissionElements;
 using System.Xml;
 
+
 namespace HSFSubsystem
 {
     public abstract class Subsystem : ISubsystem {
@@ -22,8 +23,8 @@ namespace HSFSubsystem
         public List<StateVarKey<bool>> Bkeys { get; protected set; }
         public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
         public List<StateVarKey<Quat>> Qkeys { get; protected set; }
-        private SystemState _oldState;
-        private SystemState _newState;
+        protected SystemState _oldState;
+        protected SystemState _newState;
         protected Task _task;
         #endregion Attributes
 
@@ -58,16 +59,16 @@ namespace HSFSubsystem
         /// <param name="tasks"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public virtual bool canPerform(SystemState oldState, SystemState newState,
-                                       Dictionary<Asset, Task> tasks, Universe environment)
+        public virtual bool canPerform(Event proposedEvent, Universe environment)
         {
             foreach (var sub in DependentSubsystems)
             {
-                if (sub.canPerform(oldState, newState, tasks, environment) == false)
+                if (sub.canPerform(proposedEvent, environment) == false)
                     return false;
             }
-            _task = null;
-            tasks.TryGetValue(Asset, out _task); //Find the correct task for the subsystem
+            _task = proposedEvent.getAssetTask(Asset); //Find the correct task for the subsystem
+            _newState = proposedEvent.State;
+            _oldState = proposedEvent.State.Previous; //do we want to prevent user from modifying oldState on accident??
             return true;
         }
         /// <summary>
@@ -78,10 +79,10 @@ namespace HSFSubsystem
         /// <param name="environment"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
-        public virtual bool canExtend(SystemState newState,  Universe environment, double evalToTime)
+        public virtual bool canExtend(Event proposedEvent,  Universe environment, double evalToTime)
         {
-            if (newState.EventEnd < evalToTime)
-                newState.EventEnd = evalToTime;
+            if (proposedEvent.GetEventEnd(Asset) < evalToTime)
+                proposedEvent.SetEventEnd(Asset, evalToTime);
             return true;
         }
 
@@ -104,12 +105,12 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentState"></param>
         /// <returns></returns>
-        protected HSFProfile<double> DependencyCollector(SystemState currentState)
+        protected HSFProfile<double> DependencyCollector(Event currentEvent)
         {
             HSFProfile<double> outProf = new HSFProfile<double>();
             foreach (var dep in SubsystemDependencyFunctions)
             {
-                outProf += dep.Value.DynamicInvoke(currentState);
+                outProf += dep.Value.DynamicInvoke(currentEvent);
             }
             return outProf;
         }
@@ -138,6 +139,22 @@ namespace HSFSubsystem
             else
                 throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
         }
+
+        public static string parseNameFromXmlNode(XmlNode subXmlNode)
+        {
+            string assetName = subXmlNode.ParentNode.Attributes["assetName"].Value.ToString();
+            string Name;
+            if (subXmlNode.Attributes["subsystemName"] != null)
+                Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString();
+            else if (DefaultSubName != null)
+                Name = assetName + "." + DefaultSubName;
+            else if (subXmlNode.Attributes["type"] != null)
+                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString();
+            else
+                throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
+            return Name;
+        }
+
 
         //public void getInitialStateFromXmlNode(XmlNode ICXmlNode)
         //{

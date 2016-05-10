@@ -2,7 +2,7 @@
 using System.Xml;
 using System;
 
-namespace HSFSystem
+namespace MissionElements
 {
     public class Asset
     {

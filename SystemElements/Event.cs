@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using Utilities;
 using MissionElements;
-using HSFSystem;
 
-namespace HSFScheduler
+namespace MissionElements
 {
     public class Event
     {
@@ -13,10 +12,11 @@ namespace HSFScheduler
      //   public Access ;
         /** The time history of the State during the current Event. */
         public SystemState State { get; private set; }
+        public IEnumerable<KeyValuePair<Asset, double>> TaskStartTimes { get; set; }
 
         /// <summary>
         ///  Creates an Event, in which the Task was performed by an Asset, and the time history 
-	    /// of the pertinent State information was saved.
+        /// of the pertinent State information was saved.
         /// </summary>
         /// <param name="task"></param>
         /// <param name="state"></param>
@@ -26,7 +26,12 @@ namespace HSFScheduler
             State = state; //Should this be a deep copy?
         }
 
-    	public Event(Event eventToCopyExactly)
+        public double GetTaskStart(Asset asset)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Event(Event eventToCopyExactly)
         {
             Event newEvent = DeepCopy.Copy<Event>(eventToCopyExactly);
             Tasks = newEvent.Tasks;
@@ -38,6 +43,31 @@ namespace HSFScheduler
             Task currentTask;
             Tasks.TryGetValue(asset, out currentTask);
             return currentTask;
+        }
+
+        public double GetEventStart(Asset asset)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetEventEnd(Asset asset)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetEventEnd(Asset asset, double evalToTime)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double GetTaskEnd(Asset asset)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetTaskEnd(Asset asset, double te)
+        {
+            throw new NotImplementedException();
         }
     }
 }

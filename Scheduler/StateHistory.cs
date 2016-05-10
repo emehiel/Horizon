@@ -51,7 +51,7 @@ namespace HSFScheduler
         /// <returns></returns>
         public SystemState GetLastState()
         {
-            if (!isEmpty()) //TODO: check this is what we actually want to do
+            if (!isEmpty()) 
             {
                 return Events.Peek().State;
             }
@@ -72,7 +72,23 @@ namespace HSFScheduler
             else return null;
         }
 
-        
+        /// <summary>
+        /// Return all the last tasks of all the assets in a dictionary of Asset, Task
+        /// </summary>
+        /// <returns></returns>
+        public Dictionary<Asset, Task> GetLastTasks()
+        {
+            return GetLastEvent().Tasks;
+        }
+
+        /// <summary>
+        /// Return the last event (last task of each asset in the system and the system state)
+        /// </summary>
+        /// <returns></returns>
+        public Event GetLastEvent()
+        {
+            return Events.Peek();
+        }
 
         /// <summary>
         /// Returns the number of times the specified task has been completed in this schedule for a specific asset
@@ -135,7 +151,21 @@ namespace HSFScheduler
             return count;
         }
         /// <summary>
-        /// Returns whether the schedule is empty
+        /// Returns true if the specified asset doesn't have a task (the asset isn't scheduled)
+        /// </summary>
+        /// <returns></returns>
+        public bool isEmpty(Asset asset)
+        {
+            foreach(Event eit in Events)
+            {
+                if (eit.Tasks.ContainsKey(asset)) //something has been scheduled
+                    return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// returns true is no assets have any events
         /// </summary>
         /// <returns></returns>
         public bool isEmpty()

@@ -52,15 +52,14 @@ namespace HSFSubsystem
                 _highQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityPixels"].Value.ToString(), typeof(double));
             if (EOSensorXmlNode.Attributes["highQualityTime"] != null)
                 _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
-            dependencies.Add("PowerfromEOSensor", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_EOSENSORSUB));
+            dependencies.Add("PowerfromEOSensor", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_EOSENSORSUB));
         }
         #endregion
 
         #region Methods
-        public override bool canPerform(SystemState oldState, SystemState newState,
-                            Dictionary<Asset, Task> tasks, Universe environment)
+        public override bool canPerform(Event proposedEvent, Universe environment)
         {
-            if (!canPerform(oldState, newState, tasks, environment))
+            if (!canPerform(proposedEvent, environment))
                 return false;
             if (_task.Type == TaskType.IMAGING)
             {
@@ -80,12 +79,12 @@ namespace HSFSubsystem
                 }
 
                 // get event start and task start times
-                double es = newState.EventStart;
-                double ts = newState.TaskStart;
+                double es = proposedEvent.GetEventStart(Asset);
+                double ts = proposedEvent.GetTaskStart(Asset);
 
                 // set task end based upon time to capture
                 double te = ts + timetocapture;
-                newState.TaskEnd = te;
+                proposedEvent.SetTaskEnd(Asset, te);
 
                 // calculate incidence angle
                 // from Brown, Pp. 99
@@ -100,14 +99,14 @@ namespace HSFSubsystem
                 double incidenceang = 90 - 180 / Math.PI * Math.Acos(Matrix<double>.Dot(pos_norm, pv_norm));
 
                 // set state data
-                newState.addValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage, incidenceang));
-                newState.addValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
+                _newState.addValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage, incidenceang));
+                _newState.addValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
 
-                newState.addValue(PIXELS_KEY, new KeyValuePair<double, double>(timage, pixels));
-                newState.addValue(PIXELS_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
+                _newState.addValue(PIXELS_KEY, new KeyValuePair<double, double>(timage, pixels));
+                _newState.addValue(PIXELS_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
                         
-                newState.addValue(EOON_KEY, new KeyValuePair<double, bool>(ts, true));
-                newState.addValue(EOON_KEY, new KeyValuePair<double, bool>(te, false));
+                _newState.addValue(EOON_KEY, new KeyValuePair<double, bool>(ts, true));
+                _newState.addValue(EOON_KEY, new KeyValuePair<double, bool>(te, false));
 
                 return true;
             }
@@ -115,14 +114,14 @@ namespace HSFSubsystem
                 return true;
         }
 
-        HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(SystemState currentState)
+        HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
-            prof1[currentState.EventStart] = 10;
-            if (currentState.getValueAtTime(EOON_KEY, currentState.TaskStart).Value)
+            prof1[currentEvent.GetEventStart(Asset)] = 10;
+            if (currentEvent.State.getValueAtTime(EOON_KEY, currentEvent.GetTaskStart(Asset)).Value)
             {
-                prof1[currentState.TaskStart] = 60;
-                prof1[currentState.TaskEnd] = 10;
+                prof1[currentEvent.GetTaskStart(Asset)] = 60;
+                prof1[currentEvent.GetTaskEnd(Asset)] = 10;
             }
             return prof1;
         }

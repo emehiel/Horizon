@@ -27,8 +27,8 @@ namespace HSFSubsystem
             addKey(DATABUFFERRATIO_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             DependentSubsystems = new List<ISubsystem>();
-            dependencies.Add("PowerfromSSDR", new Func<SystemState, HSFProfile<double>>(POWERSUB_PowerProfile_SSDRSUB));
-            dependencies.Add("CommfromSSDR", new Func<SystemState, HSFProfile<double>>(COMMSUB_DataRateProfile_SSDRSUB));
+            dependencies.Add("PowerfromSSDR", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_SSDRSUB));
+            dependencies.Add("CommfromSSDR", new Func<Event, HSFProfile<double>>(COMMSUB_DataRateProfile_SSDRSUB));
         }
 
         /// <summary>
@@ -39,23 +39,22 @@ namespace HSFSubsystem
         /// <param name="tasks"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public override bool canPerform(SystemState oldState, SystemState newState,
-                    Dictionary<Asset, Task> tasks, Universe environment)
+        public override bool canPerform(Event proposedEvent, Universe environment)
         {
-            if (!base.canPerform(oldState, newState, tasks, environment))
+            if (!base.canPerform(proposedEvent, environment))
                 return false;
             if (_task.Type == TaskType.IMAGING)
             {
-                double ts = newState.TaskStart;
-                double te = newState.TaskEnd;
-                double oldbufferratio = oldState.getLastValue(Dkeys.First()).Value;
-                HSFProfile<double> newdataratein = (DependencyCollector(newState) / _bufferSize);
+                double ts = proposedEvent.GetTaskStart(Asset);
+                double te = proposedEvent.GetTaskEnd(Asset);
+                double oldbufferratio = _oldState.getLastValue(Dkeys.First()).Value;
+                HSFProfile<double> newdataratein = (DependencyCollector(proposedEvent) / _bufferSize);
 
                 bool exceeded = false;
                 HSFProfile<double> newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 5, 1, ref exceeded, 0, oldbufferratio);
                 if (!exceeded)
                 {
-                    newState.addValue(DATABUFFERRATIO_KEY, newdataratio);
+                    _newState.addValue(DATABUFFERRATIO_KEY, newdataratio);
                     return true;
                 }
                 Logger.Report("SSDR");
@@ -63,18 +62,18 @@ namespace HSFSubsystem
             }
             else if (_task.Type == TaskType.COMM)
             {
-                double ts = newState.TaskStart;
-                newState.TaskEnd = ts + 60.0;
-                double te = newState.TaskEnd;
+                double ts = proposedEvent.GetTaskStart(Asset);
+                proposedEvent.SetTaskEnd(Asset, ts + 60.0);
+                double te = proposedEvent.GetTaskEnd(Asset);
 
-                double data = _bufferSize * oldState.getLastValue(Dkeys.First()).Value;
+                double data = _bufferSize * _oldState.getLastValue(Dkeys.First()).Value;
                 double dataqueout = data / 2 > 50 ? data / 2 : data;
 
                 if (data - dataqueout < 0)
                     dataqueout = data;
 
                 if (dataqueout > 0)
-                    newState.addValue(DATABUFFERRATIO_KEY, new KeyValuePair<double, double>(te, (data - dataqueout) / _bufferSize));
+                    _newState.addValue(DATABUFFERRATIO_KEY, new KeyValuePair<double, double>(te, (data - dataqueout) / _bufferSize));
                 return true;
             }
             return true;
@@ -85,26 +84,26 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentState"></param>
         /// <returns></returns>
-        HSFProfile<double> POWERSUB_PowerProfile_SSDRSUB(SystemState currentState)
+        HSFProfile<double> POWERSUB_PowerProfile_SSDRSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
-            prof1[currentState.EventStart] = 15;
+            prof1[currentEvent.GetEventStart(Asset)] = 15;
             return prof1;
         }
 
         /// <summary>
-        /// Deoendecy function for the ssdr subsystem
+        /// Dependecy function for the ssdr subsystem
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="currentEvent"></param>
         /// <returns></returns>
-        HSFProfile<double> COMMSUB_DataRateProfile_SSDRSUB(SystemState state)
+        HSFProfile<double> COMMSUB_DataRateProfile_SSDRSUB(Event currentEvent)
         {
-            double datarate = 5000 * (state.getValueAtTime(DATABUFFERRATIO_KEY, state.TaskStart).Value - state.getValueAtTime(DATABUFFERRATIO_KEY, state.TaskEnd).Value) / (state.TaskEnd - state.TaskStart);
+            double datarate = 5000 * (currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskStart(Asset)).Value - currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) / (currentEvent.GetTaskEnd(Asset) - currentEvent.GetTaskStart(Asset));
             HSFProfile<double> prof1 = new HSFProfile<double>();
             if (datarate != 0)
             {
-                prof1[state.TaskStart] = datarate;
-                prof1[state.TaskEnd] = 0;
+                prof1[currentEvent.GetTaskStart(Asset)] = datarate;
+                prof1[currentEvent.GetTaskEnd(Asset)] = 0;
             }
             return prof1;
         }

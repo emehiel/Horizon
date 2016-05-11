@@ -30,11 +30,10 @@ namespace MissionElements
                 Name = assetXMLNode.Attributes["assetName"].Value.ToString();
             else
                 throw new MissingMemberException("Missing name for Asset!");
-            foreach(XmlNode child in assetXMLNode.ChildNodes)
-            {
-                if (child.Name.ToString().Equals("DynamicState"))
-                    AssetDynamicState = new DynamicState(child);
-            }  
+            if (assetXMLNode["DynamicState"] != null)
+                AssetDynamicState = new DynamicState(assetXMLNode["DynamicState"]);
+
+
             IsTaskable = false;
         }
         #endregion

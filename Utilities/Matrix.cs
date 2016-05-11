@@ -193,21 +193,19 @@ namespace Utilities
             int rowNumber = 0;
 
             _elements = new List<List<T>>(NumRows);
-            if (rows[0].Contains(","))
+            foreach (string row in rows)
             {
-                foreach (string row in rows)
-                {
-                    dRows = Array.ConvertAll(row.Split(','), new Converter<string, double>(Double.Parse));
-                    NumCols = dRows.Length;
+                dRows = Array.ConvertAll(row.Split(','), new Converter<string, double>(Double.Parse));
+                NumCols = dRows.Length;
 
-                    _elements.Add(new List<T>(NumCols));
+                _elements.Add(new List<T>(NumCols));
 
-                    for (int j = 0; j < NumCols; j++)
-                        _elements[rowNumber].Add((T)Convert.ChangeType(dRows[j], typeof(T)));
+                for (int j = 0; j < NumCols; j++)
+                    _elements[rowNumber].Add((T)Convert.ChangeType(dRows[j], typeof(T)));
 
-                    rowNumber++;
-                }
-            }   
+                rowNumber++;
+            }
+              
         }
 
         public Matrix(XmlNode matrixXmlNode)
@@ -235,16 +233,18 @@ namespace Utilities
         /// <returns>string</returns>
         public override string ToString()
         {
-            string s = "";
+            string s = "[";
 
             foreach(List<T> row in _elements)
             {
                 foreach (T element in row)
-                    s += element.ToString() + "," + "\t";
-                s = s.Substring(0, s.Length - 2) + ";" + Environment.NewLine;
+                    s += element.ToString() + "," + " ";
+                s = s.Substring(0, s.Length - 2) + "; ";
             }
 
             s = s.Substring(0, s.Length - 2);
+            s += "]";
+
             return s;
         }
 

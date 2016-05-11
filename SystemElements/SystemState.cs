@@ -571,12 +571,12 @@ namespace MissionElements
             SystemState state = new SystemState();
             foreach (XmlNode ICNode in ICNodes)
             {
-                string type = ICNode.Attributes["type"].Value.ToString();
-                string key = ICNode.Attributes["key"].Value.ToString();
+                string type = ICNode.Attributes["type"].Value;
+                string key = ICNode.Attributes["key"].Value;
                 if (type.Equals("Int"))
                 {
                     int val;
-                    Int32.TryParse(ICNode.Attributes["value"].Value.ToString(), out val);
+                    Int32.TryParse(ICNode.Attributes["value"].Value, out val);
                     StateVarKey<int> svk = new StateVarKey<int>(key);
                     state.addValue(svk, new KeyValuePair<double, int>(SimParameters.SimStartSeconds, val));
                 }
@@ -590,13 +590,13 @@ namespace MissionElements
                 else if (type.Equals("Double"))
                 {
                     double val;
-                    Double.TryParse(ICNode.Attributes["value"].ToString(), out val);
+                    Double.TryParse(ICNode.Attributes["value"].Value, out val);
                     StateVarKey<double> svk = new StateVarKey<double>(key);
                     state.addValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
                 }
                 else if (type.Equals("Bool"))
                 {
-                    string val = ICNode.Attributes["value"].Value.ToString();
+                    string val = ICNode.Attributes["value"].Value;
                     bool val_ = false;
                     if (val.Equals("True") || val.Equals("1"))
                         val_ = true;
@@ -605,7 +605,7 @@ namespace MissionElements
                 }
                 else if (type.Equals("Matrix"))
                 {
-                    Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"].ToString());
+                    Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"].Value);
                     StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(key);
                     state.addValue(svk, new KeyValuePair<double, Matrix<double>>(SimParameters.SimStartSeconds, val));
                 }

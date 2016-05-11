@@ -18,6 +18,7 @@ namespace HSFScheduler
         public StateHistory(SystemState initialState)
         {
             InitialState = initialState;
+            Events = new Stack<Event>();
         }
 
         /// <summary>

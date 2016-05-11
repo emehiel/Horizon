@@ -4,13 +4,13 @@
 	</PYTHON>
 
 	<ASSET assetName="Asset1">
-		<POSITION
-			PositionType="PredeterminedECI"
-			ICs="[7378.137, 0.0, 0.0 0.0, 6.02088, 4.215866])">
+		<DynamicState
+			DynamicStateType="PREDETERMINED_ECI"
+			ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866]">
 			<EOMS
 				EOMSType="orbital_EOMS">
 			</EOMS>
-		</POSITION>
+		</DynamicState>
 		<SUBSYSTEM
 			Type="Access"
 			subsystemName = "Access">
@@ -18,7 +18,7 @@
 		<SUBSYSTEM
 			Type="Adcs"
 			subsystemName = "Adcs">
-			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0, 0.0, 0.0])"></IC>
+			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="EOSensor"

@@ -35,7 +35,7 @@ namespace HSFUniverse
 
         public DynamicStateType Type { get; private set; }
 
-        public EOMS Eoms { get; set; }
+        public EOMS Eoms { get; private set; }
 
         //private double _stateDataTimeStep { get;  set; }
 
@@ -61,7 +61,9 @@ namespace HSFUniverse
             if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
             {
                 // I think this should be a constructor...  The EOMS should be some sort of delegate function which can be generated from the xml...
-                //_eoms = createEOMSObject(dynamicStateXMLNode["EOMS"]);
+                string eomsType = dynamicStateXMLNode["EOMS"].GetAttribute("EOMSType");
+                if (eomsType == "orbital_EOMS")
+                    Eoms = new OrbitalEOMS();
                 
                 // Returns a null reference if INTEGRATOR is not set in XML
                 _integratorNode = dynamicStateXMLNode["INTEGRATOR"];

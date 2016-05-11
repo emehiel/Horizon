@@ -23,6 +23,13 @@ namespace HSFScheduler
 
         public SystemSchedule(SystemSchedule oldSchedule, Stack<Access> newAccessList, double newTaskStartTime)
         {
+            if (newAccessList != null)
+            {
+                Event eventToAdd = new Event(newAccessList, new SystemState(oldSchedule.GetEndState(), newTaskStartTime));
+                AllStates.Events.Push(eventToAdd);
+            }
+
+            
             /* commented out because it doesn't work yet
     // TODO (EAM):  Changed this so we need to double check/test
     //int i = 0; //need a double iterator

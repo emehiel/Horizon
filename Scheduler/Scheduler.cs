@@ -255,7 +255,14 @@ public static Stack<Stack<Access>> GenerateExhaustiveSystemSchedules(Stack<Acces
 
             IEnumerable<IEnumerable<Access>> allScheduleCombos = currentAccessesByAsset.CartesianProduct();
 
-            return (Stack<Stack<Access>>)allScheduleCombos;
+            Stack<Stack<Access>> allOfThem = new Stack<Stack<Access>>();
+            foreach (var accessStack in allScheduleCombos)
+            {
+                Stack<Access> someOfThem = new Stack<Access>(accessStack);
+                allOfThem.Push(someOfThem);
+            }
+
+            return allOfThem;
         }
     }
 }

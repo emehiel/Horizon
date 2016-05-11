@@ -63,9 +63,14 @@ namespace HSFScheduler
 
             // if all asset position types are not dynamic types, can pregenerate accesses for the simulation
             bool canPregenAccess = true;
-            foreach (var asset in system.Assets)
-                canPregenAccess &= asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_ECI && asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_LLA;
 
+            foreach (var asset in system.Assets)
+            {
+                if(asset.AssetDynamicState != null)
+                    canPregenAccess &= asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_ECI && asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_LLA;
+                else
+                    canPregenAccess = false;
+            }
 
             // if accesses can be pregenerated, do it now
             Stack<Access> preGeneratedAccesses = new Stack<Access>();

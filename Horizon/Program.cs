@@ -65,7 +65,7 @@ namespace Horizon
             XmlEnum.MoveNext();
             var targetDeckXMLNode = (XmlNode)XmlEnum.Current;
             Stack<Task> systemTasks = new Stack<Task>();
-            bool targetsLoaded = Task.loadTargetsIntoTaskList(targetDeckXMLNode, ref systemTasks);
+            bool targetsLoaded = Task.loadTargetsIntoTaskList(targetDeckXMLNode, systemTasks);
             Console.WriteLine("Initial states set");
 
 
@@ -136,7 +136,7 @@ namespace Horizon
             */
             // Initialize List to hold assets and subsystem nodes
             List<Asset> assetList = new List<Asset>();
-            List<Subsystem> subNodeList = new List<Subsystem>();
+            List<Subsystem> subList = new List<Subsystem>();
 
             // Maps used to set up preceeding nodes
             Dictionary<ISubsystem, XmlNode> subsystemXMLNodeMap = new Dictionary<ISubsystem, XmlNode>();
@@ -199,10 +199,7 @@ namespace Horizon
                                 if (ICorDepNode.Name.Equals("DEPENDENCY"))
                                 {
                                     string depSubName = "", depFunc = "";
-                                    if (ICorDepNode.Attributes["subsystemName"] != null)
-                                        depSubName = ICorDepNode.Attributes["subsystemName"].Value.ToString();
-                                    else
-                                        throw new MissingMemberException("Missing subsystem name in " + asset.Name);
+                                    depSubName = Subsystem.parseNameFromXmlNode(ICorDepNode, asset.Name) ;
                                     dependencyMap.Add(new KeyValuePair<string, string>(subName, depSubName));
 
                                     if (ICorDepNode.Attributes["fcnName"] != null)
@@ -222,13 +219,17 @@ namespace Horizon
                         //Create a new Constraint
                         if (childNode.Name.Equals("CONSTRAINT"))
                         {
-                            constraintsList.Add(ConstraintFactory.getConstraint(childNode, subsystemMap));
+                            constraintsList.Add(ConstraintFactory.getConstraint(childNode, subsystemMap, asset));
                         }
                     }
                     if (ICNodes.Count > 0)
                         initialSysState.Add(SystemState.setInitialSystemState(ICNodes));
                     ICNodes.Clear();
                 }
+            }
+            foreach (KeyValuePair<string, Subsystem> sub in subsystemMap)
+            {
+                subList.Add(sub.Value);
             }
             Console.WriteLine("Subsystems and Constraints Loaded");
             //Add all the dependent subsystems to the dependent subsystem list of the subsystems
@@ -248,6 +249,18 @@ namespace Horizon
                 subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.getDependencyFunc(depFunc.Value));
             }
             Console.WriteLine("Dependencies Loaded");
+
+            //Need to make this parse Xml
+            Evaluator schedEvaluator = new TargetValueEvaluator(dependencies);
+
+            SystemClass simSystem = new SystemClass(assetList, subList, constraintsList, SystemUniverse);
+
+            if (simSystem.checkForCircularDependencies())
+                throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
+
+            Scheduler scheduler = new Scheduler();
+            List<SystemSchedule> schedules = scheduler.generateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
+
             Console.ReadKey();
                 /*
 // USER - Specify data output parameters

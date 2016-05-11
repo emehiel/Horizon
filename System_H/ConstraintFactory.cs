@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 using System.Xml;
 using HSFSubsystem;
 using Utilities;
+using MissionElements;
 
 namespace HSFSystem
 {
     public class ConstraintFactory
     {
-        public static Constraint getConstraint(XmlNode constraintXmlNode, Dictionary<string, Subsystem> subsystemMap)
+        public static Constraint getConstraint(XmlNode constraintXmlNode, Dictionary<string, Subsystem> subsystemMap, Asset asset)
         {
             Subsystem constrainedSub = null;
-            string subName = constraintXmlNode.ParentNode.Attributes["assetName"].Value.ToString() + "." +
-                constraintXmlNode.Attributes["subsystemName"].Value.ToString();
+            string subName = Subsystem.parseNameFromXmlNode(constraintXmlNode, asset.Name);
             subsystemMap.TryGetValue(subName, out constrainedSub);
             if (constrainedSub == null)
                 throw new MissingMemberException("Missing Subsystem Name in Constraint");

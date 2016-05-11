@@ -22,7 +22,7 @@ namespace HSFSubsystem
         public static string GetSubsystem(XmlNode SubsystemXmlNode, bool enableScripting, Dependencies dependencies, Asset asset, Dictionary<string, Subsystem> subDic)
         {
             string type = SubsystemXmlNode.Attributes["Type"].Value.ToString().ToLower();
-            string name = Subsystem.parseNameFromXmlNode(SubsystemXmlNode);
+            string name = Subsystem.parseNameFromXmlNode(SubsystemXmlNode, asset.Name);
             if (type.Equals("scripted") && enableScripting)
             {
                 subDic.Add(name, new ScriptedSubsystem(SubsystemXmlNode, dependencies));

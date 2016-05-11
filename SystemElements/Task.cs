@@ -43,7 +43,7 @@ namespace MissionElements
             return Target.Name;
         }
 
-        public static bool loadTargetsIntoTaskList(XmlNode targetDeckXMLNode, ref Stack<Task> tasks)
+        public static bool loadTargetsIntoTaskList(XmlNode targetDeckXMLNode, Stack<Task> tasks)
         {
             Console.WriteLine("Loading target deck...");
             int maxTimesPerform = 1;

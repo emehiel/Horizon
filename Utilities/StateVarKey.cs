@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Xml;
 
 namespace Utilities
 {
@@ -15,7 +12,14 @@ namespace Utilities
         #region Constructors
         public StateVarKey(string varName)
         {
-            VarName = varName;
+            VarName = varName.ToLower();
+        }
+
+        public StateVarKey(XmlNode varXmlNode, string assetName)
+        {
+            if (varXmlNode.Attributes["key"] == null)
+                throw new MissingMemberException("Missing key field in constraint!");
+            VarName = assetName.ToLower() + "." + varXmlNode.Attributes["key"].Value.ToString().ToLower();
         }
         #endregion
 

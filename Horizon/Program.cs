@@ -148,9 +148,6 @@ namespace Horizon
             // Create Constraint list 
             List<Constraint> constraintsList = new List<Constraint>();
 
-            // Create new Subsystem Factory
-            SubsystemFactory subsystemFactory = new SubsystemFactory();
-
             //Create Lists to hold all the initial condition and dependency nodes to be parsed later
             List<XmlNode> ICNodes = new List<XmlNode>();
             List<XmlNode> DepNodes = new List<XmlNode>();
@@ -194,7 +191,7 @@ namespace Horizon
                         if (childNode.Name.Equals("SUBSYSTEM"))
                         {  //is this how we want to do this?
                             // Check if the type of the Subsystem is scripted, networked, or other
-                            string subName = subsystemFactory.GetSubsystem(childNode, enableScripting, dependencies, asset, subsystemMap);
+                            string subName = SubsystemFactory.GetSubsystem(childNode, enableScripting, dependencies, asset, subsystemMap);
                             foreach (XmlNode ICorDepNode in childNode.ChildNodes)
                             {
                                 if(ICorDepNode.Name.Equals("IC"))
@@ -225,11 +222,7 @@ namespace Horizon
                         //Create a new Constraint
                         if (childNode.Name.Equals("CONSTRAINT"))
                         {
-                            //Constraint factory isnt made yet
-                            //constraintsList.Add(ConstraintFactory.getConstraint(childNode));
-                            //Subsystem constrainedSub;
-                            //subsystemMap.TryGetValue(childNode.Attributes["subsystemName"].Value.ToString(), out constrainedSub);
-                            //constraintsList.Last().AddConstrainedSub(constrainedSub);
+                            constraintsList.Add(ConstraintFactory.getConstraint(childNode, subsystemMap));
                         }
                     }
                     if (ICNodes.Count > 0)
@@ -237,7 +230,8 @@ namespace Horizon
                     ICNodes.Clear();
                 }
             }
-            //Add all the dependent subsystems to tge dependent subsystem list of the subsystems
+            Console.WriteLine("Subsystems and Constraints Loaded");
+            //Add all the dependent subsystems to the dependent subsystem list of the subsystems
             foreach (KeyValuePair<string, string> depSubPair in dependencyMap)
             {
                 Subsystem subToAddDep, depSub;
@@ -256,160 +250,6 @@ namespace Horizon
             Console.WriteLine("Dependencies Loaded");
             Console.ReadKey();
                 /*
-     
-		else {
-            // Check if the XMLNode for this subsystem has attribute defaultConstructor="true".
-            // If it does, call the create method of the subsystemAdapter that will call the default
-            // constructor for the subsystem. Otherwise call the create method and pass in the XMLNode
-            // for the current subsystem
-            if (currSubsystemXMLNode.isAttributeSet("defaultConstructor"))
-            {
-                if (atob(currSubsystemXMLNode.getAttribute("defaultConstructor")))
-                    currSubsystem = subAdapter.create(currSubsystemXMLNode.getAttribute("Type"));
-            }
-            else
-                currSubsystem = subAdapter.create(currSubsystemXMLNode.getAttribute("Type"), currSubsystemXMLNode);
-        }
-        // Initialize the new SubsystemNode
-        SubsystemNode* currNode = new SubsystemNode(currSubsystem, currAsset);
-        if (enableScripting)
-        {
-            currNode->enableScriptingSupport();
-            currNode->setLuaState(lua::L);
-        }
-        subNodeList.push_back(currNode);
-        // Get the current Subsystem's SubId and set up the maps used to set up the preceeding nodes in each SubsystemNode
-        int subId = atoi(currSubsystemXMLNode.getAttribute("SubId"));
-        subsystemNodeXMLNodeMap.insert(make_pair(currNode, currSubsystemXMLNode));
-        subsystemNodeMap.insert(make_pair(subId, currNode));
-    }
-        // Loop through all the of the constraints for this Asset
-        m = currAssetXMLNode.nChildNode("CONSTRAINT");
-		for(int j = 0; j<m; j++) {
-			// Get the Constraint XMLNode and its corresponding StateVar Node
-			XMLNode currConstraintXMLNode = currAssetXMLNode.getChildNode("CONSTRAINT", j);
-        XMLNode currStateVarXMLNode = currConstraintXMLNode.getChildNode("STATEVAR");
-        int subId = atoi(currConstraintXMLNode.getAttribute("SubId"));
-        // Determine the type of the Constraint, create the Generic Constraint
-        string type = currStateVarXMLNode.getAttribute("type");
-        string key = currStateVarXMLNode.getAttribute("key");
-        Constraint* constraint;
-			// Integer Constraint
-			if(_strcmpi(type.c_str(),"Int")==0) {
-				int val = atoi(currConstraintXMLNode.getAttribute("value"));
-        StateVarKey<int> svk(key);				
-				if(currConstraintXMLNode.isAttributeSet("type"))
-					constraint = new SingleAssetGenericConstraint<int>(svk, val, currConstraintXMLNode.getAttribute("type"), "int", i+1);
-				else
-					constraint = new SingleAssetGenericConstraint<int>(svk, val, "int", i+1);
-			}
-			// Float Constraint
-			else if(_strcmpi(type.c_str(),"Float")==0) {
-				float val = atof(currConstraintXMLNode.getAttribute("value"));
-    StateVarKey<float> svk(key);				
-				if(currConstraintXMLNode.isAttributeSet("type"))
-					constraint = new SingleAssetGenericConstraint<float>(svk, val, currConstraintXMLNode.getAttribute("type"), "float", i+1);
-				else
-					constraint = new SingleAssetGenericConstraint<float>(svk, val, "float", i+1);
-			}
-			// Double Constraint
-			else if(_strcmpi(type.c_str(),"Double")==0) {
-				double val = atof(currConstraintXMLNode.getAttribute("value"));
-StateVarKey<double> svk(key);				
-				if(currConstraintXMLNode.isAttributeSet("type"))
-					constraint = new SingleAssetGenericConstraint<double>(svk, val, currConstraintXMLNode.getAttribute("type"), "double", i+1);
-				else
-					constraint = new SingleAssetGenericConstraint<double>(svk, val, "double", i+1);
-			}
-			// Not a generic constriant, pass to ConstraintAdapter
-			else {
-				constraint = constraintAdapter.create(type);
-			}
-			if(constraint != NULL) {
-				// Get the subsystem node that this constraint constrains and set it
-				SubsystemNode* constrainedNode = subsystemNodeMap.find(subId)->second;
-constraint->addConstrianedSubNode(constrainedNode);
-constraintsList.push_back(constraint);
-			}
-		}
-	}
-
-	// Loop through each SubsystemNode so that the preceeding nodes can be added
-	for(map<SubsystemNode*, XMLNode>::iterator subNodeIt = subsystemNodeXMLNodeMap.begin(); subNodeIt != subsystemNodeXMLNodeMap.end(); subNodeIt++) {
-		// Get the XML Node used to initialize the subsystem contained in the current SubsystemNode
-		XMLNode currNode = subNodeIt->second;
-// Loop through each dependency in the XML Node
-int n = currNode.nChildNode("DEPENDENCY");
-		for(int i = 0; i<n; i++) {
-			// Get the subId of the preceeding node, look up that SubsystemNode in the map, and add it to the current SubsystemNode's preceeding nodes
-			XMLNode currDepXMLNode = currNode.getChildNode("DEPENDENCY", i);
-subNodeIt->first->addPreceedingNode(subsystemNodeMap.find(atoi(currDepXMLNode.getAttribute("subID")))->second);
-		}
-		// Loop through each dependency function in the XML Node
-		n = currNode.nChildNode("DEPENDENCY_FCN");
-		for(int i = 0; i<n; i++) {
-			XMLNode currDepFcnXMLNode = currNode.getChildNode("DEPENDENCY_FCN", i);
-bool scripted = atob(currDepFcnXMLNode.getAttribute("scripted"));
-string key = currDepFcnXMLNode.getAttribute("key");
-varType type = strToVarType(currDepFcnXMLNode.getAttribute("type"));
-string callKey = currDepFcnXMLNode.getAttribute("callKey");
-			if(!scripted){
-				switch(type) {
-					case varType::INT_:
-						subNodeIt->first->addDependency(callKey, depAdapter.getIntDependency(key));
-						break;
-					case DOUBLE_:
-						subNodeIt->first->addDependency(callKey, depAdapter.getDoubleDependency(key));
-						break;
-					case FLOAT_:
-						subNodeIt->first->addDependency(callKey, depAdapter.getFloatDependency(key));
-						break;
-					case BOOL_:
-						subNodeIt->first->addDependency(callKey, depAdapter.getBoolDependency(key));
-						break;
-					case MATRIX_:
-						subNodeIt->first->addDependency(callKey, depAdapter.getMatrixDependency(key));
-						break;
-					case QUAT_:
-						subNodeIt->first->addDependency(callKey, depAdapter.getQuatDependency(key));
-						break;
-				} // end switch
-			} // end if
-			else {
-				switch(type) {
-					case varType::INT_:
-						subNodeIt->first->addIntScriptedDependency(callKey, key);
-						break;
-					case DOUBLE_:
-						subNodeIt->first->addDoubleScriptedDependency(callKey, key);
-						break;
-					case FLOAT_:
-						subNodeIt->first->addFloatScriptedDependency(callKey, key);
-						break;
-					case BOOL_:
-						subNodeIt->first->addBoolScriptedDependency(callKey, key);
-						break;
-					case MATRIX_:
-						subNodeIt->first->addMatrixScriptedDependency(callKey, key);
-						break;
-					case QUAT_:
-						subNodeIt->first->addQuatScriptedDependency(callKey, key);
-						break;
-				}
-			} // end else (scripted)
-		} // end for
-	}
-
-	// Finalize the subsystem adapter
-	subAdapter.finalize();
-
-	// Finalize the constraint adapter
-	constraintAdapter.finalize();
-	
-	// Load the initial state as defined in the XML input file
-	vector<State*>* systemInitialStateList = new vector<State*>;
-bool initialStateSet = setInitialSystemState(modelInputXMLNode, systemInitialStateList);
-
 // USER - Specify data output parameters
 scheduleDataWriter dataOut(outputPath, true, 2);
 cout << endl;

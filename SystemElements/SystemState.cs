@@ -9,6 +9,7 @@ using UserModel;
 
 namespace MissionElements
 {
+    [Serializable]
     public class SystemState
     {
         /** The previous state, upon which this state is based */

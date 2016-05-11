@@ -4,6 +4,7 @@ using System.Linq;
 using Utilities;
 using MissionElements;
 using HSFSystem;
+using UserModel;
 
 namespace HSFScheduler
 {
@@ -21,12 +22,32 @@ namespace HSFScheduler
             AllStates = new StateHistory(initialstates);
         }
 
-        public SystemSchedule(SystemSchedule oldSchedule, Stack<Access> newAccessList, double newTaskStartTime)
+        public SystemSchedule(SystemSchedule oldSchedule, Stack<Access> newAccessList, double newEventStartTime)
         {
             if (newAccessList != null)
             {
-                Event eventToAdd = new Event(newAccessList, new SystemState(oldSchedule.GetEndState(), newTaskStartTime));
-                AllStates.Events.Push(eventToAdd);
+                Dictionary<Asset, Task> tasks = new Dictionary<Asset, Task>();
+                Dictionary<Asset, double> taskStarts = new Dictionary<Asset, double>();
+                Dictionary<Asset, double> taskEnds = new Dictionary<Asset, double>();
+                Dictionary<Asset, double> eventStarts = new Dictionary<Asset, double>();
+                Dictionary<Asset, double> eventEnds = new Dictionary<Asset, double>();
+
+                foreach (var access in newAccessList)
+                {
+                    tasks.Add(access.Asset, access.Task);
+                    if (access.AccessStart < newEventStartTime)
+                        taskStarts.Add(access.Asset, newEventStartTime);
+                    else
+                        taskStarts.Add(access.Asset, access.AccessStart);
+
+                    taskEnds.Add(access.Asset, access.AccessEnd);
+                    eventStarts.Add(access.Asset, newEventStartTime);
+                    eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+
+                }
+                Event eventToAdd = new Event(tasks, new SystemState(oldSchedule.GetEndState(), newEventStartTime));
+                //eventToAdd.TaskStarts.Add()
+                AllStates = new StateHistory(oldSchedule.AllStates, eventToAdd);
             }
 
             

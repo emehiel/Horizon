@@ -7,7 +7,7 @@ using System.Xml;
 
 namespace Utilities
 {
-    [Serializable]
+    [Serializable()]
     public class Matrix<T> : ISerializable, IEnumerable
     {
         #region Properties
@@ -120,6 +120,7 @@ namespace Utilities
                     _elements[i].Add(Value);
             }
         }
+
         /// <summary>
         /// Initializes a square Matrix<T> with n rows and columns.  The Matrix<T> is filled with zeros
         /// </summary>
@@ -223,6 +224,13 @@ namespace Utilities
             }
 
         }
+
+        public Matrix(SerializationInfo info, StreamingContext context)
+        {
+            NumCols = info.GetInt32("NumCols");
+            NumRows = info.GetInt32("NumCols");
+            _elements = (List<List<T>>)info.GetValue("_elements", typeof(List<List<T>>));
+        }
         #endregion
 
         #region Overrrides
@@ -266,6 +274,8 @@ namespace Utilities
         {
             return ToString().GetHashCode();
         }
+
+
 
         #endregion
 
@@ -1056,13 +1066,15 @@ namespace Utilities
             info.AddValue("NumCols", NumCols);
             //info.AddValue("Length", this.Length);
             //info.AddValue("Values", this.elements[1][1]);
-            //info.AddValue("Elements", this.ToArray());
+            info.AddValue("_elements", _elements, typeof(List<List<T>>));
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
             return new MatrixEnum<T>(this);
         }
+
+            
         #endregion
 
         #region Accessors

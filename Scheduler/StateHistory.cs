@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System;
 using Utilities;
 using MissionElements;
 using HSFSystem;
 
 namespace HSFScheduler
 {
+    [Serializable]
     public class StateHistory
     {
         public SystemState InitialState { get; private set; }

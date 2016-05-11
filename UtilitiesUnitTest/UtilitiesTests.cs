@@ -1,6 +1,8 @@
 ﻿using System; 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Utilities;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.IO;
 using System.Xml;
 
 namespace UtilitiesUnitTest
@@ -37,6 +39,17 @@ namespace UtilitiesUnitTest
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
 
             Matrix<double> B = Matrix<double>.Cumprod(A);
+        }
+
+        [TestMethod]
+        public void MatrixDeepCopyTest()
+        {
+            Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
+
+            Matrix<double> B = DeepCopy.Copy(A);
+
+            Assert.AreEqual(B, A);
+
         }
 
         [TestMethod]

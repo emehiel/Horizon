@@ -66,7 +66,7 @@ namespace HSFSchedulerUnitTest
             XmlEnum.MoveNext();
             var targetDeckXMLNode = (XmlNode)XmlEnum.Current;
             Stack<Task> systemTasks = new Stack<Task>();
-            bool targetsLoaded = Task.loadTargetsIntoTaskList(targetDeckXMLNode, ref systemTasks);
+            bool targetsLoaded = Task.loadTargetsIntoTaskList(targetDeckXMLNode, systemTasks);
             Console.WriteLine("Initial states set");
 
 
@@ -107,9 +107,6 @@ namespace HSFSchedulerUnitTest
 
             // Create Constraint list 
             List<Constraint> constraintsList = new List<Constraint>();
-
-            // Create new Subsystem Factory
-            SubsystemFactory subsystemFactory = new SubsystemFactory();
 
             //Create Lists to hold all the initial condition and dependency nodes to be parsed later
             List<XmlNode> ICNodes = new List<XmlNode>();
@@ -154,7 +151,7 @@ namespace HSFSchedulerUnitTest
                         if (childNode.Name.Equals("SUBSYSTEM"))
                         {  //is this how we want to do this?
                             // Check if the type of the Subsystem is scripted, networked, or other
-                            string subName = subsystemFactory.GetSubsystem(childNode, enableScripting, dependencies, asset, subsystemMap);
+                            string subName = SubsystemFactory.GetSubsystem(childNode, enableScripting, dependencies, asset, subsystemMap);
                             foreach (XmlNode ICorDepNode in childNode.ChildNodes)
                             {
                                 if (ICorDepNode.Name.Equals("IC"))
@@ -215,8 +212,8 @@ namespace HSFSchedulerUnitTest
             }
             Console.WriteLine("Dependencies Loaded");
 
-            Stack<Constraint> constraintStack = new Stack<Constraint>();
-            SystemClass system = new SystemClass(assetList, subNodeList, constraintStack, SystemUniverse);
+            List<Constraint> constraintList = new List<Constraint>();
+            SystemClass system = new SystemClass(assetList, subNodeList, constraintList, SystemUniverse);
             TargetValueEvaluator scheduleEvaluator = new TargetValueEvaluator();
 
             systemScheduler.GenerateSchedules(system, systemTasks, initialSysState, scheduleEvaluator);

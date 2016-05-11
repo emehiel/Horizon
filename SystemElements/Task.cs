@@ -12,6 +12,7 @@ namespace MissionElements
     /// @author Einar Pehrson
     /// @author Eric Mehiel
     /// </summary>
+    [Serializable]
     public class Task
     {
         /* the type of task being performed */

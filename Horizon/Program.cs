@@ -25,7 +25,7 @@ namespace Horizon
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\Model_Static.xml";
+            var modelInputFilePath = @"..\..\..\DSAC_Static.xml";
             // Initialize critical section for dependencies ??Morgan Doesn't know what this does
             // InitializeCriticalSection(&horizon::sub::dep::NodeDependencies::cs);
 
@@ -260,7 +260,7 @@ namespace Horizon
                 throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
 
             Scheduler scheduler = new Scheduler();
-            List<SystemSchedule> schedules = scheduler.generateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
+            List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
 
             Console.ReadKey();
                 /*

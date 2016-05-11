@@ -43,7 +43,8 @@ namespace HSFSystem
         /// <param name="func"></param>
         public void Add(string callKey, Delegate func)
         {
-            DependencyFunctions.Add(callKey, func);
+            if (!DependencyFunctions.ContainsKey(callKey))
+                DependencyFunctions.Add(callKey, func);
         }
         /// <summary>
         /// Retrieve a specific Delegate dependency function from the dictionary.

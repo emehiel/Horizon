@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-/// <summary>
-/// An equation of motion object with the parameters governing some
-/// sort of motion of an object.
-/// @author Cory O'Connor
-/// </summary>
+    /// <summary>
+    /// An equation of motion object with the parameters governing some
+    /// sort of motion of an object.
+    /// @author Cory O'Connor
+    /// </summary>
+    [Serializable]
     public abstract class EOMS
     {
         /// <summary>

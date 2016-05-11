@@ -5,6 +5,7 @@ using System.Text;
 
 namespace Utilities
 {
+    [Serializable]
     public class MatrixIndex
     {
 

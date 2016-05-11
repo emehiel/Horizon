@@ -3,6 +3,7 @@ using System.Xml;
 
 namespace Utilities
 {
+    [Serializable]
     public class StateVarKey<T>
     {
         #region Attributes

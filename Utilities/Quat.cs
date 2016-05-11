@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
+    [Serializable]
     public class Quat
     {
     }

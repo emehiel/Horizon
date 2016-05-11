@@ -5,6 +5,7 @@ using MissionElements;
 
 namespace MissionElements
 {
+    [Serializable]
     public class Event
     {
         /** The task that are to be performed by each asset. */

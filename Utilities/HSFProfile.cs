@@ -6,6 +6,7 @@ using System.Text;
 
 namespace Utilities
 {
+    [Serializable]
     public class HSFProfile<T> : IHSFProfile   
     {
         // Class Data

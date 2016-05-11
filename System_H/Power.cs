@@ -20,8 +20,8 @@ namespace HSFSubsystem
         private double _penumbraSolarPanelPower = 75;
 
         //put these in constructor and get from xml
-        public static StateVarKey<double> DOD_KEY;
-        public static StateVarKey<double> POWIN_KEY; 
+        private StateVarKey<double> DOD_KEY;
+        private StateVarKey<double> POWIN_KEY; 
         #endregion Attributes
 
         #region Constructors
@@ -40,7 +40,7 @@ namespace HSFSubsystem
             addKey(DOD_KEY);
             addKey(POWIN_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            DependentSubsystems = new List<ISubsystem>();
+            DependentSubsystems = new List<Subsystem>();
             if (PowerNode.Attributes["batterySize"] != null)
                 _batterySize = (double)Convert.ChangeType(PowerNode.Attributes["batterySize"].Value, typeof(double));
             if (PowerNode.Attributes["fullSolarPower"] != null)

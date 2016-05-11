@@ -14,7 +14,7 @@ namespace HSFSubsystem
     {
         //Some Defaults
         private double _bufferSize = 4098;
-        public static StateVarKey<double> DATABUFFERRATIO_KEY; 
+        private StateVarKey<double> DATABUFFERRATIO_KEY; 
 
         public SSDR(XmlNode SSDRXmlNode, Dependencies dependencies, Asset asset)
         {
@@ -26,9 +26,10 @@ namespace HSFSubsystem
             DATABUFFERRATIO_KEY = new StateVarKey<double>(Asset.Name + "." +"DataBufferFillRatio");
             addKey(DATABUFFERRATIO_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            DependentSubsystems = new List<ISubsystem>();
+            DependentSubsystems = new List<Subsystem>();
             dependencies.Add("PowerfromSSDR", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_SSDRSUB));
             dependencies.Add("CommfromSSDR", new Func<Event, HSFProfile<double>>(COMMSUB_DataRateProfile_SSDRSUB));
+            dependencies.Add("EvalfromSSDR", new Func<Event, double>(EVAL_DataRateProfile_SSDRSUB));
         }
 
         /// <summary>
@@ -106,6 +107,12 @@ namespace HSFSubsystem
                 prof1[currentEvent.GetTaskEnd(Asset)] = 0;
             }
             return prof1;
+        }
+
+        double EVAL_DataRateProfile_SSDRSUB(Event currentEvent)
+        {
+            return (currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value 
+                - currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) * 50;
         }
     }
 }

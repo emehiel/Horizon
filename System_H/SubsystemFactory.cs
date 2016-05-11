@@ -10,10 +10,19 @@ namespace HSFSubsystem
 {
     public class SubsystemFactory
     {
-        public string GetSubsystem(XmlNode SubsystemXmlNode, bool enableScripting, Dependencies dependencies, Asset asset, Dictionary<string, Subsystem> subDic)
+        /// <summary>
+        /// A class to interpret the Xml file and create subsystems
+        /// </summary>
+        /// <param name="SubsystemXmlNode"></param>
+        /// <param name="enableScripting"></param>
+        /// <param name="dependencies"></param>
+        /// <param name="asset"></param>
+        /// <param name="subDic"></param>
+        /// <returns></returns>
+        public static string GetSubsystem(XmlNode SubsystemXmlNode, bool enableScripting, Dependencies dependencies, Asset asset, Dictionary<string, Subsystem> subDic)
         {
             string type = SubsystemXmlNode.Attributes["Type"].Value.ToString().ToLower();
-            string name = Subsystem.parseNameFromXmlNode(SubsystemXmlNode);
+            string name = Subsystem.parseNameFromXmlNode(SubsystemXmlNode, asset.Name);
             if (type.Equals("scripted") && enableScripting)
             {
                 subDic.Add(name, new ScriptedSubsystem(SubsystemXmlNode, dependencies));

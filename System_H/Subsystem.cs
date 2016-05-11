@@ -13,7 +13,7 @@ namespace HSFSubsystem
         #region Attributes
         public bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
-        public List<ISubsystem> DependentSubsystems { get; protected set; }
+        public List<Subsystem> DependentSubsystems { get; protected set; }
         public string Name { get; protected set; }
         public static string DefaultSubName { get; protected set; }
         public Dictionary<string, Delegate> SubsystemDependencyFunctions { get; protected set; }
@@ -50,6 +50,7 @@ namespace HSFSubsystem
         public virtual Subsystem clone() {
             return DeepCopy.Copy<Subsystem>(this);
         }
+
         /// <summary>
         /// The default canPerform method. 
         /// Should be used to check if all dependent subsystems can perform and extended by subsystem implementations.
@@ -131,25 +132,24 @@ namespace HSFSubsystem
         {
             string assetName = Asset.Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
-                Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString();
+                Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString().ToLower();
             else if (DefaultSubName != null)
-                Name = assetName + "." + DefaultSubName;
+                Name = assetName + "." + DefaultSubName.ToLower() ;
             else if (subXmlNode.Attributes["type"] != null)
-                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString();
+                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
             else
                 throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
         }
 
-        public static string parseNameFromXmlNode(XmlNode subXmlNode)
+        public static string parseNameFromXmlNode(XmlNode subXmlNode, string assetName)
         {
-            string assetName = subXmlNode.ParentNode.Attributes["assetName"].Value.ToString();
             string Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
-                Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString();
+                Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString().ToLower();
             else if (DefaultSubName != null)
-                Name = assetName + "." + DefaultSubName;
+                Name = assetName + "." + DefaultSubName.ToLower() ;
             else if (subXmlNode.Attributes["type"] != null)
-                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString();
+                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
             else
                 throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
             return Name;

@@ -15,9 +15,9 @@ namespace HSFSubsystem
         #region Attributes
         //Default stuff
         public static string SUBNAME_EOSENSOR = "EOSensor";
-        public static StateVarKey<double> PIXELS_KEY;
-        public static StateVarKey<double> INCIDENCE_KEY;
-        public static StateVarKey<bool> EOON_KEY;
+        private StateVarKey<double> PIXELS_KEY;
+        private StateVarKey<double> INCIDENCE_KEY;
+        private StateVarKey<bool> EOON_KEY;
         private double _lowQualityPixels = 5000;
         private double _lowQualityTime = 3;
         private double _midQualityPixels = 10000;
@@ -38,7 +38,7 @@ namespace HSFSubsystem
             addKey(PIXELS_KEY);
             addKey(INCIDENCE_KEY);
             addKey(EOON_KEY);
-            DependentSubsystems = new List<ISubsystem>();
+            DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
                 _lowQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityPixels"].Value.ToString(), typeof(double));

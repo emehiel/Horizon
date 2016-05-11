@@ -3,24 +3,26 @@ using System.Linq;
 using HSFSubsystem;
 using Utilities;
 using MissionElements;
+using HSFUniverse;
 
 namespace HSFSystem
 {
     public class SystemClass
     {
-        public List<Asset> Assets{get; private set;}
+        public List<Asset> Assets { get; private set; }
         public List<Subsystem> Subsystems{get; private set;}
-        public Stack<Constraint> Constraints{get; private set;}
-        public HSFUniverse.Universe Environment{get; private set;}
+        public List<Constraint> Constraints{get; private set;}
+        public Universe Environment{get; private set;}
         public int ThreadNum{get; private set;}
 
         
         public SystemClass(List<Asset> assets, List<Subsystem> subsystems,
-                         Stack<Constraint> constraints, HSFUniverse.Universe environment){
+                         List<Constraint> constraints, Universe environment)
+        {
             Assets = assets;
-            Subsystems = subsystems;
             Constraints = constraints;
             Environment = environment;
+            Subsystems = new List<Subsystem>();
             foreach (Subsystem nIt in subsystems)
             {
                 Subsystems.Add(nIt);
@@ -36,7 +38,7 @@ namespace HSFSystem
             ThreadNum = copy.ThreadNum;
         }
         
-        /*
+        
         public bool checkForCircularDependencies(){
             bool hasCircDep = false;
             foreach(Subsystem nodeIt in Subsystems){
@@ -47,33 +49,34 @@ namespace HSFSystem
             }
             return hasCircDep;
         }
- */
+ 
 
-        /*
-        private bool checkSubForCircularDependencies(Subsystem currNode,
-                                                     Subsystem beginNode){
+        
+        private bool checkSubForCircularDependencies(Subsystem currSub,
+                                                     Subsystem beginSub){
             bool hasCircDep = false;
-            Stack<Subsystem> preceedingNodes = currNode.PreceedingNodes;
-            if(!preceedingNodes.Any()){ 
-                foreach(Subsystem nodeIt in preceedingNodes){
-                    hasCircDep |= nodeIt == beginNode;
+            List<Subsystem> depSubs = currSub.DependentSubsystems;
+            if(depSubs.Any()){ 
+                foreach(Subsystem sub in depSubs){
+                    hasCircDep |= sub == beginSub;
                     if(hasCircDep)
                          break;
-                    hasCircDep |= checkSubForCircularDependencies(nodeIt, beginNode);
+                    hasCircDep |= checkSubForCircularDependencies(sub, beginSub);
                     if(hasCircDep)
                         break;
                 }
             }
             return hasCircDep;
         }
-        void setDependencies(Dependencies deps)
-        {
-            foreach(Subsystem subIt in Subsystems)
-            {
-                subIt.setDependencies(deps);
-            }
-        }
-        */
+        //I hope this never gets used ayways
+        //void setDependencies(Dependencies deps)
+        //{
+        //    foreach(Subsystem subIt in Subsystems)
+        //    {
+        //        subIt.setDependencies(deps);
+        //    }
+        //}
+        
         /*        
                 public List<Asset> getAssets(){
 

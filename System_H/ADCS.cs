@@ -13,7 +13,7 @@ namespace HSFSubsystem
     public class ADCS : Subsystem
     {
         #region Attributes
-        public static StateVarKey<Matrix<double>> POINTVEC_KEY; 
+        private StateVarKey<Matrix<double>> POINTVEC_KEY; 
         #endregion Attributes
 
         #region Constructors
@@ -24,7 +24,7 @@ namespace HSFSubsystem
             getSubNameFromXmlNode(ADCSNode);
             POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." +"ECI_Pointing_Vector(XYZ)");
             addKey(POINTVEC_KEY);
-            DependentSubsystems = new List<ISubsystem>();
+            DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             dependencies.Add("PowerfromADCS", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
         }

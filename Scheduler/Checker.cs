@@ -20,7 +20,7 @@ namespace HSFScheduler
             // Iterate through constraints
             foreach (var constraint in system.Constraints)
             {
-                if (!checkSubs(constraint.Subsystems, proposedSchedule, system.Environment))
+                if (!checkSub(constraint.Subsystem, proposedSchedule, system.Environment))
                     return false;
                 if (!CheckConstraints(system, proposedSchedule, constraint))
                     return false;
@@ -34,33 +34,37 @@ namespace HSFScheduler
             return true;
         }
 
+        private static bool checkSub(Subsystem subsystem, SystemSchedule proposedSchedule, Universe environment)
+        {
+            // new system state of the proposedSchedule (by asset).  Empty to start, fully populated after Checker.CheckSchedule is done
+            SystemState newState = proposedSchedule.AllStates.GetLastState();
+            // the system state at the end of the last event on the proposedSchedule
+            SystemState oldState = newState.Previous;
+            // the proposed Task
+            Dictionary<Asset, Task> proposedTask = new Dictionary<Asset, Task>();
+            proposedTask.Add(subsystem.Asset, proposedSchedule.getSubsytemNewTask(subsystem.Asset));
+
+            //NEED A PROPOSED EVENT-- this is just a place holder
+            Event proposedEvent = new Event(proposedTask, newState);
+            // the dynamicState of the proposedSchedule
+            DynamicState assetDynamicState = subsystem.Asset.AssetDynamicState;
+
+            // Check all subsystems to see if they canPerform the task
+            // Recursion of the subsystem dependencies is managed by the subsystems
+            if (!subsystem.canPerform(proposedEvent, environment))
+                return false;
+
+            return true;
+        }
         private static bool checkSubs(List<Subsystem> subsystems, SystemSchedule proposedSchedule, Universe environment)
         {
-            foreach (var subsystem in subsystems)
+            foreach (var sub in subsystems)
             {
-                // new system state of the proposedSchedule (by asset).  Empty to start, fully populated after Checker.CheckSchedule is done
-                SystemState newState = proposedSchedule.AllStates.GetLastState();
-                // the system state at the end of the last event on the proposedSchedule
-                SystemState oldState = newState.Previous;
-                // the proposed Task
-                Dictionary<Asset, Task> proposedTask = new Dictionary<Asset, Task>();
-                proposedTask.Add(subsystem.Asset, proposedSchedule.getSubsytemNewTask(subsystem.Asset));
-
-                //NEED A PROPOSED EVENT-- this is just a place holder
-                Event proposedEvent = new Event(proposedTask, newState);
-                // the dynamicState of the proposedSchedule
-                DynamicState assetDynamicState = subsystem.Asset.AssetDynamicState;
-
-                // Check all subsystems to see if they canPerform the task
-                // Recursion of the subsystem dependencies is managed by the subsystems
-                if (!subsystem.canPerform(proposedEvent, environment))
+                if (!checkSub(sub, proposedSchedule, environment))
                     return false;
-
-
             }
             return true;
         }
-
         private static bool CheckConstraints(SystemClass system, SystemSchedule proposedSchedule, Constraint constraint)
         {
             // pass the state for checking

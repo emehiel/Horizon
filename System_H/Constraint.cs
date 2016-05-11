@@ -8,14 +8,14 @@ namespace HSFSystem
     public abstract class Constraint
     {
         //List of subsystem nodes on which the Constraint operates
-        public List<Subsystem> Subsystems { get; private set; }
+        public Subsystem Subsystem { get; protected set; }
       //  public Guid ID;
 
-        // TODO (EAM): What is this used for?
-        public void AddConstrainedSub(Subsystem node)
-        {
-            Subsystems.Add(node);
-        }
+        //// TODO (EAM): What is this used for? (MY) nothing I hope!
+        //public void AddConstrainedSub(Subsystem node)
+        //{
+        //    Subsystems.Add(node);
+        //}
 
         /**
          * Applies the constraint to the appropriate variables in the given state,

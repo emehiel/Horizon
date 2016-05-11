@@ -27,7 +27,7 @@ namespace MissionElements
         public Asset(XmlNode assetXMLNode)
         {
             if (assetXMLNode.Attributes["assetName"] != null)
-                Name = assetXMLNode.Attributes["assetName"].Value.ToString();
+                Name = assetXMLNode.Attributes["assetName"].Value.ToString().ToLower();
             else
                 throw new MissingMemberException("Missing name for Asset!");
             if (assetXMLNode["DynamicState"] != null)

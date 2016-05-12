@@ -6,6 +6,7 @@ using System.Xml;
 using Utilities;
 using UserModel;
 
+
 namespace HSFUniverse
 {
     /*
@@ -26,6 +27,7 @@ namespace HSFUniverse
     * @author Cory O'Connor
     * @author Eric Mehiel (conversion to C#)
     */
+    [Serializable]
     public class DynamicState
     {
         /// <summary>
@@ -39,7 +41,7 @@ namespace HSFUniverse
 
         //private double _stateDataTimeStep { get;  set; }
 
-        private XmlNode _integratorNode;
+      //  private XmlNode _integratorNode;
 
         private PropagationType _propagatorType;
 
@@ -66,26 +68,25 @@ namespace HSFUniverse
                     Eoms = new OrbitalEOMS();
                 
                 // Returns a null reference if INTEGRATOR is not set in XML
-                _integratorNode = dynamicStateXMLNode["INTEGRATOR"];
+                XmlNode integratorNode = dynamicStateXMLNode["INTEGRATOR"];
 
                 _integratorOptions = new IntegratorOptions();
 
-                if (_integratorNode != null)
+                if (integratorNode != null)
                 {
-                    if (_integratorNode.Attributes["h"] != null)
-                        _integratorOptions.h = Convert.ToDouble(_integratorNode.Attributes["h"].Value);
-                    if (_integratorNode.Attributes["rtol"] != null)
-                        _integratorOptions.rtol = Convert.ToDouble(_integratorNode.Attributes["rtol"].Value);
-                    if (_integratorNode.Attributes["atol"] != null)
-                        _integratorOptions.atol = Convert.ToDouble(_integratorNode.Attributes["atol"].Value);
-                    if (_integratorNode.Attributes["eps"] != null)
-                        _integratorOptions.eps = Convert.ToDouble(_integratorNode.Attributes["eps"].Value);
+                    if (integratorNode.Attributes["h"] != null)
+                        _integratorOptions.h = Convert.ToDouble(integratorNode.Attributes["h"].Value);
+                    if (integratorNode.Attributes["rtol"] != null)
+                        _integratorOptions.rtol = Convert.ToDouble(integratorNode.Attributes["rtol"].Value);
+                    if (integratorNode.Attributes["atol"] != null)
+                        _integratorOptions.atol = Convert.ToDouble(integratorNode.Attributes["atol"].Value);
+                    if (integratorNode.Attributes["eps"] != null)
+                        _integratorOptions.eps = Convert.ToDouble(integratorNode.Attributes["eps"].Value);
                 }
             }
             else
             {
                 Eoms = null;
-                _integratorNode = null;
                 //_stateDataTimeStep = 30.0;
             }
 
@@ -97,7 +98,6 @@ namespace HSFUniverse
             Type = type;
             Eoms = eoms;
             //_stateDataTimeStep = stateDataTimeStep;
-            _integratorNode = null;
         }
 
         public Matrix<double> InitialConditions()

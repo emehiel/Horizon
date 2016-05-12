@@ -224,7 +224,7 @@ namespace Horizon
                         }
                     }
                     if (ICNodes.Count > 0)
-                        initialSysState.Add(SystemState.setInitialSystemState(ICNodes));
+                        initialSysState.Add(SystemState.setInitialSystemState(ICNodes, asset));
                     ICNodes.Clear();
                 }
             }

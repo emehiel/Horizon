@@ -21,13 +21,13 @@ namespace HSFSystem
                 throw new MissingMemberException("Missing Subsystem Name in Constraint");
             string type = constraintXmlNode.ChildNodes[0].Attributes["type"].Value.ToLower();
             if (type.Equals("int"))
-                return new GenericConstraint<int>(constraintXmlNode, constrainedSub);
+                return new SingleConstraint<int>(constraintXmlNode, constrainedSub);
             else if (type.Equals("double"))
-                return new GenericConstraint<double>(constraintXmlNode, constrainedSub);
+                return new SingleConstraint<double>(constraintXmlNode, constrainedSub);
             else if (type.Equals("bool"))
-                return new GenericConstraint<bool>(constraintXmlNode, constrainedSub);
+                return new SingleConstraint<bool>(constraintXmlNode, constrainedSub);
             else if (type.Equals("Matrix"))
-                return new GenericConstraint<Matrix<double>>(constraintXmlNode,constrainedSub);
+                return new SingleConstraint<Matrix<double>>(constraintXmlNode,constrainedSub);
             else
                 throw new NotSupportedException("Unsupported type of constraint!");
         }

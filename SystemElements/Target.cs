@@ -13,6 +13,7 @@ namespace MissionElements
     * A named location denoting where a task is to be performed.
     * @author Einar Pehrson
     */
+    [Serializable]
     public class Target
     {
         /** The name of the target */

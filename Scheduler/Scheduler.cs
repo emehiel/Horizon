@@ -252,11 +252,11 @@ namespace HSFScheduler
 // Return all possible combinations of performing Tasks by Asset at current simulation time
 public static Stack<Stack<Access>> GenerateExhaustiveSystemSchedules(Stack<Access> currentAccessForAllAssets, SystemClass system, double currentTime)
         {
+           
             // A stack of accesses stacked by asset
             Stack<Stack<Access>> currentAccessesByAsset = new Stack<Stack<Access>>();
             foreach (Asset asset in system.Assets)
-                //public static Stack<Access> getCurrentAccessesForAsset(Stack<Access> accesses, Asset asset, double currentTime)
-                currentAccessesByAsset.Push(new Stack<Access>(currentAccessForAllAssets.Where(item => item.Asset == asset)));
+                currentAccessesByAsset.Push(Access.getCurrentAccessesForAsset(currentAccessForAllAssets, asset, currentTime));
 
             IEnumerable<IEnumerable<Access>> allScheduleCombos = currentAccessesByAsset.CartesianProduct();
 

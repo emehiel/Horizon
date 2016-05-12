@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using HSFSubsystem;
 using Utilities;
@@ -7,6 +8,7 @@ using HSFUniverse;
 
 namespace HSFSystem
 {
+    [Serializable]
     public class SystemClass
     {
         public List<Asset> Assets { get; private set; }

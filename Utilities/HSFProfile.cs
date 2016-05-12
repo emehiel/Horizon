@@ -54,9 +54,42 @@ namespace Utilities
             data.Add(pointIn.Key, pointIn.Value);
         }
 
-        public HSFProfile<double> upperLimitIntegrateToProf(double ts, double te, int v1, int v2, ref bool exceeded, int v3, double oldbufferratio)
+        public HSFProfile<double> upperLimitIntegrateToProf(double start, double end, double saveFreq, double upperBound, ref bool exceeded, T iv, double ic)
         {
-            throw new NotImplementedException();
+            exceeded = false;
+            HSFProfile<double> prof = new HSFProfile<double>();
+            double last = ic;
+            double time, result;
+            for (time = start + saveFreq; time < end; time += saveFreq)
+            {
+                
+                Double.TryParse(Integrate(time - saveFreq, time, iv).ToString(), out result); //Morgan isn't sure about this
+                result += last;
+                if (result > upperBound)
+                {
+                    result = upperBound;
+                    exceeded = true;
+                }
+                if (result != last)
+                {
+                    prof[time] = result;
+                }
+                last = result;
+            }
+            time -= saveFreq;
+            Double.TryParse(Integrate(time, end, iv).ToString(), out result); //Morgan isn't sure about this
+            result += last;
+            if (result > upperBound)
+            {
+                result = upperBound;
+                exceeded = true;
+            }
+            if (result != last)
+                prof[end] = result;
+
+            if (prof.Empty())
+                prof[start] = ic;
+            return prof;
         }
 
         /// <summary>
@@ -382,7 +415,7 @@ namespace Utilities
             }
             catch (ArgumentException)
             {
-                Console.WriteLine("An element with Key/Value pair already exists in Profile - overwriting value.");
+               // Console.WriteLine("An element with Key/Value pair already exists in Profile - overwriting value.");
                 data[timeIn] = valIn;
             }
         }
@@ -399,7 +432,7 @@ namespace Utilities
             }
             catch (ArgumentException)
             {
-                Console.WriteLine("An element with Key/Value pair already exists in Profile - overwriting value.");
+               // Console.WriteLine("An element with Key/Value pair already exists in Profile - overwriting value.");
                 data[pointIn.Key] = pointIn.Value;
             }
         }

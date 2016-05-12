@@ -18,6 +18,7 @@ namespace HSFScheduler
     /// @author Einar Pehrson
     /// @author Eric Mehiel
     /// </summary>
+    [Serializable]
     public class Scheduler
     {
         //TODO:  Support monitoring of scheduler progres - Eric Mehiel
@@ -241,7 +242,7 @@ namespace HSFScheduler
             schedulesToCrop.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
             // Delete the sysScheds that don't fit
             int i = 1;
-            foreach (SystemSchedule systemSchedule in schedulesToCrop)
+            foreach (SystemSchedule systemSchedule in schedulesToCrop.ToList())
             {
                 if (i > _maxNumSchedules && systemSchedule != emptySched)
                     schedulesToCrop.Remove(systemSchedule);
@@ -252,6 +253,7 @@ namespace HSFScheduler
 // Return all possible combinations of performing Tasks by Asset at current simulation time
 public static Stack<Stack<Access>> GenerateExhaustiveSystemSchedules(Stack<Access> currentAccessForAllAssets, SystemClass system, double currentTime)
         {
+           
             // A stack of accesses stacked by asset
             Stack<Stack<Access>> currentAccessesByAsset = new Stack<Stack<Access>>();
             foreach (Asset asset in system.Assets)

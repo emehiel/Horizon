@@ -9,6 +9,7 @@ using System.Xml;
 
 namespace HSFSubsystem
 {
+    [Serializable]
     public abstract class Subsystem : ISubsystem {
         #region Attributes
         public bool IsEvaluated { get; set; }
@@ -67,7 +68,7 @@ namespace HSFSubsystem
                 if (sub.canPerform(proposedEvent, environment) == false)
                     return false;
             }
-            _task = proposedEvent.getAssetTask(Asset); //Find the correct task for the subsystem
+            _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
             _newState = proposedEvent.State;
             _oldState = proposedEvent.State.Previous; //do we want to prevent user from modifying oldState on accident??
             return true;

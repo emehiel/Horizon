@@ -10,15 +10,15 @@ using HSFSubsystem;
 
 namespace HSFSystem
 {
-    public class GenericConstraint<T>: Constraint
+    public class SingleConstraint<T>: Constraint
     {
         private T _value;
         private StateVarKey<T> _key;
         public ConstraintType Type { get; private set; }
 
-        public GenericConstraint(XmlNode constraintXmlNode, Subsystem sub)
+        public SingleConstraint(XmlNode constraintXmlNode, Subsystem sub)
         {
-            Subsystem = sub;
+            Subsystems = new List<Subsystem>() { sub };
             if (constraintXmlNode.ChildNodes[0] == null)
                 throw new MissingMemberException("Missing StateVarKey for Constraint!");
             _key = new StateVarKey<T>(constraintXmlNode.ChildNodes[0], constraintXmlNode.ParentNode.Attributes["assetName"].Value.ToString());

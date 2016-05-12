@@ -103,6 +103,20 @@ namespace MissionElements
             foreach (var data in moreState.Mdata)
                 addValue(data.Key, data.Value);
         }
+        /// <summary>
+        /// A deep clone of the System State, but keeping the reference to Previous as a reference
+        /// </summary>
+        /// <returns></returns>
+        public SystemState DeepClone()
+        {
+            SystemState newState = new SystemState();
+            newState.Idata = DeepCopy.Copy(Idata);
+            newState.Bdata = DeepCopy.Copy(Bdata);
+            newState.Mdata = DeepCopy.Copy(Mdata);
+            newState.Qdata = DeepCopy.Copy(Qdata);
+            newState.Previous = Previous;
+            return newState;
+        }
 
         /** TODO: figure out if this can all be done with dictionary stuff
          * Gets the last int value set for the given state variable key in the state. If no value is found
@@ -565,7 +579,7 @@ namespace MissionElements
                 valueOut.Add(profIn);
         }
         //maybe add this functionality to subsystem? but then we would need to pass the state to the constructor
-        public static SystemState setInitialSystemState(List<XmlNode> ICNodes)
+        public static SystemState setInitialSystemState(List<XmlNode> ICNodes, Asset asset)
         {
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
             //int n = modelInputXMLNode.ChildNode("ASSET");
@@ -573,7 +587,7 @@ namespace MissionElements
             foreach (XmlNode ICNode in ICNodes)
             {
                 string type = ICNode.Attributes["type"].Value;
-                string key = ICNode.Attributes["key"].Value;
+                string key = asset.Name + "."+ICNode.Attributes["key"].Value.ToLower();
                 if (type.Equals("Int"))
                 {
                     int val;

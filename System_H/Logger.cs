@@ -10,7 +10,7 @@ namespace HSFSubsystem
     {
         public static void Report(string v)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("Failed Subsystem " + v);
         }
     }
 }

@@ -38,15 +38,17 @@ namespace HSFScheduler
                     if (access.AccessStart < newEventStartTime)
                         taskStarts.Add(access.Asset, newEventStartTime);
                     else
-                        taskStarts.Add(access.Asset, access.AccessStart);
-
+                    taskStarts.Add(access.Asset, access.AccessStart);
                     taskEnds.Add(access.Asset, access.AccessEnd);
                     eventStarts.Add(access.Asset, newEventStartTime);
                     eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
 
                 }
                 Event eventToAdd = new Event(tasks, new SystemState(oldSchedule.GetEndState(), newEventStartTime));
-                //eventToAdd.TaskStarts.Add()
+                eventToAdd.SetEventEnd(eventEnds);
+                eventToAdd.SetTaskEnd(taskEnds);
+                eventToAdd.SetEventStart(eventStarts);
+                eventToAdd.SetTaskStart(taskStarts);
                 AllStates = new StateHistory(oldSchedule.AllStates, eventToAdd);
             }
 
@@ -145,7 +147,7 @@ namespace HSFScheduler
             //  lasttime = lasttime > assetSchedule.GetLastState().TaskStart ? lasttime : assetSchedule.GetLastState().TaskStart;
             //return lasttime;
             double lasttime = 0;
-            foreach (KeyValuePair<Asset, double> assetTaskStarts in AllStates.GetLastEvent().TaskStartTimes)
+            foreach (KeyValuePair<Asset, double> assetTaskStarts in AllStates.GetLastEvent().TaskStarts)
             {
                 lasttime = lasttime > assetTaskStarts.Value ? lasttime : assetTaskStarts.Value;
             }

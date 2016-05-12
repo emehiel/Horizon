@@ -20,12 +20,15 @@ namespace HSFScheduler
             // Iterate through constraints
             foreach (var constraint in system.Constraints)
             {
-                if (!checkSub(constraint.Subsystem, proposedSchedule, system.Environment))
-                    return false;
-                if (!CheckConstraints(system, proposedSchedule, constraint))
-                    return false;
-                //if (!constraint.accepts(proposedSchedule))
-                //    return false;
+                foreach (Subsystem sub in constraint.Subsystems)
+                {
+                    if (!checkSub(sub, proposedSchedule, system.Environment))
+                        return false;
+                    if (!CheckConstraints(system, proposedSchedule, constraint))
+                        return false;
+                    //if (!constraint.accepts(proposedSchedule))
+                    //    return false;
+                }
             }
             // Check the remaining Subsystems that aren't included in any Constraints
             if (!checkSubs(system.Subsystems, proposedSchedule, system.Environment))

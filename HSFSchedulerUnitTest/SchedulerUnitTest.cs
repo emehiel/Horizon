@@ -190,7 +190,7 @@ namespace HSFSchedulerUnitTest
                         }
                     }
                     if (ICNodes.Count > 0)
-                        initialSysState.Add(SystemState.setInitialSystemState(ICNodes));
+                        initialSysState.Add(SystemState.setInitialSystemState(ICNodes, asset));
                     ICNodes.Clear();
                 }
             }
@@ -214,7 +214,7 @@ namespace HSFSchedulerUnitTest
 
             List<Constraint> constraintList = new List<Constraint>();
             SystemClass system = new SystemClass(assetList, subNodeList, constraintList, SystemUniverse);
-            TargetValueEvaluator scheduleEvaluator = new TargetValueEvaluator();
+            TargetValueEvaluator scheduleEvaluator = new TargetValueEvaluator(dependencies);
 
             systemScheduler.GenerateSchedules(system, systemTasks, initialSysState, scheduleEvaluator);
         }

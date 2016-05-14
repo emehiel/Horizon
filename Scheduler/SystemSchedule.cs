@@ -35,7 +35,7 @@ namespace HSFScheduler
                 foreach (var access in newAccessList)
                 {
                     tasks.Add(access.Asset, access.Task);
-                    if (access.AccessStart < newEventStartTime)
+                    if (access.AccessStart < newEventStartTime && newEventStartTime < access.AccessEnd)
                         taskStarts.Add(access.Asset, newEventStartTime);
                     else
                     taskStarts.Add(access.Asset, access.AccessStart);

@@ -81,9 +81,14 @@ namespace HSFSubsystem
                 // get event start and task start times
                 double es = proposedEvent.GetEventStart(Asset);
                 double ts = proposedEvent.GetTaskStart(Asset);
-
+                double te = proposedEvent.GetTaskEnd(Asset);
+                if(ts > te)
+                {
+                    return false;
+                }
+                
                 // set task end based upon time to capture
-                double te = ts + timetocapture;
+                te = ts + timetocapture;
                 proposedEvent.SetTaskEnd(Asset, te);
 
                 // calculate incidence angle

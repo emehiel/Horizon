@@ -130,10 +130,14 @@ namespace HSFScheduler
 
                 List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
 
-                foreach (var oldSystemSchedule in systemSchedules)
+                foreach (var oldSystemSchedule in systemSchedules)//this is making to many things
                     foreach (var newAccessStack in scheduleCombos)
                         if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
-                            potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule, newAccessStack, currentTime));
+                        {
+                            SystemSchedule newSched = new SystemSchedule(oldSystemSchedule, newAccessStack, currentTime);
+                            if(!potentialSystemSchedules.Contains(newSched))
+                                potentialSystemSchedules.Add(newSched);
+                        }
 
 
                 // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.
@@ -251,9 +255,8 @@ namespace HSFScheduler
         }
 
 // Return all possible combinations of performing Tasks by Asset at current simulation time
-public static Stack<Stack<Access>> GenerateExhaustiveSystemSchedules(Stack<Access> currentAccessForAllAssets, SystemClass system, double currentTime)
+        public static Stack<Stack<Access>> GenerateExhaustiveSystemSchedules(Stack<Access> currentAccessForAllAssets, SystemClass system, double currentTime)
         {
-           
             // A stack of accesses stacked by asset
             Stack<Stack<Access>> currentAccessesByAsset = new Stack<Stack<Access>>();
             foreach (Asset asset in system.Assets)
@@ -266,6 +269,8 @@ public static Stack<Stack<Access>> GenerateExhaustiveSystemSchedules(Stack<Acces
             {
                 Stack<Access> someOfThem = new Stack<Access>(accessStack);
                 allOfThem.Push(someOfThem);
+                if (someOfThem.ElementAt(0).AccessStart != 0 || someOfThem.ElementAt(1).AccessStart != 0)
+                    Console.WriteLine("not starting at zero");
             }
 
             return allOfThem;

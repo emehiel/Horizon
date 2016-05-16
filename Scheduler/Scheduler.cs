@@ -142,7 +142,6 @@ namespace HSFScheduler
                 // The parallel version
                 // Should we use a Partitioner?
                 // Need to test this...
-                /*
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
                 // The Scheduler has to call the CanPerform for a SystemClass, SystemSchedule combo.  The SystemClass 
@@ -160,7 +159,7 @@ namespace HSFScheduler
                     ts.Hours, ts.Minutes, ts.Seconds,
                     ts.Milliseconds / 10);
                 Console.WriteLine("Parallel Scheduler RunTime: " + elapsedTime);
-                */
+
                 foreach (var potentialSchedule in potentialSystemSchedules)
                 {
                     if (Checker.CheckSchedule(system, potentialSchedule))

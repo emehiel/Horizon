@@ -65,12 +65,14 @@ namespace HSFSubsystem
         {
             foreach (var sub in DependentSubsystems)
             {
-                if (sub.canPerform(proposedEvent, environment) == false)
-                    return false;
+                if(!sub.IsEvaluated)
+                    if (sub.canPerform(proposedEvent, environment) == false)
+                        return false;
             }
             _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
             _newState = proposedEvent.State;
             _oldState = proposedEvent.State.Previous; //do we want to prevent user from modifying oldState on accident??
+            IsEvaluated = true;
             return true;
         }
         /// <summary>

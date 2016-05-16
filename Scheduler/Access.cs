@@ -83,8 +83,6 @@ namespace HSFScheduler
                             else  // extend the access
                                 accessesByAsset.Peek().AccessEnd = accessTime;
                         }
-                        else
-                            Console.WriteLine("NOLOS");
                     }
                 }
             }

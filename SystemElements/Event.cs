@@ -44,12 +44,12 @@ namespace MissionElements
 
         public Event(Event eventToCopyExactly)
         {
-            Tasks = DeepCopy.Copy(eventToCopyExactly.Tasks);
+            Tasks = eventToCopyExactly.Tasks;
             State = eventToCopyExactly.State.DeepClone();
-            EventStarts = DeepCopy.Copy(eventToCopyExactly.EventStarts);
-            EventEnds = DeepCopy.Copy(eventToCopyExactly.EventEnds);
-            TaskStarts = DeepCopy.Copy(eventToCopyExactly.TaskStarts);
-            TaskEnds = DeepCopy.Copy(eventToCopyExactly.TaskEnds);
+            EventStarts = eventToCopyExactly.EventStarts;
+            EventEnds = eventToCopyExactly.EventEnds;
+            TaskStarts = eventToCopyExactly.TaskStarts;
+            TaskEnds = eventToCopyExactly.TaskEnds;
         }
 
         public Task GetAssetTask(Asset asset)

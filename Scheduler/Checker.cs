@@ -72,7 +72,11 @@ namespace HSFScheduler
         {
             // pass the state for checking
             if (!constraint.Accepts(proposedSchedule.AllStates.GetLastState()))
+            {
+                Logger.Report("Constraint Failed: " + constraint.GetType().ToString());
                 return false;
+            }
+            
 
             return true;
         }

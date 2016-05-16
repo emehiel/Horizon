@@ -59,7 +59,7 @@ namespace HSFSubsystem
         #region Methods
         public override bool canPerform(Event proposedEvent, Universe environment)
         {
-            if (!canPerform(proposedEvent, environment))
+            if (!base.canPerform(proposedEvent, environment))
                 return false;
             if (_task.Type == TaskType.IMAGING)
             {

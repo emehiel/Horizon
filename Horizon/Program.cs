@@ -262,6 +262,8 @@ namespace Horizon
             Scheduler scheduler = new Scheduler();
             List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
 
+            
+
             Console.ReadKey();
                 /*
 // USER - Specify data output parameters

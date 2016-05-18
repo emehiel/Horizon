@@ -159,7 +159,7 @@ namespace HSFScheduler
                     ts.Hours, ts.Minutes, ts.Seconds,
                     ts.Milliseconds / 10);
                 Console.WriteLine("Parallel Scheduler RunTime: " + elapsedTime);
-
+                /*
                 foreach (var potentialSchedule in potentialSystemSchedules)
                 {
                     if (Checker.CheckSchedule(system, potentialSchedule))
@@ -167,7 +167,7 @@ namespace HSFScheduler
                     //dependencies.updateStates(newSchedule.getEndStates());
                     //systemCanPerformList.Push(system.canPerform(potentialSchedule));
                 }
-
+                */
                 // End timing
 
                 /*

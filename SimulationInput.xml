@@ -6,7 +6,7 @@
 	</SIMULATION_PARAMETERS>
 
 	<SCHEDULER_PARAMETERS
-		maxNumSchedules="100"
+		maxNumSchedules="50"
 		numSchedCropTo="50"
 		simStepSeconds="30.0">
 	</SCHEDULER_PARAMETERS>

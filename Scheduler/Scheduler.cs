@@ -115,6 +115,7 @@ namespace HSFScheduler
 
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
             {
+                Console.WriteLine(currentTime);
                 // if accesses are pregenerated, look up the access information and update assetTaskList
                 if (canPregenAccess)
                     scheduleCombos = GenerateExhaustiveSystemSchedules(preGeneratedAccesses, system, currentTime);
@@ -135,8 +136,7 @@ namespace HSFScheduler
                         if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
                         {
                             SystemSchedule newSched = new SystemSchedule(oldSystemSchedule, newAccessStack, currentTime);
-                            if(!potentialSystemSchedules.Contains(newSched))
-                                potentialSystemSchedules.Add(newSched);
+                            potentialSystemSchedules.Add(newSched);
                         }
 
 
@@ -190,7 +190,7 @@ namespace HSFScheduler
                 */
 
                 // Merge old and new systemSchedules
-                systemSchedules.InsertRange(0, potentialSystemSchedules);
+                systemSchedules.InsertRange(0, systemCanPerformList);//<--This was potentialSystemSchedules
 
                 // Print completion percentage in command window
                 Console.Write("Scheduler Status: {0} done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
@@ -237,7 +237,12 @@ namespace HSFScheduler
             return systemSchedules;
         }
 
-
+        /// <summary>
+        /// Remove Schedules with the worst scores from the List of SystemSchedules so that there are only _maxNumSchedules.
+        /// </summary>
+        /// <param name="schedulesToCrop"></param>
+        /// <param name="scheduleEvaluator"></param>
+        /// <param name="emptySched"></param>
         void CropSchedules(List<SystemSchedule> schedulesToCrop, Evaluator scheduleEvaluator, SystemSchedule emptySched)
         {
             // Evaluate the schedules and set their values
@@ -246,17 +251,22 @@ namespace HSFScheduler
 
             // Sort the sysScheds by their values
             schedulesToCrop.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
+          //  schedulesToCrop.ToList();
             // Delete the sysScheds that don't fit
-            int i = 1;
-            foreach (SystemSchedule systemSchedule in schedulesToCrop.ToList())
+            for(int i = schedulesToCrop.Count-1; i<=0; i--)
             {
-                if (i > _maxNumSchedules && systemSchedule != emptySched)
-                    schedulesToCrop.Remove(systemSchedule);
-                i++;
+                if (i < schedulesToCrop.Count - _maxNumSchedules && schedulesToCrop[i] != emptySched)
+                    schedulesToCrop.Remove(schedulesToCrop[i]);
             }
         }
 
-// Return all possible combinations of performing Tasks by Asset at current simulation time
+        /// <summary>
+        /// Return all possible combinations of performing Tasks by Asset at current simulation time
+        /// </summary>
+        /// <param name="currentAccessForAllAssets"></param>
+        /// <param name="system"></param>
+        /// <param name="currentTime"></param>
+        /// <returns></returns>
         public static Stack<Stack<Access>> GenerateExhaustiveSystemSchedules(Stack<Access> currentAccessForAllAssets, SystemClass system, double currentTime)
         {
             // A stack of accesses stacked by asset

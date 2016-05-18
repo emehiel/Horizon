@@ -34,7 +34,7 @@ namespace HSFScheduler
 
                 foreach (var access in newAccessList)
                 {
-                    tasks.Add(access.Asset, access.Task);
+                    tasks.Add(access.Asset, access.Task); //shold this be a deep copy
                     if (access.AccessStart < newEventStartTime && newEventStartTime < access.AccessEnd)
                         taskStarts.Add(access.Asset, newEventStartTime);
                     else
@@ -44,7 +44,7 @@ namespace HSFScheduler
                     eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
 
                 }
-                Event eventToAdd = new Event(tasks, new SystemState(oldSchedule.GetEndState(), newEventStartTime));
+                Event eventToAdd = new Event(tasks, new SystemState(oldSchedule.GetEndState()));
                 eventToAdd.SetEventEnd(eventEnds);
                 eventToAdd.SetTaskEnd(taskEnds);
                 eventToAdd.SetEventStart(eventStarts);

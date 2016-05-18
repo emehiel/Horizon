@@ -80,5 +80,11 @@ namespace Utilities
             return -VarName.GetHashCode();
         }
         #endregion
+        #region Methods
+        public StateVarKey<T> DeepClone()
+        {
+            return new StateVarKey<T>(VarName);
+        }
+        #endregion
     }
 }

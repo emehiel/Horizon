@@ -46,7 +46,7 @@ namespace HSFSubsystem
             {
                 if (es + timetoslew > te)
                 {
-                    Logger.Report("ADCS: Not enough time to slew");
+                    Logger.Report("ADCS: Not enough time to slew event start: "+ es + "task end" + te);
                     return false;
                 }
                 else

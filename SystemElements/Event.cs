@@ -41,15 +41,18 @@ namespace MissionElements
             TaskStarts = new Dictionary<Asset, double>();
             TaskEnds = new Dictionary<Asset, double>();
         }
-
+        /// <summary>
+        /// New Event with a deep copy of the state.
+        /// </summary>
+        /// <param name="eventToCopyExactly"></param>
         public Event(Event eventToCopyExactly)
         {
-            Tasks = DeepCopy.Copy(eventToCopyExactly.Tasks);
+            Tasks = new Dictionary<Asset, Task>(eventToCopyExactly.Tasks);
             State = eventToCopyExactly.State.DeepClone();
-            EventStarts = DeepCopy.Copy(eventToCopyExactly.EventStarts);
-            EventEnds = DeepCopy.Copy(eventToCopyExactly.EventEnds);
-            TaskStarts = DeepCopy.Copy(eventToCopyExactly.TaskStarts);
-            TaskEnds = DeepCopy.Copy(eventToCopyExactly.TaskEnds);
+            EventStarts = new Dictionary<Asset, double>(eventToCopyExactly.EventStarts);
+            EventEnds = new Dictionary<Asset, double>(eventToCopyExactly.EventEnds);
+            TaskStarts = new Dictionary<Asset, double>(eventToCopyExactly.TaskStarts);
+            TaskEnds = new Dictionary<Asset, double>(eventToCopyExactly.TaskEnds);
         }
 
         public Task GetAssetTask(Asset asset)
@@ -89,22 +92,30 @@ namespace MissionElements
 
         public void SetEventEnd(Asset asset, double te)
         {
+            if (EventEnds.ContainsKey(asset))
+                EventEnds.Remove(asset);
             EventEnds.Add(asset, te);
         }
 
         public void SetTaskEnd(Asset asset, double te)
         {
+            if (TaskEnds.ContainsKey(asset))
+                TaskEnds.Remove(asset);
             TaskEnds.Add(asset, te);
         }
 
         public void SetEventStart(Asset asset, double te)
         {
+            if (EventEnds.ContainsKey(asset))
+                EventEnds.Remove(asset);
             EventEnds.Add(asset, te);
         }
 
         public void SetTaskStart(Asset asset, double te)
         {
-            TaskEnds.Add(asset, te);
+            if (TaskStarts.ContainsKey(asset))
+                TaskStarts.Remove(asset);
+            TaskStarts.Add(asset, te);
         }
 
         public void SetEventStart(Dictionary<Asset, double> eventStarts)

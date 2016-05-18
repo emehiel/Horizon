@@ -110,9 +110,9 @@ namespace HSFUniverse
             _stateData.Add(simTime, dynamicState);
         }
 
-        public Matrix<double> DynamicStateECI(double simTime)
+        public Matrix<double> DynamicStateECI(double simTime) //Should we be interpolating?
         {
-            return _stateData[simTime];
+            return this[simTime]; 
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime">The simulation time key</param>
         /// <returns>The inertial dynamic state date of the asset</returns>
-        private Matrix<double> this[Double simTime]
+        private Matrix<double> this[double simTime]
         {
             get
             {

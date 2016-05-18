@@ -108,7 +108,7 @@ namespace HSFSubsystem
                 return false;
 
             // get the old DOD
-            double olddod = _oldState.getLastValue(Dkeys.First()).Value; //TODO: (Morgan check front is same as first
+            double olddod = _oldState.getLastValue(Dkeys.First()).Value; 
 
             // collect power profile out
             HSFProfile<double> powerOut = DependencyCollector(proposedEvent); // deps->callDoubleDependency("POWERSUB_getPowerProfile");

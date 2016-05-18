@@ -54,7 +54,7 @@ namespace Utilities
             data.Add(pointIn.Key, pointIn.Value);
         }
 
-        public HSFProfile<double> upperLimitIntegrateToProf(double start, double end, double saveFreq, double upperBound, ref bool exceeded, T iv, double ic)
+        public HSFProfile<double> upperLimitIntegrateToProf(double start, double end, double saveFreq, double upperBound, ref bool exceeded, double iv, double ic)
         {
             exceeded = false;
             HSFProfile<double> prof = new HSFProfile<double>();
@@ -162,8 +162,11 @@ namespace Utilities
         {
             return data.First().Value;
         }
+
+        #region Methods
+
         //TODO: (morgan ask mehiel) THis should be templated
-        public HSFProfile<double> limitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, double upperBound, ref bool exceeded_lower, ref bool exceeded_upper, T iv, double ic)
+        public HSFProfile<double> limitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, double upperBound, ref bool exceeded_lower, ref bool exceeded_upper, double iv, double ic)
         {
             HSFProfile<double> prof = new HSFProfile<double>();
             double last = ic;
@@ -221,7 +224,7 @@ namespace Utilities
         /// <param name="iv"></param>
         /// <param name="ic"></param>
         /// <returns></returns>
-        public HSFProfile<double> lowerLimitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, ref bool exceeded, T iv, double ic)
+        public HSFProfile<double> lowerLimitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, ref bool exceeded, double iv, double ic)
         {
             HSFProfile<double> prof = new HSFProfile<double>();
             double last = ic, time, result = 0;
@@ -462,7 +465,9 @@ namespace Utilities
 
             return p3;
         }
+        #endregion
 
+        #region Overrides
         public static HSFProfile<T> operator +(HSFProfile<T> p1, HSFProfile<T> p2)
         {
             if (p1.Empty())
@@ -589,19 +594,28 @@ namespace Utilities
             return data.GetHashCode();
         }
 
-        public T Integrate(double startTime, double endTime, T initialValue)
+        public double Integrate(double startTime, double endTime, double initialValue)
         {
             if (endTime < startTime)
-                return -1.0 * (dynamic)Integrate(startTime, endTime, initialValue);
+                return -1.0 * Integrate(startTime, endTime, initialValue);
             if (Count() == 0 || endTime <= data.First().Key)
-                return (endTime - startTime) * (dynamic)initialValue;
+                return (endTime - startTime) * initialValue;
             if (endTime == startTime)
-                return (dynamic)0;
+                return 0;
 
-            IEnumerable<KeyValuePair<double, T>> query = data.Where(item => item.Key >= startTime && item.Key <= endTime);
-
-            return (dynamic)query.Sum(queryItem => (dynamic)queryItem.Value) + initialValue;
+            //  KeyValuePair<double, double> query = (SortedDictionary<double, double>)data.Where(item => item.Key >= startTime && item.Key <= endTime);
+            double query = initialValue;
+            foreach (var prof in data)
+            {
+                if (prof.Key >= startTime && prof.Key <= endTime)
+                {
+                    query+= (dynamic)prof.Value;
+                }
+            }
+            return query;
+          //  return query.Sum(queryItem => queryItem.Value) + initialValue;
         }
+        #endregion
 
     }
 }

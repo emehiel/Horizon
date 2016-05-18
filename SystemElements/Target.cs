@@ -43,10 +43,11 @@ namespace MissionElements
             Value = value;
         }
 
-        /**
-        * Creates a new target from the xmlNode data
-        * @param targetNode the xmlNode which contains the relevant target information
-        */
+
+        /// <summary>
+        /// Creates a new target from the xmlNode data
+        /// </summary>
+        /// <param name="targetXmlNode"></param>
         public Target(XmlNode targetXmlNode)
         {
             Name = targetXmlNode.Attributes["TargetName"].Value;

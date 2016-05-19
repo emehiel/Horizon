@@ -318,7 +318,7 @@ namespace Utilities
                     }
                     else
                     {
-                        Console.WriteLine("WARNING - DataAtTime: Attempting to reference time before first data point in profile");
+                      //  Console.WriteLine("WARNING - DataAtTime: Attempting to reference time before first data point in profile");
                         return data.Single(item => item.Key == data.Keys.Min());
                     }
 
@@ -382,7 +382,8 @@ namespace Utilities
         /// <returns>The maximum value in the profile</returns>
         public T Max()
         {
-            return data.Max().Value;
+            return data.Values.Max();
+        //    return data.Max().Value;
         }
 
         /// <summary>
@@ -391,7 +392,7 @@ namespace Utilities
         /// <returns>The minimum value in the profile</returns>
         public T Min()
         {
-            return data.Min().Value;
+            return data.Values.Min() ;
         }
         // Functions
 

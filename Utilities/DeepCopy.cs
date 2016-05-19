@@ -14,6 +14,11 @@ namespace Utilities
         //http://www.codeproject.com/Articles/28952/Shallow-Copy-vs-Deep-Copy-in-NET
         public static T Copy<T>(T item)
         {
+            if (typeof(T).Equals(typeof(Matrix<double>)))
+            {
+                Console.WriteLine("trying to copy matrix");
+            }
+
             BinaryFormatter formatter = new BinaryFormatter();
             MemoryStream stream = new MemoryStream();
             formatter.Serialize(stream, item);

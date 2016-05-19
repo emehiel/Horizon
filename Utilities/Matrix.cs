@@ -753,7 +753,7 @@ namespace Utilities
 
         public void SetValue(int row, int col, T value) ///Morgan Added this
         {
-            if(row > 0 && row <NumRows && col > 0 && col < NumCols)
+            if(row > 0 && row <=NumRows && col > 0 && col <= NumCols)
                 this[row, col] = value; // why do we access it like this?
             else
                 throw new ArgumentException("Element indicies out of Matrix<T> bounds");

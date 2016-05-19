@@ -53,29 +53,11 @@ namespace MissionElements
             Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
         }
 
-        /**
-         * Copy constructor for exact state copies
-         */
-        public SystemState(SystemState initialStateToCopy)
-        {
-            SystemState newState = DeepCopy.Copy<SystemState>(initialStateToCopy);
-            Previous = newState.Previous;
-            //EventStart = newState.EventStart;
-            //TaskStart = newState.TaskStart;
-            //TaskEnd = newState.TaskEnd;
-            //EventEnd = newState.EventEnd;
-            Idata = newState.Idata;
-            Ddata = newState.Ddata;
-            //       Fdata = newState.Fdata;
-            Bdata = newState.Bdata;
-            Mdata = newState.Mdata;
-            Qdata = newState.Qdata;
-        }
 
         /**
          * Creates a new State based on a previous State and a new Task start time
          */
-        public SystemState(SystemState previous, double newTaskStart)
+        public SystemState(SystemState previous)
         {
             Previous = previous;
             //EventStart = previous.EventEnd; // start from end of previous State
@@ -103,6 +85,8 @@ namespace MissionElements
             foreach (var data in moreState.Mdata)
                 addValue(data.Key, data.Value);
         }
+
+        
         /// <summary>
         /// A deep clone of the System State, but keeping the reference to Previous as a reference
         /// </summary>
@@ -110,10 +94,30 @@ namespace MissionElements
         public SystemState DeepClone()
         {
             SystemState newState = new SystemState();
-            newState.Idata = DeepCopy.Copy(Idata);
-            newState.Bdata = DeepCopy.Copy(Bdata);
-            newState.Mdata = DeepCopy.Copy(Mdata);
-            newState.Qdata = DeepCopy.Copy(Qdata);
+            //foreach(KeyValuePair<StateVarKey<int>, HSFProfile<int>> data in this.Idata)
+            //{
+            //    newState.addValue(data.Key, new HSFProfile<int>(data.Value));
+            //}
+            //foreach (KeyValuePair<StateVarKey<bool>, HSFProfile<bool>> data in this.Bdata)
+            //{
+            //    newState.addValue(data.Key, new HSFProfile<bool>(data.Value));
+            //}
+            //foreach (KeyValuePair<StateVarKey<double>, HSFProfile<double>> data in this.Ddata)
+            //{
+            //    newState.addValue(data.Key, new HSFProfile<double>(data.Value));
+            //}
+            //foreach (KeyValuePair<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>> data in this.Mdata)
+            //{
+            //    newState.addValue(data.Key.DeepClone(), new HSFProfile<Matrix<double>>(data.Value));
+            //}
+            //foreach (KeyValuePair<StateVarKey<Quat>, HSFProfile<Quat>> data in this.Qdata)
+            //{
+            //    newState.addValue(data.Key.DeepClone(), new HSFProfile<Quat>(data.Value));
+            //}
+            newState.Idata = (DeepCopy.Copy(Idata));
+            newState.Bdata = (DeepCopy.Copy(Bdata));
+            newState.Ddata = (DeepCopy.Copy(Ddata));
+            newState.Mdata = (DeepCopy.Copy(Mdata));
             newState.Previous = Previous;
             return newState;
         }

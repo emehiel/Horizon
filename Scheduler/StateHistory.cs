@@ -29,9 +29,10 @@ namespace HSFScheduler
         /// <param name="oldSchedule"></param>
         public StateHistory(StateHistory oldSchedule)
         {
-            StateHistory newAssetSched = DeepCopy.Copy<StateHistory>(oldSchedule);
-            InitialState = newAssetSched.InitialState;
-            Events = newAssetSched.Events;
+            InitialState = oldSchedule.InitialState;
+            Events = new Stack<Event>(oldSchedule.Events);
+            Events.Pop();
+            Events.Push(new Event(oldSchedule.Events.Peek()));
         }
 
         /// <summary>
@@ -41,12 +42,8 @@ namespace HSFScheduler
         /// <param name="newEvent"></param>
         public StateHistory(StateHistory oldSchedule, Event newEvent)
         {
-            Events = new Stack<Event>();
-            foreach(Event eit in oldSchedule.Events)
-            {
-                Events.Push(new Event(eit));
-            }
-            InitialState = oldSchedule.InitialState.DeepClone();
+            Events = new Stack<Event>(oldSchedule.Events);
+            InitialState = oldSchedule.InitialState;  //Should maybe be a deep copy
             Events.Push(newEvent);
         //    Asset = newAssetSched.Asset;
         }

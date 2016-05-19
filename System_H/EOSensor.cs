@@ -59,7 +59,7 @@ namespace HSFSubsystem
         #region Methods
         public override bool canPerform(Event proposedEvent, Universe environment)
         {
-            if (!canPerform(proposedEvent, environment))
+            if (!base.canPerform(proposedEvent, environment))
                 return false;
             if (_task.Type == TaskType.IMAGING)
             {
@@ -81,17 +81,22 @@ namespace HSFSubsystem
                 // get event start and task start times
                 double es = proposedEvent.GetEventStart(Asset);
                 double ts = proposedEvent.GetTaskStart(Asset);
-
+                double te = proposedEvent.GetTaskEnd(Asset);
+                if(ts > te)
+                {
+                    return false;
+                }
+                
                 // set task end based upon time to capture
-                double te = ts + timetocapture;
+                te = ts + timetocapture;
                 proposedEvent.SetTaskEnd(Asset, te);
 
                 // calculate incidence angle
                 // from Brown, Pp. 99
                 DynamicState position = Asset.AssetDynamicState;
                 double timage = ts + timetocapture / 2;
-                Matrix<double> m_SC_pos_at_tf_ECI = position.DynamicStateECI(timage);
-                Matrix<double> m_target_pos_at_tf_ECI = _task.Target.DynamicState.DynamicStateECI(timage);
+                Matrix<double> m_SC_pos_at_tf_ECI = position.PositionECI(timage);
+                Matrix<double> m_target_pos_at_tf_ECI = _task.Target.DynamicState.PositionECI(timage);
                 Matrix<double> m_pv = m_target_pos_at_tf_ECI - m_SC_pos_at_tf_ECI;
                 Matrix<double> pos_norm = -m_SC_pos_at_tf_ECI / Matrix<double>.Norm(-m_SC_pos_at_tf_ECI);
                 Matrix<double> pv_norm = m_pv / Matrix<double>.Norm(m_pv);

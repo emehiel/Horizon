@@ -40,12 +40,19 @@ namespace HSFSubsystem
 
             double es = proposedEvent.GetEventStart(Asset);
             double ts = proposedEvent.GetTaskStart(Asset);
+            double te = proposedEvent.GetTaskEnd(Asset);
 
-            if (es + timetoslew > ts)
+            if (es + timetoslew > ts) //fix event task end!
             {
-                Logger.Report("ADCS");
-                return false;
+                if (es + timetoslew > te)
+                {
+                    Logger.Report("ADCS: Not enough time to slew event start: "+ es + "task end" + te);
+                    return false;
+                }
+                else
+                    ts = es + timetoslew;
             }
+
 
             // from Brown, Pp. 99
             DynamicState position = Asset.AssetDynamicState;
@@ -55,7 +62,7 @@ namespace HSFSubsystem
 
             // set state data
             _newState.setProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));
-
+            proposedEvent.SetTaskStart(Asset, ts);
             return true;
         }
         /// <summary>

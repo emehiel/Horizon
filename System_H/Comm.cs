@@ -47,7 +47,7 @@ namespace HSFSubsystem
 
         HSFProfile<double> POWERSUB_PowerProfile_COMMSUB(Event currentEvent)
         {
-            return (HSFProfile<double>)currentEvent.State.GetProfile(DATARATE_KEY) * 20;
+            return currentEvent.State.GetProfile(DATARATE_KEY) * 20;
         }
         #endregion
     }

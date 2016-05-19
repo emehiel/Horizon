@@ -40,7 +40,7 @@
 			subsystemName = "SSDR"
 			bufferSize = "5000">
 			<IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
-			<DEPENDENCY subsystemName="EOSensor"></DEPENDENCY>
+			<DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Comm"
@@ -111,7 +111,7 @@
 			subsystemName = "SSDR"
 			bufferSize = "5000">
 			<IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
-			<DEPENDENCY subsystemName="EOSensor"></DEPENDENCY>
+			<DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Comm"

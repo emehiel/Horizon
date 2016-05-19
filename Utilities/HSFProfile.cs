@@ -496,7 +496,7 @@ namespace Utilities
             HSFProfile<T> pOut = new HSFProfile<T>();
 
             foreach (KeyValuePair<double, T> item in p1.data)
-                pOut[item.Key] += someNumber;
+                pOut.Add(item.Key, item.Value + someNumber);
 
             return pOut;
         }
@@ -512,7 +512,7 @@ namespace Utilities
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
             foreach (KeyValuePair<double, T> item in p1.data)
-                pOut[item.Key] = -(dynamic)p1[item.Key];
+                pOut.Add(item.Key, -1 * (dynamic)item.Value);
 
             return pOut;
         }
@@ -532,7 +532,7 @@ namespace Utilities
         public static HSFProfile<T> operator -(dynamic someNumber, HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
-            return pOut = p1 + (-someNumber);
+            return pOut = -p1 + someNumber;
         }
 
         public static HSFProfile<T> operator *(HSFProfile<T> p1, dynamic someNumber)
@@ -540,7 +540,7 @@ namespace Utilities
             HSFProfile<T> pOut = new HSFProfile<T>();
 
             foreach (KeyValuePair<double, T> item in p1.data)
-                pOut[item.Key] *= someNumber;
+                pOut.Add(item.Key, item.Value * someNumber);
 
             return pOut;
         }
@@ -555,16 +555,21 @@ namespace Utilities
         public static HSFProfile<T> operator /(dynamic someNumber, HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
+            foreach (KeyValuePair<double, T> item in p1.data)
+                pOut.Add(item.Key, someNumber / item.Value);
 
-            return pOut = p1 * (1.0 / someNumber);
+            return pOut;
         }
 
         public static HSFProfile<T> operator /(HSFProfile<T> p1, dynamic someNumber)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
+            foreach (KeyValuePair<double, T> item in p1.data)
+                pOut.Add(item.Key, item.Value/ someNumber);
 
-            return pOut = p1 * (1.0 / someNumber);
+            return pOut;
         }
+    
 
         // override object.Equals
         public override bool Equals(object obj)
@@ -576,7 +581,7 @@ namespace Utilities
 
             // TODO: write your implementation of Equals() here
             HSFProfile<T> p = obj as HSFProfile<T>;
-            return data == p.data;
+            return data.Equals(p.data);
 
         }
 

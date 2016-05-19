@@ -49,6 +49,7 @@ namespace HSFSubsystem
                 double ts = proposedEvent.GetTaskStart(Asset);
                 double te = proposedEvent.GetTaskEnd(Asset);
                 double oldbufferratio = _oldState.getLastValue(Dkeys.First()).Value;
+                
                 HSFProfile<double> newdataratein = (DependencyCollector(proposedEvent) / _bufferSize);
 
                 bool exceeded = false;

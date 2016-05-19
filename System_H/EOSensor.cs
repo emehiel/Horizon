@@ -53,6 +53,7 @@ namespace HSFSubsystem
             if (EOSensorXmlNode.Attributes["highQualityTime"] != null)
                 _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
             dependencies.Add("PowerfromEOSensor", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_EOSENSORSUB));
+            dependencies.Add("SSDRfromEOSensor", new Func<Event, HSFProfile<double>>(SSDRSUB_NewDataProfile_EOSENSORSUB));
         }
         #endregion
 
@@ -134,9 +135,9 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(SystemState state)
+        HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(Event currentEvent)
         {
-            return state.GetProfile(PIXELS_KEY) / 500;
+            return currentEvent.State.GetProfile(PIXELS_KEY) / 500;
         }
         #endregion
     }

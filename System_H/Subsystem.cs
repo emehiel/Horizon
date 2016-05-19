@@ -116,7 +116,8 @@ namespace HSFSubsystem
             HSFProfile<double> outProf = new HSFProfile<double>();
             foreach (var dep in SubsystemDependencyFunctions)
             {
-                outProf  += (HSFProfile<double>)dep.Value.DynamicInvoke(currentEvent);
+                HSFProfile<double> temp = (HSFProfile<double>)dep.Value.DynamicInvoke(currentEvent);
+                outProf = outProf + temp;
             }
             return outProf;
         }

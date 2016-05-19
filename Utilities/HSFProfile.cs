@@ -7,6 +7,8 @@ using System.Text;
 namespace Utilities
 {
     [Serializable]
+    // Assume the value of the data prior to the first time entry is zero (zero order hold)
+    // Assume the value of the data after the last time entry is the last value in data
     public class HSFProfile<T> : IHSFProfile   
     {
         // Class Data
@@ -496,7 +498,14 @@ namespace Utilities
             IEnumerable<double> uniqueTimes = p1Keys.Union(p2Keys).Distinct();
 
             foreach (double time in uniqueTimes)
-                p3[time] = (dynamic)p1[time] + (dynamic)p2[time];
+            {
+                if (time < p1.FirstTime())
+                    p3.Add(time, (dynamic)p2[time]);
+                else if (time < p2.FirstTime())
+                    p3.Add(time, (dynamic)p1[time]);
+                else
+                    p3.Add(time, (dynamic)p1[time] + (dynamic)p2[time]);
+            }
 
             return p3;
         }
@@ -591,7 +600,14 @@ namespace Utilities
 
             // TODO: write your implementation of Equals() here
             HSFProfile<T> p = obj as HSFProfile<T>;
-            return data.Equals(p.data);
+            bool areEqual = true;
+            foreach (var item in data.Zip(p.data, Tuple.Create))
+            {
+                areEqual &= item.Item1.Key == item.Item2.Key;
+                areEqual &= (dynamic)item.Item1.Value == item.Item2.Value;
+            }
+
+            return areEqual;
 
         }
 

@@ -382,7 +382,12 @@ namespace Utilities
         /// <returns>The maximum value in the profile</returns>
         public T Max()
         {
-            return data.Max().Value;
+            dynamic max = data.First().Value;
+            foreach (var item in data)
+                if (item.Value > max)
+                    max = item.Value;
+
+            return max;
         }
 
         /// <summary>
@@ -391,7 +396,12 @@ namespace Utilities
         /// <returns>The minimum value in the profile</returns>
         public T Min()
         {
-            return data.Min().Value;
+            dynamic min = data.First().Value;
+            foreach (var item in data)
+                if (item.Value > min)
+                    min = item.Value;
+
+            return min;
         }
         // Functions
 
@@ -565,7 +575,7 @@ namespace Utilities
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
             foreach (KeyValuePair<double, T> item in p1.data)
-                pOut.Add(item.Key, item.Value/ someNumber);
+                pOut.Add(item.Key, item.Value / someNumber);
 
             return pOut;
         }

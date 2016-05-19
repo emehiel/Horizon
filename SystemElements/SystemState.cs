@@ -174,19 +174,19 @@ namespace MissionElements
                { // Are there any Profiles in there?
                    if (Idata.TryGetValue(_key, out valueOut)) //see if our key is in there
                        return (dynamic)valueOut;
-                   return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
                }
-           }
-           else if (_key.GetType() == typeof(StateVarKey<double>))
+                return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
+            }
+            else if (_key.GetType() == typeof(StateVarKey<double>))
            {
                 HSFProfile<double> valueOut;
                if (Ddata.Count != 0)
                { // Are there any Profiles in there?
                    if (Ddata.TryGetValue(_key, out valueOut)) //see if our key is in there
                        return (dynamic)valueOut;
-                   return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
                }
-           }
+               return Previous.GetProfile(_key);  // This isn't the right profile, go back one and try it out!
+            }
            else if (_key.GetType() == typeof(StateVarKey<bool>))
            {
                HSFProfile<bool> valueOut;
@@ -194,30 +194,31 @@ namespace MissionElements
                { // Are there any Profiles in there?
                    if (Bdata.TryGetValue(_key, out valueOut)) //see if our key is in there
                        return (dynamic)valueOut;
-                   return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
                }
-           }
-           else if (_key.GetType() == typeof(StateVarKey<Matrix<double>>))
+                return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
+            }
+            else if (_key.GetType() == typeof(StateVarKey<Matrix<double>>))
            {
                HSFProfile<Matrix<double>> valueOut;
                if (Ddata.Count != 0)
                { // Are there any Profiles in there?
                    if (Mdata.TryGetValue(_key, out valueOut)) //see if our key is in there
                        return (dynamic)valueOut;
-                   return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
                }
-           }
-           else if (_key.GetType() == typeof(StateVarKey<Quat>))
+               return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
+
+            }
+            else if (_key.GetType() == typeof(StateVarKey<Quat>))
            {
                HSFProfile<Quat> valueOut;
                if (Ddata.Count != 0)
                { // Are there any Profiles in there?
                    if (Qdata.TryGetValue(_key, out valueOut)) //see if our key is in there
                        return (dynamic)valueOut;
-                   return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
                }
-           }
-           throw new ArgumentException("Profile Type Not Found");
+               return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
+            }
+            throw new ArgumentException("Profile Type Not Found");
        }
 
        /** TODO: make sure valueOut is a good replacement for iterator.second

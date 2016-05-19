@@ -196,7 +196,7 @@ namespace HSFScheduler
 
                 // Merge old and new systemSchedules
                 systemSchedules.InsertRange(0, systemCanPerformList);//<--This was potentialSystemSchedules
-
+                potentialSystemSchedules.Clear();
                 // Print completion percentage in command window
                 Console.Write("Scheduler Status: {0} done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
             }

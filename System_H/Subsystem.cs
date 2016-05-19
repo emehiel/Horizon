@@ -111,10 +111,12 @@ namespace HSFSubsystem
         /// <returns></returns>
         protected HSFProfile<double> DependencyCollector(Event currentEvent)
         {
+            if (SubsystemDependencyFunctions.Count == 0)
+                throw new MissingMemberException("You may not call the dependency collector in your can perform because you have not specified any dependency functions for " + Name);
             HSFProfile<double> outProf = new HSFProfile<double>();
             foreach (var dep in SubsystemDependencyFunctions)
             {
-                outProf = outProf + (HSFProfile<double>)dep.Value.DynamicInvoke(currentEvent);
+                outProf  += (HSFProfile<double>)dep.Value.DynamicInvoke(currentEvent);
             }
             return outProf;
         }

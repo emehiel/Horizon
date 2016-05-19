@@ -131,14 +131,19 @@ namespace HSFScheduler
 
                 List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
 
-                foreach (var oldSystemSchedule in systemSchedules)//this is making to many things
+                foreach (var oldSystemSchedule in systemSchedules)
+                {
                     foreach (var newAccessStack in scheduleCombos)
+                    {
                         if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
                         {
                             SystemSchedule newSched = new SystemSchedule(oldSystemSchedule, newAccessStack, currentTime);
                             potentialSystemSchedules.Add(newSched);
                         }
-
+                    }
+                    potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule));
+                    //deep copy
+                }
 
                 // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.
                 List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();

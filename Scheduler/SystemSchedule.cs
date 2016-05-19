@@ -22,36 +22,40 @@ namespace HSFScheduler
             AllStates = new StateHistory(initialstates);
         }
 
+        /// <summary>
+        /// Copy constructor to preserve the without adding a task
+        /// </summary>
+        /// <param name="oldSchedule"></param>
+        public SystemSchedule(SystemSchedule oldSchedule)
+        {
+            AllStates = new StateHistory(oldSchedule.AllStates);
+        }
+
         public SystemSchedule(SystemSchedule oldSchedule, Stack<Access> newAccessList, double newEventStartTime)
         {
-            if (newAccessList != null)
+            Dictionary<Asset, Task> tasks = new Dictionary<Asset, Task>();
+            Dictionary<Asset, double> taskStarts = new Dictionary<Asset, double>();
+            Dictionary<Asset, double> taskEnds = new Dictionary<Asset, double>();
+            Dictionary<Asset, double> eventStarts = new Dictionary<Asset, double>();
+            Dictionary<Asset, double> eventEnds = new Dictionary<Asset, double>();
+
+            foreach (var access in newAccessList)
             {
-                Dictionary<Asset, Task> tasks = new Dictionary<Asset, Task>();
-                Dictionary<Asset, double> taskStarts = new Dictionary<Asset, double>();
-                Dictionary<Asset, double> taskEnds = new Dictionary<Asset, double>();
-                Dictionary<Asset, double> eventStarts = new Dictionary<Asset, double>();
-                Dictionary<Asset, double> eventEnds = new Dictionary<Asset, double>();
-
-                foreach (var access in newAccessList)
-                {
-                    tasks.Add(access.Asset, access.Task); //shold this be a deep copy
-                    if (access.AccessStart < newEventStartTime && newEventStartTime < access.AccessEnd)
-                        taskStarts.Add(access.Asset, newEventStartTime);
-                    else
+                tasks.Add(access.Asset, access.Task); //shold this be a deep copy
+                if (access.AccessStart < newEventStartTime && newEventStartTime < access.AccessEnd)
+                    taskStarts.Add(access.Asset, newEventStartTime);
+                else
                     taskStarts.Add(access.Asset, access.AccessStart);
-                    taskEnds.Add(access.Asset, access.AccessEnd);
-                    eventStarts.Add(access.Asset, newEventStartTime);
-                    eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
-
-                }
-                Event eventToAdd = new Event(tasks, new SystemState(oldSchedule.GetEndState()));
-                eventToAdd.SetEventEnd(eventEnds);
-                eventToAdd.SetTaskEnd(taskEnds);
-                eventToAdd.SetEventStart(eventStarts);
-                eventToAdd.SetTaskStart(taskStarts);
-                AllStates = new StateHistory(oldSchedule.AllStates, eventToAdd);
+                taskEnds.Add(access.Asset, access.AccessEnd);
+                eventStarts.Add(access.Asset, newEventStartTime);
+                eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
             }
-
+            Event eventToAdd = new Event(tasks, new SystemState(oldSchedule.GetEndState())); //all references
+            eventToAdd.SetEventEnd(eventEnds);
+            eventToAdd.SetTaskEnd(taskEnds);
+            eventToAdd.SetEventStart(eventStarts);
+            eventToAdd.SetTaskStart(taskStarts);
+            AllStates = new StateHistory(oldSchedule.AllStates, eventToAdd);
             
             /* commented out because it doesn't work yet
     // TODO (EAM):  Changed this so we need to double check/test

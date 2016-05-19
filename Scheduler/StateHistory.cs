@@ -36,14 +36,14 @@ namespace HSFScheduler
         }
 
         /// <summary>
-        /// Creates a new assetSchedule from and old assetSchedule and a new Event shared pointer
+        /// Creates a new assetSchedule from and old assetSchedule and a new Event
         /// </summary>
         /// <param name="oldSchedule"></param>
         /// <param name="newEvent"></param>
         public StateHistory(StateHistory oldSchedule, Event newEvent)
         {
-            Events = new Stack<Event>(oldSchedule.Events);
-            InitialState = oldSchedule.InitialState;  //Should maybe be a deep copy
+            Events = oldSchedule.Events;
+            InitialState = oldSchedule.InitialState;  //Should maybe be a deep copy -->no
             Events.Push(newEvent);
         //    Asset = newAssetSched.Asset;
         }

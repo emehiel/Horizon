@@ -19,9 +19,9 @@ namespace HSFSubsystem
             getSubNameFromXmlNode(subNode);
             DependentSubsystems = new List<Subsystem>();
         }
-        public override bool canPerform(Event proposedEvent, Universe environment) 
+        public override bool canPerform( Event proposedEvent, Universe environment) 
         {
-            if (!base.canPerform(proposedEvent, environment))
+            if (!base.canPerform( proposedEvent, environment))
                 return false;
             DynamicState position = Asset.AssetDynamicState;
             Matrix<double> assetPosECI = position.PositionECI(proposedEvent.GetTaskStart(Asset));

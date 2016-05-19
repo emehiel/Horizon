@@ -39,5 +39,12 @@ namespace MissionElements
         }
         #endregion
 
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            return Name.Equals(((Asset)obj).Name);  
+        }
+
     }
 }

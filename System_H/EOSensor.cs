@@ -32,9 +32,9 @@ namespace HSFSubsystem
             DefaultSubName = "EOSensor";
             Asset = asset;
             getSubNameFromXmlNode(EOSensorXmlNode);
-            PIXELS_KEY = new StateVarKey<double>(Asset.Name +"." + "numPixels");
-            INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "IncidenceAngle");
-            EOON_KEY = new StateVarKey<bool>(Asset.Name + "." + "EOSensorOn");
+            PIXELS_KEY = new StateVarKey<double>(Asset.Name +"." + "numpixels");
+            INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "incidenceangle");
+            EOON_KEY = new StateVarKey<bool>(Asset.Name + "." + "eosensoron");
             addKey(PIXELS_KEY);
             addKey(INCIDENCE_KEY);
             addKey(EOON_KEY);
@@ -67,10 +67,10 @@ namespace HSFSubsystem
                 int value = _task.Target.Value;
                 double pixels = _lowQualityPixels;
                 double timetocapture = _lowQualityTime;
-                if (value <= _highQualityTime  && value >= _midQualityTime) //Morgan took out magic numbers
+                if (value <= _highQualityTime && value >= _midQualityTime) //Morgan took out magic numbers
                 {
                     pixels = _midQualityPixels;
-                    timetocapture =_midQualityTime;
+                    timetocapture = _midQualityTime;
                 }
                 if (value > _highQualityTime)
                 {
@@ -82,11 +82,12 @@ namespace HSFSubsystem
                 double es = proposedEvent.GetEventStart(Asset);
                 double ts = proposedEvent.GetTaskStart(Asset);
                 double te = proposedEvent.GetTaskEnd(Asset);
-                if(ts > te)
+                if (ts > te)
                 {
+                    Logger.Report("EOSensor lost access");
                     return false;
                 }
-                
+
                 // set task end based upon time to capture
                 te = ts + timetocapture;
                 proposedEvent.SetTaskEnd(Asset, te);
@@ -109,14 +110,12 @@ namespace HSFSubsystem
 
                 _newState.addValue(PIXELS_KEY, new KeyValuePair<double, double>(timage, pixels));
                 _newState.addValue(PIXELS_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
-                        
+
                 _newState.addValue(EOON_KEY, new KeyValuePair<double, bool>(ts, true));
                 _newState.addValue(EOON_KEY, new KeyValuePair<double, bool>(te, false));
-
-                return true;
             }
-            else
                 return true;
+            
         }
 
         HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(Event currentEvent)

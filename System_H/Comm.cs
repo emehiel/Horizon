@@ -24,7 +24,7 @@ namespace HSFSubsystem
             getSubNameFromXmlNode(CommXmlNode);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             DependentSubsystems = new List<Subsystem>();
-            DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "DataRate(MB/s)");
+            DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "datarate(mb/s)");
             addKey(DATARATE_KEY);
             dependencies.Add("PowerfromComm", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_COMMSUB));
         }
@@ -47,7 +47,7 @@ namespace HSFSubsystem
 
         HSFProfile<double> POWERSUB_PowerProfile_COMMSUB(Event currentEvent)
         {
-            return currentEvent.State.GetProfile(DATARATE_KEY) * 20;
+            return (HSFProfile<double>)currentEvent.State.GetProfile(DATARATE_KEY) * 20;
         }
         #endregion
     }

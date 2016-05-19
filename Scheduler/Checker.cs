@@ -40,20 +40,23 @@ namespace HSFScheduler
         private static bool checkSub(Subsystem subsystem, SystemSchedule proposedSchedule, Universe environment)
         {
             // new system state of the proposedSchedule (by asset).  Empty to start, fully populated after Checker.CheckSchedule is done
-            SystemState newState = proposedSchedule.AllStates.GetLastState();
+            //SystemState newState = proposedSchedule.AllStates.GetLastState();
             // the system state at the end of the last event on the proposedSchedule
-           // SystemState oldState = newState.Previous;
+            // SystemState oldState = newState.Previous;
             // the proposed Task
-          //  Dictionary<Asset, Task> proposedTask = new Dictionary<Asset, Task>();
-           // proposedTask.Add(subsystem.Asset, proposedSchedule.getSubsytemNewTask(subsystem.Asset));
+            //  Dictionary<Asset, Task> proposedTask = new Dictionary<Asset, Task>();
+            // proposedTask.Add(subsystem.Asset, proposedSchedule.getSubsytemNewTask(subsystem.Asset));
 
             //NEED A PROPOSED EVENT-- this is just a place holder
-          //  Event proposedEvent = new Event(proposedSchedule.AllStates.Events.Peek()., newState);
+            //  Event proposedEvent = new Event(proposedSchedule.AllStates.Events.Peek()., newState);
             // the dynamicState of the proposedSchedule
-         //   DynamicState assetDynamicState = subsystem.Asset.AssetDynamicState;
+            //   DynamicState assetDynamicState = subsystem.Asset.AssetDynamicState;
 
             // Check all subsystems to see if they canPerform the task
             // Recursion of the subsystem dependencies is managed by the subsystems
+            SystemState oldState = proposedSchedule.AllStates.Events.Peek().State.Previous;
+            if (oldState == null)
+                oldState = proposedSchedule.AllStates.InitialState;
             if (!subsystem.canPerform(proposedSchedule.AllStates.Events.Peek(), environment))
                 return false;
 
@@ -63,7 +66,7 @@ namespace HSFScheduler
         {
             foreach (var sub in subsystems)
             {
-                if (!checkSub(sub, proposedSchedule, environment))
+                if (!sub.IsEvaluated && !checkSub(sub, proposedSchedule, environment))
                     return false;
             }
             return true;

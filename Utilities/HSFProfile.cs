@@ -138,7 +138,10 @@ namespace Utilities
             }
             set
             {
+            if (data.ContainsKey(key))
                 data[key] = value;
+            else
+                data.Add(key, value);
             }
         }
 
@@ -456,7 +459,7 @@ namespace Utilities
         }
 
         // Operators
-
+        #region Operators
         public static HSFProfile<T> MergeProfiles(HSFProfile<T> p1, HSFProfile<T> p2) //Morgan made this static
         {
             HSFProfile<T> p3 = new HSFProfile<T>();
@@ -593,7 +596,7 @@ namespace Utilities
             // TODO: write your implementation of GetHashCode() here
             return data.GetHashCode();
         }
-
+        #endregion
         public double Integrate(double startTime, double endTime, double initialValue)
         {
             if (endTime < startTime)

@@ -23,7 +23,7 @@ namespace HSFSubsystem
             getSubNameFromXmlNode(SSDRXmlNode);
             if (SSDRXmlNode.Attributes["bufferSize"] != null)
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
-            DATABUFFERRATIO_KEY = new StateVarKey<double>(Asset.Name + "." +"DataBufferFillRatio");
+            DATABUFFERRATIO_KEY = new StateVarKey<double>(Asset.Name + "." +"databufferfillratio");
             addKey(DATABUFFERRATIO_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             DependentSubsystems = new List<Subsystem>();

@@ -47,12 +47,12 @@ namespace MissionElements
         /// <param name="eventToCopyExactly"></param>
         public Event(Event eventToCopyExactly)
         {
-            Tasks = new Dictionary<Asset, Task>(eventToCopyExactly.Tasks);
+            Tasks = eventToCopyExactly.Tasks;
             State = eventToCopyExactly.State.DeepClone();
-            EventStarts = new Dictionary<Asset, double>(eventToCopyExactly.EventStarts);
-            EventEnds = new Dictionary<Asset, double>(eventToCopyExactly.EventEnds);
-            TaskStarts = new Dictionary<Asset, double>(eventToCopyExactly.TaskStarts);
-            TaskEnds = new Dictionary<Asset, double>(eventToCopyExactly.TaskEnds);
+            EventStarts = eventToCopyExactly.EventStarts;
+            EventEnds = eventToCopyExactly.EventEnds;
+            TaskStarts = eventToCopyExactly.TaskStarts;
+            TaskEnds = eventToCopyExactly.TaskEnds;
         }
 
         public Task GetAssetTask(Asset asset)

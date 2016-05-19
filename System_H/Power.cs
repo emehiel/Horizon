@@ -35,8 +35,8 @@ namespace HSFSubsystem
             DefaultSubName = "Power";
             Asset = asset;
             getSubNameFromXmlNode(PowerNode);
-            DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "DepthOfDischarge");
-            POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "SolarPanelPowerIn");
+            DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
+            POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");
             addKey(DOD_KEY);
             addKey(POWIN_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
@@ -105,7 +105,10 @@ namespace HSFSubsystem
             double powerSubPowerOut = 10;
 
             if (ee > SimParameters.SimEndSeconds)
+            {
+                Logger.Report("Simulation ended");
                 return false;
+            }
 
             // get the old DOD
             double olddod = _oldState.getLastValue(Dkeys.First()).Value; 

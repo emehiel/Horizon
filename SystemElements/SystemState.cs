@@ -60,6 +60,12 @@ namespace MissionElements
         public SystemState(SystemState previous)
         {
             Previous = previous;
+            //Previous = null;
+            //Idata = previous.Idata;
+            //Ddata = previous.Ddata;
+            //Bdata = previous.Bdata;
+            //Mdata = previous.Mdata;
+            //Qdata = previous.Qdata;
             //EventStart = previous.EventEnd; // start from end of previous State
             //TaskStart = newTaskStart;
             //TaskEnd = newTaskStart;
@@ -259,8 +265,10 @@ namespace MissionElements
         void addValue(StateVarKey<int> key, KeyValuePair<double, int> pairIn) {
             HSFProfile<int> valueIn = new HSFProfile<int>(pairIn);
             HSFProfile<int> valueOut;
-            if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+            if (!Idata.TryGetValue(key, out valueOut))
+            { // If there's no Profile matching that key, insert a new one.
                 Idata.Add(key, valueIn);
+            }
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
         }
@@ -353,8 +361,10 @@ namespace MissionElements
         public void addValue(StateVarKey<double> key, KeyValuePair<double, double> pairIn) {
             HSFProfile<double> valueIn = new HSFProfile<double>(pairIn);
             HSFProfile<double> valueOut;
-            if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+            if (!Ddata.TryGetValue(key, out valueOut))
+            { // If there's no Profile matching that key, insert a new one.
                 Ddata.Add(key, valueIn);
+            }
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
         }

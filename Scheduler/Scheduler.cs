@@ -137,12 +137,12 @@ namespace HSFScheduler
                     {
                         if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
                         {
-                            SystemSchedule newSched = new SystemSchedule(oldSystemSchedule, newAccessStack, currentTime);
+                            SystemSchedule newSched = new SystemSchedule(oldSystemSchedule, newAccessStack, currentTime); //shallow copy
                             potentialSystemSchedules.Add(newSched);
                         }
                     }
-                    potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule));
-                    //deep copy
+                    potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule)); //deep copy
+
                 }
 
                 // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.

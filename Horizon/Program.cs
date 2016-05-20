@@ -26,16 +26,20 @@ namespace Horizon
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
             var modelInputFilePath = @"..\..\..\Model_Static.xml";
 
-            var outputPath = String.Format("..\\..\\..\\output-{0:yyyy-MM-dd}-0", DateTime.Now);
-            //Need to figure out output data versioning
-            //if (File.Exists(outputPath + ".txt"))
-            //{
-            //    var version = outputPath[outputPath.Length - 1];
-            //    int number = (int)Convert.ChangeType(version, typeof(int))+1;
-            //    outputPath.Remove(outputPath.Length - 1); 
-            //    outputPath += number;
-            //}
-            outputPath += ".txt";
+            var outputFileName = String.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
+            var outputPath = @"..\..\..\";
+            var txt = ".txt";
+            string[] fileNames = System.IO.Directory.GetFiles(outputPath, outputFileName, System.IO.SearchOption.TopDirectoryOnly);
+            double number = 0;
+            foreach (var fileName in fileNames)
+            {
+                char version = fileName[fileName.Length - txt.Length-1];
+                if(number < Char.GetNumericValue(version))
+                    number = Char.GetNumericValue(version);
+            }
+            number++;
+            outputFileName = outputFileName.Remove(outputFileName.Length - 1) + number;
+            outputPath += outputFileName + txt;
             // Find the main input node from the XML input files
             var XmlDoc = new XmlDocument();
             XmlDoc.Load(simulationInputFilePath);
@@ -203,19 +207,25 @@ namespace Horizon
 
             Scheduler scheduler = new Scheduler();
             List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
+            // Evaluate the schedules and set their values
+            foreach (SystemSchedule systemSchedule in schedules)
+                systemSchedule.ScheduleValue = schedEvaluator.Evaluate(systemSchedule);
 
-            double maxSched = 0;
+            // Sort the sysScheds by their values
+            schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
+            schedules.Reverse();
+            double maxSched = schedules[0].ScheduleValue;
             int i = 0;
             //Morgan's Way
             using (StreamWriter sw = File.CreateText(outputPath))
             {
                 foreach (SystemSchedule sched in schedules)
                 {
-                    sw.WriteLine("Schedule Number: " + i);
+                    sw.WriteLine("Schedule Number: " + i + "Schedule Value: " + schedules[i].ScheduleValue);
                     foreach (var eit in sched.AllStates.Events)
                     {
                         if (eit.Tasks.Values.GetType().Equals(TaskType.COMM))
-            {
+                        {
                             Console.WriteLine("Schedule {0} contains Comm task", i);
                         }
                         if (i < 5)
@@ -223,8 +233,6 @@ namespace Horizon
                             sw.WriteLine(eit.ToString());
                         }
                     }
-                if (sched.ScheduleValue > maxSched)
-                    maxSched = sched.ScheduleValue;
                     i++;
             }
             Console.WriteLine(maxSched);
@@ -297,8 +305,8 @@ namespace Horizon
             */
             System.IO.File.WriteAllText(stateFilePath, csv.ToString());
 
-               // Console.ReadKey();
-            /*
+               Console.ReadKey();
+     
 
                 // *********************************Output selected data*************************************
              //   bool schedOutput = dataOut.writeAll(schedules, simSystem);

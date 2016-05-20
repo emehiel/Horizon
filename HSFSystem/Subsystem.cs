@@ -161,7 +161,6 @@ namespace HSFSubsystem
             return Name;
         }
 
-
         //public void getInitialStateFromXmlNode(XmlNode ICXmlNode)
         //{
         //    Type keyType = Type.GetType(ICXmlNode.Attributes["type"].Value.ToString());
@@ -171,7 +170,27 @@ namespace HSFSubsystem
         //    StateVarKey <keyType.GetType()> = new StateVarKey<keyType.GetType() > (key);
         //    .ChangeType(value, keyType);
         //}
-
+        public SystemState getSubStateAtTime(SystemState currentSystemState, double time)
+        {
+            SystemState state = new SystemState();
+            foreach(var key in Ikeys)
+            {
+                state.Idata.Add(key, new HSFProfile<int>(time, currentSystemState.getValueAtTime(key, time).Value));
+            }
+            foreach (var key in Bkeys)
+            {
+                state.Bdata.Add(key, new HSFProfile<bool>(time, currentSystemState.getValueAtTime(key, time).Value));
+            }
+            foreach (var key in Dkeys)
+            {
+                state.Ddata.Add(key, new HSFProfile<double>(time, currentSystemState.getValueAtTime(key, time).Value));
+            }
+            foreach (var key in Mkeys)
+            {
+                state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.getValueAtTime(key, time).Value));
+            }
+            return state;
+        }
         public void addKey(StateVarKey<int> keyIn) {
             if (Ikeys == null) //Only construct what you need
             {

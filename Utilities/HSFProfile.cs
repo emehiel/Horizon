@@ -169,7 +169,15 @@ namespace Utilities
         }
 
         #region Methods
-
+        public override string ToString()
+        {
+            string dataString = "";
+            foreach(var data in data)
+            {
+                dataString += data.Key + "," + data.Value + ",";
+            }
+            return dataString;
+        }
         //TODO: (morgan ask mehiel) THis should be templated
         public HSFProfile<double> limitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, double upperBound, ref bool exceeded_lower, ref bool exceeded_upper, double iv, double ic)
         {

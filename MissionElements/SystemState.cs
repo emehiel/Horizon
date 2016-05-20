@@ -128,6 +128,16 @@ namespace MissionElements
             return newState;
         }
 
+        public override string ToString()
+        {
+            string stateData = "";
+            foreach(var data in Idata)
+            {
+                stateData += data.Key.VarName + "," + data.Value.ToString();
+            }
+            return stateData;
+        }
+
         /** TODO: figure out if this can all be done with dictionary stuff
          * Gets the last int value set for the given state variable key in the state. If no value is found
          * it checks the previous state, continuing all the way to the initial state.

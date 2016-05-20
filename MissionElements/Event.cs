@@ -64,10 +64,10 @@ namespace MissionElements
         {
             Tasks = eventToCopyExactly.Tasks;
             State = eventToCopyExactly.State.DeepClone();
-            EventStarts = eventToCopyExactly.EventStarts;
-            EventEnds = eventToCopyExactly.EventEnds;
-            TaskStarts = eventToCopyExactly.TaskStarts;
-            TaskEnds = eventToCopyExactly.TaskEnds;
+            EventStarts = DeepCopy.Copy(eventToCopyExactly.EventStarts);
+            EventEnds = DeepCopy.Copy(eventToCopyExactly.EventEnds);
+            TaskStarts = DeepCopy.Copy(eventToCopyExactly.TaskStarts);
+            TaskEnds = DeepCopy.Copy(eventToCopyExactly.TaskEnds);
         }
         #endregion
 
@@ -163,7 +163,8 @@ namespace MissionElements
             foreach(var assetTask in Tasks)
             {
                 eventString += assetTask.Key.Name + ":\t" + assetTask.Value.Target.ToString()+ "\t";
-                eventString += " Task Start:\t" + GetTaskStart(assetTask.Key) + "\tTask End:\t" + GetTaskEnd(assetTask.Key);
+                eventString += "Task Start:\t" + GetTaskStart(assetTask.Key) + "\tEvent Start:\t" + GetEventStart(assetTask.Key) + "\t"; 
+                eventString+= "Task End:\t" + GetTaskEnd(assetTask.Key) + "\tEvent End:\t" + GetEventEnd(assetTask.Key);
             }
 
             return eventString;

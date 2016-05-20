@@ -41,11 +41,17 @@ namespace HSFScheduler
 
             foreach (var access in newAccessList)
             {
-                tasks.Add(access.Asset, access.Task); //shold this be a deep copy
+
                 if (access.AccessStart < newEventStartTime && newEventStartTime < access.AccessEnd)
                     taskStarts.Add(access.Asset, newEventStartTime);
-                else
+                else if (access.AccessStart > newEventStartTime && newEventStartTime < access.AccessEnd)
                     taskStarts.Add(access.Asset, access.AccessStart);
+                else
+                {
+                    Console.WriteLine("Event Start: " + newEventStartTime + "AccesStart: " + access.AccessStart);
+                    taskStarts.Add(access.Asset, newEventStartTime);
+                }
+                tasks.Add(access.Asset, access.Task);
                 taskEnds.Add(access.Asset, access.AccessEnd);
                 eventStarts.Add(access.Asset, newEventStartTime);
                 eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
@@ -108,10 +114,12 @@ namespace HSFScheduler
 
 	        foreach(var access in newAccessList)
             {
-                if (!AllStates.isEmpty(access.Asset)) // the ait2 check
+                if (!AllStates.isEmpty(access.Asset))
+                { // the ait2 check
                     if (AllStates.GetLastEvent().GetEventEnd(access.Asset) > newTaskStartTime)
                         return false;
-                
+                }
+
 		        if(access.Task != null)
                 {
 				    count += AllStates.timesCompletedTask(access.Task);

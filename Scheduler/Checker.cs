@@ -54,9 +54,9 @@ namespace HSFScheduler
 
             // Check all subsystems to see if they canPerform the task
             // Recursion of the subsystem dependencies is managed by the subsystems
-            SystemState oldState = proposedSchedule.AllStates.Events.Peek().State.Previous;
-            if (oldState == null)
-                oldState = proposedSchedule.AllStates.InitialState;
+            //SystemState oldState = proposedSchedule.AllStates.Events.Peek().State.Previous;
+            //if (oldState == null)
+            //    oldState = proposedSchedule.AllStates.InitialState;
             if (!subsystem.canPerform(proposedSchedule.AllStates.Events.Peek(), environment))
                 return false;
 

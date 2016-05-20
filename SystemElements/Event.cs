@@ -8,24 +8,39 @@ namespace MissionElements
     [Serializable]
     public class Event
     {
-        /** The task that are to be performed by each asset. */
+        #region Attributes
+        /// <summary>
+        /// The task that are to be performed by each asset. */
+        /// </summary>
         public Dictionary<Asset, Task> Tasks { get; private set; }
-        /** The time history of the State during the current Event. */
-        public SystemState State { get; private set; }
-      //  public IEnumerable<KeyValuePair<Asset, double>> TaskStartTimes { get; set; }
 
-        /** The start of the event associated with this State */
+        /// <summary>
+        /// The time history of the State during the current Event. 
+        /// </summary>
+        public SystemState State { get; private set; }
+
+        /// <summary>
+        /// The start of the event associated with this State 
+        /// </summary>
         public Dictionary<Asset, double> EventStarts { get; private set; }
 
-        /** The start of the task associated with this State */
+        /// <summary>
+        /// The start of the task associated with this State 
+        /// </summary>
         public Dictionary<Asset, double> TaskStarts { get; set; }
 
-        /** The end of the task associated with this State */
+        /// <summary>
+        ///The end of the task associated with this State 
+        /// </summary>
         public Dictionary<Asset, double> TaskEnds { get; set; }
 
-        /** The end of the event associated with this State */
+        /// <summary>
+        /// The end of the event associated with this State 
+        /// </summary>
         public Dictionary<Asset, double> EventEnds { get; set; }
+        #endregion
 
+        #region Constructors
         /// <summary>
         ///  Creates an Event, in which the Task was performed by an Asset, and the time history 
         /// of the pertinent State information was saved.
@@ -54,7 +69,9 @@ namespace MissionElements
             TaskStarts = eventToCopyExactly.TaskStarts;
             TaskEnds = eventToCopyExactly.TaskEnds;
         }
+        #endregion
 
+        #region Accessors
         public Task GetAssetTask(Asset asset)
         {
             Task currentTask;
@@ -137,5 +154,20 @@ namespace MissionElements
         {
             TaskEnds = taskEnds;
         }
+        #endregion
+
+        #region Methods
+        public override string ToString()
+        {
+            string eventString = "";
+            foreach(var assetTask in Tasks)
+            {
+                eventString += assetTask.Key.Name + ":\t" + assetTask.Value.Target.ToString()+ "\t";
+                eventString += " Task Start:\t" + GetTaskStart(assetTask.Key) + "\tTask End:\t" + GetTaskEnd(assetTask.Key);
+            }
+
+            return eventString;
+        }
+        #endregion
     }
 }

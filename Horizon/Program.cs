@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml;
 using HSFScheduler;
 using Utilities;
@@ -24,7 +25,16 @@ namespace Horizon
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
             var modelInputFilePath = @"..\..\..\Model_Static.xml";
 
-
+            var outputPath = String.Format("..\\..\\..\\output-{0:yyyy-MM-dd}-0", DateTime.Now);
+            //Need to figure out output data versioning
+            //if (File.Exists(outputPath + ".txt"))
+            //{
+            //    var version = outputPath[outputPath.Length - 1];
+            //    int number = (int)Convert.ChangeType(version, typeof(int))+1;
+            //    outputPath.Remove(outputPath.Length - 1); 
+            //    outputPath += number;
+            //}
+            outputPath += ".txt";
             // Find the main input node from the XML input files
             var XmlDoc = new XmlDocument();
             XmlDoc.Load(simulationInputFilePath);
@@ -205,42 +215,35 @@ namespace Horizon
             List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
 
             double maxSched = 0;
-            foreach(SystemSchedule sched in schedules)
+            int i = 0;
+            using (StreamWriter sw = File.CreateText(outputPath))
             {
-                if (sched.ScheduleValue > maxSched)
-                    maxSched = sched.ScheduleValue;
-
+                foreach (SystemSchedule sched in schedules)
+                {
+                    sw.WriteLine("Schedule Number: " + i);
+                    foreach (var eit in sched.AllStates.Events)
+                    {
+                        if (eit.Tasks.Values.GetType().Equals(TaskType.COMM))
+                        {
+                            Console.WriteLine("Schedule {0} contains Comm task", i);
+                        }
+                        if (i < 5)
+                        { //just compare the first 5 schedules for now
+                            sw.WriteLine(eit.ToString());
+                        }
+                    }
+                    if (sched.ScheduleValue > maxSched)
+                        maxSched = sched.ScheduleValue;
+                    i++;
+                }
+                Console.WriteLine(maxSched);
             }
-            Console.WriteLine(maxSched);
 
             Console.ReadKey();
-            /*
 
                 // *********************************Output selected data*************************************
-                bool schedOutput = dataOut.writeAll(schedules, simSystem);
+             //   bool schedOutput = dataOut.writeAll(schedules, simSystem);
             // ******************************************************************************************
-
-            // Clean up memory
-            delete systemScheduler;
-            // Delete the initial state vector
-            delete systemInitialStateList;
-                // Delete the tasks
-                for(vector<const Task*>::iterator tIt = systemTasks->begin(); tIt != systemTasks->end(); tIt++) { delete* tIt; }
-                // Delete the task vector
-                delete systemTasks;
-            // Delete the Evaluator
-            delete systemEvaluator;
-            // Delete the System
-            delete simSystem;
-                // Delete the possible generated schedules
-                for(list<systemSchedule*>::iterator sIt = schedules.begin(); sIt != schedules.end();) {
-                    delete* sIt;
-            schedules.erase(sIt++);
-                }	
-
-                getchar();
-                return 0;
-            */
         }
     }
 }

@@ -256,12 +256,17 @@ namespace HSFScheduler
 
             // Sort the sysScheds by their values
             schedulesToCrop.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
-          //  schedulesToCrop.ToList();
+            //  schedulesToCrop.ToList();
             // Delete the sysScheds that don't fit
-            for(int i = schedulesToCrop.Count-1; i<=0; i--)
+            int j = 0;
+            int numSched = schedulesToCrop.Count;
+            for(int i = numSched-1; j< numSched-_maxNumSchedules; i--)
             {
-                if (i < schedulesToCrop.Count - _maxNumSchedules && schedulesToCrop[i] != emptySched)
+                if (schedulesToCrop[i] != emptySched)
+                {
                     schedulesToCrop.Remove(schedulesToCrop[i]);
+                    j++;
+                }
             }
         }
 

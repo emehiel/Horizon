@@ -46,5 +46,10 @@ namespace MissionElements
             return Name.Equals(((Asset)obj).Name);  
         }
 
+        public bool tester(Asset asset)
+        {
+            return Name.Equals(asset.Name);
+        }
+
     }
 }

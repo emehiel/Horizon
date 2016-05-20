@@ -23,7 +23,7 @@ namespace Horizon
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\Model_Static.xml";
+            var modelInputFilePath = @"..\..\..\Model_Scripted.xml";
 
             var outputPath = String.Format("..\\..\\..\\output-{0:yyyy-MM-dd}-0", DateTime.Now);
             //Need to figure out output data versioning
@@ -89,7 +89,7 @@ namespace Horizon
                 SystemUniverse = new Universe();
 
             //Create singleton dependency dictionary
-            Dependencies dependencies = Dependencies.Instance;
+            Dependency dependencies = Dependency.Instance;
 
             // Initialize List to hold assets and subsystem nodes
             List<Asset> assetList = new List<Asset>();
@@ -110,31 +110,20 @@ namespace Horizon
             List<XmlNode> DepNodes = new List<XmlNode>();
             SystemState initialSysState = new SystemState();
 
-            // Enable Python scripting support, add additional functions defined in input file
-            bool enableScripting = false;
-
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
             foreach (XmlNode childNodeAsset in modelInputXMLNode.ChildNodes)
             {
                 if (childNodeAsset.Name.Equals("PYTHON"))
                 {
-                    if (childNodeAsset.Attributes["enableScripting"] != null)
-                    {
-                        if (childNodeAsset.Attributes["enableScripting"].Value.ToString().ToLower().Equals("true"))
-                            enableScripting = true;
-                    }
                     // Loop through all the of the file nodes -- TODO (Morgan) What other types of things might be scripted
                     foreach (XmlNode fileXmlNode in childNodeAsset.ChildNodes)
                     {
-                        // If scripting is enabled, parse the script file designated by the attribute
-                        if (enableScripting)
+                    // If scripting is enabled, parse the script file designated by the attribute
+                        // Parse script file if the attribute exists
+                        if (fileXmlNode.ChildNodes[0].Name.Equals("EOMS_FILE"))
                         {
-                            // Parse script file if the attribute exists
-                            if (fileXmlNode.ChildNodes[0].Name.Equals("EOMS_FILE"))
-                            {
-                                string fileName = fileXmlNode.ChildNodes[0].Attributes["src"].Value.ToString();
-                                ScriptedEOMS eoms = new ScriptedEOMS(fileName);
-                            }
+                            string fileName = fileXmlNode.ChildNodes[0].Attributes["src"].Value.ToString();
+                            ScriptedEOMS eoms = new ScriptedEOMS(fileName);
                         }
                     }
                 }
@@ -149,7 +138,7 @@ namespace Horizon
                         if (childNode.Name.Equals("SUBSYSTEM"))
                         {  //is this how we want to do this?
                             // Check if the type of the Subsystem is scripted, networked, or other
-                            string subName = SubsystemFactory.GetSubsystem(childNode, enableScripting, dependencies, asset, subsystemMap);
+                            string subName = SubsystemFactory.GetSubsystem(childNode, dependencies, asset, subsystemMap);
                             foreach (XmlNode ICorDepNode in childNode.ChildNodes)
                             {
                                 if(ICorDepNode.Name.Equals("IC"))

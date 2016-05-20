@@ -27,7 +27,7 @@ namespace HSFSubsystem
         #endregion
 
         #region Constructors
-        public EOSensor(XmlNode EOSensorXmlNode, Dependencies dependencies, Asset asset)
+        public EOSensor(XmlNode EOSensorXmlNode, Dependency dependencies, Asset asset)
         {
             DefaultSubName = "EOSensor";
             Asset = asset;

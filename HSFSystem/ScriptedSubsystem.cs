@@ -17,14 +17,14 @@ namespace HSFSubsystem
     {
         #region Attributes
         public dynamic PythonInstance { get; private set; }
-        public Type CollectorType { get; private set; }
+     //   public Type CollectorType { get; private set; }
         #endregion
 
         #region Constructors
-        public ScriptedSubsystem(string filePath, string className, Dependencies dependencies, Type collectorType)
+        public ScriptedSubsystem(string filePath, string className, Dependency dependencies, Type collectorType)
         {
             Name = className;
-            CollectorType = collectorType;
+      //      CollectorType = collectorType;
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
@@ -35,17 +35,27 @@ namespace HSFSubsystem
             dependencies.Append(newDependencies);
             SubsystemDependencyFunctions = PythonInstance.getDependencyDictionary();
         }
-        public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Dependencies dependencies)
+        public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Dependency dependencies, Asset asset)
         {
-            Name = scriptedSubXmlNode.Attributes["Name"].Value.ToString();
-            string pythonFilePath = scriptedSubXmlNode.Attributes["src"].Value.ToString();
-            CollectorType = Type.GetType(scriptedSubXmlNode.Attributes["CollectorType"].Value.ToString());
+            Asset = asset;
+            getSubNameFromXmlNode(scriptedSubXmlNode);
+            string pythonFilePath, className;
+            if (scriptedSubXmlNode.Attributes["src"] == null)
+                throw new MissingFieldException("No source file location found in XmlNode " + Name);
+            pythonFilePath = scriptedSubXmlNode.Attributes["src"].Value.ToString();
+            //if(scriptedSubXmlNode.Attributes["collectorType"] == null)
+            //    CollectorType = Type.GetType(scriptedSubXmlNode.Attributes["CollectorType"].Value.ToString());
+            if(scriptedSubXmlNode.Attributes["className"] == null)
+                throw new MissingFieldException("No class name found in XmlNode " + Name);
+            className = scriptedSubXmlNode.Attributes["className"].Value.ToString();
+
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
             engine.ExecuteFile(pythonFilePath, scope);
-            var pythonType = scope.GetVariable(Name);
-            PythonInstance = ops.CreateInstance(pythonType);
+            var pythonType = scope.GetVariable(className);
+            var inputs = new object[] { scriptedSubXmlNode, dependencies, asset };
+            PythonInstance = ops.CreateInstance(pythonType, scriptedSubXmlNode, asset);
             Dictionary<string, Delegate> newDependencies = PythonInstance.getDependencyDictionary();
             dependencies.Append(newDependencies);
             SubsystemDependencyFunctions = PythonInstance.getDependencyDictionary();

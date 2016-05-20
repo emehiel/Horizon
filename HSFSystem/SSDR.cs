@@ -16,7 +16,7 @@ namespace HSFSubsystem
         private double _bufferSize = 4098;
         private StateVarKey<double> DATABUFFERRATIO_KEY; 
 
-        public SSDR(XmlNode SSDRXmlNode, Dependencies dependencies, Asset asset)
+        public SSDR(XmlNode SSDRXmlNode, Dependency dependencies, Asset asset)
         {
             DefaultSubName = "SSDR";
             Asset = asset;

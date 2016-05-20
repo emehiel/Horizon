@@ -41,7 +41,7 @@ namespace HSFSubsystem
         {
 
         }
-        public Subsystem(XmlNode xmlNode, Dependencies deps, Asset asset)
+        public Subsystem(XmlNode xmlNode, Dependency deps, Asset asset)
         {
 
         }
@@ -97,7 +97,7 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="Deps"></param>
         /// <param name="FuncNames"></param>
-        public void CollectDependencyFuncs(Dependencies Deps, List<string> FuncNames)
+        public void CollectDependencyFuncs(Dependency Deps, List<string> FuncNames)
         {
             foreach (var Func in FuncNames)
             {

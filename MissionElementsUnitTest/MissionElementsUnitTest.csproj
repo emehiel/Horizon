@@ -54,7 +54,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SystemElements\MissionElements.csproj">
+    <ProjectReference Include="..\MissionElements\MissionElements.csproj">
       <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
       <Name>MissionElements</Name>
     </ProjectReference>

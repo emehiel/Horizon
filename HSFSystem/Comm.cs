@@ -17,7 +17,7 @@ namespace HSFSubsystem
         #endregion
 
         #region Constructors
-        public Comm(XmlNode CommXmlNode, Dependencies dependencies, Asset asset)
+        public Comm(XmlNode CommXmlNode, Dependency dependencies, Asset asset)
         {
             DefaultSubName = "Comm";
             Asset = asset;

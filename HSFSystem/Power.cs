@@ -30,7 +30,7 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="PowerNode"></param>
         /// <param name="dependencies"></param>
-        public Power(XmlNode PowerNode, Dependencies dependencies, Asset asset) 
+        public Power(XmlNode PowerNode, Dependency dependencies, Asset asset) 
         {
             DefaultSubName = "Power";
             Asset = asset;

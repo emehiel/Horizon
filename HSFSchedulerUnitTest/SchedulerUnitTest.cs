@@ -92,7 +92,7 @@ namespace HSFSchedulerUnitTest
                 SystemUniverse = new Universe();
 
             //Create singleton dependency dictionary
-            Dependencies dependencies = Dependencies.Instance;
+            Dependency dependencies = Dependency.Instance;
 
             // Initialize List to hold assets and subsystem nodes
             List<Asset> assetList = new List<Asset>();
@@ -151,7 +151,7 @@ namespace HSFSchedulerUnitTest
                         if (childNode.Name.Equals("SUBSYSTEM"))
                         {  //is this how we want to do this?
                             // Check if the type of the Subsystem is scripted, networked, or other
-                            string subName = SubsystemFactory.GetSubsystem(childNode, enableScripting, dependencies, asset, subsystemMap);
+                            string subName = SubsystemFactory.GetSubsystem(childNode, dependencies, asset, subsystemMap);
                             foreach (XmlNode ICorDepNode in childNode.ChildNodes)
                             {
                                 if (ICorDepNode.Name.Equals("IC"))

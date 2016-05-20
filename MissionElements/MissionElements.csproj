@@ -7,8 +7,8 @@
     <ProjectGuid>{982DCCE0-925A-4139-9BE7-7A99542D6240}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SystemElements</RootNamespace>
-    <AssemblyName>SystemElements</AssemblyName>
+    <RootNamespace>MissionElements</RootNamespace>
+    <AssemblyName>MissionElements</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

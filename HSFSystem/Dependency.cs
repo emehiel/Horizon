@@ -9,15 +9,15 @@ namespace HSFSystem
     /// <summary>
     /// A singleton class to hold dependency functions for interpretting data between subsystems
     /// </summary>
-    public class Dependencies
+    public class Dependency
     {
         //TODO(MORGAN): Make sure dependency can be singleton if it has these endstates and stateMap fields
-        static Dependencies _instance = null;
+        static Dependency _instance = null;
         //public List<SystemState> endStates {get; private set;}
         //private Dictionary<List<State>, int> stateMap;
         private Dictionary<string, Delegate> DependencyFunctions;
 
-        private Dependencies()
+        private Dependency()
         {
             DependencyFunctions = new Dictionary<string, Delegate>();
            // endStates = new List<SystemState>();
@@ -25,26 +25,28 @@ namespace HSFSystem
         /// <summary>
         /// Create a singleton instance of the Dependency dictionary
         /// </summary>
-        public static Dependencies Instance
+        public static Dependency Instance
         {
             get
             {
                 if(_instance == null)
                 {
-                    _instance = new Dependencies();
+                    _instance = new Dependency();
                 }
                 return _instance;
             }
         }
         /// <summary>
-        /// Add a new dependency function and its call key to the dictionary
+        /// Add a new dependency function and its call key to the dictionary. A new dependency 
+        /// added with the same callkey will be overwritten
         /// </summary>
         /// <param name="callKey"></param>
         /// <param name="func"></param>
         public void Add(string callKey, Delegate func)
         {
             if (!DependencyFunctions.ContainsKey(callKey))
-                DependencyFunctions.Add(callKey, func);
+                DependencyFunctions.Remove(callKey);
+            DependencyFunctions.Add(callKey, func);
         }
         /// <summary>
         /// Retrieve a specific Delegate dependency function from the dictionary.

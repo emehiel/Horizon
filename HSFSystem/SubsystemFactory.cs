@@ -19,13 +19,13 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         /// <param name="subDic"></param>
         /// <returns></returns>
-        public static string GetSubsystem(XmlNode SubsystemXmlNode, bool enableScripting, Dependencies dependencies, Asset asset, Dictionary<string, Subsystem> subDic)
+        public static string GetSubsystem(XmlNode SubsystemXmlNode, Dependency dependencies, Asset asset, Dictionary<string, Subsystem> subDic)
         {
             string type = SubsystemXmlNode.Attributes["Type"].Value.ToString().ToLower();
             string name = Subsystem.parseNameFromXmlNode(SubsystemXmlNode, asset.Name);
-            if (type.Equals("scripted") && enableScripting)
+            if (type.Equals("scripted"))
             {
-                subDic.Add(name, new ScriptedSubsystem(SubsystemXmlNode, dependencies));
+                subDic.Add(name, new ScriptedSubsystem(SubsystemXmlNode, dependencies, asset));
             }
             else // not scripted subsystem
             {

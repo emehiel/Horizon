@@ -8,7 +8,7 @@ namespace HSFSystem
 {
     public class NodeDependencies
     {
-        public Dependencies DepInstance { get; private set; }
+        public Dependency DepInstance { get; private set; }
         public bool ScriptingEnabled;
         public PythonState PyState;
         public int ThreadNum;

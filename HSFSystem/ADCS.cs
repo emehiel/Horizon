@@ -17,7 +17,7 @@ namespace HSFSubsystem
         #endregion Attributes
 
         #region Constructors
-        public ADCS(XmlNode ADCSNode, Dependencies dependencies, Asset asset) 
+        public ADCS(XmlNode ADCSNode, Dependency dependencies, Asset asset) 
         {
             DefaultSubName = "Adcs";
             Asset = asset;
@@ -28,8 +28,19 @@ namespace HSFSubsystem
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             dependencies.Add("PowerfromADCS", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
         }
+        public ADCS(XmlNode ADCSNode, Asset asset)
+        {
+            DefaultSubName = "Adcs";
+            Asset = asset;
+            getSubNameFromXmlNode(ADCSNode);
+            POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
+            addKey(POINTVEC_KEY);
+            DependentSubsystems = new List<Subsystem>();
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+          //  dependencies.Add("PowerfromADCS", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
+        }
         #endregion Constructors
-        
+
         #region Methods
         public override bool canPerform(Event proposedEvent, Universe environment)
         {

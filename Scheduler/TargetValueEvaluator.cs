@@ -8,8 +8,8 @@ namespace HSFScheduler
 {
     public class TargetValueEvaluator : Evaluator
     {
-        Dependencies Dependencies;
-        public TargetValueEvaluator(Dependencies dependencies)
+        Dependency Dependencies;
+        public TargetValueEvaluator(Dependency dependencies)
         {
             Dependencies = dependencies;
         }

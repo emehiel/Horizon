@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using System.Text;
 using HSFScheduler;
 using Utilities;
 using MissionElements;
@@ -213,7 +214,73 @@ namespace Horizon
             }
             Console.WriteLine(maxSched);
 
-            Console.ReadKey();
+            string schedFilePath = @"..\..\..\ScheduleOutput.csv";
+            var csv = new StringBuilder();
+            string schedInfo = "";
+
+            foreach( var e in schedules[0].AllStates.Events)
+            {
+                foreach (var task in e.Tasks)
+                    schedInfo += task.Value.Target.Name + ",";
+
+                foreach (var es in e.EventStarts)
+                    schedInfo += es.Value.ToString() + ",";
+
+                foreach (var ee in e.EventEnds)
+                    schedInfo += ee.Value.ToString() + ",";
+
+                foreach (var ts in e.TaskStarts)
+                    schedInfo += ts.Value.ToString() + ",";
+
+                foreach (var te in e.TaskEnds)
+                    schedInfo += te.Value.ToString() + ",";
+
+                schedInfo = schedInfo.Substring(0, schedInfo.Length - 1);
+                csv.AppendLine(schedInfo);
+                schedInfo = "";
+            }
+
+            System.IO.File.WriteAllText(schedFilePath, csv.ToString());
+
+            string stateFilePath = @"..\..\..\StateDataOutput.csv";
+            Dictionary<StateVarKey<double>, List<double>> stateTimeData = new Dictionary<StateVarKey<double>, List<double>>();
+            string stateData = "";
+            csv.Clear();
+            /*
+            foreach (var e in schedules[0].AllStates.Events)
+            {
+                foreach (var dd in e.State.Ddata)
+                {
+                    foreach(var data in dd.Value.Data)
+
+                    if (!stateTimeData.ContainsKey(dd.Key))
+                        stateTimeData.Add(dd.Key);
+
+                        stateTimeData[dd.Key].Add(dd.Value.Data)
+                    
+                    /*
+                    // Write the times and data
+                    stateData = dd.Key.VarName + ",";
+                    foreach (var s in dd.Value.Data)
+                    {
+                        stateTimeData += s.Key.ToString() + ",";
+                        stateData += s.Value.ToString() + ",";
+                    }
+
+                    stateTimeData = stateTimeData.Substring(0, stateTimeData.Length - 1);
+                    stateData = stateData.Substring(0, stateData.Length - 1);
+                    csv.AppendLine(stateTimeData);
+                    csv.AppendLine(stateData);
+
+                    stateTimeData = "Time,";
+                    stateData = "";
+                    
+                }
+            }
+            */
+            System.IO.File.WriteAllText(stateFilePath, csv.ToString());
+
+               // Console.ReadKey();
             /*
 
                 // *********************************Output selected data*************************************

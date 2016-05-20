@@ -23,7 +23,7 @@ namespace Horizon
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\Model_Scripted.xml";
+            var modelInputFilePath = @"..\..\..\Model_Static.xml";
 
             var outputPath = String.Format("..\\..\\..\\output-{0:yyyy-MM-dd}-0", DateTime.Now);
             //Need to figure out output data versioning

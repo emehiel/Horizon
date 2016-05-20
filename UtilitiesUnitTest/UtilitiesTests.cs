@@ -39,6 +39,17 @@ namespace UtilitiesUnitTest
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
 
             Matrix<double> B = Matrix<double>.Cumprod(A);
+//            Assert.AreEqual(B, A);
+        }
+
+        [TestMethod]
+        public void InsertRowTest()
+        {
+            Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
+            A.SetRow(2, new Matrix<double>(new double[,] { { 1, 2, 3 } }));
+            Matrix<double> B = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 1, 2, 3 }, { 7, 8, 9 } });
+
+            Assert.AreEqual(B, A);
         }
 
         [TestMethod]
@@ -49,7 +60,6 @@ namespace UtilitiesUnitTest
             Matrix<double> B = DeepCopy.Copy(A);
 
             Assert.AreEqual(B, A);
-
         }
 
         [TestMethod]

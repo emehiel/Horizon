@@ -24,7 +24,7 @@ namespace Horizon
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\Model_Static.xml";
+            var modelInputFilePath = @"..\..\..\DSAC_Static.xml";
 
             var outputFileName = String.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
             var outputPath = @"..\..\..\";
@@ -33,8 +33,8 @@ namespace Horizon
             double number = 0;
             foreach (var fileName in fileNames)
             {
-                char version = fileName[fileName.Length - txt.Length-1];
-                if(number < Char.GetNumericValue(version))
+                char version = fileName[fileName.Length - txt.Length - 1];
+                if (number < Char.GetNumericValue(version))
                     number = Char.GetNumericValue(version);
             }
             number++;
@@ -124,14 +124,14 @@ namespace Horizon
                     foreach (XmlNode fileXmlNode in childNodeAsset.ChildNodes)
                     {
                         // If scripting is enabled, parse the script file designated by the attribute
-                            // Parse script file if the attribute exists
-                            if (fileXmlNode.ChildNodes[0].Name.Equals("EOMS_FILE"))
-                            {
-                                string fileName = fileXmlNode.ChildNodes[0].Attributes["src"].Value.ToString();
-                                ScriptedEOMS eoms = new ScriptedEOMS(fileName);
-                            }
+                        // Parse script file if the attribute exists
+                        if (fileXmlNode.ChildNodes[0].Name.Equals("EOMS_FILE"))
+                        {
+                            string fileName = fileXmlNode.ChildNodes[0].Attributes["src"].Value.ToString();
+                            ScriptedEOMS eoms = new ScriptedEOMS(fileName);
                         }
                     }
+                }
                 if (childNodeAsset.Name.Equals("ASSET"))
                 {
                     Asset asset = new Asset(childNodeAsset);
@@ -146,12 +146,12 @@ namespace Horizon
                             string subName = SubsystemFactory.GetSubsystem(childNode, dependencies, asset, subsystemMap);
                             foreach (XmlNode ICorDepNode in childNode.ChildNodes)
                             {
-                                if(ICorDepNode.Name.Equals("IC"))
+                                if (ICorDepNode.Name.Equals("IC"))
                                     ICNodes.Add(ICorDepNode);
                                 if (ICorDepNode.Name.Equals("DEPENDENCY"))
                                 {
                                     string depSubName = "", depFunc = "";
-                                    depSubName = Subsystem.parseNameFromXmlNode(ICorDepNode, asset.Name) ;
+                                    depSubName = Subsystem.parseNameFromXmlNode(ICorDepNode, asset.Name);
                                     dependencyMap.Add(new KeyValuePair<string, string>(subName, depSubName));
 
                                     if (ICorDepNode.Attributes["fcnName"] != null)
@@ -159,7 +159,7 @@ namespace Horizon
                                         depFunc = ICorDepNode.Attributes["fcnName"].Value.ToString();
                                         dependencyFcnMap.Add(new KeyValuePair<string, string>(subName, depFunc));
                                     }
-                                }  
+                                }
                             }
                         }
                         //Create a new Constraint
@@ -207,6 +207,8 @@ namespace Horizon
 
             Scheduler scheduler = new Scheduler();
             List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
+            
+            
             // Evaluate the schedules and set their values
             foreach (SystemSchedule systemSchedule in schedules)
                 systemSchedule.ScheduleValue = schedEvaluator.Evaluate(systemSchedule);
@@ -234,8 +236,8 @@ namespace Horizon
                         }
                     }
                     i++;
-            }
-            Console.WriteLine(maxSched);
+                }
+                Console.WriteLine(maxSched);
             }
 
             //Mehiel's way
@@ -243,7 +245,7 @@ namespace Horizon
             var csv = new StringBuilder();
             string schedInfo = "";
 
-            foreach( var e in schedules[0].AllStates.Events)
+            foreach (var e in schedules[0].AllStates.Events)
             {
                 foreach (var task in e.Tasks)
                     schedInfo += task.Value.Target.Name + ",";
@@ -268,42 +270,9 @@ namespace Horizon
             System.IO.File.WriteAllText(schedFilePath, csv.ToString());
 
             string stateFilePath = @"..\..\..\StateDataOutput.csv";
-            Dictionary<StateVarKey<double>, List<double>> stateTimeData = new Dictionary<StateVarKey<double>, List<double>>();
-            string stateData = "";
-            csv.Clear();
-            /*
-            foreach (var e in schedules[0].AllStates.Events)
-            {
-                foreach (var dd in e.State.Ddata)
-                {
-                    foreach(var data in dd.Value.Data)
 
-                    if (!stateTimeData.ContainsKey(dd.Key))
-                        stateTimeData.Add(dd.Key);
-
-                        stateTimeData[dd.Key].Add(dd.Value.Data)
-                    
-                    /*
-                    // Write the times and data
-                    stateData = dd.Key.VarName + ",";
-                    foreach (var s in dd.Value.Data)
-                    {
-                        stateTimeData += s.Key.ToString() + ",";
-                        stateData += s.Value.ToString() + ",";
-                    }
-
-                    stateTimeData = stateTimeData.Substring(0, stateTimeData.Length - 1);
-                    stateData = stateData.Substring(0, stateData.Length - 1);
-                    csv.AppendLine(stateTimeData);
-                    csv.AppendLine(stateData);
-
-                    stateTimeData = "Time,";
-                    stateData = "";
-                    
-                }
-            }
-            */
-            System.IO.File.WriteAllText(stateFilePath, csv.ToString());
+            SystemSchedule.WriteSchedule(schedules[0], stateFilePath);
+            
 
                Console.ReadKey();
      

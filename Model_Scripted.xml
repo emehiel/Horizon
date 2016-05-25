@@ -41,8 +41,10 @@
       <DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
-			Type="Comm"
-			subsystemName = "Comm">
+			Type="Scripted"
+			subsystemName = "Comm"
+			src="..\..\..\comm.py"
+			className="..\..\..\comm">
       <IC type="Double" key="DataRate(MB/s)" value="0.0"></IC>
       <DEPENDENCY subsystemName="SSDR" fcnName="CommfromSSDR"></DEPENDENCY>
     </SUBSYSTEM>

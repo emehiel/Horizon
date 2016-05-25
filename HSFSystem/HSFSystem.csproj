@@ -99,6 +99,7 @@
     <ProjectReference Include="..\MissionElements\MissionElements.csproj">
       <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
       <Name>MissionElements</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Universe\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
@@ -113,6 +114,11 @@
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>if exist "$(TargetPath).locked" del "$(TargetPath).locked"
+if exist "$(TargetPath)" if not exist "$(TargetPath).locked" move "$(TargetPath)" "$(TargetPath).locked"
+</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

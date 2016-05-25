@@ -24,7 +24,7 @@ namespace Horizon
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\Model_Static.xml";
+            var modelInputFilePath = @"..\..\..\Model_Scripted.xml";
 
             var outputFileName = String.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
             var outputPath = @"..\..\..\";
@@ -205,6 +205,13 @@ namespace Horizon
             if (simSystem.checkForCircularDependencies())
                 throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
 
+            //Subsystem power;
+            //Event myEvent = new Event(new Dictionary<Asset, Task>(), new SystemState());
+            //subsystemMap.TryGetValue("asset1.power", out power);
+            //Delegate func;
+
+            //power.SubsystemDependencyFunctions.TryGetValue("PowerfromADCS", out func);
+            //HSFProfile<double> temp = (HSFProfile<double>)func.DynamicInvoke(myEvent);
             Scheduler scheduler = new Scheduler();
             List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
             // Evaluate the schedules and set their values

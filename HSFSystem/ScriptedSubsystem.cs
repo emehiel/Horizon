@@ -17,6 +17,9 @@ namespace HSFSubsystem
     {
         #region Attributes
         public dynamic PythonInstance { get; private set; }
+        private ScriptScope _pyScope;
+        protected Event _event;
+        protected Universe _universe;
      //   public Type CollectorType { get; private set; }
         #endregion
 
@@ -26,10 +29,10 @@ namespace HSFSubsystem
             Name = className;
       //      CollectorType = collectorType;
             var engine = Python.CreateEngine();
-            var scope = engine.CreateScope();
+            _pyScope = engine.CreateScope();
             var ops = engine.Operations;
-            engine.ExecuteFile(filePath, scope);
-            var pythonType = scope.GetVariable(className);
+            engine.ExecuteFile(filePath, _pyScope);
+            var pythonType = _pyScope.GetVariable(className);
             PythonInstance = ops.CreateInstance(pythonType);
             Dictionary<string, Delegate> newDependencies = PythonInstance.getDependencyDictionary();
             dependencies.Append(newDependencies);
@@ -39,6 +42,7 @@ namespace HSFSubsystem
         {
             Asset = asset;
             getSubNameFromXmlNode(scriptedSubXmlNode);
+            DependentSubsystems = new List<Subsystem>();
             string pythonFilePath, className;
             if (scriptedSubXmlNode.Attributes["src"] == null)
                 throw new MissingFieldException("No source file location found in XmlNode " + Name);
@@ -58,17 +62,24 @@ namespace HSFSubsystem
             PythonInstance = ops.CreateInstance(pythonType, scriptedSubXmlNode, asset);
             Dictionary<string, Delegate> newDependencies = PythonInstance.getDependencyDictionary();
             dependencies.Append(newDependencies);
-            SubsystemDependencyFunctions = PythonInstance.getDependencyDictionary();
         }
         #endregion
 
         #region Methods
         public override bool canPerform(Event proposedEvent,  Universe environment)
         {
-            if (!base.canPerform(proposedEvent, environment)) //checks all the dependent subsystems
-                return false;
-
-            dynamic perform = PythonInstance.canPerform(proposedEvent, environment);
+            foreach (var sub in DependentSubsystems)
+            {
+                if (!sub.IsEvaluated)
+                    if (sub.canPerform(proposedEvent, environment) == false)
+                        return false;
+            }
+            _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
+            _newState = proposedEvent.State;
+            _oldState = proposedEvent.State.Previous;
+            //_pyScope.SetVariable("self._event", proposedEvent);
+            //_pyScope.SetVariable("self._universe", environment);
+            dynamic perform = PythonInstance.canPerform(proposedEvent, environment );
             //This needs to be inside the python canPerform
             //IsEvaluated = true;
             //if ((bool)perform == false)

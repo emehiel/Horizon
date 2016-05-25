@@ -43,6 +43,16 @@
     <Compile Include="Asset.cs" />
     <Compile Include="Event.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
     <Compile Include="SystemState.cs" />
     <Compile Include="Target.cs" />
     <Compile Include="Task.cs" />
@@ -51,17 +61,40 @@
     <ProjectReference Include="..\IO\UserModel.csproj">
       <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
       <Name>UserModel</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Universe\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
       <Name>HSFUniverse</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>
       <Name>Utilities</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>if exist "$(TargetPath).locked" del "$(TargetPath).locked"
+if exist "$(TargetPath)" if not exist "$(TargetPath).locked" move "$(TargetPath)" "$(TargetPath).locked"
+</PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy "$(ProjectDir)obj\Debug\MissionElements.dll" "$(SolutionDir)pythonDLLs\" /Y /I</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

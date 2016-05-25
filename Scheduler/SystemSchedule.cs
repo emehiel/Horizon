@@ -42,13 +42,13 @@ namespace HSFScheduler
             foreach (var access in newAccessList)
             {
 
-                if (access.AccessStart < newEventStartTime && newEventStartTime < access.AccessEnd)
+                if (access.AccessStart <= newEventStartTime && newEventStartTime < access.AccessEnd)
                     taskStarts.Add(access.Asset, newEventStartTime);
-                else if (access.AccessStart > newEventStartTime && newEventStartTime < access.AccessEnd)
+                else if (access.AccessStart >= newEventStartTime && newEventStartTime < access.AccessEnd)
                     taskStarts.Add(access.Asset, access.AccessStart);
                 else
                 {
-                    Console.WriteLine("Event Start: " + newEventStartTime + "AccesStart: " + access.AccessStart);
+                    Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart +" AccessEnd: " + access.AccessEnd);
                     taskStarts.Add(access.Asset, newEventStartTime);
                 }
                 tasks.Add(access.Asset, access.Task);
@@ -116,7 +116,7 @@ namespace HSFScheduler
             {
                 if (!AllStates.isEmpty(access.Asset))
                 { // the ait2 check
-                    if (AllStates.GetLastEvent().GetEventEnd(access.Asset) > newTaskStartTime)
+                    if (AllStates.GetLastEvent().GetEventEnd(access.Asset) >= newTaskStartTime)
                         return false;
                 }
 

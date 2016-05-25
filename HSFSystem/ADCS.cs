@@ -81,7 +81,7 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentEvent"></param>
         /// <returns></returns>
-        HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(Event currentEvent)
+        public HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
             prof1[currentEvent.GetEventStart(Asset)] = 40;

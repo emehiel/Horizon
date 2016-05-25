@@ -16,12 +16,12 @@ namespace HSFSubsystem
         {
             Asset = asset;
             DefaultSubName = "AccessToTarget";
-            getSubNameFromXmlNode(subNode);
+            GetSubNameFromXmlNode(subNode);
             DependentSubsystems = new List<Subsystem>();
         }
-        public override bool canPerform( Event proposedEvent, Universe environment) 
+        public override bool CanPerform( Event proposedEvent, Universe environment) 
         {
-            if (!base.canPerform( proposedEvent, environment))
+            if (!base.CanPerform( proposedEvent, environment))
                 return false;
             DynamicState position = Asset.AssetDynamicState;
             Matrix<double> assetPosECI = position.PositionECI(proposedEvent.GetTaskStart(Asset));
@@ -29,7 +29,7 @@ namespace HSFSubsystem
             return GeometryUtilities.hasLOS(assetPosECI, targetPosECI);
         }
 
-        public override bool canExtend(Event proposedEvent, Universe environment, double evalToTime)
+        public override bool CanExtend(Event proposedEvent, Universe environment, double evalToTime)
         {
             if (proposedEvent.GetEventEnd(Asset) < evalToTime)
                 proposedEvent.SetEventEnd(Asset, evalToTime);

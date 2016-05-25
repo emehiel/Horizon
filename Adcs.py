@@ -2,9 +2,6 @@ import sys
 import clr
 import System.Collections.Generic
 import System
-
-#c:\users\admin\documents\visual studio 2015\Projects\PythonTest1\PythonTest1\PythonTest1.py
-#sys.path.Add('') # folder containing software to be tested
 clr.AddReference('System.Core')
 clr.AddReference('IronPython')
 clr.AddReference('System.Xml')
@@ -30,7 +27,7 @@ from MissionElements import *
 from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
-refEvent = clr.Reference[Event]()
+
 class adcs(HSFSubsystem.ADCS):
     #def __new__(self, node, asset):
     #    print("Initializing Scripted Subsystem ADCS")

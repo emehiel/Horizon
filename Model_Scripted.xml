@@ -14,10 +14,10 @@
     <SUBSYSTEM
 			Type="scripted"
 			subsystemName = "Adcs"
-      src="..\..\..\Adcs.py"
-      className ="adcs">
-      <IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
-      <DEPENDENCY subsystemName="Access"></DEPENDENCY>
+      			src="..\..\..\Adcs.py"
+      			className ="adcs">
+      			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
+      			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
 			Type="EOSensor"

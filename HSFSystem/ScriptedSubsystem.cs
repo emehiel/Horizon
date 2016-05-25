@@ -35,13 +35,14 @@ namespace HSFSubsystem
             var pythonType = _pyScope.GetVariable(className);
             PythonInstance = ops.CreateInstance(pythonType);
             Dictionary<string, Delegate> newDependencies = PythonInstance.getDependencyDictionary();
-            dependencies.Append(newDependencies);
+            if(newDependencies.Count != 0)
+                dependencies.Append(newDependencies);
             SubsystemDependencyFunctions = PythonInstance.getDependencyDictionary();
         }
         public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Dependency dependencies, Asset asset)
         {
             Asset = asset;
-            getSubNameFromXmlNode(scriptedSubXmlNode);
+            GetSubNameFromXmlNode(scriptedSubXmlNode);
             DependentSubsystems = new List<Subsystem>();
             string pythonFilePath, className;
             if (scriptedSubXmlNode.Attributes["src"] == null)
@@ -60,18 +61,18 @@ namespace HSFSubsystem
             var pythonType = scope.GetVariable(className);
             var inputs = new object[] { scriptedSubXmlNode, dependencies, asset };
             PythonInstance = ops.CreateInstance(pythonType, scriptedSubXmlNode, asset);
-            Dictionary<string, Delegate> newDependencies = PythonInstance.getDependencyDictionary();
+            Dictionary<string, Delegate> newDependencies = PythonInstance.GetDependencyDictionary();
             dependencies.Append(newDependencies);
         }
         #endregion
 
         #region Methods
-        public override bool canPerform(Event proposedEvent,  Universe environment)
+        public override bool CanPerform(Event proposedEvent,  Universe environment)
         {
             foreach (var sub in DependentSubsystems)
             {
                 if (!sub.IsEvaluated)
-                    if (sub.canPerform(proposedEvent, environment) == false)
+                    if (sub.CanPerform(proposedEvent, environment) == false)
                         return false;
             }
             _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
@@ -88,9 +89,9 @@ namespace HSFSubsystem
             //newState.addValue(KEY, );
             return (bool)perform;
         }
-        public override bool canExtend(Event proposedEvent, Universe environment, double evalToTime)
+        public override bool CanExtend(Event proposedEvent, Universe environment, double evalToTime)
         {
-            dynamic extend = PythonInstance.canExtend(proposedEvent, environment, evalToTime);
+            dynamic extend = PythonInstance.CanExtend(proposedEvent, environment, evalToTime);
             return (bool)extend;
         }
 

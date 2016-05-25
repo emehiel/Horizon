@@ -21,7 +21,7 @@ namespace HSFSubsystem
         {
             DefaultSubName = "Adcs";
             Asset = asset;
-            getSubNameFromXmlNode(ADCSNode);
+            GetSubNameFromXmlNode(ADCSNode);
             POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." +"eci_pointing_vector(xyz)");
             addKey(POINTVEC_KEY);
             DependentSubsystems = new List<Subsystem>();
@@ -32,7 +32,7 @@ namespace HSFSubsystem
         {
             DefaultSubName = "Adcs";
             Asset = asset;
-            getSubNameFromXmlNode(ADCSNode);
+            GetSubNameFromXmlNode(ADCSNode);
             POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
             addKey(POINTVEC_KEY);
             DependentSubsystems = new List<Subsystem>();
@@ -42,9 +42,9 @@ namespace HSFSubsystem
         #endregion Constructors
 
         #region Methods
-        public override bool canPerform(Event proposedEvent, Universe environment)
+        public override bool CanPerform(Event proposedEvent, Universe environment)
         {
-            if (base.canPerform( proposedEvent, environment) == false)
+            if (base.CanPerform( proposedEvent, environment) == false)
                 return false;
             //double timetoslew = (rand()%5)+8;
             double timetoslew = 10;

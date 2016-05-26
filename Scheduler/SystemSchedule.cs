@@ -43,13 +43,13 @@ namespace HSFScheduler
             foreach (var access in newAccessList)
             {
 
-                if (access.AccessStart < newEventStartTime && newEventStartTime < access.AccessEnd)
+                if (access.AccessStart <= newEventStartTime && newEventStartTime < access.AccessEnd)
                     taskStarts.Add(access.Asset, newEventStartTime);
-                else if (access.AccessStart > newEventStartTime && newEventStartTime < access.AccessEnd)
+                else if (access.AccessStart >= newEventStartTime && newEventStartTime < access.AccessEnd)
                     taskStarts.Add(access.Asset, access.AccessStart);
                 else
                 {
-                    Console.WriteLine("Event Start: " + newEventStartTime + "AccesStart: " + access.AccessStart);
+                    Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart +" AccessEnd: " + access.AccessEnd);
                     taskStarts.Add(access.Asset, newEventStartTime);
                 }
                 tasks.Add(access.Asset, access.Task);
@@ -124,7 +124,7 @@ namespace HSFScheduler
 		        if(access.Task != null)
                 {
 				    count += AllStates.timesCompletedTask(access.Task);
-			        if(count >= access.Task.MaxTimesToPerform)
+			        if(count >= 1)// access.Task.MaxTimesToPerform)
 				        return false;
 		        }
 	        }
@@ -190,6 +190,7 @@ namespace HSFScheduler
             csv.Clear();
 
             SystemState sysState = schedule.AllStates.Events.Peek().State;
+            
 
             while (sysState != null)
             {
@@ -242,64 +243,43 @@ namespace HSFScheduler
 
             }
 
+            System.IO.Directory.CreateDirectory(scheduleWritePath);
 
             foreach(var list in stateTimeDData)
-            {
-                stateData += list.Key.VarName + ",";
-                foreach (var k in list.Value)
-                {
-                    stateTimeData += k.Key + ",";
-                    stateData += k.Value + ",";
-                }
-                csv.AppendLine(stateTimeData);
-                csv.AppendLine(stateData);
-                stateTimeData = "Time,";
-                stateData = "";
-            }
+                writeStateVariable(list, scheduleWritePath);
 
             foreach(var list in stateTimeIData)
-            {
-                stateData += list.Key.VarName + ",";
-                foreach (var k in list.Value)
-                {
-                    stateTimeData += k.Key + ",";
-                    stateData += k.Value + ",";
-                }
-                csv.AppendLine(stateTimeData);
-                csv.AppendLine(stateData);
-                stateTimeData = "Time,";
-                stateData = "";
-            }
+                writeStateVariable(list, scheduleWritePath);
 
             foreach (var list in stateTimeBData)
-            {
-                stateData += list.Key.VarName + ",";
-                foreach (var k in list.Value)
-                {
-                    stateTimeData += k.Key + ",";
-                    stateData += k.Value + ",";
-                }
-                csv.AppendLine(stateTimeData);
-                csv.AppendLine(stateData);
-                stateTimeData = "Time,";
-                stateData = "";
-            }
+                writeStateVariable(list, scheduleWritePath);
 
             foreach (var list in stateTimeMData)
-            {
-                stateData += list.Key.VarName + ",";
-                foreach (var k in list.Value)
-                {
-                    stateTimeData += k.Key + ",";
-                    stateData += k.Value + ",";
-                }
-                csv.AppendLine(stateTimeData);
-                csv.AppendLine(stateData);
-                stateTimeData = "Time,";
-                stateData = "";
-            }
+                writeStateVariable(list, scheduleWritePath);
 
-            System.IO.File.WriteAllText(scheduleWritePath, csv.ToString());
+        }
+        
+        static void writeStateVariable<T>(KeyValuePair<StateVarKey<T>, SortedList<double, T>> list, string scheduleWritePath)
+        {
+            var csv = new StringBuilder();
+            string fileName = list.Key.VarName;
+
+            string invalidChars = "";
+
+            foreach (char c in System.IO.Path.GetInvalidPathChars())
+                invalidChars += c;
+
+            invalidChars += "(" + ")" + "/" + ".";
+
+            foreach (char c in invalidChars)
+                fileName = fileName.Replace(c, '_');
+
+            csv.AppendLine("time" + "," + fileName);
+            foreach (var k in list.Value)
+                csv.AppendLine(k.Key + "," + k.Value);
+
+            System.IO.File.WriteAllText(scheduleWritePath + "\\" + fileName + ".csv", csv.ToString());
+            csv.Clear();
         }
     }
 }

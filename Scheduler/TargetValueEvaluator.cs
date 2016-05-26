@@ -21,7 +21,7 @@ namespace HSFScheduler
                 foreach(KeyValuePair<Asset, Task> assetTask in eit.Tasks)
                 {
                     Task task = assetTask.Value;
-                    sum += 5 - task.Target.Value;
+                    sum += task.Target.Value;
                     if(task.Type == TaskType.COMM)
                         sum += (double)Dependencies.getDependencyFunc("EvalfromSSDR").DynamicInvoke(eit);
                 }

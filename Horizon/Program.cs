@@ -26,15 +26,15 @@ namespace Horizon
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
             var modelInputFilePath = @"..\..\..\DSAC_Static.xml";
 
-            var outputFileName = String.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
+            var outputFileName = string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}-*", DateTime.Now);
             var outputPath = @"..\..\..\";
             var txt = ".txt";
             string[] fileNames = System.IO.Directory.GetFiles(outputPath, outputFileName, System.IO.SearchOption.TopDirectoryOnly);
             double number = 0;
             foreach (var fileName in fileNames)
             {
-                char version = fileName[fileName.Length - txt.Length - 1];
-                if (number < Char.GetNumericValue(version))
+                char version = fileName[fileName.Length - txt.Length-1];
+                if(number < Char.GetNumericValue(version))
                     number = Char.GetNumericValue(version);
             }
             number++;
@@ -124,14 +124,14 @@ namespace Horizon
                     foreach (XmlNode fileXmlNode in childNodeAsset.ChildNodes)
                     {
                         // If scripting is enabled, parse the script file designated by the attribute
-                        // Parse script file if the attribute exists
-                        if (fileXmlNode.ChildNodes[0].Name.Equals("EOMS_FILE"))
-                        {
-                            string fileName = fileXmlNode.ChildNodes[0].Attributes["src"].Value.ToString();
-                            ScriptedEOMS eoms = new ScriptedEOMS(fileName);
+                            // Parse script file if the attribute exists
+                            if (fileXmlNode.ChildNodes[0].Name.Equals("EOMS_FILE"))
+                            {
+                                string fileName = fileXmlNode.ChildNodes[0].Attributes["src"].Value.ToString();
+                                ScriptedEOMS eoms = new ScriptedEOMS(fileName);
+                            }
                         }
                     }
-                }
                 if (childNodeAsset.Name.Equals("ASSET"))
                 {
                     Asset asset = new Asset(childNodeAsset);
@@ -146,12 +146,12 @@ namespace Horizon
                             string subName = SubsystemFactory.GetSubsystem(childNode, dependencies, asset, subsystemMap);
                             foreach (XmlNode ICorDepNode in childNode.ChildNodes)
                             {
-                                if (ICorDepNode.Name.Equals("IC"))
+                                if(ICorDepNode.Name.Equals("IC"))
                                     ICNodes.Add(ICorDepNode);
                                 if (ICorDepNode.Name.Equals("DEPENDENCY"))
                                 {
                                     string depSubName = "", depFunc = "";
-                                    depSubName = Subsystem.parseNameFromXmlNode(ICorDepNode, asset.Name);
+                                    depSubName = Subsystem.parseNameFromXmlNode(ICorDepNode, asset.Name) ;
                                     dependencyMap.Add(new KeyValuePair<string, string>(subName, depSubName));
 
                                     if (ICorDepNode.Attributes["fcnName"] != null)
@@ -159,7 +159,7 @@ namespace Horizon
                                         depFunc = ICorDepNode.Attributes["fcnName"].Value.ToString();
                                         dependencyFcnMap.Add(new KeyValuePair<string, string>(subName, depFunc));
                                     }
-                                }
+                                }  
                             }
                         }
                         //Create a new Constraint
@@ -205,10 +205,15 @@ namespace Horizon
             if (simSystem.checkForCircularDependencies())
                 throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
 
+            //Subsystem power;
+            //Event myEvent = new Event(new Dictionary<Asset, Task>(), new SystemState());
+            //subsystemMap.TryGetValue("asset1.power", out power);
+            //Delegate func;
+
+            //power.SubsystemDependencyFunctions.TryGetValue("PowerfromADCS", out func);
+            //HSFProfile<double> temp = (HSFProfile<double>)func.DynamicInvoke(myEvent);
             Scheduler scheduler = new Scheduler();
             List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
-            
-            
             // Evaluate the schedules and set their values
             foreach (SystemSchedule systemSchedule in schedules)
                 systemSchedule.ScheduleValue = schedEvaluator.Evaluate(systemSchedule);
@@ -236,45 +241,22 @@ namespace Horizon
                         }
                     }
                     i++;
-                }
-                Console.WriteLine(maxSched);
+            }
+            Console.WriteLine(maxSched);
             }
 
-            //Mehiel's way
-            string schedFilePath = @"..\..\..\ScheduleOutput.csv";
+            ////Mehiel's way
+            string stateDataFilePath = @"..\..\..\" + string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}", DateTime.Now);
+            SystemSchedule.WriteSchedule(schedules[0], stateDataFilePath);
+
             var csv = new StringBuilder();
-            string schedInfo = "";
-
-            foreach (var e in schedules[0].AllStates.Events)
+            csv.Clear();
+            foreach (var asset in simSystem.Assets)
             {
-                foreach (var task in e.Tasks)
-                    schedInfo += task.Value.Target.Name + ",";
-
-                foreach (var es in e.EventStarts)
-                    schedInfo += es.Value.ToString() + ",";
-
-                foreach (var ee in e.EventEnds)
-                    schedInfo += ee.Value.ToString() + ",";
-
-                foreach (var ts in e.TaskStarts)
-                    schedInfo += ts.Value.ToString() + ",";
-
-                foreach (var te in e.TaskEnds)
-                    schedInfo += te.Value.ToString() + ",";
-
-                schedInfo = schedInfo.Substring(0, schedInfo.Length - 1);
-                csv.AppendLine(schedInfo);
-                schedInfo = "";
+                File.WriteAllText(@"..\..\..\" + asset.Name + "_dynamicStateData.csv", asset.AssetDynamicState.ToString());
             }
 
-            System.IO.File.WriteAllText(schedFilePath, csv.ToString());
-
-            string stateFilePath = @"..\..\..\StateDataOutput.csv";
-
-            SystemSchedule.WriteSchedule(schedules[0], stateFilePath);
-            
-
-               Console.ReadKey();
+            //   Console.ReadKey();
      
 
                 // *********************************Output selected data*************************************

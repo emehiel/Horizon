@@ -15,9 +15,9 @@ namespace HSFSubsystem
     {
         #region Attributes
         //Some Defaults
-        private double _batterySize = 1000000;
-        private double _fullSolarPanelPower = 150;
-        private double _penumbraSolarPanelPower = 75;
+        protected double _batterySize = 1000000;
+        protected double _fullSolarPanelPower = 150;
+        protected double _penumbraSolarPanelPower = 75;
 
         //put these in constructor and get from xml
         private StateVarKey<double> DOD_KEY;
@@ -34,7 +34,7 @@ namespace HSFSubsystem
         {
             DefaultSubName = "Power";
             Asset = asset;
-            getSubNameFromXmlNode(PowerNode);
+            GetSubNameFromXmlNode(PowerNode);
             DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
             POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");
             addKey(DOD_KEY);
@@ -53,7 +53,7 @@ namespace HSFSubsystem
         #endregion Constructors
 
         #region Methods
-        private double getSolarPanelPower(ShadowState shadow)
+        protected double getSolarPanelPower(ShadowState shadow)
         {
             switch (shadow)
             {
@@ -65,7 +65,7 @@ namespace HSFSubsystem
                     return _fullSolarPanelPower;
             }
         }
-        private HSFProfile<double> calcSolarPanelPowerProfile(double start, double end, SystemState state, DynamicState position, Universe universe)
+        protected HSFProfile<double> calcSolarPanelPowerProfile(double start, double end, SystemState state, DynamicState position, Universe universe)
         {
             // create solar panel profile for this event
             double freq = 5;
@@ -94,10 +94,10 @@ namespace HSFSubsystem
         /// <param name="tasks"></param>
         /// <param name="universe"></param>
         /// <returns></returns>
-        public override bool canPerform(Event proposedEvent, Universe universe)
+        public override bool CanPerform(Event proposedEvent, Universe universe)
         {
             //Make sure all dependent subsystems have been evaluated
-            if (!base.canPerform(proposedEvent, universe)) 
+            if (!base.CanPerform(proposedEvent, universe)) 
                 return false;
             double es = proposedEvent.GetEventStart(Asset);
             double te = proposedEvent.GetTaskEnd(Asset);
@@ -137,7 +137,7 @@ namespace HSFSubsystem
         /// <param name="universe"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
-        public override bool canExtend(Event proposedEvent, Universe universe, double evalToTime) {
+        public override bool CanExtend(Event proposedEvent, Universe universe, double evalToTime) {
             double powOut = 65;
             double ee = proposedEvent.GetEventEnd(Asset);
             if (ee > SimParameters.SimEndSeconds)

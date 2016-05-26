@@ -151,7 +151,7 @@ namespace HSFScheduler
                 // The parallel version
                 // Should we use a Partitioner?
                 // Need to test this...
-                /*
+                
                 Stopwatch stopWatch = new Stopwatch();
                 stopWatch.Start();
                 // The Scheduler has to call the CanPerform for a SystemClass, SystemSchedule combo.  The SystemClass 
@@ -170,7 +170,8 @@ namespace HSFScheduler
                     ts.Hours, ts.Minutes, ts.Seconds,
                     ts.Milliseconds / 10);
                 Console.WriteLine("Parallel Scheduler RunTime: " + elapsedTime);
-                */
+
+                /*
                 foreach (var potentialSchedule in potentialSystemSchedules)
                 {
                     if (Checker.CheckSchedule(system, potentialSchedule))
@@ -180,7 +181,7 @@ namespace HSFScheduler
                 }
 
                 // End timing
-
+                */
                 /*
                 // delete systemSchedules (and corresponding lower level classes) that are not possible
                 list<systemSchedule*>::iterator eraseIt = newSysScheds.begin();
@@ -197,6 +198,7 @@ namespace HSFScheduler
                 // Merge old and new systemSchedules
                 systemSchedules.InsertRange(0, systemCanPerformList);//<--This was potentialSystemSchedules
                 potentialSystemSchedules.Clear();
+                systemCanPerformList.Clear();
                 // Print completion percentage in command window
                 Console.Write("Scheduler Status: {0} done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
             }

@@ -61,12 +61,12 @@ namespace HSFSubsystem
         /// <param name="tasks"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public virtual bool canPerform(Event proposedEvent, Universe environment)
+        public virtual bool CanPerform(Event proposedEvent, Universe environment)
         {
             foreach (var sub in DependentSubsystems)
             {
                 if(!sub.IsEvaluated)
-                    if (sub.canPerform(proposedEvent, environment) == false)
+                    if (sub.CanPerform(proposedEvent, environment) == false)
                         return false;
             }
             _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
@@ -83,7 +83,7 @@ namespace HSFSubsystem
         /// <param name="environment"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
-        public virtual bool canExtend(Event proposedEvent,  Universe environment, double evalToTime)
+        public virtual bool CanExtend(Event proposedEvent,  Universe environment, double evalToTime)
         {
             if (proposedEvent.GetEventEnd(Asset) < evalToTime)
                 proposedEvent.SetEventEnd(Asset, evalToTime);
@@ -134,7 +134,7 @@ namespace HSFSubsystem
         /// Find the subsystem name field from the XMLnode and create the name of format "Asset#.SubName
         /// </summary>
         /// <param name="subXmlNode"></param>
-        public void getSubNameFromXmlNode(XmlNode subXmlNode)
+        public void GetSubNameFromXmlNode(XmlNode subXmlNode)
         {
             string assetName = Asset.Name;
             if (subXmlNode.Attributes["subsystemName"] != null)

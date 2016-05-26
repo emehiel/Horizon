@@ -31,7 +31,7 @@ namespace HSFSubsystem
         {
             DefaultSubName = "EOSensor";
             Asset = asset;
-            getSubNameFromXmlNode(EOSensorXmlNode);
+            GetSubNameFromXmlNode(EOSensorXmlNode);
             PIXELS_KEY = new StateVarKey<double>(Asset.Name +"." + "numpixels");
             INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "incidenceangle");
             EOON_KEY = new StateVarKey<bool>(Asset.Name + "." + "eosensoron");
@@ -58,9 +58,9 @@ namespace HSFSubsystem
         #endregion
 
         #region Methods
-        public override bool canPerform(Event proposedEvent, Universe environment)
+        public override bool CanPerform(Event proposedEvent, Universe environment)
         {
-            if (!base.canPerform(proposedEvent, environment))
+            if (!base.CanPerform(proposedEvent, environment))
                 return false;
             if (_task.Type == TaskType.IMAGING)
             {

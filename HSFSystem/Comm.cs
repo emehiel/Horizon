@@ -21,7 +21,7 @@ namespace HSFSubsystem
         {
             DefaultSubName = "Comm";
             Asset = asset;
-            getSubNameFromXmlNode(CommXmlNode);
+            GetSubNameFromXmlNode(CommXmlNode);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             DependentSubsystems = new List<Subsystem>();
             DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "datarate(mb/s)");
@@ -31,10 +31,10 @@ namespace HSFSubsystem
         #endregion
 
         #region Methods
-        public override bool canPerform(Event proposedEvent, Universe environment)
+        public override bool CanPerform(Event proposedEvent, Universe environment)
         {
             IsEvaluated = true;
-            if (!base.canPerform(proposedEvent, environment))
+            if (!base.CanPerform(proposedEvent, environment))
                 return false;
             if (_task.Type == TaskType.COMM)
             {

@@ -44,7 +44,7 @@ namespace HSFSystem
         /// <param name="func"></param>
         public void Add(string callKey, Delegate func)
         {
-            if (!DependencyFunctions.ContainsKey(callKey))
+            if (DependencyFunctions.ContainsKey(callKey))
                 DependencyFunctions.Remove(callKey);
             DependencyFunctions.Add(callKey, func);
         }
@@ -69,7 +69,7 @@ namespace HSFSystem
         {
             foreach (var dep in newDeps)
             {
-                DependencyFunctions.Add(dep.Key, dep.Value);
+                Add(dep.Key, dep.Value);
             }
         }
         /// <summary>

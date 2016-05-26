@@ -45,6 +45,10 @@ namespace MissionElements
                 return false;
             return Name.Equals(((Asset)obj).Name);  
         }
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
 
         public bool tester(Asset asset)
         {

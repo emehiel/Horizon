@@ -1,27 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using IronPython.Hosting;
 using IronPython.Runtime;
 using Microsoft.Scripting.Hosting;
 using System.Dynamic;
+using HSFSystem;
+using MissionElements;
+using HSFUniverse;
 using System.Xml;
 using UserModel;
 
-
-namespace Utilities
+namespace HSFScheduler
 {
-    public class ScriptedEOMS : EOMS
+    public class ScriptedEvaluator : Evaluator
     {
         #region Attributes
         private dynamic _pythonInstance;
+        public Dependency Dependencies;
         #endregion
 
         #region Constructors
-        public ScriptedEOMS(XmlNode scriptedNode)
+        public ScriptedEvaluator(XmlNode scriptedNode, Dependency deps)
         {
+            Dependencies = deps;
             string pythonFilePath = "", className = "";
             XmlParser.ParseScriptedSrc(scriptedNode, ref pythonFilePath, ref className);
             var engine = Python.CreateEngine();
@@ -34,14 +35,12 @@ namespace Utilities
         #endregion
 
         #region Methods
-        public override Matrix<double> this[double t, Matrix<double> y]
+        public override double Evaluate(SystemSchedule schedule)
         {
-            get
-            {
-                dynamic prop = _pythonInstance.Accessor(t, y);
-                return (Matrix<double>)prop;
-            }
+            dynamic eval = _pythonInstance.Evaluate(schedule);
+            return (double)eval;
         }
+
         #endregion
     }
 }

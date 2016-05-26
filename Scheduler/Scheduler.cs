@@ -34,11 +34,14 @@ namespace HSFScheduler
         public double SchedTime { get; }
         public double AccumSchedTime { get; }
 
+        public Evaluator ScheduleEvaluator { get; private set; }
+
         /// <summary>
         /// Creates a scheduler for the given system and simulation scenario
         /// </summary>
-        public Scheduler()
+        public Scheduler(Evaluator scheduleEvaluator)
         {
+            ScheduleEvaluator = scheduleEvaluator;
             _startTime = SimParameters.SimStartSeconds;
             _endTime = SimParameters.SimEndSeconds;
             _stepLength = SchedParameters.SimStepSeconds;
@@ -46,7 +49,7 @@ namespace HSFScheduler
             _numSchedCropTo = SchedParameters.NumSchedCropTo;
         }
 
-        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<MissionElements.Task> tasks, SystemState initialStateList, Evaluator scheduleEvaluator)
+        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<MissionElements.Task> tasks, SystemState initialStateList)
         {
 
             //system.setThreadNum(1);
@@ -122,7 +125,7 @@ namespace HSFScheduler
 
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
                 if (systemSchedules.Count > _maxNumSchedules)
-                    CropSchedules(systemSchedules, scheduleEvaluator, emptySchedule);
+                    CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
 
                 // Create a new system schedule list by adding each of the new Task commands for the Assets onto each of the old schedules
                 // Start timing
@@ -146,23 +149,9 @@ namespace HSFScheduler
                  //   potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule)); //deep copy
 
                 }
-                //foreach (var sched in potentialSystemSchedules)
-                //{
-                //    foreach (var assetTask in sched.AllStates.Events.Peek().EventStarts)
-                //    {
-                //        if (assetTask.Value != currentTime)
-                //            Console.WriteLine("How did this event get added?");
-                //    }
-                //}
                 // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.
                 List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
-                foreach(var x in potentialSystemSchedules)
-                {
-                    if(x.AllStates.Events.Count > i) { 
-                            Console.WriteLine("woops");
-                    }
-                }
-                i++;
+
                 //for (list<systemSchedule*>::iterator newSchedIt = newSysScheds.begin(); newSchedIt != newSysScheds.end(); newSchedIt++)
                 // The parallel version
                 // Should we use a Partitioner?
@@ -194,28 +183,6 @@ namespace HSFScheduler
                     //dependencies.updateStates(newSchedule.getEndStates());
                     //systemCanPerformList.Push(system.canPerform(potentialSchedule));
                 }
-                //foreach (var sched in systemCanPerformList)
-                //{
-                //    foreach (var assetTask in sched.AllStates.Events.Peek().EventStarts)
-                //    {
-                //        if (assetTask.Value != currentTime)
-                //            Console.WriteLine("How did this event get added?");
-                //    }
-                //}
-                // End timing
-
-                /*
-                // delete systemSchedules (and corresponding lower level classes) that are not possible
-                list<systemSchedule*>::iterator eraseIt = newSysScheds.begin();
-                for (vector<bool>::iterator successIt = systemCanPerformList.begin(); successIt != systemCanPerformList.end(); successIt++)
-                {
-                    if (*successIt) { eraseIt++; }
-                    else {
-                        delete* eraseIt;
-                        eraseIt = newSysScheds.erase(eraseIt);
-                    }
-                }
-                */
 
                 // Merge old and new systemSchedules
                 systemSchedules.InsertRange(0, systemCanPerformList);//<--This was potentialSystemSchedules
@@ -227,7 +194,7 @@ namespace HSFScheduler
 
 
             if (systemSchedules.Count > _maxNumSchedules)
-                CropSchedules(systemSchedules, scheduleEvaluator, emptySchedule);
+                CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
 
             // THIS GOES AWAY IF CAN EXTEND HAPPENS IN THE SUBSYSTEM - EAM
             // extend all schedules to the end of the simulation

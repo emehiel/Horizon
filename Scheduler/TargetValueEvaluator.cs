@@ -8,11 +8,18 @@ namespace HSFScheduler
 {
     public class TargetValueEvaluator : Evaluator
     {
-        Dependency Dependencies;
+        #region Attributes
+        public Dependency Dependencies;
+        #endregion
+
+        #region Constructors
         public TargetValueEvaluator(Dependency dependencies)
         {
             Dependencies = dependencies;
         }
+        #endregion
+
+        #region Methods
         public override double Evaluate(SystemSchedule schedule)
         {
             double sum = 0;
@@ -28,5 +35,6 @@ namespace HSFScheduler
             }
             return sum;
         }
+        #endregion
     }
 }

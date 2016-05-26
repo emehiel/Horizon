@@ -26,7 +26,7 @@ namespace Horizon
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
             var modelInputFilePath = @"..\..\..\Model_Static.xml";
 
-            var outputFileName = string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}-*", DateTime.Now);
+            var outputFileName = string.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
             var outputPath = @"..\..\..\";
             var txt = ".txt";
             string[] fileNames = System.IO.Directory.GetFiles(outputPath, outputFileName, System.IO.SearchOption.TopDirectoryOnly);

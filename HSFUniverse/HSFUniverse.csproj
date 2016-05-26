@@ -47,7 +47,7 @@
     <Compile Include="Sun.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\IO\UserModel.csproj">
+    <ProjectReference Include="..\UserModel\UserModel.csproj">
       <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
       <Name>UserModel</Name>
     </ProjectReference>

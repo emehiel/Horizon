@@ -8,6 +8,7 @@ using Microsoft.Scripting.Hosting;
 using System.Dynamic;
 using HSFSystem;
 using MissionElements;
+using UserModel;
 using HSFUniverse;
 using System.Xml;
 
@@ -16,11 +17,8 @@ namespace HSFSubsystem
     public class ScriptedSubsystem : Subsystem
     {
         #region Attributes
-        public dynamic PythonInstance { get; private set; }
+        private dynamic _pythonInstance;
         private ScriptScope _pyScope;
-        protected Event _event;
-        protected Universe _universe;
-     //   public Type CollectorType { get; private set; }
         #endregion
 
         #region Constructors
@@ -33,35 +31,27 @@ namespace HSFSubsystem
             var ops = engine.Operations;
             engine.ExecuteFile(filePath, _pyScope);
             var pythonType = _pyScope.GetVariable(className);
-            PythonInstance = ops.CreateInstance(pythonType);
-            Dictionary<string, Delegate> newDependencies = PythonInstance.getDependencyDictionary();
+            _pythonInstance = ops.CreateInstance(pythonType);
+            Dictionary<string, Delegate> newDependencies = _pythonInstance.getDependencyDictionary();
             if(newDependencies.Count != 0)
                 dependencies.Append(newDependencies);
-            SubsystemDependencyFunctions = PythonInstance.getDependencyDictionary();
+            SubsystemDependencyFunctions = _pythonInstance.getDependencyDictionary();
         }
         public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Dependency dependencies, Asset asset)
         {
             Asset = asset;
             GetSubNameFromXmlNode(scriptedSubXmlNode);
             DependentSubsystems = new List<Subsystem>();
-            string pythonFilePath, className;
-            if (scriptedSubXmlNode.Attributes["src"] == null)
-                throw new MissingFieldException("No source file location found in XmlNode " + Name);
-            pythonFilePath = scriptedSubXmlNode.Attributes["src"].Value.ToString();
-            //if(scriptedSubXmlNode.Attributes["collectorType"] == null)
-            //    CollectorType = Type.GetType(scriptedSubXmlNode.Attributes["CollectorType"].Value.ToString());
-            if(scriptedSubXmlNode.Attributes["className"] == null)
-                throw new MissingFieldException("No class name found in XmlNode " + Name);
-            className = scriptedSubXmlNode.Attributes["className"].Value.ToString();
+            string pythonFilePath ="", className = "";
+            XmlParser.ParseScriptedSrc(scriptedSubXmlNode, ref pythonFilePath, ref className);
 
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
-            var inputs = new object[] { scriptedSubXmlNode, dependencies, asset };
-            PythonInstance = ops.CreateInstance(pythonType, scriptedSubXmlNode, asset);
-            Dictionary<string, Delegate> newDependencies = PythonInstance.GetDependencyDictionary();
+            _pythonInstance = ops.CreateInstance(pythonType, scriptedSubXmlNode, asset);
+            Dictionary<string, Delegate> newDependencies = _pythonInstance.GetDependencyDictionary();
             dependencies.Append(newDependencies);
         }
         #endregion
@@ -80,7 +70,7 @@ namespace HSFSubsystem
             _oldState = proposedEvent.State.Previous;
             //_pyScope.SetVariable("self._event", proposedEvent);
             //_pyScope.SetVariable("self._universe", environment);
-            dynamic perform = PythonInstance.canPerform(proposedEvent, environment );
+            dynamic perform = _pythonInstance.canPerform(proposedEvent, environment );
             //This needs to be inside the python canPerform
             //IsEvaluated = true;
             //if ((bool)perform == false)
@@ -91,7 +81,7 @@ namespace HSFSubsystem
         }
         public override bool CanExtend(Event proposedEvent, Universe environment, double evalToTime)
         {
-            dynamic extend = PythonInstance.CanExtend(proposedEvent, environment, evalToTime);
+            dynamic extend = _pythonInstance.CanExtend(proposedEvent, environment, evalToTime);
             return (bool)extend;
         }
 

@@ -24,7 +24,7 @@ namespace Horizon
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\DSAC_Static.xml";
+            var modelInputFilePath = @"..\..\..\Model_Static.xml";
 
             var outputFileName = string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}-*", DateTime.Now);
             var outputPath = @"..\..\..\";
@@ -41,57 +41,18 @@ namespace Horizon
             outputFileName = outputFileName.Remove(outputFileName.Length - 1) + number;
             outputPath += outputFileName + txt;
             // Find the main input node from the XML input files
-            var XmlDoc = new XmlDocument();
-            XmlDoc.Load(simulationInputFilePath);
-            XmlNodeList simulationInputXMLNodeList = XmlDoc.GetElementsByTagName("SCENARIO");
-            var XmlEnum = simulationInputXMLNodeList.GetEnumerator();
-            XmlEnum.MoveNext();
-            var simulationInputXMLNode = (XmlNode)XmlEnum.Current;
-            var scenarioName = simulationInputXMLNode.Attributes["scenarioName"].InnerXml;
-            Console.Write("EXECUITING SCENARIO: ");
-            Console.WriteLine(scenarioName);
-
-            // Load the simulation parameters from the XML simulation input file
-            XmlNode simParametersXMLNode = simulationInputXMLNode["SIMULATION_PARAMETERS"];
-            bool simParamsLoaded = SimParameters.LoadSimParameters(simParametersXMLNode, scenarioName);
-
-            // Load the scheduler parameters defined in the XML simulation input file
-            XmlNode schedParametersXMLNode = simulationInputXMLNode["SCHEDULER_PARAMETERS"];
-
-            bool paramsLoaded = SchedParameters.LoadSchedParameters(schedParametersXMLNode);
-            Scheduler systemScheduler = new Scheduler();
-            //MultiThreadedScheduler systemScheduler = new MultiThreadedScheduler();
+            XmlNode evaluatorNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
 
             // Load the target deck into the targets list from the XML target deck input file
-            XmlDoc.Load(targetDeckFilePath);
-            XmlNodeList targetDeckXMLNodeList = XmlDoc.GetElementsByTagName("TARGETDECK");
-            int numTargets = XmlDoc.GetElementsByTagName("TARGET").Count;
-            XmlEnum = targetDeckXMLNodeList.GetEnumerator();
-            XmlEnum.MoveNext();
-            var targetDeckXMLNode = (XmlNode)XmlEnum.Current;
             Stack<Task> systemTasks = new Stack<Task>();
-            bool targetsLoaded = Task.loadTargetsIntoTaskList(targetDeckXMLNode, systemTasks);
+            bool targetsLoaded = Task.loadTargetsIntoTaskList(XmlParser.GetTargetNode(targetDeckFilePath), systemTasks);
             Console.WriteLine("Initial states set");
 
             // Find the main model node from the XML model input file
-            XmlDoc.Load(modelInputFilePath);
-            XmlNodeList modelXMLNodeList = XmlDoc.GetElementsByTagName("MODEL");
-            XmlEnum = modelXMLNodeList.GetEnumerator();
-            XmlEnum.MoveNext();
-            var modelInputXMLNode = (XmlNode)XmlEnum.Current;
+            var modelInputXMLNode = XmlParser.GetModelNode(modelInputFilePath);
 
             // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
             Universe SystemUniverse = null;
-            foreach (XmlNode node in modelInputXMLNode.ChildNodes)
-            {
-                if (node.Attributes["ENVIRONMENT"] != null)
-                {
-                    // Create the Environment based on the XMLNode
-                    SystemUniverse = new Universe(node);
-                }
-            }
-            if (SystemUniverse == null)
-                SystemUniverse = new Universe();
 
             //Create singleton dependency dictionary
             Dependency dependencies = Dependency.Instance;
@@ -116,28 +77,23 @@ namespace Horizon
             SystemState initialSysState = new SystemState();
 
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
-            foreach (XmlNode childNodeAsset in modelInputXMLNode.ChildNodes)
+            foreach (XmlNode modelChildNode in modelInputXMLNode.ChildNodes)
             {
-                if (childNodeAsset.Name.Equals("PYTHON"))
+                if (modelChildNode.Name.Equals("ENVIRONMENT"))
                 {
-                    // Loop through all the of the file nodes -- TODO (Morgan) What other types of things might be scripted
-                    foreach (XmlNode fileXmlNode in childNodeAsset.ChildNodes)
-                    {
-                        // If scripting is enabled, parse the script file designated by the attribute
-                            // Parse script file if the attribute exists
-                            if (fileXmlNode.ChildNodes[0].Name.Equals("EOMS_FILE"))
-                            {
-                                string fileName = fileXmlNode.ChildNodes[0].Attributes["src"].Value.ToString();
-                                ScriptedEOMS eoms = new ScriptedEOMS(fileName);
-                            }
-                        }
-                    }
-                if (childNodeAsset.Name.Equals("ASSET"))
+                    // Create the Environment based on the XMLNode
+                    SystemUniverse = new Universe(modelChildNode);
+                }
+                if (modelChildNode.Name.Equals("EOM"))
                 {
-                    Asset asset = new Asset(childNodeAsset);
+                    ScriptedEOMS eoms = new ScriptedEOMS(modelChildNode);
+                }
+                if (modelChildNode.Name.Equals("ASSET"))
+                {
+                    Asset asset = new Asset(modelChildNode);
                     assetList.Add(asset);
                     // Loop through all the of the ChildNodess for this Asset
-                    foreach (XmlNode childNode in childNodeAsset.ChildNodes)
+                    foreach (XmlNode childNode in modelChildNode.ChildNodes)
                     {
                         // Get the current Subsystem XML Node, and create it using the SubsystemFactory
                         if (childNode.Name.Equals("SUBSYSTEM"))
@@ -173,6 +129,9 @@ namespace Horizon
                     ICNodes.Clear();
                 }
             }
+            if (SystemUniverse == null)
+                SystemUniverse = new Universe();
+
             foreach (KeyValuePair<string, Subsystem> sub in subsystemMap)
             {
                 subList.Add(sub.Value);
@@ -197,23 +156,14 @@ namespace Horizon
             }
             Console.WriteLine("Dependencies Loaded");
 
-            //Need to make this parse Xml
-            Evaluator schedEvaluator = new TargetValueEvaluator(dependencies);
-
             SystemClass simSystem = new SystemClass(assetList, subList, constraintsList, SystemUniverse);
 
             if (simSystem.checkForCircularDependencies())
                 throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
 
-            //Subsystem power;
-            //Event myEvent = new Event(new Dictionary<Asset, Task>(), new SystemState());
-            //subsystemMap.TryGetValue("asset1.power", out power);
-            //Delegate func;
-
-            //power.SubsystemDependencyFunctions.TryGetValue("PowerfromADCS", out func);
-            //HSFProfile<double> temp = (HSFProfile<double>)func.DynamicInvoke(myEvent);
-            Scheduler scheduler = new Scheduler();
-            List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState, schedEvaluator);
+            Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evaluatorNode, dependencies);
+            Scheduler scheduler = new Scheduler(schedEvaluator);
+            List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState);
             // Evaluate the schedules and set their values
             foreach (SystemSchedule systemSchedule in schedules)
                 systemSchedule.ScheduleValue = schedEvaluator.Evaluate(systemSchedule);
@@ -235,7 +185,7 @@ namespace Horizon
                         {
                             Console.WriteLine("Schedule {0} contains Comm task", i);
                         }
-                        if (i < 5)
+                        if (i < 15)
                         { //just compare the first 5 schedules for now
                             sw.WriteLine(eit.ToString());
                         }

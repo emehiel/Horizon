@@ -31,8 +31,11 @@ namespace HSFScheduler
         {
             InitialState = oldSchedule.InitialState;
             Events = new Stack<Event>(oldSchedule.Events);
-            Events.Pop();
-            Events.Push(new Event(oldSchedule.Events.Peek()));
+            if (Events.Count != 0)
+            {
+                Events.Pop();
+                Events.Push(new Event(oldSchedule.Events.Peek()));
+            }
         }
 
         /// <summary>
@@ -42,7 +45,7 @@ namespace HSFScheduler
         /// <param name="newEvent"></param>
         public StateHistory(StateHistory oldSchedule, Event newEvent)
         {
-            Events = oldSchedule.Events;
+            Events = new Stack<Event>(oldSchedule.Events);
             InitialState = oldSchedule.InitialState;  //Should maybe be a deep copy -->no
             Events.Push(newEvent);
         //    Asset = newAssetSched.Asset;

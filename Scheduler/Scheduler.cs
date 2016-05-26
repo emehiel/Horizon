@@ -140,10 +140,10 @@ namespace HSFScheduler
                         {
                             var CopySchedule = new StateHistory(oldSched.AllStates);
                             potentialSystemSchedules.Add(new SystemSchedule(CopySchedule, newAccessStack, currentTime));
-                           // oldSched = new SystemSchedule(CopySchedule);
+                            // oldSched = new SystemSchedule(CopySchedule);
                         }
                     }
-                    potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule)); //deep copy
+                 //   potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule)); //deep copy
 
                 }
                 //foreach (var sched in potentialSystemSchedules)
@@ -284,13 +284,16 @@ namespace HSFScheduler
             // Delete the sysScheds that don't fit
             int j = 0;
             int numSched = schedulesToCrop.Count;
-            for(int i = numSched-1; j< numSched-_maxNumSchedules; i--)
+            for(int i = 0; i< numSched-_maxNumSchedules; i++)
             {
-                if (schedulesToCrop[i] != emptySched)
-                {
-                    schedulesToCrop.Remove(schedulesToCrop[i]);
-                    j++;
-                }
+                //if (schedulesToCrop[i] != emptySched)
+                //{
+                    schedulesToCrop.Remove(schedulesToCrop[0]);
+                //}
+                //else
+                //{
+                //    i--;
+                //}
             }
         }
 

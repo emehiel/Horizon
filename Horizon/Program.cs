@@ -235,7 +235,7 @@ namespace Horizon
                         {
                             Console.WriteLine("Schedule {0} contains Comm task", i);
                         }
-                        if (i < 5)
+                        if (i < 15)
                         { //just compare the first 5 schedules for now
                             sw.WriteLine(eit.ToString());
                         }

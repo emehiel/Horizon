@@ -57,9 +57,11 @@ namespace HSFScheduler
             //SystemState oldState = proposedSchedule.AllStates.Events.Peek().State.Previous;
             //if (oldState == null)
             //    oldState = proposedSchedule.AllStates.InitialState;
-            if (!subsystem.CanPerform(proposedSchedule.AllStates.Events.Peek(), environment))
-                return false;
-
+            if (proposedSchedule.AllStates.Events.Count != 0)
+            {
+                if (!subsystem.CanPerform(proposedSchedule.AllStates.Events.Peek(), environment))
+                    return false;
+            }
             return true;
         }
         private static bool checkSubs(List<Subsystem> subsystems, SystemSchedule proposedSchedule, Universe environment)

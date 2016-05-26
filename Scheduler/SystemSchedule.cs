@@ -28,10 +28,16 @@ namespace HSFScheduler
         /// <param name="oldSchedule"></param>
         public SystemSchedule(SystemSchedule oldSchedule)
         {
-            AllStates = new StateHistory(oldSchedule.AllStates);
+             AllStates = new StateHistory(oldSchedule.AllStates);
+           // AllStates = oldSchedule.AllStates;
         }
 
-        public SystemSchedule(SystemSchedule oldSchedule, Stack<Access> newAccessList, double newEventStartTime)
+        public SystemSchedule(StateHistory allStates)
+        {
+            AllStates = allStates; 
+        }
+
+        public SystemSchedule(StateHistory oldStates, Stack<Access> newAccessList, double newEventStartTime)
         {
             Dictionary<Asset, Task> tasks = new Dictionary<Asset, Task>();
             Dictionary<Asset, double> taskStarts = new Dictionary<Asset, double>();
@@ -42,9 +48,9 @@ namespace HSFScheduler
             foreach (var access in newAccessList)
             {
 
-                if (access.AccessStart <= newEventStartTime && newEventStartTime < access.AccessEnd)
+                if (access.AccessStart <= newEventStartTime && newEventStartTime <= access.AccessEnd)
                     taskStarts.Add(access.Asset, newEventStartTime);
-                else if (access.AccessStart >= newEventStartTime && newEventStartTime < access.AccessEnd)
+                else if (access.AccessStart >= newEventStartTime && access.AccessStart <= newEventStartTime + SchedParameters.SimStepSeconds)
                     taskStarts.Add(access.Asset, access.AccessStart);
                 else
                 {
@@ -56,12 +62,12 @@ namespace HSFScheduler
                 eventStarts.Add(access.Asset, newEventStartTime);
                 eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
             }
-            Event eventToAdd = new Event(tasks, new SystemState(oldSchedule.GetEndState())); //all references
+            Event eventToAdd = new Event(tasks, new SystemState(oldStates.GetLastState())); //all references
             eventToAdd.SetEventEnd(eventEnds);
             eventToAdd.SetTaskEnd(taskEnds);
             eventToAdd.SetEventStart(eventStarts);
             eventToAdd.SetTaskStart(taskStarts);
-            AllStates = new StateHistory(oldSchedule.AllStates, eventToAdd);
+            AllStates = new StateHistory(oldStates, eventToAdd);
             
             /* commented out because it doesn't work yet
     // TODO (EAM):  Changed this so we need to double check/test
@@ -116,7 +122,7 @@ namespace HSFScheduler
             {
                 if (!AllStates.isEmpty(access.Asset))
                 { // the ait2 check
-                    if (AllStates.GetLastEvent().GetEventEnd(access.Asset) >= newTaskStartTime)
+                    if (AllStates.GetLastEvent().GetEventEnd(access.Asset) > newTaskStartTime)
                         return false;
                 }
 

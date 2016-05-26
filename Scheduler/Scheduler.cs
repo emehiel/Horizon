@@ -112,7 +112,7 @@ namespace HSFScheduler
 
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
-
+            int i = 1;
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
             {
                 Console.WriteLine(currentTime);
@@ -133,20 +133,36 @@ namespace HSFScheduler
 
                 foreach (var oldSystemSchedule in systemSchedules)
                 {
+                    var oldSched = oldSystemSchedule;
                     foreach (var newAccessStack in scheduleCombos)
                     {
-                        if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
+                        if (oldSched.CanAddTasks(newAccessStack, currentTime))
                         {
-                            SystemSchedule newSched = new SystemSchedule(oldSystemSchedule, newAccessStack, currentTime); //shallow copy
-                            potentialSystemSchedules.Add(newSched);
+                            var CopySchedule = new StateHistory(oldSched.AllStates);
+                            potentialSystemSchedules.Add(new SystemSchedule(CopySchedule, newAccessStack, currentTime));
+                           // oldSched = new SystemSchedule(CopySchedule);
                         }
                     }
                     potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule)); //deep copy
 
                 }
-
+                //foreach (var sched in potentialSystemSchedules)
+                //{
+                //    foreach (var assetTask in sched.AllStates.Events.Peek().EventStarts)
+                //    {
+                //        if (assetTask.Value != currentTime)
+                //            Console.WriteLine("How did this event get added?");
+                //    }
+                //}
                 // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.
                 List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
+                foreach(var x in potentialSystemSchedules)
+                {
+                    if(x.AllStates.Events.Count > i) { 
+                            Console.WriteLine("woops");
+                    }
+                }
+                i++;
                 //for (list<systemSchedule*>::iterator newSchedIt = newSysScheds.begin(); newSchedIt != newSysScheds.end(); newSchedIt++)
                 // The parallel version
                 // Should we use a Partitioner?
@@ -178,7 +194,14 @@ namespace HSFScheduler
                     //dependencies.updateStates(newSchedule.getEndStates());
                     //systemCanPerformList.Push(system.canPerform(potentialSchedule));
                 }
-
+                //foreach (var sched in systemCanPerformList)
+                //{
+                //    foreach (var assetTask in sched.AllStates.Events.Peek().EventStarts)
+                //    {
+                //        if (assetTask.Value != currentTime)
+                //            Console.WriteLine("How did this event get added?");
+                //    }
+                //}
                 // End timing
 
                 /*
@@ -197,8 +220,9 @@ namespace HSFScheduler
                 // Merge old and new systemSchedules
                 systemSchedules.InsertRange(0, systemCanPerformList);//<--This was potentialSystemSchedules
                 potentialSystemSchedules.Clear();
+                systemCanPerformList.Clear();
                 // Print completion percentage in command window
-                Console.Write("Scheduler Status: {0} done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+                Console.WriteLine("Scheduler Status: {0}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
             }
 
 

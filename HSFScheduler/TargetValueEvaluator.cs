@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using HSFSystem;
 using MissionElements;
-using Utilities;
 
 namespace HSFScheduler
 {
@@ -28,9 +27,9 @@ namespace HSFScheduler
                 foreach(KeyValuePair<Asset, Task> assetTask in eit.Tasks)
                 {
                     Task task = assetTask.Value;
-                    sum += 5 - task.Target.Value;
+                    sum += task.Target.Value;
                     if(task.Type == TaskType.COMM)
-                        sum += (double)Dependencies.getDependencyFunc("EvalfromSSDR").DynamicInvoke(eit);
+                        sum += (double)Dependencies.GetDependencyFunc("EvalfromSSDR").DynamicInvoke(eit);
                 }
             }
             return sum;

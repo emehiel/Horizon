@@ -24,9 +24,9 @@ namespace Horizon
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\Model_Static.xml";
+            var modelInputFilePath = @"..\..\..\Model_Scripted_Subsystems.xml";
 
-            var outputFileName = String.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
+            var outputFileName = string.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
             var outputPath = @"..\..\..\";
             var txt = ".txt";
             string[] fileNames = System.IO.Directory.GetFiles(outputPath, outputFileName, System.IO.SearchOption.TopDirectoryOnly);
@@ -134,6 +134,8 @@ namespace Horizon
 
             foreach (KeyValuePair<string, Subsystem> sub in subsystemMap)
             {
+                if(!sub.Value.GetType().Equals(typeof(ScriptedSubsystem)))//let the scripted subsystems add their own dependency collector
+                    sub.Value.AddDependencyCollector();
                 subList.Add(sub.Value);
             }
             Console.WriteLine("Subsystems and Constraints Loaded");
@@ -152,7 +154,7 @@ namespace Horizon
             {
                 Subsystem subToAddDep;
                 subsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
-                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.getDependencyFunc(depFunc.Value));
+                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.GetDependencyFunc(depFunc.Value));
             }
             Console.WriteLine("Dependencies Loaded");
 
@@ -196,71 +198,15 @@ namespace Horizon
             }
 
             ////Mehiel's way
-            //string schedFilePath = @"..\..\..\ScheduleOutput.csv";
-            //var csv = new StringBuilder();
-            //string schedInfo = "";
+            string stateDataFilePath = @"..\..\..\" + string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}", DateTime.Now);
+            SystemSchedule.WriteSchedule(schedules[0], stateDataFilePath);
 
-            //foreach( var e in schedules[0].AllStates.Events)
-            //{
-            //    foreach (var task in e.Tasks)
-            //        schedInfo += task.Value.Target.Name + ",";
-
-            //    foreach (var es in e.EventStarts)
-            //        schedInfo += es.Value.ToString() + ",";
-
-            //    foreach (var ee in e.EventEnds)
-            //        schedInfo += ee.Value.ToString() + ",";
-
-            //    foreach (var ts in e.TaskStarts)
-            //        schedInfo += ts.Value.ToString() + ",";
-
-            //    foreach (var te in e.TaskEnds)
-            //        schedInfo += te.Value.ToString() + ",";
-
-            //    schedInfo = schedInfo.Substring(0, schedInfo.Length - 1);
-            //    csv.AppendLine(schedInfo);
-            //    schedInfo = "";
-            //}
-
-            //System.IO.File.WriteAllText(schedFilePath, csv.ToString());
-
-            //string stateFilePath = @"..\..\..\StateDataOutput.csv";
-            //Dictionary<StateVarKey<double>, List<double>> stateTimeData = new Dictionary<StateVarKey<double>, List<double>>();
-            //string stateData = "";
-            //csv.Clear();
-            ///*
-            //foreach (var e in schedules[0].AllStates.Events)
-            //{
-            //    foreach (var dd in e.State.Ddata)
-            //    {
-            //        foreach(var data in dd.Value.Data)
-
-            //        if (!stateTimeData.ContainsKey(dd.Key))
-            //            stateTimeData.Add(dd.Key);
-
-            //            stateTimeData[dd.Key].Add(dd.Value.Data)
-                    
-            //        /*
-            //        // Write the times and data
-            //        stateData = dd.Key.VarName + ",";
-            //        foreach (var s in dd.Value.Data)
-            //        {
-            //            stateTimeData += s.Key.ToString() + ",";
-            //            stateData += s.Value.ToString() + ",";
-            //        }
-
-            //        stateTimeData = stateTimeData.Substring(0, stateTimeData.Length - 1);
-            //        stateData = stateData.Substring(0, stateData.Length - 1);
-            //        csv.AppendLine(stateTimeData);
-            //        csv.AppendLine(stateData);
-
-            //        stateTimeData = "Time,";
-            //        stateData = "";
-                    
-            //    }
-            //}
-            //*/
-            //System.IO.File.WriteAllText(stateFilePath, csv.ToString());
+            var csv = new StringBuilder();
+            csv.Clear();
+            foreach (var asset in simSystem.Assets)
+            {
+                File.WriteAllText(@"..\..\..\" + asset.Name + "_dynamicStateData.csv", asset.AssetDynamicState.ToString());
+            }
 
             //   Console.ReadKey();
      

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Linq;
 using Utilities;
 using MissionElements;
@@ -129,7 +130,7 @@ namespace HSFScheduler
 		        if(access.Task != null)
                 {
 				    count += AllStates.timesCompletedTask(access.Task);
-			        if(count >= access.Task.MaxTimesToPerform)
+			        if(count >= 1)// access.Task.MaxTimesToPerform)
 				        return false;
 		        }
 	        }
@@ -182,5 +183,109 @@ namespace HSFScheduler
             return elem1.ScheduleValue > elem2.ScheduleValue;
         }
 
+        public static void WriteSchedule(SystemSchedule schedule, String scheduleWritePath)
+        {
+            var csv = new StringBuilder();
+            Dictionary<StateVarKey<double>, SortedList<double, double>> stateTimeDData = new Dictionary<StateVarKey<double>, SortedList<double, double>>();
+            Dictionary<StateVarKey<int>, SortedList<double, int>> stateTimeIData = new Dictionary<StateVarKey<int>, SortedList<double, int>>();
+            Dictionary<StateVarKey<bool>, SortedList<double, bool>> stateTimeBData = new Dictionary<StateVarKey<bool>, SortedList<double, bool>>();
+            Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>> stateTimeMData = new Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>>();
+
+            string stateTimeData = "Time,";
+            string stateData = "";
+            csv.Clear();
+
+            SystemState sysState = schedule.AllStates.Events.Peek().State;
+            
+
+            while (sysState != null)
+            {
+                foreach (var kvpDoubleProfile in sysState.Ddata)
+                    foreach (var data in kvpDoubleProfile.Value.Data)
+                        if (!stateTimeDData.ContainsKey(kvpDoubleProfile.Key))
+                        {
+                            var lt = new SortedList<double, double>();
+                            lt.Add(data.Key, data.Value);
+                            stateTimeDData.Add(kvpDoubleProfile.Key, lt);
+                        }
+                        else if (!stateTimeDData[kvpDoubleProfile.Key].ContainsKey(data.Key))
+                            stateTimeDData[kvpDoubleProfile.Key].Add(data.Key, data.Value);
+
+                foreach (var kvpIntProfile in sysState.Idata)
+                    foreach (var data in kvpIntProfile.Value.Data)
+                        if (!stateTimeIData.ContainsKey(kvpIntProfile.Key))
+                        {
+                            var lt = new SortedList<double, int>();
+                            lt.Add(data.Key, data.Value);
+                            stateTimeIData.Add(kvpIntProfile.Key, lt);
+                        }
+                        else if (!stateTimeIData[kvpIntProfile.Key].ContainsKey(data.Key))
+                            stateTimeIData[kvpIntProfile.Key].Add(data.Key, data.Value);
+
+                foreach (var kvpBoolProfile in sysState.Bdata)
+                    foreach (var data in kvpBoolProfile.Value.Data)
+                        if (!stateTimeBData.ContainsKey(kvpBoolProfile.Key))
+                        {
+                            var lt = new SortedList<double, bool>();
+                            lt.Add(data.Key, data.Value);
+                            stateTimeBData.Add(kvpBoolProfile.Key, lt);
+                        }
+                        else if (!stateTimeBData[kvpBoolProfile.Key].ContainsKey(data.Key))
+                            stateTimeBData[kvpBoolProfile.Key].Add(data.Key, data.Value);
+
+                foreach (var kvpMatrixProfile in sysState.Mdata)
+                    foreach (var data in kvpMatrixProfile.Value.Data)
+                        if (!stateTimeMData.ContainsKey(kvpMatrixProfile.Key))
+                        {
+                            var lt = new SortedList<double, Matrix<double>>();
+                            lt.Add(data.Key, data.Value);
+                            stateTimeMData.Add(kvpMatrixProfile.Key, lt);
+                        }
+                        else if (!stateTimeMData[kvpMatrixProfile.Key].ContainsKey(data.Key))
+                            stateTimeMData[kvpMatrixProfile.Key].Add(data.Key, data.Value);
+
+
+                sysState = sysState.Previous;
+
+            }
+
+            System.IO.Directory.CreateDirectory(scheduleWritePath);
+
+            foreach(var list in stateTimeDData)
+                writeStateVariable(list, scheduleWritePath);
+
+            foreach(var list in stateTimeIData)
+                writeStateVariable(list, scheduleWritePath);
+
+            foreach (var list in stateTimeBData)
+                writeStateVariable(list, scheduleWritePath);
+
+            foreach (var list in stateTimeMData)
+                writeStateVariable(list, scheduleWritePath);
+
+        }
+        
+        static void writeStateVariable<T>(KeyValuePair<StateVarKey<T>, SortedList<double, T>> list, string scheduleWritePath)
+        {
+            var csv = new StringBuilder();
+            string fileName = list.Key.VarName;
+
+            string invalidChars = "";
+
+            foreach (char c in System.IO.Path.GetInvalidPathChars())
+                invalidChars += c;
+
+            invalidChars += "(" + ")" + "/" + ".";
+
+            foreach (char c in invalidChars)
+                fileName = fileName.Replace(c, '_');
+
+            csv.AppendLine("time" + "," + fileName);
+            foreach (var k in list.Value)
+                csv.AppendLine(k.Key + "," + k.Value);
+
+            System.IO.File.WriteAllText(scheduleWritePath + "\\" + fileName + ".csv", csv.ToString());
+            csv.Clear();
+        }
     }
 }

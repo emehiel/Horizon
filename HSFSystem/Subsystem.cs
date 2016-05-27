@@ -12,12 +12,12 @@ namespace HSFSubsystem
     [Serializable]
     public abstract class Subsystem : ISubsystem {
         #region Attributes
-        public bool IsEvaluated { get; set; }
+        public virtual bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
-        public List<Subsystem> DependentSubsystems { get; protected set; }
+        public virtual List<Subsystem> DependentSubsystems { get; set; }
         public string Name { get; protected set; }
         public static string DefaultSubName { get; protected set; }
-        public Dictionary<string, Delegate> SubsystemDependencyFunctions { get; protected set; }
+        public virtual Dictionary<string, Delegate> SubsystemDependencyFunctions { get; set; }
         public List<StateVarKey<int>> Ikeys { get; protected set; }
         public List<StateVarKey<double>> Dkeys { get; protected set; }
         public List<StateVarKey<float>> Fkeys { get; protected set; }
@@ -65,7 +65,7 @@ namespace HSFSubsystem
         {
             foreach (var sub in DependentSubsystems)
             {
-                if(!sub.IsEvaluated)
+                if (!sub.IsEvaluated)// && !sub.GetType().Equals(typeof(ScriptedSubsystem)))
                     if (sub.CanPerform(proposedEvent, environment) == false)
                         return false;
             }
@@ -90,34 +90,32 @@ namespace HSFSubsystem
             return true;
         }
 
-        //make a logger method
         /// <summary>
-        /// Go to the dependency dictionary and grab all the dependency functions with FuncNames and add it to the 
-        /// subsystem's SubsystemDependencyFunctions field
+        /// Add the dependency collector to the dependency dictionary
         /// </summary>
         /// <param name="Deps"></param>
         /// <param name="FuncNames"></param>
-        public void CollectDependencyFuncs(Dependency Deps, List<string> FuncNames)
+        public void AddDependencyCollector()
         {
-            foreach (var Func in FuncNames)
-            {
-                SubsystemDependencyFunctions.Add(Func, Deps.getDependencyFunc(Func));
-            }
+            SubsystemDependencyFunctions.Add("DepCollector", new Func<Event, HSFProfile<double>>(DependencyCollector));
         }
         /// <summary>
         /// Default Dependency Collector simply sums the results of the dependecy functions
         /// </summary>
         /// <param name="currentState"></param>
         /// <returns></returns>
-        protected HSFProfile<double> DependencyCollector(Event currentEvent)
+        public virtual HSFProfile<double> DependencyCollector(Event currentEvent)
         {
             if (SubsystemDependencyFunctions.Count == 0)
                 throw new MissingMemberException("You may not call the dependency collector in your can perform because you have not specified any dependency functions for " + Name);
             HSFProfile<double> outProf = new HSFProfile<double>();
             foreach (var dep in SubsystemDependencyFunctions)
             {
-                HSFProfile<double> temp = (HSFProfile<double>)dep.Value.DynamicInvoke(currentEvent);
-                outProf = outProf + temp;
+                if (!dep.Key.Equals("DepCollector"))
+                {
+                    HSFProfile<double> temp = (HSFProfile<double>)dep.Value.DynamicInvoke(currentEvent);
+                    outProf = outProf + temp;
+                }
             }
             return outProf;
         }

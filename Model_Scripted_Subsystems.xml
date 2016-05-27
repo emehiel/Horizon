@@ -20,14 +20,10 @@
       			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
-			Type="EOSensor"
+			Type="scripted"
 			subsystemName = "EOSensor"
-			lowQualityNumPixels="5000"
-			midQualityNumPixels="10000"
-			highQualityNumPixels="15000"
-			lowQualityCaptureTime="3"
-			midQualityCaptureTime="5"
-			highQualityCaptureTime="7">
+			src="..\..\..\eosensor.py"
+			className="eosensor">
       <IC type="Double" key="numPixels" value="0.0"></IC>
       <IC type="Double" key="IncidenceAngle" value="0.0"></IC>
       <IC type="Bool" key="EOSensorOn" value="0.0"></IC>
@@ -41,10 +37,10 @@
       <DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
-			Type="Scripted"
+			Type="scripted"
 			subsystemName = "Comm"
 			src="..\..\..\comm.py"
-			className="..\..\..\comm">
+			className="comm">
       <IC type="Double" key="DataRate(MB/s)" value="0.0"></IC>
       <DEPENDENCY subsystemName="SSDR" fcnName="CommfromSSDR"></DEPENDENCY>
     </SUBSYSTEM>

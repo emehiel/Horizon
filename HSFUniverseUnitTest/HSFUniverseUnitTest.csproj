@@ -57,7 +57,7 @@
     <Compile Include="DynamicStateUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Universe\HSFUniverse.csproj">
+    <ProjectReference Include="..\HSFUniverse\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
       <Name>HSFUniverse</Name>
     </ProjectReference>

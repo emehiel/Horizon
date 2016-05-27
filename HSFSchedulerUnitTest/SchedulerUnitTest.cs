@@ -208,7 +208,7 @@ namespace HSFSchedulerUnitTest
             {
                 Subsystem subToAddDep;
                 subsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
-                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.getDependencyFunc(depFunc.Value));
+                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.GetDependencyFunc(depFunc.Value));
             }
             Console.WriteLine("Dependencies Loaded");
 

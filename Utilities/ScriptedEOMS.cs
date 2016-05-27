@@ -38,7 +38,7 @@ namespace Utilities
         {
             get
             {
-                dynamic prop = _pythonInstance.Accessor(t, y);
+                dynamic prop = _pythonInstance.PythonAccessor(t, y);
                 return (Matrix<double>)prop;
             }
         }

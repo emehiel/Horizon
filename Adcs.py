@@ -29,17 +29,15 @@ from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
 class adcs(HSFSubsystem.ADCS):
-    #def __new__(self, node, asset):
-    #    print("Initializing Scripted Subsystem ADCS")
-    #    return HSFSubsystem.ADCS.__new__(self, node, asset)
     def __init__(self, node, asset):
-        self.POINTVEC_KEY = StateVarKey[Matrix[System.Double]](self.Asset.Name + "." + "eci_pointing_vector(xyz)")
-        super(adcs, self).addKey(self.POINTVEC_KEY)
-    def getDependencyDictionary(self):
+        pass
+    def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_ADCSSUB)
         dep.Add("PowerfromADCS", depFunc1)
         return dep
+    def GetDependencyCollector(self):
+        return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def POWERSUB_PowerProfile_ADCSSUB(self, event):
         prof1 = HSFProfile[System.Double]()
         prof1[event.GetEventStart(self.Asset)] = 30
@@ -47,7 +45,7 @@ class adcs(HSFSubsystem.ADCS):
         prof1[event.GetTaskEnd(self.Asset)] = 30
         return prof1
      #   return super(adcs, self).POWERSUB_PowerProfile_ADCSSUB( event)
-    def canPerform(self, event, universe):
+    def CanPerform(self, event, universe):
         timetoslew = 10
         es = event.GetEventStart(self.Asset)
         ts = event.GetTaskStart(self.Asset)
@@ -67,5 +65,7 @@ class adcs(HSFSubsystem.ADCS):
         event.SetTaskStart(self.Asset, ts)
         return True
        # return super(adcs, self).canPerform(event, universe)
-    def canExtend(self, event, universe, extendTo):
+    def CanExtend(self, event, universe, extendTo):
         return super(adcs, self).canExtend(self, event, universe, extendTo)
+    def DependencyCollector(self, currentEvent):
+        return super(adcs, self).DependencyCollector(currentEvent)

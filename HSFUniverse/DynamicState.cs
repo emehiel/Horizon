@@ -39,6 +39,8 @@ namespace HSFUniverse
 
         public EOMS Eoms { get; private set; }
 
+        public string Name { get; private set; }
+
         //private double _stateDataTimeStep { get;  set; }
 
       //  private XmlNode _integratorNode;
@@ -49,6 +51,11 @@ namespace HSFUniverse
 
         public DynamicState(XmlNode dynamicStateXMLNode)
         {
+            if (dynamicStateXMLNode.ParentNode.Attributes["assetName"] != null)
+                Name = dynamicStateXMLNode.ParentNode.Attributes["assetName"].Value.ToString() + "." + "DynamicState";
+            else
+                Name = "Generic.DynamicState";
+
             // TODO add a line to pre-propagate to simEndTime if the type is predetermined
             // TODO catch exception if _type or initial conditions are not set from teh XML file
             if (dynamicStateXMLNode.Attributes["DynamicStateType"] != null)
@@ -222,8 +229,27 @@ namespace HSFUniverse
         {
             return GeometryUtilities.hasLOS(PositionECI(simTime), targetPositionECI);
         }
-    }
 
+        public override string ToString()
+        {
+            var csv = new StringBuilder();
+            string t = Name + "_time,";
+            string rx = Name + "_R_x,";
+            string ry = Name + "_R_y,";
+            string rz = Name + "_R_z,";
+            string vx = Name + "_V_x,";
+            string vy = Name + "_V_y,";
+            string vz = Name + "_V_z,";
+            // header
+            csv.AppendLine(t + rx + ry + rz + vx + vy + vz);
+
+            // data
+            foreach (var d in _stateData)
+                csv.AppendLine(d.Key + "," + d.Value[1, 1] + "," + d.Value[2, 1] + "," + d.Value[3, 1] + "," + d.Value[4, 1] + "," + d.Value[5, 1] + "," + d.Value[6, 1]);
+
+            return csv.ToString();
+        }
+    }
    
     public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
     public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };

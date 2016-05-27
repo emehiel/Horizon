@@ -5,7 +5,7 @@
 
 	<ASSET assetName="Asset1">
 		<DynamicState
-			DynamicStateType="PREDETERMINED_ECI"
+      DynamicStateType="PREDETERMINED_ECI"
 			ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866]">
 			<EOMS
 				EOMSType="orbital_EOMS">

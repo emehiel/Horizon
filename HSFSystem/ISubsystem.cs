@@ -13,8 +13,6 @@ namespace HSFSystem
         bool CanPerform(Event proposedEvent, Universe environment);
         bool CanExtend(Event proposedEvent, Universe environment, double evalToTime); 
 
-        void CollectDependencyFuncs(Dependency Deps, List<string> FuncNames);
-
     //    void DependencyCollector();
     }
 }

@@ -20,8 +20,8 @@ namespace HSFSubsystem
         protected double _penumbraSolarPanelPower = 75;
 
         //put these in constructor and get from xml
-        private StateVarKey<double> DOD_KEY;
-        private StateVarKey<double> POWIN_KEY; 
+        protected StateVarKey<double> DOD_KEY;
+        protected StateVarKey<double> POWIN_KEY; 
         #endregion Attributes
 
         #region Constructors
@@ -47,13 +47,27 @@ namespace HSFSubsystem
                 _fullSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["fullSolarPower"].Value, typeof(double));
             if(PowerNode.Attributes["penumbraSolarPower"] != null)
                 _penumbraSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["penumbraSolarPower"].Value, typeof(double));
-            
-
+        }
+        public Power(XmlNode PowerNode, Asset asset)
+        {
+            DefaultSubName = "Power";
+            Asset = asset;
+            GetSubNameFromXmlNode(PowerNode);
+            DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
+            POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");
+            addKey(DOD_KEY);
+            addKey(POWIN_KEY);
+            if (PowerNode.Attributes["batterySize"] != null)
+                _batterySize = (double)Convert.ChangeType(PowerNode.Attributes["batterySize"].Value, typeof(double));
+            if (PowerNode.Attributes["fullSolarPower"] != null)
+                _fullSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["fullSolarPower"].Value, typeof(double));
+            if (PowerNode.Attributes["penumbraSolarPower"] != null)
+                _penumbraSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["penumbraSolarPower"].Value, typeof(double));
         }
         #endregion Constructors
 
         #region Methods
-        protected double getSolarPanelPower(ShadowState shadow)
+        protected double GetSolarPanelPower(ShadowState shadow)
         {
             switch (shadow)
             {
@@ -65,12 +79,12 @@ namespace HSFSubsystem
                     return _fullSolarPanelPower;
             }
         }
-        protected HSFProfile<double> calcSolarPanelPowerProfile(double start, double end, SystemState state, DynamicState position, Universe universe)
+        protected HSFProfile<double> CalcSolarPanelPowerProfile(double start, double end, SystemState state, DynamicState position, Universe universe)
         {
             // create solar panel profile for this event
             double freq = 5;
             ShadowState lastShadow = universe.Sun.castShadowOnPos(position, start);
-            HSFProfile<double> solarPanelPowerProfile = new HSFProfile<double>(start, getSolarPanelPower(lastShadow));
+            HSFProfile<double> solarPanelPowerProfile = new HSFProfile<double>(start, GetSolarPanelPower(lastShadow));
 
             for (double time = start + freq; time <= end; time += freq)
             {
@@ -78,7 +92,7 @@ namespace HSFSubsystem
                 // if the shadow state changes during this step, save the power data
                 if (shadow != lastShadow)
                 {
-                    solarPanelPowerProfile[time] = getSolarPanelPower(shadow);
+                    solarPanelPowerProfile[time] = GetSolarPanelPower(shadow);
                     lastShadow = shadow;
                 }
             }
@@ -111,14 +125,16 @@ namespace HSFSubsystem
             }
 
             // get the old DOD
-            double olddod = _oldState.getLastValue(Dkeys.First()).Value; 
+            double olddod = _oldState.getLastValue(Dkeys.First()).Value;
 
             // collect power profile out
-            HSFProfile<double> powerOut = DependencyCollector(proposedEvent); // deps->callDoubleDependency("POWERSUB_getPowerProfile");
+            Delegate DepCollector;
+            SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
+            HSFProfile<double> powerOut = (HSFProfile<double>)DepCollector.DynamicInvoke(proposedEvent); // deps->callDoubleDependency("POWERSUB_getPowerProfile");
             powerOut = powerOut + powerSubPowerOut;
             // collect power profile in
             DynamicState position = Asset.AssetDynamicState;
-            HSFProfile<double> powerIn = calcSolarPanelPowerProfile(es, te, _newState, position, universe);
+            HSFProfile<double> powerIn = CalcSolarPanelPowerProfile(es, te, _newState, position, universe);
             // calculate dod rate
             HSFProfile<double> dodrateofchange = ((powerOut - powerIn) / _batterySize);
 
@@ -155,7 +171,7 @@ namespace HSFSubsystem
             HSFProfile<double> powerOut = new HSFProfile<double>(te, powOut);
             // collect power profile in
             DynamicState position = Asset.AssetDynamicState;
-            HSFProfile<double> powerIn = calcSolarPanelPowerProfile(te, ee, proposedEvent.State, position, universe);
+            HSFProfile<double> powerIn = CalcSolarPanelPowerProfile(te, ee, proposedEvent.State, position, universe);
             // calculate dod rate
             HSFProfile<double> dodrateofchange = ((powerOut - powerIn) / _batterySize);
 

@@ -13,8 +13,8 @@ namespace HSFSubsystem
     public class SSDR : Subsystem
     {
         //Some Defaults
-        private double _bufferSize = 4098;
-        private StateVarKey<double> DATABUFFERRATIO_KEY; 
+        protected double _bufferSize = 4098;
+        protected StateVarKey<double> DATABUFFERRATIO_KEY; 
 
         public SSDR(XmlNode SSDRXmlNode, Dependency dependencies, Asset asset)
         {
@@ -31,7 +31,16 @@ namespace HSFSubsystem
             dependencies.Add("CommfromSSDR", new Func<Event, HSFProfile<double>>(COMMSUB_DataRateProfile_SSDRSUB));
             dependencies.Add("EvalfromSSDR", new Func<Event, double>(EVAL_DataRateProfile_SSDRSUB));
         }
-
+        public SSDR(XmlNode SSDRXmlNode, Asset asset)
+        {
+            DefaultSubName = "SSDR";
+            Asset = asset;
+            GetSubNameFromXmlNode(SSDRXmlNode);
+            if (SSDRXmlNode.Attributes["bufferSize"] != null)
+                _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
+            DATABUFFERRATIO_KEY = new StateVarKey<double>(Asset.Name + "." + "databufferfillratio");
+            addKey(DATABUFFERRATIO_KEY);
+        }
         /// <summary>
         /// An override of the subsystem canPerform method
         /// </summary>
@@ -49,8 +58,9 @@ namespace HSFSubsystem
                 double ts = proposedEvent.GetTaskStart(Asset);
                 double te = proposedEvent.GetTaskEnd(Asset);
                 double oldbufferratio = _oldState.getLastValue(Dkeys.First()).Value;
-                
-                HSFProfile<double> newdataratein = (DependencyCollector(proposedEvent) / _bufferSize);
+                Delegate DepCollector;
+                SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
+                HSFProfile<double> newdataratein = ((HSFProfile<double>)DepCollector.DynamicInvoke(proposedEvent) / _bufferSize);
 
                 bool exceeded = false;
                 HSFProfile<double> newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 5, 1, ref exceeded, 0, oldbufferratio);
@@ -86,7 +96,7 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentState"></param>
         /// <returns></returns>
-        HSFProfile<double> POWERSUB_PowerProfile_SSDRSUB(Event currentEvent)
+        public HSFProfile<double> POWERSUB_PowerProfile_SSDRSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
             prof1[currentEvent.GetEventStart(Asset)] = 15;
@@ -98,7 +108,7 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentEvent"></param>
         /// <returns></returns>
-        HSFProfile<double> COMMSUB_DataRateProfile_SSDRSUB(Event currentEvent)
+        public HSFProfile<double> COMMSUB_DataRateProfile_SSDRSUB(Event currentEvent)
         {
             double datarate = 5000 * (currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskStart(Asset)).Value - currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) / (currentEvent.GetTaskEnd(Asset) - currentEvent.GetTaskStart(Asset));
             HSFProfile<double> prof1 = new HSFProfile<double>();
@@ -110,7 +120,7 @@ namespace HSFSubsystem
             return prof1;
         }
 
-        double EVAL_DataRateProfile_SSDRSUB(Event currentEvent)
+        public double EVAL_DataRateProfile_SSDRSUB(Event currentEvent)
         {
             return (currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value 
                 - currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) * 50;

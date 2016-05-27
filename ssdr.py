@@ -29,28 +29,31 @@ from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
 class ssdr(HSFSubsystem.SSDR):
-    #def __new__(self, node, asset):
-    #    print("Initializing Scripted Subsystem ADCS")
-    #    return HSFSubsystem.Comm.__new__(self, node, asset)
     def __init__(self, node, asset):
-        self.DATABUFFERRATIO_KEY = StateVarKey[System.Double](self.Asset.Name + "." + "databufferfillratio")
-        super(ssdr, self).addKey(self.DATABUFFERRATIO_KEY)
+        pass
+        #self.bufferSize = 5000
+        #self.DATABUFFERRATIO_KEY = StateVarKey[System.Double](self.Asset.Name + "." + "databufferfillratio")
+        #super(ssdr, self).addKey(self.DATABUFFERRATIO_KEY)
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_SSDRSUB)
         dep.Add("PowerfromSSDR", depFunc1)
-        depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.COMMSUB_DataRateProfile_SSDRSUB)
-        dep.Add("COMMfromSSDR", depFunc1)
-        depFunc1 = Func[Event,  System.Double](self.EVALSUB_DataRateProfile_SSDRSUB)
-        dep.Add("EvalfromSSDR", depFunc1)
+        depFunc2 = Func[Event,  Utilities.HSFProfile[System.Double]](self.COMMSUB_DataRateProfile_SSDRSUB)
+        dep.Add("CommfromSSDR", depFunc2)
+        depFunc3 = Func[Event,  System.Double](self.EVAL_DataRateProfile_SSDRSUB)
+        dep.Add("EvalfromSSDR", depFunc3)
         return dep
+    def GetDependencyCollector(self):
+        return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
-        return super(ssdr, self).canPerform(event, universe)
+        return super(ssdr, self).CanPerform(event, universe)
     def CanExtend(self, event, universe, extendTo):
-        return super(ssdr, self).canExtend(self, event, universe, extendTo)
+        return super(ssdr, self).CanExtend(self, event, universe, extendTo)
     def POWERSUB_PowerProfile_SSDRSUB(self, event):
         return super(ssdr, self).POWERSUB_PowerProfile_SSDRSUB(event)
     def COMMSUB_DataRateProfile_SSDRSUB(self, event):
         return super(ssdr, self).COMMSUB_DataRateProfile_SSDRSUB(event)
     def EVAL_DataRateProfile_SSDRSUB(self, event):
         return super(ssdr, self).EVAL_DataRateProfile_SSDRSUB(event)
+    def DependencyCollector(self, currentEvent):
+        return super(ssdr, self).DependencyCollector(currentEvent)

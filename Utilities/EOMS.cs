@@ -25,5 +25,9 @@ namespace Utilities
         {
             get;
         }
+        public virtual Matrix<double> PythonAccessor(double t, Matrix<double> y)
+        {
+            return this[t, y];
+        }
     }
 }

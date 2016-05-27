@@ -18,6 +18,7 @@ namespace HSFSubsystem
             DefaultSubName = "AccessToTarget";
             GetSubNameFromXmlNode(subNode);
             DependentSubsystems = new List<Subsystem>();
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
         }
         public override bool CanPerform( Event proposedEvent, Universe environment) 
         {

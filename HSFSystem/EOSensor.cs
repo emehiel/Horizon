@@ -15,15 +15,15 @@ namespace HSFSubsystem
         #region Attributes
         //Default stuff
         public static string SUBNAME_EOSENSOR = "EOSensor";
-        private StateVarKey<double> PIXELS_KEY;
-        private StateVarKey<double> INCIDENCE_KEY;
-        private StateVarKey<bool> EOON_KEY;
-        private double _lowQualityPixels = 5000;
-        private double _lowQualityTime = 3;
-        private double _midQualityPixels = 10000;
-        private double _midQualityTime = 5;
-        private double _highQualityPixels = 15000;
-        private double _highQualityTime = 7;
+        protected StateVarKey<double> PIXELS_KEY;
+        protected StateVarKey<double> INCIDENCE_KEY;
+        protected StateVarKey<bool> EOON_KEY;
+        protected double _lowQualityPixels = 5000;
+        protected double _lowQualityTime = 3;
+        protected double _midQualityPixels = 10000;
+        protected double _midQualityTime = 5;
+        protected double _highQualityPixels = 15000;
+        protected double _highQualityTime = 7;
         #endregion
 
         #region Constructors
@@ -54,6 +54,31 @@ namespace HSFSubsystem
                 _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
             dependencies.Add("PowerfromEOSensor", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_EOSENSORSUB));
             dependencies.Add("SSDRfromEOSensor", new Func<Event, HSFProfile<double>>(SSDRSUB_NewDataProfile_EOSENSORSUB));
+        }
+
+        public EOSensor(XmlNode EOSensorXmlNode, Asset asset)
+        {
+            DefaultSubName = "EOSensor";
+            Asset = asset;
+            GetSubNameFromXmlNode(EOSensorXmlNode);
+            PIXELS_KEY = new StateVarKey<double>(Asset.Name + "." + "numpixels");
+            INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "incidenceangle");
+            EOON_KEY = new StateVarKey<bool>(Asset.Name + "." + "eosensoron");
+            addKey(PIXELS_KEY);
+            addKey(INCIDENCE_KEY);
+            addKey(EOON_KEY);
+            if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
+                _lowQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityPixels"].Value.ToString(), typeof(double));
+            if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
+                _lowQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityTime"].Value.ToString(), typeof(double));
+            if (EOSensorXmlNode.Attributes["midQualityPixels"] != null)
+                _midQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["midQualityPixels"].Value.ToString(), typeof(double));
+            if (EOSensorXmlNode.Attributes["midQualityTime"] != null)
+                _midQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["midQualityTime"].Value.ToString(), typeof(double));
+            if (EOSensorXmlNode.Attributes["highQualityPixels"] != null)
+                _highQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityPixels"].Value.ToString(), typeof(double));
+            if (EOSensorXmlNode.Attributes["highQualityTime"] != null)
+                _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
         }
         #endregion
 
@@ -119,7 +144,7 @@ namespace HSFSubsystem
             
         }
 
-        HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(Event currentEvent)
+        public HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
             prof1[currentEvent.GetEventStart(Asset)] = 10;
@@ -135,7 +160,7 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(Event currentEvent)
+        public HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(Event currentEvent)
         {
             return currentEvent.State.GetProfile(PIXELS_KEY) / 500;
         }

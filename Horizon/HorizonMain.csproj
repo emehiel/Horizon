@@ -71,6 +71,10 @@
       <Project>{72fa2884-1d92-4088-9fac-60564f9971f8}</Project>
       <Name>HSFSystem</Name>
     </ProjectReference>
+    <ProjectReference Include="..\HSFUniverse\HSFUniverse.csproj">
+      <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
+      <Name>HSFUniverse</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MissionElements\MissionElements.csproj">
       <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
       <Name>MissionElements</Name>

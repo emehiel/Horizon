@@ -29,20 +29,22 @@ from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
 class comm(HSFSubsystem.Comm):
-    #def __new__(self, node, asset):
-    #    print("Initializing Scripted Subsystem ADCS")
-    #    return HSFSubsystem.Comm.__new__(self, node, asset)
     def __init__(self, node, asset):
-        self.DATARATE_KEY = StateVarKey[System.Double](self.Asset.Name + "." + "datarate(mb/s)")
-        super(comm, self).addKey(self.DATARATE_KEY)
+        pass
+        #self.DATARATE_KEY = StateVarKey[System.Double](self.Asset.Name + "." + "datarate(mb/s)")
+        #super(comm, self).addKey(self.DATARATE_KEY)
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_COMMSUB)
-        dep.Add("PowerfromCOMM", depFunc1)
+        dep.Add("PowerfromComm", depFunc1)
         return dep
+    def GetDependencyCollector(self):
+        return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
-        return super(comm, self).canPerform(event, universe)
+        return super(comm, self).CanPerform(event, universe)
     def CanExtend(self, event, universe, extendTo):
-        return super(comm, self).canExtend(self, event, universe, extendTo)
+        return super(comm, self).CanExtend(self, event, universe, extendTo)
     def POWERSUB_PowerProfile_COMMSUB(self, event):
         return super(comm, self).POWERSUB_PowerProfile_COMMSUB(event)
+    def DependencyCollector(self, currentEvent):
+        return super(comm, self).DependencyCollector(currentEvent)

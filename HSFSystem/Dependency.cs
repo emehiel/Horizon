@@ -53,7 +53,7 @@ namespace HSFSystem
         /// </summary>
         /// <param name="callKey"></param>
         /// <returns></returns>
-        public Delegate getDependencyFunc(string callKey)
+        public Delegate GetDependencyFunc(string callKey)
         {
             Delegate ret;
             if(DependencyFunctions.TryGetValue(callKey, out ret))

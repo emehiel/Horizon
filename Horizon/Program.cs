@@ -24,7 +24,7 @@ namespace Horizon
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\Model_Static.xml";
+            var modelInputFilePath = @"..\..\..\Model_Scripted_Subsystems.xml";
 
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
             var outputPath = @"..\..\..\";
@@ -134,6 +134,8 @@ namespace Horizon
 
             foreach (KeyValuePair<string, Subsystem> sub in subsystemMap)
             {
+                if(!sub.Value.GetType().Equals(typeof(ScriptedSubsystem)))//let the scripted subsystems add their own dependency collector
+                    sub.Value.AddDependencyCollector();
                 subList.Add(sub.Value);
             }
             Console.WriteLine("Subsystems and Constraints Loaded");
@@ -152,7 +154,7 @@ namespace Horizon
             {
                 Subsystem subToAddDep;
                 subsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
-                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.getDependencyFunc(depFunc.Value));
+                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.GetDependencyFunc(depFunc.Value));
             }
             Console.WriteLine("Dependencies Loaded");
 

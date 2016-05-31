@@ -39,11 +39,7 @@ class comm(HSFSubsystem.Comm):
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
-        if (self._task.Type == TaskType.COMM):
-            newProf = self.DependencyCollector(event)
-            if (newProf.Empty() == False):
-                event.State.setProfile(self.DATARATE_KEY, newProf)
-        return True
+        return super(comm, self).CanPerform(event, universe)
     def CanExtend(self, event, universe, extendTo):
         return super(comm, self).CanExtend(self, event, universe, extendTo)
     def POWERSUB_PowerProfile_COMMSUB(self, event):

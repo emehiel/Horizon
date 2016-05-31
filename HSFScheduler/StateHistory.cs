@@ -31,11 +31,11 @@ namespace HSFScheduler
         {
             InitialState = oldSchedule.InitialState;
             Events = new Stack<Event>(oldSchedule.Events);
-            if (Events.Count != 0)
-            {
-                Events.Pop();
-                Events.Push(new Event(oldSchedule.Events.Peek()));
-            }
+            //if (Events.Count != 0)
+            //{
+            //    Events.Pop();
+            //    Events.Push(new Event(oldSchedule.Events.Peek()));
+            //}
         }
 
         /// <summary>

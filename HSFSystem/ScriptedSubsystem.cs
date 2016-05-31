@@ -18,7 +18,7 @@ namespace HSFSubsystem
     public class ScriptedSubsystem : Subsystem
     {
         #region Attributes
-        private dynamic _pythonInstance;
+        protected dynamic _pythonInstance;
         public override List<Subsystem> DependentSubsystems
         {
             get { return ( List<Subsystem>)_pythonInstance.DependentSubsystems; }
@@ -33,6 +33,18 @@ namespace HSFSubsystem
         {
             get { return (bool)_pythonInstance.IsEvaluated; }
             set { _pythonInstance.IsEvaluated = (bool)value; }
+        }
+        public override SystemState _oldState {
+            get { return (SystemState)_pythonInstance._oldState; }
+            set { _pythonInstance._oldState = value; }
+        }
+        public override SystemState _newState {
+            get { return (SystemState)_pythonInstance._newState; }
+            set { _pythonInstance._newState = value; }
+        }
+        public override Task _task {
+            get { return (Task)_pythonInstance._task; }
+            set { _pythonInstance._task = value; }
         }
         #endregion
 

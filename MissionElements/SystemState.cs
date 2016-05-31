@@ -393,6 +393,14 @@ namespace MissionElements
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
         }
+        //public void addValue(StateVarKey<double> key, IronPython.Runtime.PythonTuple profIn)
+        //{
+        //    HSFProfile<double> valueOut;
+        //    if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+        //        Ddata.Add(key, profIn);
+        //    else // Otherwise, add this data point to the existing Profile.
+        //        valueOut.Add(profIn);
+        //}
         /*      
         * Gets the last boolean value set for the given state variable key in the state. If no value is found
         * it checks the previous state, continuing all the way to the initial state.

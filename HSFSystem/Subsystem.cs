@@ -24,9 +24,9 @@ namespace HSFSubsystem
         public List<StateVarKey<bool>> Bkeys { get; protected set; }
         public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
         public List<StateVarKey<Quat>> Qkeys { get; protected set; }
-        protected SystemState _oldState;
-        protected SystemState _newState;
-        protected Task _task;
+        public virtual SystemState _oldState { get; set; }
+        public virtual SystemState _newState { get; set; }
+        public virtual Task _task { get; set; }
         #endregion Attributes
 
         #region Constructors

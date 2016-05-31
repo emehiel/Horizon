@@ -125,7 +125,10 @@ namespace HSFScheduler
 
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
                 if (systemSchedules.Count > _maxNumSchedules)
+                {
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
+                    systemSchedules.Add(emptySchedule);
+                }
 
                 // Create a new system schedule list by adding each of the new Task commands for the Assets onto each of the old schedules
                 // Start timing
@@ -136,12 +139,12 @@ namespace HSFScheduler
 
                 foreach (var oldSystemSchedule in systemSchedules)
                 {
-                    var oldSched = oldSystemSchedule;
+                    potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule.AllStates));
                     foreach (var newAccessStack in scheduleCombos)
                     {
-                        if (oldSched.CanAddTasks(newAccessStack, currentTime))
+                        if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
                         {
-                            var CopySchedule = new StateHistory(oldSched.AllStates);
+                            var CopySchedule = new StateHistory(oldSystemSchedule.AllStates);
                             potentialSystemSchedules.Add(new SystemSchedule(CopySchedule, newAccessStack, currentTime));
                             // oldSched = new SystemSchedule(CopySchedule);
                         }

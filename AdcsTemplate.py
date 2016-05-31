@@ -28,25 +28,21 @@ from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
-class comm(HSFSubsystem.Comm):
+class adcs(HSFSubsystem.ADCS):
     def __init__(self, node, asset):
         pass
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
-        depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_COMMSUB)
-        dep.Add("PowerfromComm", depFunc1)
+        depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_ADCSSUB)
+        dep.Add("PowerfromADCS", depFunc1)
         return dep
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
+    def POWERSUB_PowerProfile_ADCSSUB(self, event):
+        return super(adcs, self).POWERSUB_PowerProfile_ADCSSUB( event)
     def CanPerform(self, event, universe):
-        if (self._task.Type == TaskType.COMM):
-            newProf = self.DependencyCollector(event)
-            if (newProf.Empty() == False):
-                event.State.setProfile(self.DATARATE_KEY, newProf)
-        return True
+        return super(adcs, self).canPerform(event, universe)
     def CanExtend(self, event, universe, extendTo):
-        return super(comm, self).CanExtend(self, event, universe, extendTo)
-    def POWERSUB_PowerProfile_COMMSUB(self, event):
-        return super(comm, self).POWERSUB_PowerProfile_COMMSUB(event)
+        return super(adcs, self).canExtend(self, event, universe, extendTo)
     def DependencyCollector(self, currentEvent):
-        return super(comm, self).DependencyCollector(currentEvent)
+        return super(adcs, self).DependencyCollector(currentEvent)

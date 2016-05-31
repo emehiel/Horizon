@@ -30,10 +30,9 @@
       <DEPENDENCY subsystemName="Adcs"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
-			Type="scripted"
-			subsystemName = "ssdr"
-			src="..\..\..\ssdr.py"
-			className="ssdr">
+			Type="Ssdr"
+			subsystemName = "SSDR"
+			bufferSize = "5000">
       <IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
       <DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor"></DEPENDENCY>
     </SUBSYSTEM>
@@ -46,10 +45,8 @@
       <DEPENDENCY subsystemName="SSDR" fcnName="CommfromSSDR"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
-			Type="scripted"
+			Type="Power"
 			subsystemName = "Power"
-			src="..\..\..\power.py"
-			className="power"
 			batterySize="1000000"
 			fullSolarPower="150"
 			penumbraSolarPower="75">

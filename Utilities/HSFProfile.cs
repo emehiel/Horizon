@@ -56,11 +56,6 @@ namespace Utilities
             data.Add(pointIn.Key, pointIn.Value);
         }
 
-        //public HSFProfile<double> ConvertHSFProfile(IronPython.Runtime.PythonTuple pytup, Type tupType)
-        //{
-        //    return new  HSFProfile<double>(new KeyValuePair<double, double>(pytup.));
-        //}
-
         public HSFProfile<double> upperLimitIntegrateToProf(double start, double end, double saveFreq, double upperBound, ref bool exceeded, double iv, double ic)
         {
             exceeded = false;

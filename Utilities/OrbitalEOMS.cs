@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    [Serializable]
+  //  [Serializable]
     public class OrbitalEOMS: EOMS
     {
-        private double _mu;
-        private Matrix<double> _A;
+        protected double _mu;
+        protected Matrix<double> _A;
 
         public OrbitalEOMS()
         {

@@ -58,10 +58,6 @@
       <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
       <Name>MissionElements</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UserModel\UserModel.csproj">
-      <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
-      <Name>UserModel</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>
       <Name>Utilities</Name>

@@ -11,7 +11,7 @@ namespace Utilities
     {
         public static EOMS GetEomClass(XmlNode dynamicStateXMLNode)
         {
-            EOMS Eoms = new OrbitalEOMS();
+            EOMS Eoms = new OrbitalEOMS(); //default is orbitaleoms
             string eomsType = dynamicStateXMLNode["EOMS"].GetAttribute("EOMSType");
             if (eomsType == "scripted")
                 Eoms = new ScriptedEOMS(dynamicStateXMLNode["EOMS"]);

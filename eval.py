@@ -21,7 +21,15 @@ from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
 class eval(HSFScheduler.TargetValueEvaluator):
-    def __init__(self):
+    def __init__(self, deps):
         pass
     def Evaluate(self, sched):
-        return super(eval, self).Evaluate(sched)
+        sum = 0
+        for eit in sched.AllStates.Events:
+            for assetTask in eit.Tasks:
+                task = assetTask.Value
+                sum += task.Target.Value
+                if(task.Type == TaskType.COMM):
+                    foo = getattr(self.Dependencies, "EvalfromSSDR")
+                    sum += System.Double(foo(eit))
+        return sum

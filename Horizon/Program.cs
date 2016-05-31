@@ -22,9 +22,9 @@ namespace Horizon
             //string targetDeckFilePath = args[2];
             //string modelInputFileName = args[3];
             //string outputPath = args[4];
-            var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
+            var simulationInputFilePath = @"..\..\..\SimulationInput_Scripted.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\Model_Scripted_Subsystems.xml";
+            var modelInputFilePath = @"..\..\..\Model_Static.xml";
 
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
             var outputPath = @"..\..\..\";
@@ -83,10 +83,6 @@ namespace Horizon
                 {
                     // Create the Environment based on the XMLNode
                     SystemUniverse = new Universe(modelChildNode);
-                }
-                if (modelChildNode.Name.Equals("EOM"))
-                {
-                    ScriptedEOMS eoms = new ScriptedEOMS(modelChildNode);
                 }
                 if (modelChildNode.Name.Equals("ASSET"))
                 {

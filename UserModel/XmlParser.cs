@@ -43,9 +43,9 @@ namespace UserModel
 
             bool paramsLoaded = SchedParameters.LoadSchedParameters(schedParametersXMLNode);
 
-            foreach (XmlNode child in simParametersXMLNode.ChildNodes)
+            foreach (XmlNode child in schedParametersXMLNode.ChildNodes)
             {
-                if (child.Name.Equals("ScriptedEvaluator"))
+                if (child.Name.Equals("SCRIPTED_EVALUATOR"))
                     return child;                    
             }
             return null;
@@ -64,7 +64,14 @@ namespace UserModel
         public static XmlNode GetModelNode(string modelInputFilePath)
         {
             var XmlDoc = new XmlDocument();
-            XmlDoc.Load(modelInputFilePath);
+            try {
+                XmlDoc.Load(modelInputFilePath);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine("Could not find input file!");
+                throw;
+            }
             XmlNodeList modelXMLNodeList = XmlDoc.GetElementsByTagName("MODEL");
             var XmlEnum = modelXMLNodeList.GetEnumerator();
             XmlEnum.MoveNext();

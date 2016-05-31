@@ -1,0 +1,17 @@
+<SCENARIO scenarioName="testScenario">
+	<SIMULATION_PARAMETERS
+		SimStartJD="2454680.0"
+		SimStartSeconds="0.0"
+		SimEndSeconds="250.0">
+	</SIMULATION_PARAMETERS>
+
+	<SCHEDULER_PARAMETERS
+		maxNumSchedules="50"
+		numSchedCropTo="50"
+		simStepSeconds="30.0">
+		<SCRIPTED_EVALUATOR
+			src="..\..\..\eval.py"
+			className="eval">
+		</SCRIPTED_EVALUATOR>
+	</SCHEDULER_PARAMETERS>
+</SCENARIO>

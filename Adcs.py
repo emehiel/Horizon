@@ -44,7 +44,6 @@ class adcs(HSFSubsystem.ADCS):
         prof1[event.GetTaskStart(self.Asset)] = 60
         prof1[event.GetTaskEnd(self.Asset)] = 30
         return prof1
-     #   return super(adcs, self).POWERSUB_PowerProfile_ADCSSUB( event)
     def CanPerform(self, event, universe):
         timetoslew = 10
         es = event.GetEventStart(self.Asset)

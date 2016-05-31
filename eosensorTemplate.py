@@ -28,25 +28,25 @@ from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
-class comm(HSFSubsystem.Comm):
+class eosensor(HSFSubsystem.EOSensor):
     def __init__(self, node, asset):
         pass
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
-        depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_COMMSUB)
-        dep.Add("PowerfromComm", depFunc1)
+        depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_EOSENSORSUB)
+        dep.Add("PowerfromEOSensor", depFunc1)
+        depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.SSDRSUB_NewDataProfile_EOSENSORSUB)
+        dep.Add("SSDRfromEOSensor", depFunc1)
         return dep
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
-        if (self._task.Type == TaskType.COMM):
-            newProf = self.DependencyCollector(event)
-            if (newProf.Empty() == False):
-                event.State.setProfile(self.DATARATE_KEY, newProf)
-        return True
+        return super(eosensor, self).CanPerform(event, universe)
     def CanExtend(self, event, universe, extendTo):
-        return super(comm, self).CanExtend(self, event, universe, extendTo)
-    def POWERSUB_PowerProfile_COMMSUB(self, event):
-        return super(comm, self).POWERSUB_PowerProfile_COMMSUB(event)
+        return super(eosensor, self).CanExtend(self, event, universe, extendTo)
+    def POWERSUB_PowerProfile_EOSENSORSUB(self, event):
+        return super(eosensor, self).POWERSUB_PowerProfile_EOSENSORSUB(event)
+    def SSDRSUB_NewDataProfile_EOSENSORSUB(self, event):
+        return super(eosensor, self).SSDRSUB_NewDataProfile_EOSENSORSUB(event)
     def DependencyCollector(self, currentEvent):
-        return super(comm, self).DependencyCollector(currentEvent)
+        return super(eosensor, self).DependencyCollector(currentEvent)

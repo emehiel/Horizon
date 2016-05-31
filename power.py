@@ -31,25 +31,39 @@ from IronPython.Compiler import CallTarget0
 class power(HSFSubsystem.Power):
     def __init__(self, node, asset):
         pass
-        #batterySize=1000000
-        #fullSolarPower=150
-        #penumbraSolarPower=75
-        #self.DOD_KEY = StateVarKey[System.Double](self.Asset.Name + "." + "depthofdischarge")
-        #self.POWIN_KEY = StateVarKey[System.Double](self.Asset.Name + "." + "solarpanelpowerin")
-        #super(power, self).addKey(self.DOD_KEY)
-        #super(power, self).addKey(self.POWIN_KEY)
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         return dep
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
-        return super(power, self).CanPerform(event, universe)
+        es = event.GetEventStart(self.Asset)
+        te = event.GetTaskEnd(self.Asset)
+        ee = event.GetEventEnd(self.Asset)
+        powerSubPowerOut = 10
+
+        if (ee > SimParameters.SimEndSeconds):
+            #Logger.Report("Simulation ended")
+            return False
+
+        olddod = self._oldState.getLastValue(self.Dkeys[0]).Value
+        powerOut = self.DependencyCollector(event)
+        powerOut = powerOut + powerSubPowerOut
+        position = self.Asset.AssetDynamicState
+        powerIn = self.CalcSolarPanelPowerProfile(es, te, self._newState, position, universe)
+        dodrateofchange = HSFProfile[System.Double]()
+        dodrateofchange = ((powerOut - powerIn) / self._batterySize)
+        exceeded= False
+        freq = 5.0
+        dodProf = HSFProfile[System.Double]()
+        dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, exceeded, 0, olddod)
+        self._newState.addValue(self.DOD_KEY, dodProf[0])
+        return True
     def CanExtend(self, event, universe, extendTo):
         return super(power, self).CanExtend(self, event, universe, extendTo)
     def GetSolarPanelPower(self, shadow):
         return super(power, self).GetSolarPanelPower(shadow)
     def CalcSolarPanelPowerProfile(self, start, end, state, position, universe):
-        return super(power, self).CalcSolarPanelPower(start, end, state, position, universe)
+        return super(power, self).CalcSolarPanelPowerProfile(start, end, state, position, universe)
     def DependencyCollector(self, currentEvent):
         return super(power, self).DependencyCollector(currentEvent)

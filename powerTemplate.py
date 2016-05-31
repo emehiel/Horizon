@@ -28,25 +28,21 @@ from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
-class comm(HSFSubsystem.Comm):
+class power(HSFSubsystem.Power):
     def __init__(self, node, asset):
         pass
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
-        depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_COMMSUB)
-        dep.Add("PowerfromComm", depFunc1)
         return dep
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
-        if (self._task.Type == TaskType.COMM):
-            newProf = self.DependencyCollector(event)
-            if (newProf.Empty() == False):
-                event.State.setProfile(self.DATARATE_KEY, newProf)
-        return True
+        return super(power, self).CanPerform(event, universe)
     def CanExtend(self, event, universe, extendTo):
-        return super(comm, self).CanExtend(self, event, universe, extendTo)
-    def POWERSUB_PowerProfile_COMMSUB(self, event):
-        return super(comm, self).POWERSUB_PowerProfile_COMMSUB(event)
+        return super(power, self).CanExtend(self, event, universe, extendTo)
+    def GetSolarPanelPower(self, shadow):
+        return super(power, self).GetSolarPanelPower(shadow)
+    def CalcSolarPanelPowerProfile(self, start, end, state, position, universe):
+        return super(power, self).CalcSolarPanelPower(start, end, state, position, universe)
     def DependencyCollector(self, currentEvent):
-        return super(comm, self).DependencyCollector(currentEvent)
+        return super(power, self).DependencyCollector(currentEvent)

@@ -152,7 +152,6 @@ namespace HSFUniverse
 
         private void PropagateState(double simTime)
         {
-
             Console.WriteLine("Integrating and resampling dynamic state data to {0} seconds... ", simTime);
             Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
             // Update the integrator parameters using the information in the XML Node
@@ -198,8 +197,11 @@ namespace HSFUniverse
                     if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
                     {
                         int lowerIndex = _stateData.Keys.LowerBoundIndex(simTime);
+                        int slopeInd = 1;
+                        if (simTime >= SimParameters.SimEndSeconds)
+                            slopeInd = -1;
                         KeyValuePair<double, Matrix<double>> lowerData = _stateData.ElementAt(lowerIndex);
-                        KeyValuePair<double, Matrix<double>> upperData = _stateData.ElementAt(lowerIndex + 1);
+                        KeyValuePair<double, Matrix<double>> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
 
                         double lowerTime = lowerData.Key;
                         Matrix<double> lowerState = lowerData.Value;

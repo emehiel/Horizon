@@ -22,9 +22,9 @@ namespace Horizon
             //string targetDeckFilePath = args[2];
             //string modelInputFileName = args[3];
             //string outputPath = args[4];
-            var simulationInputFilePath = @"..\..\..\SimulationInput_Scripted.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
+            var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
             var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            var modelInputFilePath = @"..\..\..\Model_Static.xml";
+            var modelInputFilePath = @"..\..\..\DSAC_Static.xml";
 
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
             var outputPath = @"..\..\..\";
@@ -168,7 +168,7 @@ namespace Horizon
 
             // Sort the sysScheds by their values
             schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
-            schedules.Reverse();
+           // schedules.Reverse();
             double maxSched = schedules[0].ScheduleValue;
             int i = 0;
             //Morgan's Way

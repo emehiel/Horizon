@@ -46,7 +46,7 @@ class ssdr(HSFSubsystem.SSDR):
         if (self._task.Type == TaskType.IMAGING):
             ts = event.GetTaskStart(self.Asset)
             te = event.GetTaskEnd(self.Asset)
-            oldbufferratio = self._oldState.getLastValue(self.Dkeys[0]).Value
+            oldbufferratio = self._newState.getLastValue(self.Dkeys[0]).Value
             newdataratein = HSFProfile[System.Double]()
             newdataratein = self.DependencyCollector(event) / self._bufferSize
             exceeded = False
@@ -61,7 +61,7 @@ class ssdr(HSFSubsystem.SSDR):
              ts = event.GetTaskStart(self.Asset)
              event.SetTaskEnd(self.Asset, ts + 60.0)
              te = event.GetTaskEnd(self.Asset)
-             data = self._bufferSize * self._oldState.getLastValue(self.Dkeys[0]).Value
+             data = self._bufferSize * self._newState.getLastValue(self.Dkeys[0]).Value
              if( data / 2 > 50):
                 dataqueout = data/2
              else:

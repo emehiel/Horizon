@@ -34,7 +34,7 @@ namespace Utilities
             }
 
             StateVarKey<T> p = obj as StateVarKey<T>;
-            return VarName == p.VarName;
+            return VarName.Equals(p.VarName);
 
         }
 

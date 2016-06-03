@@ -34,10 +34,7 @@ namespace HSFSubsystem
             get { return (bool)_pythonInstance.IsEvaluated; }
             set { _pythonInstance.IsEvaluated = (bool)value; }
         }
-        public override SystemState _oldState {
-            get { return (SystemState)_pythonInstance._oldState; }
-            set { _pythonInstance._oldState = value; }
-        }
+
         public override SystemState _newState {
             get { return (SystemState)_pythonInstance._newState; }
             set { _pythonInstance._newState = value; }
@@ -84,7 +81,6 @@ namespace HSFSubsystem
             }
             _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
             _newState = proposedEvent.State;
-            _oldState = proposedEvent.State.Previous;
             IsEvaluated = true;
             //_pyScope.SetVariable("self._event", proposedEvent);
             //_pyScope.SetVariable("self._universe", environment);

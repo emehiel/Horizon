@@ -59,9 +59,15 @@ namespace HSFScheduler
                     taskStarts.Add(access.Asset, newEventStartTime);
                 }
                 tasks.Add(access.Asset, access.Task);
-                taskEnds.Add(access.Asset, access.AccessEnd);
+                if (access.AccessEnd > SimParameters.SimEndSeconds)
+                    taskEnds.Add(access.Asset, SimParameters.SimEndSeconds);
+                else
+                    taskEnds.Add(access.Asset, access.AccessEnd);
                 eventStarts.Add(access.Asset, newEventStartTime);
-                eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+                if (newEventStartTime + SchedParameters.SimStepSeconds > SimParameters.SimEndSeconds)
+                    eventEnds.Add(access.Asset, SchedParameters.SimStepSeconds);
+                else
+                    eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
             }
             Event eventToAdd = new Event(tasks, new SystemState(oldStates.GetLastState())); //all references
             eventToAdd.SetEventEnd(eventEnds);
@@ -188,18 +194,20 @@ namespace HSFScheduler
             var csv = new StringBuilder();
             Dictionary<StateVarKey<double>, SortedList<double, double>> stateTimeDData = new Dictionary<StateVarKey<double>, SortedList<double, double>>();
             Dictionary<StateVarKey<int>, SortedList<double, int>> stateTimeIData = new Dictionary<StateVarKey<int>, SortedList<double, int>>();
-            Dictionary<StateVarKey<bool>, SortedList<double, bool>> stateTimeBData = new Dictionary<StateVarKey<bool>, SortedList<double, bool>>();
+            Dictionary<StateVarKey<int>, SortedList<double, int>> stateTimeBData = new Dictionary<StateVarKey<int>, SortedList<double, int>>(); // need 0s and 1 for matlab to read in csv
             Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>> stateTimeMData = new Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>>();
 
             string stateTimeData = "Time,";
             string stateData = "";
             csv.Clear();
 
-            SystemState sysState = schedule.AllStates.Events.Peek().State;
+
             
 
-            while (sysState != null)
+            while (schedule.AllStates.Events.Count > 0)
             {
+                var currEvent = schedule.AllStates.Events.Pop();
+                SystemState sysState = currEvent.State;
                 foreach (var kvpDoubleProfile in sysState.Ddata)
                     foreach (var data in kvpDoubleProfile.Value.Data)
                         if (!stateTimeDData.ContainsKey(kvpDoubleProfile.Key))
@@ -210,6 +218,8 @@ namespace HSFScheduler
                         }
                         else if (!stateTimeDData[kvpDoubleProfile.Key].ContainsKey(data.Key))
                             stateTimeDData[kvpDoubleProfile.Key].Add(data.Key, data.Value);
+                        else
+                            Console.WriteLine("idk");
 
                 foreach (var kvpIntProfile in sysState.Idata)
                     foreach (var data in kvpIntProfile.Value.Data)
@@ -226,12 +236,12 @@ namespace HSFScheduler
                     foreach (var data in kvpBoolProfile.Value.Data)
                         if (!stateTimeBData.ContainsKey(kvpBoolProfile.Key))
                         {
-                            var lt = new SortedList<double, bool>();
-                            lt.Add(data.Key, data.Value);
-                            stateTimeBData.Add(kvpBoolProfile.Key, lt);
+                            var lt = new SortedList<double, int>();
+                            lt.Add(data.Key, (data.Value ? 1 : 0)); //convert to int for matlab to read in for csv
+                            stateTimeBData.Add((StateVarKey<int>)kvpBoolProfile.Key, lt);
                         }
                         else if (!stateTimeBData[kvpBoolProfile.Key].ContainsKey(data.Key))
-                            stateTimeBData[kvpBoolProfile.Key].Add(data.Key, data.Value);
+                            stateTimeBData[(StateVarKey<int>)kvpBoolProfile.Key].Add(data.Key, data.Value ? 1 : 0);
 
                 foreach (var kvpMatrixProfile in sysState.Mdata)
                     foreach (var data in kvpMatrixProfile.Value.Data)
@@ -245,7 +255,7 @@ namespace HSFScheduler
                             stateTimeMData[kvpMatrixProfile.Key].Add(data.Key, data.Value);
 
 
-                sysState = sysState.Previous;
+
 
             }
 

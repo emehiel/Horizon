@@ -57,9 +57,14 @@ namespace HSFScheduler
             //SystemState oldState = proposedSchedule.AllStates.Events.Peek().State.Previous;
             //if (oldState == null)
             //    oldState = proposedSchedule.AllStates.InitialState;
-            if (proposedSchedule.AllStates.Events.Count != 0)
+            var events = proposedSchedule.AllStates.Events; 
+            if (events.Count != 0)
             {
-                if (!subsystem.CanPerform(proposedSchedule.AllStates.Events.Peek(), environment))
+                //if (events.Count > 1)
+                //    subsystem._oldState = events.ElementAt(events.Count - 2).State;
+                //else
+                //    subsystem._oldState = null;
+                if (!subsystem.CanPerform(events.Peek(), environment))
                     return false;
             }
             return true;

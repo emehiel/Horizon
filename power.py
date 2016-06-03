@@ -46,7 +46,7 @@ class power(HSFSubsystem.Power):
             #Logger.Report("Simulation ended")
             return False
 
-        olddod = self._oldState.getLastValue(self.Dkeys[0]).Value
+        olddod = self._newState.getLastValue(self.Dkeys[0]).Value
         powerOut = self.DependencyCollector(event)
         powerOut = powerOut + powerSubPowerOut
         position = self.Asset.AssetDynamicState

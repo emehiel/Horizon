@@ -57,13 +57,13 @@ namespace HSFSubsystem
             {
                 double ts = proposedEvent.GetTaskStart(Asset);
                 double te = proposedEvent.GetTaskEnd(Asset);
-                double oldbufferratio = _oldState.getLastValue(Dkeys.First()).Value;
+                double oldbufferratio = _newState.getLastValue(Dkeys[0]).Value;
                 Delegate DepCollector;
                 SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
                 HSFProfile<double> newdataratein = ((HSFProfile<double>)DepCollector.DynamicInvoke(proposedEvent) / _bufferSize);
 
                 bool exceeded = false;
-                HSFProfile<double> newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 5, 1, ref exceeded, 0, oldbufferratio);
+                HSFProfile<double> newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 1, 1, ref exceeded, 0, oldbufferratio);
                 if (!exceeded)
                 {
                     _newState.addValue(DATABUFFERRATIO_KEY, newdataratio);
@@ -78,7 +78,7 @@ namespace HSFSubsystem
                 proposedEvent.SetTaskEnd(Asset, ts + 60.0);
                 double te = proposedEvent.GetTaskEnd(Asset);
 
-                double data = _bufferSize * _oldState.getLastValue(Dkeys.First()).Value;
+                double data = _bufferSize * _newState.getLastValue(Dkeys.First()).Value;
                 double dataqueout = data / 2 > 50 ? data / 2 : data;
 
                 if (data - dataqueout < 0)

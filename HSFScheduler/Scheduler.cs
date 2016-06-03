@@ -124,7 +124,7 @@ namespace HSFScheduler
                     scheduleCombos = GenerateExhaustiveSystemSchedules(preGeneratedAccesses, system, currentTime);
 
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
-                if (systemSchedules.Count > _maxNumSchedules)
+                if (systemSchedules.Count > _numSchedCropTo)
                 {
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
                     systemSchedules.Add(emptySchedule);

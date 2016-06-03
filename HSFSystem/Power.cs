@@ -125,7 +125,7 @@ namespace HSFSubsystem
             }
 
             // get the old DOD
-            double olddod = _oldState.getLastValue(Dkeys.First()).Value;
+            double olddod = _newState.getLastValue(Dkeys.First()).Value;
 
             // collect power profile out
             Delegate DepCollector;

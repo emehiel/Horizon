@@ -23,19 +23,20 @@ namespace HSFScheduler
             AllStates = new StateHistory(initialstates);
         }
 
-        /// <summary>
-        /// Copy constructor to preserve the without adding a task
-        /// </summary>
-        /// <param name="oldSchedule"></param>
-        public SystemSchedule(SystemSchedule oldSchedule)
-        {
-             AllStates = new StateHistory(oldSchedule.AllStates);
-           // AllStates = oldSchedule.AllStates;
-        }
-
         public SystemSchedule(StateHistory allStates)
         {
-            AllStates = allStates; 
+            AllStates = allStates;
+            //AllStates = new StateHistory(allStates.InitialState);
+            //foreach(var eit in allStates.Events)
+            //{
+            //    AllStates.Events.Push(new Event(eit));
+            //}
+
+        }
+
+        public SystemSchedule(SystemSchedule oldSchedule)
+        {
+
         }
 
         public SystemSchedule(StateHistory oldStates, Stack<Access> newAccessList, double newEventStartTime)
@@ -68,6 +69,7 @@ namespace HSFScheduler
                     eventEnds.Add(access.Asset, SchedParameters.SimStepSeconds);
                 else
                     eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+
             }
             Event eventToAdd = new Event(tasks, new SystemState(oldStates.GetLastState())); //all references
             eventToAdd.SetEventEnd(eventEnds);

@@ -139,7 +139,7 @@ namespace HSFSubsystem
             HSFProfile<double> dodrateofchange = ((powerOut - powerIn) / _batterySize);
 
             bool exceeded= false ;
-            double freq = 5.0;
+            double freq = 1.0;
             HSFProfile<double> dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, ref exceeded, 0, olddod);
 
             _newState.addValue(DOD_KEY, dodProf);

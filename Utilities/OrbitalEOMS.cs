@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-  //  [Serializable]
+    [Serializable]
     public class OrbitalEOMS: EOMS
     {
         protected double _mu;

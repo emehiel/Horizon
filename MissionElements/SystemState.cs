@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Utilities;
 using System.Xml;
 using UserModel;
@@ -33,19 +32,13 @@ namespace MissionElements
         /** The Dictionary of Quaternion Profiles. */
         public Dictionary<StateVarKey<Quat>, HSFProfile<Quat>> Qdata { get; private set; }
 
-        //public Dictionary<StateVarKey<T>, HSFProfile<T>> TData { get; set; }
 
-
-        /**
-         * Creates an initial State
-         */
+        /// <summary>
+        /// Creates an initial state   
+        /// </summary>
         public SystemState()
         {
             Previous = null;
-            //EventStart = 0;
-            //EventEnd = 0;
-            //TaskEnd = 0;
-            //TaskStart = 0;
             Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>();
             Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
             Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
@@ -54,27 +47,32 @@ namespace MissionElements
         }
 
 
-        /**
-         * Creates a new State based on a previous State and a new Task start time
-         */
+       /// <summary>
+       /// Create a new state from a previous one
+       /// </summary>
+       /// <param name="previous"></param>
         public SystemState(SystemState previous)
         {
             Previous = previous;
-            //Previous = null;
-            //Idata = previous.Idata;
-            //Ddata = previous.Ddata;
-            //Bdata = previous.Bdata;
-            //Mdata = previous.Mdata;
-            //Qdata = previous.Qdata;
-            //EventStart = previous.EventEnd; // start from end of previous State
-            //TaskStart = newTaskStart;
-            //TaskEnd = newTaskStart;
-            //EventEnd = newTaskStart;
             Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>();
             Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
             Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
             Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
             Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
+        }
+        /// <summary>
+        /// Use this constructor to create a copy of another state
+        /// </summary>
+        /// <param name="state"></param>
+        /// <param name="copy"> Only used to distinguish constructor calls by prototype</param>
+        public SystemState(SystemState state, int copy)
+        {
+            Previous = state.Previous;
+            Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>(state.Idata);
+            Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>(state.Ddata);
+            Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>(state.Bdata);
+            Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>(state.Mdata);
+            Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>(state.Qdata);
         }
         /// <summary>
         /// combine two system states by adding the states from one into the other
@@ -90,42 +88,6 @@ namespace MissionElements
                 addValue(data.Key, data.Value);
             foreach (var data in moreState.Mdata)
                 addValue(data.Key, data.Value);
-        }
-
-        
-        /// <summary>
-        /// A deep clone of the System State, but keeping the reference to Previous as a reference
-        /// </summary>
-        /// <returns></returns>
-        public SystemState DeepClone()
-        {
-            SystemState newState = new SystemState();
-            //foreach(KeyValuePair<StateVarKey<int>, HSFProfile<int>> data in this.Idata)
-            //{
-            //    newState.addValue(data.Key, new HSFProfile<int>(data.Value));
-            //}
-            //foreach (KeyValuePair<StateVarKey<bool>, HSFProfile<bool>> data in this.Bdata)
-            //{
-            //    newState.addValue(data.Key, new HSFProfile<bool>(data.Value));
-            //}
-            //foreach (KeyValuePair<StateVarKey<double>, HSFProfile<double>> data in this.Ddata)
-            //{
-            //    newState.addValue(data.Key, new HSFProfile<double>(data.Value));
-            //}
-            //foreach (KeyValuePair<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>> data in this.Mdata)
-            //{
-            //    newState.addValue(data.Key.DeepClone(), new HSFProfile<Matrix<double>>(data.Value));
-            //}
-            //foreach (KeyValuePair<StateVarKey<Quat>, HSFProfile<Quat>> data in this.Qdata)
-            //{
-            //    newState.addValue(data.Key.DeepClone(), new HSFProfile<Quat>(data.Value));
-            //}
-            newState.Idata = (DeepCopy.Copy(Idata));
-            newState.Bdata = (DeepCopy.Copy(Bdata));
-            newState.Ddata = (DeepCopy.Copy(Ddata));
-            newState.Mdata = (DeepCopy.Copy(Mdata));
-            newState.Previous = Previous;
-            return newState;
         }
 
         public override string ToString()

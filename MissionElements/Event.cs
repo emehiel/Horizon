@@ -56,19 +56,21 @@ namespace MissionElements
             TaskStarts = new Dictionary<Asset, double>();
             TaskEnds = new Dictionary<Asset, double>();
         }
-        ///// <summary>
-        ///// New Event with a deep copy of the state.
-        ///// </summary>
-        ///// <param name="eventToCopyExactly"></param>
-        //public Event(Event eventToCopyExactly)
-        //{
-        //    Tasks = eventToCopyExactly.Tasks;
-        //    State = eventToCopyExactly.State.DeepClone();
-        //    EventStarts = DeepCopy.Copy(eventToCopyExactly.EventStarts);
-        //    EventEnds = DeepCopy.Copy(eventToCopyExactly.EventEnds);
-        //    TaskStarts = DeepCopy.Copy(eventToCopyExactly.TaskStarts);
-        //    TaskEnds = DeepCopy.Copy(eventToCopyExactly.TaskEnds);
-        //}
+        /// <summary>
+        /// New Event with a deep copy of the state.
+        /// </summary>
+        /// <param name="eventToCopyExactly"></param>
+        public Event(Event eventToCopyExactly)
+        {
+            Tasks = eventToCopyExactly.Tasks;
+            State = DeepCopy.Copy(eventToCopyExactly.State);
+            EventStarts = eventToCopyExactly.EventStarts;
+            EventEnds = eventToCopyExactly.EventEnds;
+            //EventStarts = DeepCopy.Copy(eventToCopyExactly.EventStarts);
+            //EventEnds = DeepCopy.Copy(eventToCopyExactly.EventEnds);
+            TaskStarts = DeepCopy.Copy(eventToCopyExactly.TaskStarts);
+            TaskEnds = DeepCopy.Copy(eventToCopyExactly.TaskEnds);
+        }
         #endregion
 
         #region Accessors

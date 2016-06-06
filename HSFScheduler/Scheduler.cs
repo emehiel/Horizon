@@ -136,10 +136,10 @@ namespace HSFScheduler
                 //TODO: Parallelize this.
 
                 List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
-
+                List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
                 foreach (var oldSystemSchedule in systemSchedules)
                 {
-                    potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule.AllStates));
+                    systemCanPerformList.Add(new SystemSchedule(oldSystemSchedule.AllStates));
                     foreach (var newAccessStack in scheduleCombos)
                     {
                         if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
@@ -153,7 +153,7 @@ namespace HSFScheduler
 
                 }
                 // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.
-                List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
+
 
                 //for (list<systemSchedule*>::iterator newSchedIt = newSysScheds.begin(); newSchedIt != newSysScheds.end(); newSchedIt++)
                 // The parallel version

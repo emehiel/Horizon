@@ -24,18 +24,13 @@ namespace HSFScheduler
         }
 
         /// <summary>
-        /// Creates a new endstate-safe schedule from the given schedule. (last state copied as deep copy, all others shallow copies)
+        /// Creates a new copy of a state history so that events can be added to it
         /// </summary>
         /// <param name="oldSchedule"></param>
         public StateHistory(StateHistory oldSchedule)
         {
             InitialState = oldSchedule.InitialState;
             Events = new Stack<Event>(oldSchedule.Events);
-            //if (Events.Count != 0)
-            //{
-            //    Events.Pop();
-            //    Events.Push(new Event(oldSchedule.Events.Peek()));
-            //}
         }
 
         /// <summary>
@@ -46,10 +41,11 @@ namespace HSFScheduler
         public StateHistory(StateHistory oldSchedule, Event newEvent)
         {
             Events = new Stack<Event>(oldSchedule.Events);
-            InitialState = oldSchedule.InitialState;  //Should maybe be a deep copy -->no
+            InitialState = oldSchedule.InitialState;  //Should maybe be a deep copy -->not for this one
             Events.Push(newEvent);
         //    Asset = newAssetSched.Asset;
         }
+
 
         /// <summary>
         ///  Returns the last State in the schedule

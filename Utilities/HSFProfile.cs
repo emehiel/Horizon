@@ -276,6 +276,28 @@ namespace Utilities
             return prof;
         }
 
+
+        public double Integrate(double startTime, double endTime, double initialValue)
+        {
+            if (endTime < startTime)
+                return -1.0 * Integrate(startTime, endTime, initialValue);
+            if (Count() == 0 || endTime <= data.First().Key)
+                return (endTime - startTime) * initialValue;
+            if (endTime == startTime)
+                return 0;
+
+            //  KeyValuePair<double, double> query = (SortedDictionary<double, double>)data.Where(item => item.Key >= startTime && item.Key <= endTime);
+            double query = initialValue;
+            foreach (var prof in data)
+            {
+                if (prof.Key >= startTime && prof.Key <= endTime)
+                {
+                    query += (dynamic)prof.Value;
+                }
+            }
+            return query;
+            //  return query.Sum(queryItem => queryItem.Value) + initialValue;
+        }
         /// <summary>
         /// Returns the time of the first data point in the profile
         /// </summary>
@@ -478,6 +500,8 @@ namespace Utilities
             {
                 foreach (var item in otherProfile.data)
                 {
+                    if (otherProfile.data.ContainsKey(14))
+                        Console.WriteLine("14");
                     Add(item);
                 }
             }
@@ -641,27 +665,7 @@ namespace Utilities
             return data.GetHashCode();
         }
         #endregion
-        public double Integrate(double startTime, double endTime, double initialValue)
-        {
-            if (endTime < startTime)
-                return -1.0 * Integrate(startTime, endTime, initialValue);
-            if (Count() == 0 || endTime <= data.First().Key)
-                return (endTime - startTime) * initialValue;
-            if (endTime == startTime)
-                return 0;
 
-            //  KeyValuePair<double, double> query = (SortedDictionary<double, double>)data.Where(item => item.Key >= startTime && item.Key <= endTime);
-            double query = initialValue;
-            foreach (var prof in data)
-            {
-                if (prof.Key >= startTime && prof.Key <= endTime)
-                {
-                    query+= (dynamic)prof.Value;
-                }
-            }
-            return query;
-          //  return query.Sum(queryItem => queryItem.Value) + initialValue;
-        }
         #endregion
 
     }

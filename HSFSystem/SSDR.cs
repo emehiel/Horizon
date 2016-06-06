@@ -57,7 +57,13 @@ namespace HSFSubsystem
             {
                 double ts = proposedEvent.GetTaskStart(Asset);
                 double te = proposedEvent.GetTaskEnd(Asset);
+
                 double oldbufferratio = _newState.getLastValue(Dkeys[0]).Value;
+                if (te > 40 && te <= 45 && _task.Target.Name.Equals("imagetarget185"))
+                    Console.WriteLine("NO!");
+                if (te > 60 && te <= 75 && oldbufferratio == 0 && _task.Target.Name.Equals("imagetarget282"))
+                    Console.WriteLine("NO!");
+
                 Delegate DepCollector;
                 SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
                 HSFProfile<double> newdataratein = ((HSFProfile<double>)DepCollector.DynamicInvoke(proposedEvent) / _bufferSize);
@@ -66,7 +72,8 @@ namespace HSFSubsystem
                 HSFProfile<double> newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 1, 1, ref exceeded, 0, oldbufferratio);
                 if (!exceeded)
                 {
-                    _newState.addValue(DATABUFFERRATIO_KEY, newdataratio);
+                //    if(newdataratio.Data.Keys.Min() >ts && newdataratio.Data.Keys.Max() <te)
+                        _newState.addValue(DATABUFFERRATIO_KEY, newdataratio);
                     return true;
                 }
                 Logger.Report("SSDR");

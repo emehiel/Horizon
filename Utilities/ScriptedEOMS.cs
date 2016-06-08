@@ -13,10 +13,11 @@ using UserModel;
 
 namespace Utilities
 {
+    [Serializable]
     public class ScriptedEOMS : EOMS
     {
         #region Attributes
-        private dynamic _pythonInstance;
+        [NonSerialized] private dynamic _pythonInstance;
         #endregion
 
         #region Constructors

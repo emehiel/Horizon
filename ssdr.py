@@ -34,9 +34,9 @@ class ssdr(HSFSubsystem.SSDR):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_SSDRSUB)
-        dep.Add("PowerfromSSDR", depFunc1)
+        dep.Add("PowerfromSSDR"+ "." + self.Asset.Name, depFunc1)
         depFunc2 = Func[Event,  Utilities.HSFProfile[System.Double]](self.COMMSUB_DataRateProfile_SSDRSUB)
-        dep.Add("CommfromSSDR", depFunc2)
+        dep.Add("CommfromSSDR"+ "." + self.Asset.Name, depFunc2)
         depFunc3 = Func[Event,  System.Double](self.EVAL_DataRateProfile_SSDRSUB)
         dep.Add("EvalfromSSDR", depFunc3)
         return dep

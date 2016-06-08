@@ -26,7 +26,7 @@ namespace HSFSubsystem
             DependentSubsystems = new List<Subsystem>();
             DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "datarate(mb/s)");
             addKey(DATARATE_KEY);
-            dependencies.Add("PowerfromComm", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_COMMSUB));
+            dependencies.Add("PowerfromComm" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_COMMSUB));
         }
 
         public Comm(XmlNode CommXmlNode, Asset asset)

@@ -30,6 +30,7 @@ class eval(HSFScheduler.TargetValueEvaluator):
                 task = assetTask.Value
                 sum += task.Target.Value
                 if(task.Type == TaskType.COMM):
-                    foo = getattr(self.Dependencies, "EvalfromSSDR")
+                    callKey = "EvalfromSSDR" + "." + assetTask.Key.Name
+                    foo = self.Dependencies.GetDependencyFunc(callKey)
                     sum += System.Double(foo(eit))
         return sum

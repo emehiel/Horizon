@@ -38,6 +38,8 @@ namespace MissionElements
         /// The end of the event associated with this State 
         /// </summary>
         public Dictionary<Asset, double> EventEnds { get; set; }
+
+        public int isEvaluated;
         #endregion
 
         #region Constructors
@@ -55,6 +57,7 @@ namespace MissionElements
             EventEnds = new Dictionary<Asset, double>();
             TaskStarts = new Dictionary<Asset, double>();
             TaskEnds = new Dictionary<Asset, double>();
+            isEvaluated = 0;
         }
         /// <summary>
         /// New Event with a deep copy of the state.

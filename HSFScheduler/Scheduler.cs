@@ -102,7 +102,7 @@ namespace HSFScheduler
                 {
                     foreach (var task in tasks)
                         allAccesses.Push(new Access(asset, task));
-
+                    allAccesses.Push(new Access(asset, null));
                     exhaustive.Push(allAccesses);
                     allAccesses.Clear();
                 }
@@ -116,6 +116,8 @@ namespace HSFScheduler
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
             int i = 1;
+            List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
+            List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
             {
                 Console.WriteLine(currentTime);
@@ -126,6 +128,7 @@ namespace HSFScheduler
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
                 if (systemSchedules.Count > _numSchedCropTo)
                 {
+                    Console.WriteLine("Cropping");
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
                     systemSchedules.Add(emptySchedule);
                 }
@@ -134,24 +137,29 @@ namespace HSFScheduler
                 // Start timing
                 // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
                 //TODO: Parallelize this.
+                int k = 0;
 
-                List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
-                List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
                 foreach (var oldSystemSchedule in systemSchedules)
                 {
-                    systemCanPerformList.Add(new SystemSchedule(oldSystemSchedule.AllStates));
+                    potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
                     foreach (var newAccessStack in scheduleCombos)
                     {
+                        k++;
                         if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
                         {
                             var CopySchedule = new StateHistory(oldSystemSchedule.AllStates);
                             potentialSystemSchedules.Add(new SystemSchedule(CopySchedule, newAccessStack, currentTime));
                             // oldSched = new SystemSchedule(CopySchedule);
                         }
+
                     }
-                 //   potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule)); //deep copy
+                    //Stack<Access> emptyAccess = new Stack<Access>();
+                    //emptyAccess.Push()
+                    //potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule, emptyEvent));
+                    //   potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule)); //deep copy
 
                 }
+
                 // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.
 
 
@@ -179,16 +187,41 @@ namespace HSFScheduler
                     ts.Milliseconds / 10);
                 Console.WriteLine("Parallel Scheduler RunTime: " + elapsedTime);
                 */
+                int numSched = 0;
                 foreach (var potentialSchedule in potentialSystemSchedules)
                 {
+                    //SystemState previous = potentialSchedule.AllStates.InitialState;
+                    //int j;
+                    //for(j = potentialSchedule.AllStates.Events.Count - 1; j>=0; j--)
+                    //{
+                    //    int m = 0;
+                    //    var eit = potentialSchedule.AllStates.Events.ElementAt(j);
+                    //    if(eit.State.Previous != previous)
+                    //    {
+                    //        Console.WriteLine("Previous don't match " + m + " " +numSched);
+                    //    }
+                    //    previous = eit.State;
+                    //    m++;
+                    //}
+
                     if (Checker.CheckSchedule(system, potentialSchedule))
                         systemCanPerformList.Add(potentialSchedule);
+                    //else
+                    //{
+                    //    Console.WriteLine("Can't add sched " + numSched);
+                    //}
+                    numSched++;
                     //dependencies.updateStates(newSchedule.getEndStates());
                     //systemCanPerformList.Push(system.canPerform(potentialSchedule));
                 }
+                foreach (SystemSchedule systemSchedule in systemCanPerformList)
+                    systemSchedule.ScheduleValue = ScheduleEvaluator.Evaluate(systemSchedule);
 
+                systemCanPerformList.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
+                systemCanPerformList.Reverse();
                 // Merge old and new systemSchedules
-                systemSchedules.InsertRange(0, systemCanPerformList);//<--This was potentialSystemSchedules
+                var oldSystemCanPerfrom = new List<SystemSchedule>(systemCanPerformList);
+                systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedules
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
                 // Print completion percentage in command window
@@ -196,36 +229,30 @@ namespace HSFScheduler
             }
 
 
-            if (systemSchedules.Count > _maxNumSchedules)
-                CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
+            //if (systemSchedules.Count > _maxNumSchedules)
+            //    CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
 
             // THIS GOES AWAY IF CAN EXTEND HAPPENS IN THE SUBSYSTEM - EAM
             // extend all schedules to the end of the simulation
-            /*
-            foreach (var schedule in systemSchedules)
-            { 
-                bool canExtendUntilEnd = true;
-                // Iterate through Subsystem Nodes and set that they havent run
-                foreach (var subsystem in system.Subsystems)
-                    subsystem.IsEvaluated = false;
+            
 
-                int subAssetNum;
-                foreach (var subsystem in system.Subsystems)
-                    canExtendUntilEnd &= subsystem.canPerform(schedule.getSubsystemNewState(subsystem.Asset), schedule.getSubsytemNewTask(subsystem.Asset), system.Environment, _endTime, true);
+                //int subAssetNum;
+                //foreach (var subsystem in system.Subsystems)
+                //    canExtendUntilEnd &= subsystem.canPerform(schedule.getSubsystemNewState(subsystem.Asset), schedule.getSubsytemNewTask(subsystem.Asset), system.Environment, _endTime, true);
 
-                // Iterate through constraints
-                foreach (var constraint in system.Constraints)
-                {
-                    canExtendUntilEnd &= constraint.Accepts(schedule);
-                }
-                //                for (vector <const Constraint*>::const_iterator constraintIt = system.getConstraints().begin(); constraintIt != system.getConstraints().end(); constraintIt++)
-                //            canExtendUntilEnd &= (*constraintIt)->accepts(*schedIt);
-                if (!canExtendUntilEnd) {
-                    //delete *schedIt;
-                    Console.WriteLine("Schedule may not be valid");
-                }
-            }
-            */
+                //// Iterate through constraints
+                //foreach (var constraint in system.Constraints)
+                //{
+                //    canExtendUntilEnd &= constraint.Accepts(schedule);
+                //}
+                ////                for (vector <const Constraint*>::const_iterator constraintIt = system.getConstraints().begin(); constraintIt != system.getConstraints().end(); constraintIt++)
+                ////            canExtendUntilEnd &= (*constraintIt)->accepts(*schedIt);
+                //if (!canExtendUntilEnd) {
+                //    //delete *schedIt;
+                //    Console.WriteLine("Schedule may not be valid");
+                //}
+            
+            
 
             //DWORD endSchedTickCount = GetTickCount();
             //schedTimeMs = endSchedTickCount - startSchedTickCount;
@@ -242,7 +269,7 @@ namespace HSFScheduler
         /// <param name="schedulesToCrop"></param>
         /// <param name="scheduleEvaluator"></param>
         /// <param name="emptySched"></param>
-        void CropSchedules(List<SystemSchedule> schedulesToCrop, Evaluator scheduleEvaluator, SystemSchedule emptySched)
+        public void CropSchedules(List<SystemSchedule> schedulesToCrop, Evaluator scheduleEvaluator, SystemSchedule emptySched)
         {
             // Evaluate the schedules and set their values
             foreach (SystemSchedule systemSchedule in schedulesToCrop)
@@ -252,19 +279,13 @@ namespace HSFScheduler
             schedulesToCrop.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
             //  schedulesToCrop.ToList();
             // Delete the sysScheds that don't fit
-            int j = 0;
+
             int numSched = schedulesToCrop.Count;
-            for(int i = 0; i< numSched-_maxNumSchedules; i++)
+            for (int i = 0; i < numSched - _maxNumSchedules; i++)
             {
-                //if (schedulesToCrop[i] != emptySched)
-                //{
-                    schedulesToCrop.Remove(schedulesToCrop[0]);
-                //}
-                //else
-                //{
-                //    i--;
-                //}
+                schedulesToCrop.Remove(schedulesToCrop[0]);
             }
+
         }
 
         /// <summary>

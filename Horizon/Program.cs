@@ -23,7 +23,7 @@ namespace Horizon
             //string modelInputFileName = args[3];
             //string outputPath = args[4];
             var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
-            var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
+            var targetDeckFilePath = @"..\..\..\v2.2-300targets_old.xml";
             var modelInputFilePath = @"..\..\..\DSAC_Static.xml";
 
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
@@ -164,11 +164,20 @@ namespace Horizon
             List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState);
             // Evaluate the schedules and set their values
             foreach (SystemSchedule systemSchedule in schedules)
+            {
                 systemSchedule.ScheduleValue = schedEvaluator.Evaluate(systemSchedule);
-
+                bool canExtendUntilEnd = true;
+                // Iterate through Subsystem Nodes and set that they havent run
+                foreach (var subsystem in simSystem.Subsystems)
+                {
+                    if(systemSchedule.AllStates.Events.Count >0)
+                        if (!subsystem.CanExtend(systemSchedule.AllStates.Events.Peek(), simSystem.Environment, SimParameters.SimEndSeconds))
+                            Console.WriteLine("oops");
+                }
+            }
             // Sort the sysScheds by their values
             schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
-           // schedules.Reverse();
+            schedules.Reverse();
             double maxSched = schedules[0].ScheduleValue;
             int i = 0;
             //Morgan's Way

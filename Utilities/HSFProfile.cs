@@ -500,8 +500,6 @@ namespace Utilities
             {
                 foreach (var item in otherProfile.data)
                 {
-                    if (otherProfile.data.ContainsKey(14))
-                        Console.WriteLine("14");
                     Add(item);
                 }
             }

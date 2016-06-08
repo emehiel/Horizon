@@ -30,7 +30,16 @@ namespace HSFScheduler
         public StateHistory(StateHistory oldSchedule)
         {
             InitialState = oldSchedule.InitialState;
-            Events = new Stack<Event>(oldSchedule.Events);
+            Events = new Stack<Event>();
+            int i;
+            Event eit;
+            Event[] copy = new Event[oldSchedule.Events.Count] ;
+            oldSchedule.Events.CopyTo(copy, 0);
+            for (i = oldSchedule.Events.Count - 1; i >= 0; i--)
+            {
+                eit = copy[i];
+                Events.Push(eit);
+            }
         }
 
         /// <summary>

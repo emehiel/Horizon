@@ -34,9 +34,9 @@ class eosensor(HSFSubsystem.EOSensor):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_EOSENSORSUB)
-        dep.Add("PowerfromEOSensor", depFunc1)
+        dep.Add("PowerfromEOSensor"+ "." + self.Asset.Name, depFunc1)
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.SSDRSUB_NewDataProfile_EOSENSORSUB)
-        dep.Add("SSDRfromEOSensor", depFunc1)
+        dep.Add("SSDRfromEOSensor"+ "." + self.Asset.Name, depFunc1)
         return dep
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)

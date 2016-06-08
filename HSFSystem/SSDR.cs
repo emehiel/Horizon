@@ -27,9 +27,9 @@ namespace HSFSubsystem
             addKey(DATABUFFERRATIO_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             DependentSubsystems = new List<Subsystem>();
-            dependencies.Add("PowerfromSSDR", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_SSDRSUB));
-            dependencies.Add("CommfromSSDR", new Func<Event, HSFProfile<double>>(COMMSUB_DataRateProfile_SSDRSUB));
-            dependencies.Add("EvalfromSSDR", new Func<Event, double>(EVAL_DataRateProfile_SSDRSUB));
+            dependencies.Add("PowerfromSSDR" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_SSDRSUB));
+            dependencies.Add("CommfromSSDR" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(COMMSUB_DataRateProfile_SSDRSUB));
+            dependencies.Add("EvalfromSSDR" + "." + Asset.Name, new Func<Event, double>(EVAL_DataRateProfile_SSDRSUB));
         }
         public SSDR(XmlNode SSDRXmlNode, Asset asset)
         {
@@ -59,10 +59,6 @@ namespace HSFSubsystem
                 double te = proposedEvent.GetTaskEnd(Asset);
 
                 double oldbufferratio = _newState.getLastValue(Dkeys[0]).Value;
-                if (te > 40 && te <= 45 && _task.Target.Name.Equals("imagetarget185"))
-                    Console.WriteLine("NO!");
-                if (te > 60 && te <= 75 && oldbufferratio == 0 && _task.Target.Name.Equals("imagetarget282"))
-                    Console.WriteLine("NO!");
 
                 Delegate DepCollector;
                 SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
@@ -70,6 +66,8 @@ namespace HSFSubsystem
 
                 bool exceeded = false;
                 HSFProfile<double> newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 1, 1, ref exceeded, 0, oldbufferratio);
+                if (oldbufferratio > newdataratio.LastValue())
+                    Console.WriteLine("old>new");
                 if (!exceeded)
                 {
                 //    if(newdataratio.Data.Keys.Min() >ts && newdataratio.Data.Keys.Max() <te)
@@ -129,8 +127,10 @@ namespace HSFSubsystem
 
         public double EVAL_DataRateProfile_SSDRSUB(Event currentEvent)
         {
-            return (currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value 
-                - currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) * 50;
+            return (currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value
+            - currentEvent.State.getValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) *50;
+
+            //return 10;//(currentEvent.State.getLastValue(DATABUFFERRATIO_KEY).Value) * 500;
         }
     }
 }

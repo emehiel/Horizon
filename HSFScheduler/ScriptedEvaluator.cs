@@ -16,13 +16,16 @@ namespace HSFScheduler
     {
         #region Attributes
         private dynamic _pythonInstance;
-        public Dependency Dependencies;
+        public Dependency Dependencies
+        {
+            get { return (Dependency)_pythonInstance.Dependencies; }
+            set { _pythonInstance.Dependencies = value; }
+        }
         #endregion
 
         #region Constructors
         public ScriptedEvaluator(XmlNode scriptedNode, Dependency deps)
         {
-            Dependencies = deps;
             string pythonFilePath = "", className = "";
             XmlParser.ParseScriptedSrc(scriptedNode, ref pythonFilePath, ref className);
             var engine = Python.CreateEngine();
@@ -31,6 +34,7 @@ namespace HSFScheduler
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
             _pythonInstance = ops.CreateInstance(pythonType, deps);
+            Dependencies = deps;
         }
         #endregion
 

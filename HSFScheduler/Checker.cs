@@ -41,15 +41,18 @@ namespace HSFScheduler
         {
             //if (subsystem.IsEvaluated)
             //    return true;
-            var events = proposedSchedule.AllStates.Events; 
+            var events = proposedSchedule.AllStates.Events;
             if (events.Count != 0)
             {
                 //if (events.Count > 1)
                 //    subsystem._oldState = events.ElementAt(events.Count - 2).State;
                 //else
                 //    subsystem._oldState = null;
-                if (!subsystem.CanPerform(events.Peek(), environment))
-                    return false;
+
+                    if (!subsystem.CanPerform(events.Peek(), environment))
+                        return false;
+                    events.Peek().isEvaluated +=1;
+
             }
             return true;
         }

@@ -34,7 +34,7 @@ class adcs(HSFSubsystem.ADCS):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_ADCSSUB)
-        dep.Add("PowerfromADCS", depFunc1)
+        dep.Add("PowerfromADCS"+ "." + self.Asset.Name, depFunc1)
         return dep
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
@@ -65,6 +65,6 @@ class adcs(HSFSubsystem.ADCS):
         return True
        # return super(adcs, self).canPerform(event, universe)
     def CanExtend(self, event, universe, extendTo):
-        return super(adcs, self).canExtend(self, event, universe, extendTo)
+        return super(adcs, self).CanExtend(event, universe, extendTo)
     def DependencyCollector(self, currentEvent):
         return super(adcs, self).DependencyCollector(currentEvent)

@@ -52,8 +52,8 @@ namespace HSFSubsystem
                 _highQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityPixels"].Value.ToString(), typeof(double));
             if (EOSensorXmlNode.Attributes["highQualityTime"] != null)
                 _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
-            dependencies.Add("PowerfromEOSensor", new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_EOSENSORSUB));
-            dependencies.Add("SSDRfromEOSensor", new Func<Event, HSFProfile<double>>(SSDRSUB_NewDataProfile_EOSENSORSUB));
+            dependencies.Add("PowerfromEOSensor"+"."+Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_EOSENSORSUB));
+            dependencies.Add("SSDRfromEOSensor" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(SSDRSUB_NewDataProfile_EOSENSORSUB));
         }
 
         public EOSensor(XmlNode EOSensorXmlNode, Asset asset)

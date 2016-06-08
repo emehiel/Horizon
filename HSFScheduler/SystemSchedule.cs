@@ -25,18 +25,19 @@ namespace HSFScheduler
 
         public SystemSchedule(StateHistory allStates)
         {
-            AllStates = allStates;
-            //AllStates = new StateHistory(allStates.InitialState);
-            //foreach(var eit in allStates.Events)
-            //{
-            //    AllStates.Events.Push(new Event(eit));
-            //}
+            //AllStates = allStates;
+            AllStates = new StateHistory(allStates.InitialState);
+            foreach (var eit in allStates.Events)
+            {
+                AllStates.Events.Push(new Event(eit));
+            }
 
         }
 
-        public SystemSchedule(SystemSchedule oldSchedule)
+        public SystemSchedule(SystemSchedule oldSchedule, Event emptyEvent)
         {
-
+            AllStates = new StateHistory(oldSchedule.AllStates);
+            AllStates.Events.Push(emptyEvent);
         }
 
         public SystemSchedule(StateHistory oldStates, Stack<Access> newAccessList, double newEventStartTime)
@@ -49,26 +50,36 @@ namespace HSFScheduler
 
             foreach (var access in newAccessList)
             {
-
-                if (access.AccessStart <= newEventStartTime && newEventStartTime <= access.AccessEnd)
-                    taskStarts.Add(access.Asset, newEventStartTime);
-                else if (access.AccessStart >= newEventStartTime && access.AccessStart <= newEventStartTime + SchedParameters.SimStepSeconds)
-                    taskStarts.Add(access.Asset, access.AccessStart);
+                if (access.Task != null)
+                {
+                    if (access.AccessStart <= newEventStartTime && newEventStartTime <= access.AccessEnd)
+                        taskStarts.Add(access.Asset, newEventStartTime);
+                    else if (access.AccessStart >= newEventStartTime && access.AccessStart <= newEventStartTime + SchedParameters.SimStepSeconds)
+                        taskStarts.Add(access.Asset, access.AccessStart);
+                    else
+                    {
+                        Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart + " AccessEnd: " + access.AccessEnd);
+                        taskStarts.Add(access.Asset, newEventStartTime);
+                    }
+                    tasks.Add(access.Asset, access.Task);
+                    if (access.AccessEnd > SimParameters.SimEndSeconds)
+                        taskEnds.Add(access.Asset, SimParameters.SimEndSeconds);
+                    else
+                        taskEnds.Add(access.Asset, access.AccessEnd);
+                    eventStarts.Add(access.Asset, newEventStartTime);
+                    if (newEventStartTime + SchedParameters.SimStepSeconds > SimParameters.SimEndSeconds)
+                        eventEnds.Add(access.Asset, SchedParameters.SimStepSeconds);
+                    else
+                        eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+                }
                 else
                 {
-                    Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart +" AccessEnd: " + access.AccessEnd);
                     taskStarts.Add(access.Asset, newEventStartTime);
-                }
-                tasks.Add(access.Asset, access.Task);
-                if (access.AccessEnd > SimParameters.SimEndSeconds)
-                    taskEnds.Add(access.Asset, SimParameters.SimEndSeconds);
-                else
-                    taskEnds.Add(access.Asset, access.AccessEnd);
-                eventStarts.Add(access.Asset, newEventStartTime);
-                if (newEventStartTime + SchedParameters.SimStepSeconds > SimParameters.SimEndSeconds)
-                    eventEnds.Add(access.Asset, SchedParameters.SimStepSeconds);
-                else
+                    taskEnds.Add(access.Asset, newEventStartTime);
+                    tasks.Add(access.Asset, null);
+                    eventStarts.Add(access.Asset, newEventStartTime);
                     eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+                }
 
             }
             Event eventToAdd = new Event(tasks, new SystemState(oldStates.GetLastState())); //all references
@@ -77,52 +88,23 @@ namespace HSFScheduler
             eventToAdd.SetEventStart(eventStarts);
             eventToAdd.SetTaskStart(taskStarts);
             AllStates = new StateHistory(oldStates, eventToAdd);
-            
-            /* commented out because it doesn't work yet
-    // TODO (EAM):  Changed this so we need to double check/test
-    //int i = 0; //need a double iterator
-    foreach(var assetSchedAccess in newAccessList)
-    {
-        Task task = DeepCopy.Copy<Task>(assetSchedAccess.Task);
-        if (task != null)
-        {
-            Event eventToAdd = new Event(task, new SystemState(assetSchedAccess.Item1.GetLastState(), newTaskStartTime));
-            AssetScheds.Add(new StateHistory(assetSchedAccess.Item1, eventToAdd, assetSchedAccess.Item2.Asset));
-            //TODO: double check c# implementation above
-           // shared_ptr<Event> eventToAdd(new Event(*tIt, new State((*assSchedIt)->getLastState(), newTaskStartTime)));
-           // assetscheds.push_back(new assetSchedule(*assSchedIt, eventToAdd));
-        }
-        else
-            AssetScheds.Add(DeepCopy.Copy<StateHistory>(assetSchedAccess.Item1));
-    }
-            */
         }
 
         #endregion
-
+        public SystemSchedule Copy()
+        {
+            SystemSchedule newSched = new SystemSchedule(AllStates.InitialState);
+            int i;
+            Event eit;
+            for(i = AllStates.Events.Count-1; i>=0; i--)
+            {
+                eit = AllStates.Events.ElementAt(i);
+                newSched.AllStates.Events.Push(eit);
+            }
+            return newSched;
+        }
         public bool CanAddTasks(Stack<Access> newAccessList, double newTaskStartTime)
         {
-            //TODO: Mehiel double check
-            //HSF v2.3:
-            //size_t count = 0;
-            //vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
-            //for (vector <const Task*>::const_iterator tIt = newTaskList.begin(); tIt != newTaskList.end(); tIt++, asIt2++) {
-            //    if (*tIt != NULL)
-            //    {
-            //        for (vector<assetSchedule*>::iterator asIt = assetscheds.begin(); asIt != assetscheds.end(); asIt++)
-            //        {
-            //            count += (*asIt)->timesCompletedTask(*tIt);
-            //        }
-            //        if (count >= (*tIt)->getMaxTimesPerformable())
-            //            return false;
-            //        if (!(*asIt2)->empty())
-            //        {
-            //            if ((*asIt2)->getLastState()->getEventEnd() > newTaskStartTime)
-            //                return false;
-            //        }
-            //    }
-            //}
-            //return true;
             int count = 0;
             // vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
             //int asIt2 = 0;
@@ -138,7 +120,7 @@ namespace HSFScheduler
 		        if(access.Task != null)
                 {
 				    count += AllStates.timesCompletedTask(access.Task);
-			        if(count >= 1)// access.Task.MaxTimesToPerform)
+			        if(count >= access.Task.MaxTimesToPerform)
 				        return false;
 		        }
 	        }
@@ -204,12 +186,13 @@ namespace HSFScheduler
             csv.Clear();
 
 
-            
 
-            while (schedule.AllStates.Events.Count > 0)
-            {
-                var currEvent = schedule.AllStates.Events.Pop();
-                SystemState sysState = currEvent.State;
+            SystemState sysState = schedule.AllStates.Events.Peek().State;
+            //while (schedule.AllStates.Events.Count > 0)
+            //{
+            //    var currEvent = schedule.AllStates.Events.Pop();
+            while(sysState != null) { 
+           //     SystemState sysState = currEvent.State;
                 foreach (var kvpDoubleProfile in sysState.Ddata)
                     foreach (var data in kvpDoubleProfile.Value.Data)
                         if (!stateTimeDData.ContainsKey(kvpDoubleProfile.Key))
@@ -256,7 +239,7 @@ namespace HSFScheduler
                         else if (!stateTimeMData[kvpMatrixProfile.Key].ContainsKey(data.Key))
                             stateTimeMData[kvpMatrixProfile.Key].Add(data.Key, data.Value);
 
-
+                sysState = sysState.Previous;
 
 
             }

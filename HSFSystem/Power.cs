@@ -154,7 +154,6 @@ namespace HSFSubsystem
         /// <param name="evalToTime"></param>
         /// <returns></returns>
         public override bool CanExtend(Event proposedEvent, Universe universe, double evalToTime) {
-            double powOut = 65;
             double ee = proposedEvent.GetEventEnd(Asset);
             if (ee > SimParameters.SimEndSeconds)
                 return false;
@@ -168,7 +167,9 @@ namespace HSFSubsystem
             double olddod = proposedEvent.State.getValueAtTime(DOD_KEY, te).Value;
 
             // collect power profile out
-            HSFProfile<double> powerOut = new HSFProfile<double>(te, powOut);
+            Delegate DepCollector;
+            SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
+            HSFProfile<double> powerOut = (HSFProfile<double>)DepCollector.DynamicInvoke(proposedEvent); // deps->callDoubleDependency("POWERSUB_getPowerProfile");
             // collect power profile in
             DynamicState position = Asset.AssetDynamicState;
             HSFProfile<double> powerIn = CalcSolarPanelPowerProfile(te, ee, proposedEvent.State, position, universe);
@@ -176,10 +177,14 @@ namespace HSFSubsystem
             HSFProfile<double> dodrateofchange = ((powerOut - powerIn) / _batterySize);
 
             bool exceeded_lower = false, exceeded_upper = false;
-            double freq = 5.0;
+            double freq =  1.0;
             HSFProfile<double> dodProf = dodrateofchange.limitIntegrateToProf(te, ee, freq, 0.0, 1.0, ref exceeded_lower, ref exceeded_upper, 0, olddod);
             if (exceeded_upper)
                 return false;
+            if(dodProf.LastTime() != ee && ee == SimParameters.SimEndSeconds)
+            {
+                dodProf[ee] = dodProf.LastValue();
+            }
             proposedEvent.State.addValue(DOD_KEY, dodProf);
             return true;
         }

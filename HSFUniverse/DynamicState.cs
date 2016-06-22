@@ -1,53 +1,45 @@
-﻿using System;
+﻿// Copyright (c) 2016 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Xml;
 using Utilities;
 using UserModel;
+using log4net;
 
 
 namespace HSFUniverse
 {
-    /*
-     * A class that specifies the dynamic state of a given rigid body object in the system in a given coordinate frame.
-     * Dynamic State data includes position, velocity, Euler Angels, Quaternions, body angular rates.
-     * This class replaces the Position Class in prior versions of HSF.
-     * 
-    * The two coordinate frames used are ECI and LLA. 
 
-    * ECI refers to an unchanging coordinate frame which is relatively fixed with respect to the Solar 
-    * System. The z axis runs along the Earth's rotational axis pointing North, the x axis points in 
-    * the direction of the vernal equinox, and the y axis completes the right-handed orthogonal system.
-    * Units are (Kilometers, Kilometers, Kilometers).
-
-    * LLA refers to the geodetic latitude, longitude, and altitude above the planetary ellipsoid. Units
-    * are (Radians, Radians, Kilometers)
-    *
-    * @author Cory O'Connor
-    * @author Eric Mehiel (conversion to C#)
-    */
+    /// <summary>
+    /// A class that specifies the dynamic state of a given rigid body object in the system in a given coordinate frame.
+    /// Dynamic State data includes position, velocity, Euler Angels, Quaternions, body angular rates.
+    /// This class replaces the Position Class in prior versions of HSF.      
+    /// The two coordinate frames used are ECI and LLA. 
+    /// ECI refers to an unchanging coordinate frame which is relatively fixed with respect to the Solar
+    /// System. The z axis runs along the Earth's rotational axis pointing North, the x axis points in 
+    /// the direction of the vernal equinox, and the y axis completes the right-handed orthogonal system.
+    /// Units are (Kilometers, Kilometers, Kilometers).
+    /// LLA refers to the geodetic latitude, longitude, and altitude above the planetary ellipsoid.
+    /// Units are(Radians, Radians, Kilometers)
+    /// </summary>
     [Serializable]
     public class DynamicState
     {
         /// <summary>
         /// SortedList with time and the state data at that time stored in a double Matrix
         /// </summary>
+        public DynamicStateType Type { get; private set; }
+        public EOMS Eoms { get; private set; }
+        public string Name { get; private set; }
+        private PropagationType _propagatorType;
+        private IntegratorOptions _integratorOptions;
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private SortedList<double, Matrix<double>> _stateData;
 
-        public DynamicStateType Type { get; private set; }
-
-        public EOMS Eoms { get; private set; }
-
-        public string Name { get; private set; }
-
-        //private double _stateDataTimeStep { get;  set; }
-
-      //  private XmlNode _integratorNode;
-
-        private PropagationType _propagatorType;
-
-        private IntegratorOptions _integratorOptions;
 
         public DynamicState(XmlNode dynamicStateXMLNode)
         {
@@ -152,8 +144,8 @@ namespace HSFUniverse
 
         private void PropagateState(double simTime)
         {
-            Console.WriteLine("Integrating and resampling dynamic state data to {0} seconds... ", simTime);
-            Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
+            log.Info("Integrating and resampling dynamic state data to "+ simTime + "seconds...");
+            Matrix <double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
             // Update the integrator parameters using the information in the XML Node
 
             Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions);
@@ -161,7 +153,7 @@ namespace HSFUniverse
             for (int index = 1; index <= data.Length; index++)
                 _stateData[data[1, index]] = data[new MatrixIndex(2, data.NumRows), index];
 
-            Console.WriteLine("DONE!");
+            log.Info("Done Integrating");
         }
  
         /// <summary>

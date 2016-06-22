@@ -1,15 +1,19 @@
-﻿using System;
+﻿// Copyright (c) 2016 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using log4net;
 
 namespace UserModel
 {
-    public class XmlParser
+    public class XmlParser//todo catch exceptions with logger
     {
-
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         public static void ParseScriptedSrc(XmlNode node, ref string pythonFilePath, ref string className)
         {
             if (node.Attributes["src"] == null)
@@ -31,8 +35,7 @@ namespace UserModel
             XmlEnum.MoveNext();
             var simulationInputXMLNode = (XmlNode)XmlEnum.Current;
             var scenarioName = simulationInputXMLNode.Attributes["scenarioName"].InnerXml;
-            Console.Write("EXECUITING SCENARIO: ");
-            Console.WriteLine(scenarioName);
+            log.Info("EXECUITING SCENARIO: "+ scenarioName);
 
             // Load the simulation parameters from the XML simulation input file
             XmlNode simParametersXMLNode = simulationInputXMLNode["SIMULATION_PARAMETERS"];
@@ -69,7 +72,7 @@ namespace UserModel
             }
             catch(Exception e)
             {
-                Console.WriteLine("Could not find input file!");
+                log.Error("Could not find input file!");
                 throw;
             }
             XmlNodeList modelXMLNodeList = XmlDoc.GetElementsByTagName("MODEL");

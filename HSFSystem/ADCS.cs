@@ -1,7 +1,8 @@
-﻿using System;
+﻿// Copyright (c) 2016 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Utilities;
 using System.Xml;
 using MissionElements;
@@ -49,7 +50,7 @@ namespace HSFSubsystem
             double ts = proposedEvent.GetTaskStart(Asset);
             double te = proposedEvent.GetTaskEnd(Asset);
 
-            if (es + timetoslew > ts) //fix event task end!
+            if (es + timetoslew > ts)
             {
                 if (es + timetoslew > te)
                 {
@@ -72,6 +73,7 @@ namespace HSFSubsystem
             proposedEvent.SetTaskStart(Asset, ts);
             return true;
         }
+
         /// <summary>
         /// Dependecy function for the power subsystem
         /// </summary>

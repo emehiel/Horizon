@@ -1,0 +1,7 @@
+extensions: .cs 
+#region copyright
+// Copyright (c) 2016 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) and Eric A. Mehiel (emehiel@calpoly.edu) 
+#endregion
+extensions: .aspx .ascx
+<%-- This is a sample license header. --%>

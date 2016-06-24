@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFScheduler", "HSFSchedule
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Logging\Logging.csproj", "{45BEE7E3-100B-4B95-8E59-2AE94503C1B4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingUnitTest", "LoggingUnitTest\LoggingUnitTest.csproj", "{701C5284-237E-44D2-8AE8-6F70F02259DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,6 +126,12 @@ Global
 		{45BEE7E3-100B-4B95-8E59-2AE94503C1B4}.Realease Fast|Any CPU.Build.0 = Release|Any CPU
 		{45BEE7E3-100B-4B95-8E59-2AE94503C1B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{45BEE7E3-100B-4B95-8E59-2AE94503C1B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{701C5284-237E-44D2-8AE8-6F70F02259DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{701C5284-237E-44D2-8AE8-6F70F02259DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{701C5284-237E-44D2-8AE8-6F70F02259DC}.Realease Fast|Any CPU.ActiveCfg = Release|Any CPU
+		{701C5284-237E-44D2-8AE8-6F70F02259DC}.Realease Fast|Any CPU.Build.0 = Release|Any CPU
+		{701C5284-237E-44D2-8AE8-6F70F02259DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{701C5284-237E-44D2-8AE8-6F70F02259DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

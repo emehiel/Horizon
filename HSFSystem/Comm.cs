@@ -67,7 +67,7 @@ namespace HSFSubsystem
             {
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);
                 if (!newProf.Empty())
-                    proposedEvent.State.setProfile(DATARATE_KEY, newProf);
+                    proposedEvent.State.SetProfile(DATARATE_KEY, newProf);
             }
             return true;
         }

@@ -24,7 +24,7 @@ namespace MissionElementsUnitTest
             doubleProf.Add(2, -1);
 
             StateVarKey<double> doubleKey = new StateVarKey<double>("testDoubleVar");
-            state.setProfile(doubleKey, doubleProf);
+            state.SetProfile(doubleKey, doubleProf);
 
             HSFProfile<Matrix<double>> matrixProf = new HSFProfile<Matrix<double>>(0, new Matrix<double>(1, 2, 1));
             matrixProf.Add(1, new Matrix<double>(1, 2, 2));

@@ -3,8 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using HSFUniverse;
 using MissionElements;
 using System.Xml;
@@ -16,7 +14,7 @@ namespace HSFSubsystem
     public class EOSensor : Subsystem
     {
         #region Attributes
-        //Default stuff
+        //Default Values
         public static string SUBNAME_EOSENSOR = "EOSensor";
         protected StateVarKey<double> PIXELS_KEY;
         protected StateVarKey<double> INCIDENCE_KEY;
@@ -30,6 +28,14 @@ namespace HSFSubsystem
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Constructor for built in subsystem
+        /// Defaults: lowQualityPixels = 5000, midQualityPixels = 10000, highQualityPixels = 15000
+        /// lowQualityTime = 3s, midQyalityTime = 5s, highQualityTime = 7s
+        /// </summary>
+        /// <param name="EOSensorXmlNode"></param>
+        /// <param name="dependencies"></param>
+        /// <param name="asset"></param>
         public EOSensor(XmlNode EOSensorXmlNode, Dependency dependencies, Asset asset)
         {
             DefaultSubName = "EOSensor";
@@ -59,6 +65,11 @@ namespace HSFSubsystem
             dependencies.Add("SSDRfromEOSensor" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(SSDRSUB_NewDataProfile_EOSENSORSUB));
         }
 
+        /// <summary>
+        /// Constructor for scripted subsystem
+        /// </summary>
+        /// <param name="EOSensorXmlNode"></param>
+        /// <param name="asset"></param>
         public EOSensor(XmlNode EOSensorXmlNode, Asset asset)
         {
             DefaultSubName = "EOSensor";
@@ -86,6 +97,12 @@ namespace HSFSubsystem
         #endregion
 
         #region Methods
+        /// <summary>
+        /// An override of the Subsystem CanPerform method
+        /// </summary>
+        /// <param name="proposedEvent"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Universe environment)
         {
             if (!base.CanPerform(proposedEvent, environment))
@@ -113,7 +130,8 @@ namespace HSFSubsystem
                 double te = proposedEvent.GetTaskEnd(Asset);
                 if (ts > te)
                 {
-                    Logger.Report("EOSensor lost access");
+                    // TODO: Change this to Logger
+                    Console.WriteLine("EOSensor lost access");
                     return false;
                 }
 
@@ -134,30 +152,36 @@ namespace HSFSubsystem
                 double incidenceang = 90 - 180 / Math.PI * Math.Acos(Matrix<double>.Dot(pos_norm, pv_norm));
 
                 // set state data
-                _newState.addValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage, incidenceang));
-                _newState.addValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
+                _newState.AddValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage, incidenceang));
+                _newState.AddValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
 
-                _newState.addValue(PIXELS_KEY, new KeyValuePair<double, double>(timage, pixels));
-                _newState.addValue(PIXELS_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
+                _newState.AddValue(PIXELS_KEY, new KeyValuePair<double, double>(timage, pixels));
+                _newState.AddValue(PIXELS_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
 
-                _newState.addValue(EOON_KEY, new KeyValuePair<double, bool>(ts, true));
-                _newState.addValue(EOON_KEY, new KeyValuePair<double, bool>(te, false));
+                _newState.AddValue(EOON_KEY, new KeyValuePair<double, bool>(ts, true));
+                _newState.AddValue(EOON_KEY, new KeyValuePair<double, bool>(te, false));
             }
                 return true;
             
         }
 
+        /// <summary>
+        /// Dependency Function for Power Subsystem
+        /// </summary>
+        /// <param name="currentEvent"></param>
+        /// <returns></returns>
         public HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
             prof1[currentEvent.GetEventStart(Asset)] = 10;
-            if (currentEvent.State.getValueAtTime(EOON_KEY, currentEvent.GetTaskStart(Asset)).Value)
+            if (currentEvent.State.GetValueAtTime(EOON_KEY, currentEvent.GetTaskStart(Asset)).Value)
             {
                 prof1[currentEvent.GetTaskStart(Asset)] = 60;
                 prof1[currentEvent.GetTaskEnd(Asset)] = 10;
             }
             return prof1;
         }
+
         /// <summary>
         /// Dependecy function for the SSDR subsystem
         /// </summary>

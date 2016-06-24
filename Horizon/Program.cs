@@ -19,18 +19,57 @@ namespace Horizon
 {
     public class Program
     {
-        static void Main(string[] args)
+        static int Main(string[] args)
         {
-            // Get the input filenames
-            //string simulationInputFilePath = args[1];
-            //string targetDeckFilePath = args[2];
-            //string modelInputFileName = args[3];
-            //string outputPath = args[4];
-            var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
-            var targetDeckFilePath = @"..\..\..\v2.2-300targets_old.xml";
-            var modelInputFilePath = @"..\..\..\DSAC_Static.xml";
+            // Begin the Logger
             ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             log.Info("STARTING HSF RUN"); //Do not delete
+
+            // Set Defaults
+            var simulationInputFilePath = @"..\..\..\SimulationInput.XML";
+            var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
+            var modelInputFilePath = @"..\..\..\DSAC_Static.xml";
+            bool simulationSet = false, targetSet = false, modelSet = false;
+
+            // Get the input filenames
+            int i = 0;
+            foreach(var input in args)
+            {
+                i++;
+                switch (input)
+                {
+                    case "-s":
+                        simulationInputFilePath = args[i];
+                        simulationSet = true;
+                        break;
+                    case "-t":
+                        targetDeckFilePath = args[i];
+                        targetSet = true;
+                        break;
+                    case "-m":
+                        modelInputFilePath = args[i];
+                        modelSet = true;
+                        break;
+                }
+            }
+
+            if (!simulationSet)
+            {
+                log.Info("Using Default Simulation File");
+            }
+
+            if (!targetSet)
+            {
+                log.Info("Using Default Target File");
+            }
+
+            if (!modelSet)
+            {
+                log.Info("Using Default Model File");
+            }
+
+
+            // Initialize Output File
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
             var outputPath = @"C:\HorizonLog\";
             var txt = ".txt";
@@ -51,7 +90,10 @@ namespace Horizon
             // Load the target deck into the targets list from the XML target deck input file
             Stack<Task> systemTasks = new Stack<Task>();
             bool targetsLoaded = Task.loadTargetsIntoTaskList(XmlParser.GetTargetNode(targetDeckFilePath), systemTasks);
-            log.Info("Initial states set");
+            if (!targetsLoaded)
+            {
+                return 1;
+            }
 
             // Find the main model node from the XML model input file
             var modelInputXMLNode = XmlParser.GetModelNode(modelInputFilePath);
@@ -122,7 +164,7 @@ namespace Horizon
                         //Create a new Constraint
                         if (childNode.Name.Equals("CONSTRAINT"))
                         {
-                            constraintsList.Add(ConstraintFactory.getConstraint(childNode, subsystemMap, asset));
+                            constraintsList.Add(ConstraintFactory.GetConstraint(childNode, subsystemMap, asset));
                         }
                     }
                     if (ICNodes.Count > 0)
@@ -161,7 +203,7 @@ namespace Horizon
 
             SystemClass simSystem = new SystemClass(assetList, subList, constraintsList, SystemUniverse);
 
-            if (simSystem.checkForCircularDependencies())
+            if (simSystem.CheckForCircularDependencies())
                 throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
 
             Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evaluatorNode, dependencies);
@@ -185,7 +227,7 @@ namespace Horizon
             schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
             schedules.Reverse();
             double maxSched = schedules[0].ScheduleValue;
-            int i = 0;
+            i = 0;
             //Morgan's Way
             using (StreamWriter sw = File.CreateText(outputPath))
             {
@@ -214,7 +256,7 @@ namespace Horizon
             {
                 File.WriteAllText(@"..\..\..\" + asset.Name + "_dynamicStateData.csv", asset.AssetDynamicState.ToString());
             }
-
+            return 0;
             //   Console.ReadKey();
         }
     }

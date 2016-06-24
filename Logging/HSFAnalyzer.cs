@@ -8,7 +8,7 @@ using HSFSystem;
 using HSFSubsystem;
 using Utilities;
 
-namespace Horizon
+namespace Logging
 {
     public class HSFAnalyzer
     {/*

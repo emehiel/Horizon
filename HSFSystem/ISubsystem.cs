@@ -1,21 +1,30 @@
 ﻿// Copyright (c) 2016 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+
 using MissionElements;
 using HSFUniverse;
-using Utilities;
 
 namespace HSFSystem
 {
     public interface ISubsystem
     {
+        /// <summary>
+        /// Determine if the subsystem can perform the new task within the event.
+        /// If it can, update the state to reflect the task being performed
+        /// </summary>
+        /// <param name="proposedEvent"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
         bool CanPerform(Event proposedEvent, Universe environment);
-        bool CanExtend(Event proposedEvent, Universe environment, double evalToTime); 
 
-    //    void DependencyCollector();
+        /// <summary>
+        /// Determine if the susystem's state can progress in time in an "idle" task.
+        /// </summary>
+        /// <param name="proposedEvent"></param>
+        /// <param name="environment"></param>
+        /// <param name="evalToTime"></param>
+        /// <returns></returns>
+        bool CanExtend(Event proposedEvent, Universe environment, double evalToTime); 
     }
 }

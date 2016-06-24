@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Horizon
+namespace Logging
 {
     public class HSFLog
     {

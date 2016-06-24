@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Horizon
+namespace Logging
 {
     static public class HSFLogger   // Logs log data 
     {

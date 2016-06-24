@@ -3,11 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using Utilities;
 using HSFSystem;
 using UserModel;
@@ -18,15 +13,12 @@ namespace HSFScheduler
 {
     /// <summary>
     /// Creates valid schedules for a system
-    /// @author Cory O'Connor
-    /// @author Einar Pehrson
-    /// @author Eric Mehiel
     /// </summary>
     [Serializable]
     public class Scheduler
     {
-        //TODO:  Support monitoring of scheduler progres - Eric Mehiel
-
+        //TODO:  Support monitoring of scheduler progress - Eric Mehiel
+        #region Attributes
         private double _startTime;
         private double _stepLength;
         private double _endTime;
@@ -39,11 +31,13 @@ namespace HSFScheduler
         public double AccumSchedTime { get; }
 
         public Evaluator ScheduleEvaluator { get; private set; }
-       private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        #endregion
 
         /// <summary>
         /// Creates a scheduler for the given system and simulation scenario
         /// </summary>
+        /// <param name="scheduleEvaluator"></param>
         public Scheduler(Evaluator scheduleEvaluator)
         {
             ScheduleEvaluator = scheduleEvaluator;
@@ -54,16 +48,16 @@ namespace HSFScheduler
             _numSchedCropTo = SchedParameters.NumSchedCropTo;
         }
 
-        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<MissionElements.Task> tasks, SystemState initialStateList)
+        /// <summary>
+        /// Generate schedules by adding a new event to the end of existing ones
+        /// Create a new system schedule list by adding each of the new Task commands for the Assets onto each of the old schedules
+        /// </summary>
+        /// <param name="system"></param>
+        /// <param name="tasks"></param>
+        /// <param name="initialStateList"></param>
+        /// <returns></returns>
+        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<Task> tasks, SystemState initialStateList)
         {
-
-            //system.setThreadNum(1);
-            //DWORD startTickCount = GetTickCount();
-            //accumSchedTimeMs = 0;
-
-            // get the global dependencies object
-            //Dependencies dependencies = new Dependencies().Instance();
-
             log.Info("SIMULATING... ");
             // Create empty systemSchedule with initial state set
             SystemSchedule emptySchedule = new SystemSchedule(initialStateList);
@@ -116,7 +110,7 @@ namespace HSFScheduler
                 log.Info("Done generating exhaustive task combinations");
             }
 
-            /// \todo TODO: Delete (or never create in the first place) schedules with inconsistent asset tasks (because of asset dependencies)
+            /// TODO: Delete (or never create in the first place) schedules with inconsistent asset tasks (because of asset dependencies)
 
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
@@ -138,8 +132,6 @@ namespace HSFScheduler
                     systemSchedules.Add(emptySchedule);
                 }
 
-                // Create a new system schedule list by adding each of the new Task commands for the Assets onto each of the old schedules
-                // Start timing
                 // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
                 //TODO: Parallelize this.
                 int k = 0;
@@ -158,40 +150,8 @@ namespace HSFScheduler
                         }
 
                     }
-                    //Stack<Access> emptyAccess = new Stack<Access>();
-                    //emptyAccess.Push()
-                    //potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule, emptyEvent));
-                    //   potentialSystemSchedules.Add(new SystemSchedule(oldSystemSchedule)); //deep copy
-
                 }
 
-                // TODO EAM: Remove this and only add new SystemScedule if canAddTasks and CanPerform are both true.  That way we don't need to delete SystemSchedules after the fact below.
-
-
-                //for (list<systemSchedule*>::iterator newSchedIt = newSysScheds.begin(); newSchedIt != newSysScheds.end(); newSchedIt++)
-                // The parallel version
-                // Should we use a Partitioner?
-                // Need to test this...
-                /*
-                Stopwatch stopWatch = new Stopwatch();
-                stopWatch.Start();
-                // The Scheduler has to call the CanPerform for a SystemClass, SystemSchedule combo.  The SystemClass 
-                Parallel.ForEach(potentialSystemSchedules, (currentSchedule) =>
-                {
-                    // dependencies.updateStates(newSchedule.getEndStates());
-                    if (Checker.CheckSchedule(system, currentSchedule))
-                        systemCanPerformList.Add(currentSchedule);
-                    Console.WriteLine("Processing {0} on thread {1}", currentSchedule.ToString(), Thread.CurrentThread.ManagedThreadId);
-                });
-                stopWatch.Stop();
-                
-                TimeSpan ts = stopWatch.Elapsed;
-                // Format and display the TimeSpan value.
-                string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-                    ts.Hours, ts.Minutes, ts.Seconds,
-                    ts.Milliseconds / 10);
-                Console.WriteLine("Parallel Scheduler RunTime: " + elapsedTime);
-                */
                 int numSched = 0;
                 foreach (var potentialSchedule in potentialSystemSchedules)
                 {
@@ -199,13 +159,7 @@ namespace HSFScheduler
 
                     if (Checker.CheckSchedule(system, potentialSchedule))
                         systemCanPerformList.Add(potentialSchedule);
-                    //else
-                    //{
-                    //    Console.WriteLine("Can't add sched " + numSched);
-                    //}
                     numSched++;
-                    //dependencies.updateStates(newSchedule.getEndStates());
-                    //systemCanPerformList.Push(system.canPerform(potentialSchedule));
                 }
                 foreach (SystemSchedule systemSchedule in systemCanPerformList)
                     systemSchedule.ScheduleValue = ScheduleEvaluator.Evaluate(systemSchedule);

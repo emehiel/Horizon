@@ -13,6 +13,12 @@ namespace HSFScheduler
 {
     public class EvaluatorFactory
     {
+        /// <summary>
+        /// Static method to generate an evaluator from XML node
+        /// </summary>
+        /// <param name="evaluatorNode"></param>
+        /// <param name="dependencies"></param>
+        /// <returns></returns>
         public static Evaluator GetEvaluator(XmlNode evaluatorNode, Dependency dependencies)
         {
             Evaluator schedEvaluator = new TargetValueEvaluator(dependencies); // default

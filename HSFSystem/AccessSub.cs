@@ -1,20 +1,21 @@
 ﻿// Copyright (c) 2016 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using HSFUniverse;
 using MissionElements;
 using Utilities;
-using HSFSystem;
 
 namespace HSFSubsystem
 {
     public class AccessSub : Subsystem
     {
+        /// <summary>
+        /// Constructor for the built in subsystem (cannot be scripted)
+        /// </summary>
+        /// <param name="subNode"></param>
+        /// <param name="asset"></param>
         public AccessSub(XmlNode subNode, Asset asset)
         {
             Asset = asset;
@@ -23,6 +24,7 @@ namespace HSFSubsystem
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
         }
+
         public override bool CanPerform( Event proposedEvent, Universe environment) 
         {
             if (!base.CanPerform( proposedEvent, environment))

@@ -7,7 +7,6 @@ using System.Text;
 using System.Linq;
 using Utilities;
 using MissionElements;
-using HSFSystem;
 using UserModel;
 
 namespace HSFScheduler
@@ -28,7 +27,6 @@ namespace HSFScheduler
 
         public SystemSchedule(StateHistory allStates)
         {
-            //AllStates = allStates;
             AllStates = new StateHistory(allStates.InitialState);
             foreach (var eit in allStates.Events)
             {
@@ -92,30 +90,22 @@ namespace HSFScheduler
             eventToAdd.SetTaskStart(taskStarts);
             AllStates = new StateHistory(oldStates, eventToAdd);
         }
-
         #endregion
-        public SystemSchedule Copy()
-        {
-            SystemSchedule newSched = new SystemSchedule(AllStates.InitialState);
-            int i;
-            Event eit;
-            for(i = AllStates.Events.Count-1; i>=0; i--)
-            {
-                eit = AllStates.Events.ElementAt(i);
-                newSched.AllStates.Events.Push(eit);
-            }
-            return newSched;
-        }
+        
+        /// <summary>
+        /// Determine if a task can be added to a schedule at the new start time
+        /// </summary>
+        /// <param name="newAccessList"></param>
+        /// <param name="newTaskStartTime"></param>
+        /// <returns></returns>
         public bool CanAddTasks(Stack<Access> newAccessList, double newTaskStartTime)
         {
             int count = 0;
-            // vector<assetSchedule*>::iterator asIt2 = assetscheds.begin();
-            //int asIt2 = 0;
 
 	        foreach(var access in newAccessList)
             {
                 if (!AllStates.isEmpty(access.Asset))
-                { // the ait2 check
+                {
                     if (AllStates.GetLastEvent().GetEventEnd(access.Asset) > newTaskStartTime)
                         return false;
                 }
@@ -130,17 +120,18 @@ namespace HSFScheduler
 	        return true;
         }
 
-        public int getTotalNumEvents()
+        #region Accessors
+        public int GetTotalNumEvents()
         {
             return AllStates.size();
         }
 
-        public SystemState getSubsystemNewState()
+        public SystemState GetSubsystemNewState()
         {
             return AllStates.GetLastState();
         }
 
-        public Task getSubsytemNewTask(Asset asset)
+        public Task GetSubsytemNewTask(Asset asset)
         {
             return AllStates.GetLastTask(asset);
         }
@@ -150,14 +141,8 @@ namespace HSFScheduler
         //    return AllStates.Find(item => item.Asset == asset);
         //}
 
-        public double getLastTaskStart()
+        public double GetLastTaskStart()
         {
-            //TODO: Mehiel check morgan's work
-            //double lasttime = 0;
-            //   foreach(var assetSchedule in AssetScheds)
-            // if(!assetSchedule.isEmpty())
-            //  lasttime = lasttime > assetSchedule.GetLastState().TaskStart ? lasttime : assetSchedule.GetLastState().TaskStart;
-            //return lasttime;
             double lasttime = 0;
             foreach (KeyValuePair<Asset, double> assetTaskStarts in AllStates.GetLastEvent().TaskStarts)
             {
@@ -170,12 +155,24 @@ namespace HSFScheduler
         {
             return AllStates.GetLastState();
         }
+        #endregion 
 
-        bool schedGreater(SystemSchedule elem1, SystemSchedule elem2)
+        /// <summary>
+        /// Determine if the first schedule value is greater than the second
+        /// </summary>
+        /// <param name="elem1"></param>
+        /// <param name="elem2"></param>
+        /// <returns></returns>
+        bool SchedGreater(SystemSchedule elem1, SystemSchedule elem2)
         {
             return elem1.ScheduleValue > elem2.ScheduleValue;
         }
 
+        /// <summary>
+        /// Utilitiy method to write the schedule to csv file
+        /// </summary>
+        /// <param name="schedule"></param>
+        /// <param name="scheduleWritePath"></param>
         public static void WriteSchedule(SystemSchedule schedule, String scheduleWritePath)
         {
             var csv = new StringBuilder();
@@ -187,15 +184,9 @@ namespace HSFScheduler
             string stateTimeData = "Time,";
             string stateData = "";
             csv.Clear();
-
-
-
             SystemState sysState = schedule.AllStates.Events.Peek().State;
-            //while (schedule.AllStates.Events.Count > 0)
-            //{
-            //    var currEvent = schedule.AllStates.Events.Pop();
+
             while(sysState != null) { 
-           //     SystemState sysState = currEvent.State;
                 foreach (var kvpDoubleProfile in sysState.Ddata)
                     foreach (var data in kvpDoubleProfile.Value.Data)
                         if (!stateTimeDData.ContainsKey(kvpDoubleProfile.Key))
@@ -241,10 +232,7 @@ namespace HSFScheduler
                         }
                         else if (!stateTimeMData[kvpMatrixProfile.Key].ContainsKey(data.Key))
                             stateTimeMData[kvpMatrixProfile.Key].Add(data.Key, data.Value);
-
                 sysState = sysState.Previous;
-
-
             }
 
             System.IO.Directory.CreateDirectory(scheduleWritePath);
@@ -263,6 +251,12 @@ namespace HSFScheduler
 
         }
         
+        /// <summary>
+        /// Write out all the state variables in the schedule to file
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="scheduleWritePath"></param>
         static void writeStateVariable<T>(KeyValuePair<StateVarKey<T>, SortedList<double, T>> list, string scheduleWritePath)
         {
             var csv = new StringBuilder();

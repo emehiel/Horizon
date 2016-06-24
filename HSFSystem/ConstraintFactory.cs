@@ -3,9 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using HSFSubsystem;
 using Utilities;
@@ -15,14 +12,23 @@ namespace HSFSystem
 {
     public class ConstraintFactory
     {
-        public static Constraint getConstraint(XmlNode constraintXmlNode, Dictionary<string, Subsystem> subsystemMap, Asset asset)
+        /// <summary>
+        /// Constraint generator to translate XML nodes to actual constraints
+        /// </summary>
+        /// <param name="constraintXmlNode"></param>
+        /// <param name="subsystemMap"></param>
+        /// <param name="asset"></param>
+        /// <returns></returns>
+        public static Constraint GetConstraint(XmlNode constraintXmlNode, Dictionary<string, Subsystem> subsystemMap, Asset asset)
         {
             Subsystem constrainedSub = null;
             string subName = Subsystem.parseNameFromXmlNode(constraintXmlNode, asset.Name);
             subsystemMap.TryGetValue(subName, out constrainedSub);
             if (constrainedSub == null)
                 throw new MissingMemberException("Missing Subsystem Name in Constraint");
-            string type = constraintXmlNode.ChildNodes[0].Attributes["type"].Value.ToLower();
+
+            string type = constraintXmlNode.Attributes["type"].Value.ToLower();
+
             if (type.Equals("int"))
                 return new SingleConstraint<int>(constraintXmlNode, constrainedSub);
             else if (type.Equals("double"))
@@ -31,8 +37,10 @@ namespace HSFSystem
                 return new SingleConstraint<bool>(constraintXmlNode, constrainedSub);
             else if (type.Equals("Matrix"))
                 return new SingleConstraint<Matrix<double>>(constraintXmlNode,constrainedSub);
-            else
+            else //TODO: Add functionality to create scripted constraints
                 throw new NotSupportedException("Unsupported type of constraint!");
+
+            
         }
     }
 }

@@ -14,15 +14,23 @@ namespace HSFSystem
     [Serializable]
     public class SystemClass
     {
+        #region Attributes
         public List<Asset> Assets { get; private set; }
         public List<Subsystem> Subsystems{get; private set;}
         public List<Constraint> Constraints{get; private set;}
         public Universe Environment{get; private set;}
         public int ThreadNum{get; private set;}
+        #endregion
 
-        
-        public SystemClass(List<Asset> assets, List<Subsystem> subsystems,
-                         List<Constraint> constraints, Universe environment)
+        #region Constructors
+        /// <summary>
+        /// Constructor for the system class
+        /// </summary>
+        /// <param name="assets"></param>
+        /// <param name="subsystems"></param>
+        /// <param name="constraints"></param>
+        /// <param name="environment"></param>
+        public SystemClass(List<Asset> assets, List<Subsystem> subsystems, List<Constraint> constraints, Universe environment)
         {
             Assets = assets;
             Constraints = constraints;
@@ -33,7 +41,11 @@ namespace HSFSystem
                 Subsystems.Add(nIt);
             }
         }
-        
+
+        /// <summary>
+        /// Copy Constructor for the System Class
+        /// </summary>
+        /// <param name="other"></param>
         public SystemClass(SystemClass other){
             SystemClass copy = DeepCopy.Copy<SystemClass>(other);
             Assets = copy.Assets;
@@ -42,23 +54,33 @@ namespace HSFSystem
             Environment = copy.Environment;
             ThreadNum = copy.ThreadNum;
         }
-        
-        
-        public bool checkForCircularDependencies(){
+        #endregion
+
+        #region methods
+        /// <summary>
+        /// Check for circular dependencies
+        /// </summary>
+        /// <returns></returns>
+        public bool CheckForCircularDependencies()
+        {
             bool hasCircDep = false;
             foreach(Subsystem nodeIt in Subsystems){
                 Subsystem currNode = nodeIt;
-                hasCircDep |= checkSubForCircularDependencies(nodeIt, nodeIt);
+                hasCircDep |= CheckSubForCircularDependencies(nodeIt, nodeIt);
                 if(hasCircDep)
                     break;
             }
             return hasCircDep;
         }
- 
 
-        
-        private bool checkSubForCircularDependencies(Subsystem currSub,
-                                                     Subsystem beginSub){
+        /// <summary>
+        /// Recursivley used by CheckForCircularDependencies()
+        /// </summary>
+        /// <param name="currSub"></param>
+        /// <param name="beginSub"></param>
+        /// <returns></returns>
+        private bool CheckSubForCircularDependencies(Subsystem currSub, Subsystem beginSub)
+        {
             bool hasCircDep = false;
             List<Subsystem> depSubs = currSub.DependentSubsystems;
             if(depSubs.Any()){ 
@@ -66,41 +88,13 @@ namespace HSFSystem
                     hasCircDep |= sub == beginSub;
                     if(hasCircDep)
                          break;
-                    hasCircDep |= checkSubForCircularDependencies(sub, beginSub);
+                    hasCircDep |= CheckSubForCircularDependencies(sub, beginSub);
                     if(hasCircDep)
                         break;
                 }
             }
             return hasCircDep;
         }
-        //I hope this never gets used ayways
-        //void setDependencies(Dependencies deps)
-        //{
-        //    foreach(Subsystem subIt in Subsystems)
-        //    {
-        //        subIt.setDependencies(deps);
-        //    }
-        //}
-        
-        /*        
-                public List<Asset> getAssets(){
-
-                }
-
-                public List<Subsystem> getSubsystems(){
-
-                }
-
-                public List<Constraint> getConstraints(){
-
-                }
-
-                public Environment getEnvironment(){
-
-                }
-                */
-
-
-
+        #endregion
     }
 }

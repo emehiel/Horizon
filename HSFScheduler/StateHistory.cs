@@ -12,9 +12,10 @@ namespace HSFScheduler
     [Serializable]
     public class StateHistory
     {
+        #region Attributes
         public SystemState InitialState { get; private set; }
         public Stack<Event> Events { get; private set; }
-        //   public Asset Asset { get; private set; }
+        #endregion
 
         /// <summary>
         ///  Creates a new empty schedule with the given initial state.

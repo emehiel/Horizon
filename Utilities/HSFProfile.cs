@@ -4,8 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
+using log4net;
 
 namespace Utilities
 {
@@ -14,7 +13,7 @@ namespace Utilities
     // Assume the value of the data after the last time entry is the last value in data
     public class HSFProfile<T> : IHSFProfile   
     {
-        // Class Data
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// A map containing time-ordered values which stores SystemState data
@@ -27,26 +26,11 @@ namespace Utilities
             { return data; }
         }
 
-        // Construcotrs
-
         /// <summary>
         /// Creates a new empty profile
         /// </summary>
         public HSFProfile()
         {
-        }
-
-        // Does this get used?
-        // If not, don't include it.  Passing a reference causes otherProfile to change when Profile changes
-        /// <summary>
-        /// Create a new Profile from a copy of an existing profile
-        /// This constructor create a deep copy of the Profile passed in as a reference
-        /// </summary>
-        /// <param name="otherProfile"></param>
-        public HSFProfile(HSFProfile<T> otherProfile)
-        {
-            foreach (var item in otherProfile.data)
-                data[item.Key] = item.Value;
         }
 
         /// <summary>
@@ -57,49 +41,6 @@ namespace Utilities
         public HSFProfile(KeyValuePair<double, T> pointIn)
         {
             data.Add(pointIn.Key, pointIn.Value);
-        }
-
-        //public HSFProfile<double> ConvertHSFProfile(IronPython.Runtime.PythonTuple pytup, Type tupType)
-        //{
-        //    return new  HSFProfile<double>(new KeyValuePair<double, double>(pytup.));
-        //}
-
-        public HSFProfile<double> upperLimitIntegrateToProf(double start, double end, double saveFreq, double upperBound, ref bool exceeded, double iv, double ic)
-        {
-            exceeded = false;
-            HSFProfile<double> prof = new HSFProfile<double>();
-            double last = ic;
-            double time, result;
-            for (time = start + saveFreq; time < end; time += saveFreq)
-            {
-                
-                Double.TryParse(Integrate(time - saveFreq, time, iv).ToString(), out result); //Morgan isn't sure about this
-                result += last;
-                if (result > upperBound)
-                {
-                    result = upperBound;
-                    exceeded = true;
-                }
-                if (result != last)
-                {
-                    prof[time] = result;
-                }
-                last = result;
-            }
-            time -= saveFreq;
-            Double.TryParse(Integrate(time, end, iv).ToString(), out result); //Morgan isn't sure about this
-            result += last;
-            if (result > upperBound)
-            {
-                result = upperBound;
-                exceeded = true;
-            }
-            if (result != last)
-                prof[end] = result;
-
-            if (prof.Empty())
-                prof[start] = ic;
-            return prof;
         }
 
         /// <summary>
@@ -138,8 +79,7 @@ namespace Utilities
             data = new SortedDictionary<double, T>(dataIn);
         }
 
-        // Indexers
-
+        #region Indexers
         public T this[double key]
         {
             get
@@ -154,10 +94,9 @@ namespace Utilities
                 data.Add(key, value);
             }
         }
+        #endregion
 
-
-        // Accessors
-
+        #region Accessors
         /// <summary>
         /// Returns the first data point in the profile
         /// </summary>
@@ -175,18 +114,156 @@ namespace Utilities
         {
             return data.First().Value;
         }
-
-        #region Methods
-        public override string ToString()
+        /// <summary>
+        /// Returns the time of the first data point in the profile
+        /// </summary>
+        /// <returns>The time of the first data point as a double</returns>
+        public double FirstTime()
         {
-            string dataString = "";
-            foreach(var data in data)
-            {
-                dataString += data.Key + "," + data.Value + ",";
-            }
-            return dataString;
+            return data.First().Key;
         }
-        //TODO: (morgan ask mehiel) THis should be templated
+
+        /// <summary>
+        /// Returns the last data point in the profile
+        /// </summary>
+        /// <returns>The KeyValuePair representing the data point in the profile</returns>
+        public KeyValuePair<double, T> Last()
+        {
+            return data.Last();
+        }
+
+        /// <summary>
+        /// Returns the last value in the profile
+        /// </summary>
+        /// <returns>Returns the last value in the profile</returns>
+        public T LastValue()
+        {
+            return data.Last().Value;
+        }
+
+        /// <summary>
+        /// Retruns the time of the last data point in the profile
+        /// </summary>
+        /// <returns>The time of the last data point as a doubl</returns>
+        public double LastTime()
+        {
+            return data.Last().Key;
+        }
+
+        /// <summary>
+        /// Gets a profile data point at a given time
+        /// </summary>
+        /// <param name="time">a double representing the time at which to get the data point</param>
+        /// <returns>a KeyValuePair representing the data point</returns>
+        // MAJOR TODO: what should be returned when we try to access profile data before or after the first or last key (time)?
+        public KeyValuePair<double, T> DataAtTime(double time)
+        {
+
+            try
+            {
+                if (!Empty())
+                {
+                    IEnumerable<KeyValuePair<double, T>> query = data.Where(item => item.Key <= time);
+                    if (query.Count() != 0)
+                    {
+                        var v = query.Last();
+                        return v;
+                    }
+                    else
+                    {
+                        log.Warn("WARNING - DataAtTime: Attempting to reference time before first data point in profile");
+                        return data.Single(item => item.Key == data.Keys.Min());
+                    }
+
+                }
+                else
+                {
+                    log.Warn("WARNING - DataAtTime: Attemping to get data point from empty profile. Returning null pair.");
+                    return new KeyValuePair<double, T>();  // TODO:  What to return if profile is empty?
+                }
+            }
+            catch (ArgumentException e)
+            {
+                log.Warn("attempt to find data point in profile failed at time " + time + "failed");
+                throw;
+            }
+        }
+
+        /// <summary>
+        /// Gets a profile data value at a given time
+        /// </summary>
+        /// <param name="time">a double representing the time at which to get the data value</param>
+        /// <returns>the data value of type T</returns>
+        public T ValueAtTime(double time)
+        {
+            return DataAtTime(time).Value;
+        }
+        #endregion
+
+        #region Integration Methods
+        /// <summary>
+        /// Integrate the profile from start to end time and set to upper limit if limit is exceeded
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="saveFreq"></param>
+        /// <param name="upperBound"></param>
+        /// <param name="exceeded"></param>
+        /// <param name="iv"></param>
+        /// <param name="ic"></param>
+        /// <returns></returns>
+        public HSFProfile<double> upperLimitIntegrateToProf(double start, double end, double saveFreq, double upperBound, ref bool exceeded, double iv, double ic)
+        {
+            exceeded = false;
+            HSFProfile<double> prof = new HSFProfile<double>();
+            double last = ic;
+            double time, result;
+            for (time = start + saveFreq; time < end; time += saveFreq)
+            {
+
+                Double.TryParse(Integrate(time - saveFreq, time, iv).ToString(), out result); //Morgan isn't sure about this
+                result += last;
+                if (result > upperBound)
+                {
+                    result = upperBound;
+                    exceeded = true;
+                }
+                if (result != last)
+                {
+                    prof[time] = result;
+                }
+                last = result;
+            }
+            time -= saveFreq;
+            Double.TryParse(Integrate(time, end, iv).ToString(), out result); //Morgan isn't sure about this
+            result += last;
+            if (result > upperBound)
+            {
+                result = upperBound;
+                exceeded = true;
+            }
+            if (result != last)
+                prof[end] = result;
+
+            if (prof.Empty())
+                prof[start] = ic;
+            return prof;
+        }
+
+        //TODO: This should be templated
+        /// <summary>
+        /// Integrate the profile from start to end time and set to limit if exceeded
+        /// </summary>
+        /// <param name="start"></param>
+        /// <param name="end"></param>
+        /// <param name="saveFreq"></param>
+        /// <param name="lowerBound"></param>
+        /// <param name="upperBound"></param>
+        /// <param name="exceeded_lower"></param>
+        /// <param name="exceeded_upper"></param>
+        /// <param name="iv"></param>
+        /// <param name="ic"></param>
+        /// <returns></returns>
         public HSFProfile<double> limitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, double upperBound, ref bool exceeded_lower, ref bool exceeded_upper, double iv, double ic)
         {
             HSFProfile<double> prof = new HSFProfile<double>();
@@ -279,7 +356,13 @@ namespace Utilities
             return prof;
         }
 
-
+        /// <summary>
+        /// Integrate a value from the start to end time
+        /// </summary>
+        /// <param name="startTime"></param>
+        /// <param name="endTime"></param>
+        /// <param name="initialValue"></param>
+        /// <returns></returns>
         public double Integrate(double startTime, double endTime, double initialValue)
         {
             if (endTime < startTime)
@@ -301,94 +384,9 @@ namespace Utilities
             return query;
             //  return query.Sum(queryItem => queryItem.Value) + initialValue;
         }
-        /// <summary>
-        /// Returns the time of the first data point in the profile
-        /// </summary>
-        /// <returns>The time of the first data point as a double</returns>
-        public double FirstTime()
-        {
-            return data.First().Key;
-        }
+        #endregion
 
-        /// <summary>
-        /// Returns the last data point in the profile
-        /// </summary>
-        /// <returns>The KeyValuePair representing the data point in the profile</returns>
-        public KeyValuePair<double, T> Last()
-        {
-            return data.Last();
-        }
-
-        /// <summary>
-        /// Returns the last value in the profile
-        /// </summary>
-        /// <returns>Returns the last value in the profile</returns>
-        public T LastValue()
-        {
-            return data.Last().Value;
-        }
-
-        /// <summary>
-        /// Retruns the time of the last data point in the profile
-        /// </summary>
-        /// <returns>The time of the last data point as a doubl</returns>
-        public double LastTime()
-        {
-            return data.Last().Key;
-        }
-
-        /// <summary>
-        /// Gets a profile data point at a given time
-        /// </summary>
-        /// <param name="time">a double representing the time at which to get the data point</param>
-        /// <returns>a KeyValuePair representing the data point</returns>
-        // MAJOR TODO: what should be returned when we try to access profile data before or after the first or last key (time)?
-        public KeyValuePair<double, T> DataAtTime(double time)
-        {
-
-            try
-            {
-                if (!Empty())
-                {
-                    IEnumerable<KeyValuePair<double, T>> query = data.Where(item => item.Key <= time);
-                    if (query.Count() != 0)
-                    {
-                        var v = query.Last();
-                        return v;
-                    }
-                    else
-                    {
-                        Console.WriteLine("WARNING - DataAtTime: Attempting to reference time before first data point in profile");
-                        return data.Single(item => item.Key == data.Keys.Min());
-                    }
-
-                }
-                else
-                {
-                    Console.WriteLine("WARNING - DataAtTime: Attemping to get data point from empty profile. Returning null pair.");
-                    return new KeyValuePair<double, T>();  // TODO:  What to return if profile is empty?
-                }
-            }
-            catch (ArgumentException e)
-            {
-                Console.WriteLine("attempt to find data point in profile failed at time {0} failed", time);
-                throw;
-            }
-        }
-
-        /// <summary>
-        /// Gets a profile data value at a given time
-        /// </summary>
-        /// <param name="time">a double representing the time at which to get the data value</param>
-        /// <returns>the data value of type T</returns>
-        public T ValueAtTime(double time)
-        {
-            return DataAtTime(time).Value;
-        }
-
-
-        // Utilities
-
+        #region Utilities
         /// <summary>
         /// Sums all elements in a profile
         /// </summary>
@@ -453,10 +451,9 @@ namespace Utilities
         {
             data = (SortedDictionary<double, T>)data.Distinct();
         }
+        #endregion
 
-
-        // Add Data Funtions
-
+        #region Add Data Funtions
         // TODO:  Do we want to always overwrite values with same key?  Or throw the exception and overwrite?
         /// <summary>
         /// Adds a new data point to an existing profile
@@ -471,7 +468,7 @@ namespace Utilities
             }
             catch (ArgumentException)
             {
-               // Console.WriteLine("An element with Key/Value pair already exists in Profile - overwriting value.");
+                log.Warn("An element with Key/Value pair already exists in Profile - overwriting value.");
                 data[timeIn] = valIn;
             }
         }
@@ -488,7 +485,7 @@ namespace Utilities
             }
             catch (ArgumentException)
             {
-               // Console.WriteLine("An element with Key/Value pair already exists in Profile - overwriting value.");
+                log.Warn("An element with Key/Value pair already exists in Profile - overwriting value.");
                 data[pointIn.Key] = pointIn.Value;
             }
         }
@@ -507,9 +504,15 @@ namespace Utilities
                 }
             }
         }
+        #endregion
 
-        // Operators
         #region Operators
+        /// <summary>
+        /// Merge the data in two profiles by performing a union
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <returns></returns>
         public static HSFProfile<T> MergeProfiles(HSFProfile<T> p1, HSFProfile<T> p2) //Morgan made this static
         {
             HSFProfile<T> p3 = new HSFProfile<T>();
@@ -521,6 +524,26 @@ namespace Utilities
         #endregion
 
         #region Overrides
+        /// <summary>
+        /// Override of the ToString method
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            string dataString = "";
+            foreach (var data in data)
+            {
+                dataString += data.Key + "," + data.Value + ",";
+            }
+            return dataString;
+        }
+
+        /// <summary>
+        /// Override addition operator for adding to hsfprofiles
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator +(HSFProfile<T> p1, HSFProfile<T> p2)
         {
             if (p1.Empty())
@@ -548,6 +571,12 @@ namespace Utilities
             return p3;
         }
 
+        /// <summary>
+        /// Override addition operator to add a hsfprofile with a number
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="someNumber"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator +(HSFProfile<T> p1, dynamic someNumber)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
@@ -558,6 +587,12 @@ namespace Utilities
             return pOut;
         }
 
+        /// <summary>
+        /// Override addition operator to add a hsfprofile with a number
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="someNumber"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator +(dynamic someNumber, HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
@@ -565,6 +600,12 @@ namespace Utilities
             return pOut = p1 + someNumber;
         }
 
+        /// <summary>
+        /// Override subtraction operator to make a hsfprofile negative
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="someNumber"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator -(HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
@@ -574,24 +615,48 @@ namespace Utilities
             return pOut;
         }
 
+        /// <summary>
+        /// Override subtraction operator to subtract two hsfprofiles
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="someNumber"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator -(HSFProfile<T> p1, HSFProfile<T> p2)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
             return pOut = p1 + (-p2);
         }
 
+        /// <summary>
+        /// Override subtraction operator to subtract two hsfprofiles
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="someNumber"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator -(HSFProfile<T> p1, dynamic someNumber)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
             return pOut = p1 + (-someNumber);
         }
 
+        /// <summary>
+        /// Override subtraction operator to subtract a number from a hsfprofile
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="someNumber"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator -(dynamic someNumber, HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
             return pOut = -p1 + someNumber;
         }
 
+        /// <summary>
+        /// Override subtraction operator to subtract a number from a hsfprofile
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="someNumber"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator *(HSFProfile<T> p1, dynamic someNumber)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
@@ -602,6 +667,12 @@ namespace Utilities
             return pOut;
         }
 
+        /// <summary>
+        /// Override the multiplcation operator to scale a profile by a number
+        /// </summary>
+        /// <param name="someNumber"></param>
+        /// <param name="p1"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator *(dynamic someNumber, HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
@@ -609,6 +680,12 @@ namespace Utilities
             return pOut = p1 * someNumber;
         }
 
+        /// <summary>
+        /// Override the division operator to divide a profile by a number
+        /// </summary>
+        /// <param name="someNumber"></param>
+        /// <param name="p1"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator /(dynamic someNumber, HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
@@ -618,6 +695,12 @@ namespace Utilities
             return pOut;
         }
 
+        /// <summary>
+        /// Override the division operator to divide a profile by a number
+        /// </summary>
+        /// <param name="someNumber"></param>
+        /// <param name="p1"></param>
+        /// <returns></returns>
         public static HSFProfile<T> operator /(HSFProfile<T> p1, dynamic someNumber)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
@@ -627,8 +710,11 @@ namespace Utilities
             return pOut;
         }
     
-
-        // override object.Equals
+        /// <summary>
+        /// Override the object equals method
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType())
@@ -644,22 +730,35 @@ namespace Utilities
                 areEqual &= item.Item1.Key == item.Item2.Key;
                 areEqual &= (dynamic)item.Item1.Value == item.Item2.Value;
             }
-
             return areEqual;
-
         }
 
+        /// <summary>
+        /// Override the logical equals operator
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <returns></returns>
         public static bool operator == (HSFProfile<T> p1, HSFProfile<T> p2)
         {
             return p1.Equals(p2);
         }
 
+        /// <summary>
+        /// Override the logical not equals operator
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <returns></returns>
         public static bool operator != (HSFProfile<T> p1, HSFProfile<T> p2)
         {
             return !(p1 == p2);
         }
 
-        // override object.GetHashCode
+        /// <summary>
+        /// Override the object GetHashCode method
+        /// </summary>
+        /// <returns></returns>
         public override int GetHashCode()
         {
             // TODO: write your implementation of GetHashCode() here
@@ -667,7 +766,7 @@ namespace Utilities
         }
         #endregion
 
-        #endregion
+       
 
     }
 }

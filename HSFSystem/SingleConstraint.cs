@@ -3,9 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MissionElements;
 using Utilities;
 using System.Xml;
@@ -19,6 +16,11 @@ namespace HSFSystem
         private StateVarKey<T> _key;
         public ConstraintType Type { get; private set; }
 
+        /// <summary>
+        /// Constraint to check a single value of the state of a group or single subsystem
+        /// </summary>
+        /// <param name="constraintXmlNode"></param>
+        /// <param name="sub"></param>
         public SingleConstraint(XmlNode constraintXmlNode, Subsystem sub)
         {
             Subsystems = new List<Subsystem>() { sub };
@@ -31,12 +33,13 @@ namespace HSFSystem
             if (constraintXmlNode.Attributes["type"] == null)
                 throw new MissingFieldException("Missing Type Field for Constraint!");
             Type = (ConstraintType)Enum.Parse(typeof(ConstraintType), constraintXmlNode.Attributes["type"].Value);
+            if (constraintXmlNode.Attributes["name"] == null)
+                throw new MissingMemberException("Missing Constraint Name");
+            Name = constraintXmlNode.Attributes["name"].Value.ToLower();
         }
 
-        public override bool Accepts(SystemState state)
+        public override bool Accepts(SystemState state) //fix this to be a dependency function
         {
-            // use dynamic in getProfile()
-
             HSFProfile<T> prof = state.GetProfile(_key);
             
             switch (Type)
@@ -56,9 +59,9 @@ namespace HSFSystem
 
             }
             return true;
-
         }
 
+        // The types of constraints supported by HSF
         public enum ConstraintType { FAIL_IF_HIGHER, FAIL_IF_HIGHER_OR_EQUAL, FAIL_IF_LOWER, FAIL_IF_LOWER_OR_EQUAL, FAIL_IF_NOT_EQUAL, FAIL_IF_EQUAL}
     }
 

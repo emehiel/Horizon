@@ -10,10 +10,12 @@ using System.Xml;
 
 
 namespace HSFUniverse{
-    //Old implementation of universe. To be modified drastically by trent's thesis.
     public class Universe{
+        #region Attributes
         public Sun Sun { get; private set; }
-        
+        #endregion
+
+        #region Constructors
         public Universe(){
             Sun = new Sun(false);
         }
@@ -24,8 +26,6 @@ namespace HSFUniverse{
 
         public Universe(XmlNode environmentNode){
             // Check the XMLNode for the presence of a child SUN node
-
-   
             if (environmentNode["SUN"] != null)
             {
                 // Create the Sun based on the XMLNode                
@@ -42,9 +42,6 @@ namespace HSFUniverse{
                 Sun = new Sun();
             }
         }
-        
-
-        
-        
+        #endregion
     }
 }

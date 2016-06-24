@@ -9,7 +9,7 @@ using MissionElements;
 using HSFSubsystem;
 using HSFSystem;
 
-namespace Horizon
+namespace Logging
 {
     public class HSFLogData
     {
@@ -35,14 +35,14 @@ namespace Horizon
             Value = value;
             TimeInfo = timeInfo;
         }
-        public HSFLogData(Constraint constraint, Subsystem subsystem, Task task, string conName, string violation, double value, double timeInfo)
+        public HSFLogData(Constraint constraint, Subsystem subsystem, Task task, double value, double timeInfo)
         {
             AssetName = constraint.Name;
             SubName = subsystem.Name;
             TaskName = task.Type.ToString();
             TargetName = task.Target.Name;
-            ConstraintName = conName;
-            Violation = violation;
+            ConstraintName = constraint.Name;
+            Violation = "Constraint Failed";
             Value = value;
             TimeInfo = timeInfo;
         }

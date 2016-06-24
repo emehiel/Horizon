@@ -16,7 +16,7 @@ namespace HSFUniverse
 
     /// <summary>
     /// A class that specifies the dynamic state of a given rigid body object in the system in a given coordinate frame.
-    /// Dynamic State data includes position, velocity, Euler Angels, Quaternions, body angular rates.
+    /// Dynamic State data includes position, velocity, (future: Euler Angels, Quaternions, body angular rates)
     /// This class replaces the Position Class in prior versions of HSF.      
     /// The two coordinate frames used are ECI and LLA. 
     /// ECI refers to an unchanging coordinate frame which is relatively fixed with respect to the Solar
@@ -40,7 +40,7 @@ namespace HSFUniverse
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         private SortedList<double, Matrix<double>> _stateData;
 
-
+        #region Constructors
         public DynamicState(XmlNode dynamicStateXMLNode)
         {
             if (dynamicStateXMLNode.ParentNode.Attributes["assetName"] != null)
@@ -95,6 +95,8 @@ namespace HSFUniverse
             Eoms = eoms;
             //_stateDataTimeStep = stateDataTimeStep;
         }
+        #endregion
+
 
         public Matrix<double> InitialConditions()
         {
@@ -111,6 +113,7 @@ namespace HSFUniverse
             return this[simTime]; 
         }
 
+        #region Accessors
         /// <summary>
         /// Returns the current position of the system at the time simTime.
         /// </summary>
@@ -121,27 +124,52 @@ namespace HSFUniverse
             return this[simTime][new MatrixIndex(1, 3), 1];
         }
 
+        /// <summary>
+        /// Returns velocity at time in ECI
+        /// </summary>
+        /// <param name="simTime"></param>
+        /// <returns></returns>
         public Matrix<double> VelocityECI(double simTime)
         {
             return _stateData[simTime][new MatrixIndex(4, 6), 1];
         }
 
+        /// <summary>
+        /// Returns euler angles at time in radians
+        /// </summary>
+        /// <param name="simTime"></param>
+        /// <returns></returns>
         public Matrix<double> EulerAngles(double simTime)
         {
             Matrix<double> eulerAngles = GeometryUtilities.quat2euler(Quaternions(simTime));
             return eulerAngles;
         }
 
+        /// <summary>
+        /// Returns quaternions at time
+        /// </summary>
+        /// <param name="simTime"></param>
+        /// <returns></returns>
         public Matrix<double> Quaternions(double simTime)
         {
             return _stateData[simTime][new MatrixIndex(7, 10), 1];
         }
 
+        /// <summary>
+        /// Returns euler rates at time in rad/s
+        /// </summary>
+        /// <param name="simTime"></param>
+        /// <returns></returns>
         public Matrix<double> EulerRates(double simTime)
         {
             return _stateData[simTime][new MatrixIndex(11, 13), 1];
         }
+        #endregion
 
+        /// <summary>
+        /// Propogate state from last propogated time to simTime
+        /// </summary>
+        /// <param name="simTime"></param>
         private void PropagateState(double simTime)
         {
             log.Info("Integrating and resampling dynamic state data to "+ simTime + "seconds...");
@@ -219,11 +247,21 @@ namespace HSFUniverse
             }
         }
 
+        /// <summary>
+        /// Determine if there is a line of sight (LOS) to the target at sim time
+        /// </summary>
+        /// <param name="targetPositionECI"></param>
+        /// <param name="simTime"></param>
+        /// <returns></returns>
         public bool hasLOSTo(Matrix<double> targetPositionECI, double simTime)
         {
             return GeometryUtilities.hasLOS(PositionECI(simTime), targetPositionECI);
         }
 
+        /// <summary>
+        /// Override of the Object ToString method
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             var csv = new StringBuilder();
@@ -244,7 +282,10 @@ namespace HSFUniverse
             return csv.ToString();
         }
     }
-   
+    
+    // Dynamic states type supported by HSF
     public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
+
+    // Propagator types supported by HSF
     public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };
 }

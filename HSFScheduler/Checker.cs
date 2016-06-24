@@ -3,17 +3,21 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using HSFSystem;
 using HSFSubsystem;
-using MissionElements;
 using HSFUniverse;
+using Logging;
 
 namespace HSFScheduler
 {
     public static class Checker
     {
+        /// <summary>
+        /// Determine if the system can execute the proposed schedule
+        /// </summary>
+        /// <param name="system"></param>
+        /// <param name="proposedSchedule"></param>
+        /// <returns></returns>
         public static bool CheckSchedule(SystemClass system, SystemSchedule proposedSchedule)
         {
             // Iterate through Subsystem Nodes and set that they havent run
@@ -40,10 +44,17 @@ namespace HSFScheduler
             return true;
         }
 
+        /// <summary>
+        /// Method to check if the subsystem can perform the most recent task that was added to the schedule
+        /// </summary>
+        /// <param name="subsystem"></param>
+        /// <param name="proposedSchedule"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
         private static bool checkSub(Subsystem subsystem, SystemSchedule proposedSchedule, Universe environment)
         {
-            //if (subsystem.IsEvaluated)
-            //    return true;
+            if (subsystem.IsEvaluated)
+                return true;
             var events = proposedSchedule.AllStates.Events;
             if (events.Count != 0)
             {
@@ -59,6 +70,14 @@ namespace HSFScheduler
             }
             return true;
         }
+
+        /// <summary>
+        /// See if all the subsystems can perform the most recent task that was added to the schedule
+        /// </summary>
+        /// <param name="subsystems"></param>
+        /// <param name="proposedSchedule"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
         private static bool checkSubs(List<Subsystem> subsystems, SystemSchedule proposedSchedule, Universe environment)
         {
             foreach (var sub in subsystems)
@@ -68,16 +87,23 @@ namespace HSFScheduler
             }
             return true;
         }
+
+        /// <summary>
+        /// Check if the constraint has been violated in progressing the state of the system
+        /// </summary>
+        /// <param name="system"></param>
+        /// <param name="proposedSchedule"></param>
+        /// <param name="constraint"></param>
+        /// <returns></returns>
         private static bool CheckConstraints(SystemClass system, SystemSchedule proposedSchedule, Constraint constraint)
         {
-            // pass the state for checking
             if (!constraint.Accepts(proposedSchedule.AllStates.GetLastState()))
             {
-                Logger.Report("Constraint Failed: " + constraint.GetType().ToString());
+                // TODO: Change this to logger
+                // HSFLogger.Log(new HSFLogData(constraint, subsystem, task, value, time));
+                Console.WriteLine("Constraint Failed");
                 return false;
             }
-            
-
             return true;
         }
     }

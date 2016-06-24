@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2016 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+
+using System;
 using System.Collections.Generic;
 using Utilities;
 using MissionElements;
@@ -77,6 +80,11 @@ namespace MissionElements
         #endregion
 
         #region Accessors
+        /// <summary>
+        /// Get the current task assigned to the asset
+        /// </summary>
+        /// <param name="asset"></param>
+        /// <returns></returns>
         public Task GetAssetTask(Asset asset)
         {
             Task currentTask;
@@ -161,7 +169,11 @@ namespace MissionElements
         }
         #endregion
 
-        #region Methods
+        #region Overrides
+        /// <summary>
+        /// Override of the Object ToString method
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
             string eventString = "";

@@ -76,6 +76,7 @@ namespace HSFSubsystem
             IsEvaluated = true;
             return true;
         }
+
         /// <summary>
         /// The default canExtend function. May be over written for additional functionality.
         /// </summary>
@@ -100,6 +101,7 @@ namespace HSFSubsystem
         {
             SubsystemDependencyFunctions.Add("DepCollector", new Func<Event, HSFProfile<double>>(DependencyCollector));
         }
+
         /// <summary>
         /// Default Dependency Collector simply sums the results of the dependecy functions
         /// </summary>
@@ -120,14 +122,6 @@ namespace HSFSubsystem
             }
             return outProf;
         }
-        /// <summary>
-        /// Add all the dependent subsystems to the DependentSubsystems field
-        /// </summary>
-        /// <param name="deps"></param>
-        //public void CollectDependentSubsystems(List<ISubsystem> deps)
-        //{
-        //    DepenedentSubsystems = deps;
-        //}
 
         /// <summary>
         /// Find the subsystem name field from the XMLnode and create the name of format "Asset#.SubName
@@ -146,6 +140,12 @@ namespace HSFSubsystem
                 throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
         }
 
+        /// <summary>
+        /// Method to get subsystem name from xml node.
+        /// </summary>
+        /// <param name="subXmlNode"></param>
+        /// <param name="assetName"></param>
+        /// <returns></returns>
         public static string parseNameFromXmlNode(XmlNode subXmlNode, string assetName)
         {
             string Name;
@@ -169,27 +169,36 @@ namespace HSFSubsystem
         //    StateVarKey <keyType.GetType()> = new StateVarKey<keyType.GetType() > (key);
         //    .ChangeType(value, keyType);
         //}
+
+        /// <summary>
+        /// Method to get subsystem state at a given time. Should be used for writing out state data
+        /// </summary>
+        /// <param name="currentSystemState"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
         public SystemState getSubStateAtTime(SystemState currentSystemState, double time)
         {
             SystemState state = new SystemState();
             foreach(var key in Ikeys)
             {
-                state.Idata.Add(key, new HSFProfile<int>(time, currentSystemState.getValueAtTime(key, time).Value));
+                state.Idata.Add(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Bkeys)
             {
-                state.Bdata.Add(key, new HSFProfile<bool>(time, currentSystemState.getValueAtTime(key, time).Value));
+                state.Bdata.Add(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Dkeys)
             {
-                state.Ddata.Add(key, new HSFProfile<double>(time, currentSystemState.getValueAtTime(key, time).Value));
+                state.Ddata.Add(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Mkeys)
             {
-                state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.getValueAtTime(key, time).Value));
+                state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             return state;
         }
+        
+        // Add keys depending on the type of the key
         public void addKey(StateVarKey<int> keyIn) {
             if (Ikeys == null) //Only construct what you need
             {
@@ -197,6 +206,7 @@ namespace HSFSubsystem
             }
             Ikeys.Add(keyIn);
         }
+
         public void addKey(StateVarKey<double> keyIn) {
             if (Dkeys == null) //Only construct what you need
             {
@@ -204,6 +214,7 @@ namespace HSFSubsystem
             }
             Dkeys.Add(keyIn);
         }
+
         public void addKey(StateVarKey<float> keyIn) {
             if (Fkeys == null) //Only construct what you need
             {
@@ -211,6 +222,7 @@ namespace HSFSubsystem
             }
             Fkeys.Add(keyIn);
         }
+
         public void addKey(StateVarKey<bool> keyIn) {
             if (Bkeys == null) //Only construct what you need
             {
@@ -218,6 +230,7 @@ namespace HSFSubsystem
             }
             Bkeys.Add(keyIn);
         }
+
         public void addKey(StateVarKey<Matrix<double>> keyIn) {
             if (Mkeys == null) //Only construct what you need
             {
@@ -225,6 +238,7 @@ namespace HSFSubsystem
             }
             Mkeys.Add(keyIn);
         }
+
         public void addKey(StateVarKey<Quat> keyIn) {
             if (Qkeys == null) //Only construct what you need
             {

@@ -3,18 +3,18 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Xml;
 using HSFSystem;
 using MissionElements;
+using log4net;
 
 namespace HSFSubsystem
 {
     public class SubsystemFactory
     {
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
         /// <summary>
-        /// A class to interpret the Xml file and create subsystems
+        /// A method to interpret the Xml file and create subsystems
         /// </summary>
         /// <param name="SubsystemXmlNode"></param>
         /// <param name="enableScripting"></param>
@@ -62,12 +62,11 @@ namespace HSFSubsystem
                 }
                 else
                 {
+                    log.Fatal("Horizon does not recognize the subsystem: " + type);
                     throw new MissingMemberException("Unknown Subsystem Type " + type);
                 }
             }
             return name;
-
-            // throw new NotSupportedException("Horizon does not recognize the subsystem: " + type);
         }
     }
 }

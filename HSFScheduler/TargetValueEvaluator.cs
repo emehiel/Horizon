@@ -22,6 +22,11 @@ namespace HSFScheduler
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Override of the Evaluate method
+        /// </summary>
+        /// <param name="schedule"></param>
+        /// <returns></returns>
         public override double Evaluate(SystemSchedule schedule)
         {
             double sum = 0;

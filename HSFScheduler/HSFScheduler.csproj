@@ -105,6 +105,10 @@
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
       <Name>HSFUniverse</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Logging\Logging.csproj">
+      <Project>{45bee7e3-100b-4b95-8e59-2ae94503c1b4}</Project>
+      <Name>Logging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MissionElements\MissionElements.csproj">
       <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
       <Name>MissionElements</Name>

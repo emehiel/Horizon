@@ -125,7 +125,7 @@ namespace HSFScheduler
                     scheduleCombos = GenerateExhaustiveSystemSchedules(preGeneratedAccesses, system, currentTime);
 
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
-                if (systemSchedules.Count > _numSchedCropTo)
+                if (systemSchedules.Count > _maxNumSchedules)
                 {
                     log.Info("Cropping Schedules...");
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
@@ -194,7 +194,7 @@ namespace HSFScheduler
 
             // Delete the sysScheds that don't fit
             int numSched = schedulesToCrop.Count;
-            for (int i = 0; i < numSched - _maxNumSchedules; i++)
+            for (int i = 0; i < numSched - _numSchedCropTo; i++)
             {
                 schedulesToCrop.Remove(schedulesToCrop[0]);
             }

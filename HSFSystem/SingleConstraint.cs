@@ -33,9 +33,9 @@ namespace HSFSystem
             if (constraintXmlNode.Attributes["type"] == null)
                 throw new MissingFieldException("Missing Type Field for Constraint!");
             Type = (ConstraintType)Enum.Parse(typeof(ConstraintType), constraintXmlNode.Attributes["type"].Value);
-            if (constraintXmlNode.Attributes["name"] == null)
+            if (constraintXmlNode.Attributes["subsystemName"] == null)
                 throw new MissingMemberException("Missing Constraint Name");
-            Name = constraintXmlNode.Attributes["name"].Value.ToLower();
+            Name = constraintXmlNode.Attributes["subsystemName"].Value.ToLower();
         }
 
         public override bool Accepts(SystemState state) //fix this to be a dependency function

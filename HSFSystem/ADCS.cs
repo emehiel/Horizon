@@ -32,12 +32,12 @@ namespace HSFSubsystem
             DefaultSubName = "Adcs";
             Asset = asset;
             GetSubNameFromXmlNode(ADCSNode);
-            double slewTime;
+            /*double slewTime;
             if (ADCSNode.Attributes["timetoslew"].Value != null)
             {
                 Double.TryParse(ADCSNode.Attributes["slewTime"].Value, out slewTime);
                 _timetoslew = slewTime;
-            }
+            }*/
             POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
             addKey(POINTVEC_KEY);
             DependentSubsystems = new List<Subsystem>();
@@ -82,7 +82,7 @@ namespace HSFSubsystem
                 if (es + timetoslew > te)
                 {
                     // TODO: Change this to Logger
-                    Console.WriteLine("ADCS: Not enough time to slew event start: "+ es + "task end" + te);
+                    //Console.WriteLine("ADCS: Not enough time to slew event start: "+ es + "task end" + te);
                     return false;
                 }
                 else

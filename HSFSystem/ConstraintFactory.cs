@@ -27,7 +27,7 @@ namespace HSFSystem
             if (constrainedSub == null)
                 throw new MissingMemberException("Missing Subsystem Name in Constraint");
 
-            string type = constraintXmlNode.Attributes["type"].Value.ToLower();
+            string type = constraintXmlNode["STATEVAR"].Attributes["type"].Value.ToLower();
 
             if (type.Equals("int"))
                 return new SingleConstraint<int>(constraintXmlNode, constrainedSub);

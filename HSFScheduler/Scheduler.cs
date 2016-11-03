@@ -198,6 +198,8 @@ namespace HSFScheduler
             {
                 schedulesToCrop.Remove(schedulesToCrop[0]);
             }
+
+            schedulesToCrop.TrimExcess();
         }
 
         /// <summary>

@@ -95,6 +95,7 @@
     <Compile Include="IntegratorOptions.cs" />
     <Compile Include="CollectionExtentions.cs" />
     <Compile Include="Math\MyClass.cs" />
+    <Compile Include="Matrix 3x1.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="MatrixIndex.cs" />
     <Compile Include="obj\Debug\TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs" />

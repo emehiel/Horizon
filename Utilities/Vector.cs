@@ -11,7 +11,7 @@ using System.Xml;
 namespace Utilities
 {
     [Serializable()]
-    public class Matrix3x1<T> : ISerializable, IEnumerable
+    public class Vector<T> : ISerializable, IEnumerable
     {
         #region Properties
         /// <summary>
@@ -20,8 +20,8 @@ namespace Utilities
         /// 
         
         [XmlIgnore]
-        public int NumRows { get; set; }
-
+        public int Length { get; set; }
+        /*
         /// <summary>
         /// The number of columns in the Matrix<T>
         /// </summary>
@@ -49,7 +49,7 @@ namespace Utilities
         {
             get
             {
-                return 3;
+                return _elements;
             }
         }
         
@@ -64,7 +64,7 @@ namespace Utilities
                 return 3;
             }
         }
-        
+        */
         #endregion
 
         #region Members
@@ -86,19 +86,35 @@ namespace Utilities
         /// <summary>
         /// Initializes a 0x0 null Matrix<T> with no content
         /// </summary>
-        public Matrix3x1()
+        public Vector(int n)
         {
-            T[] _elements = new T[3];
+            Length = n;
+            T[] _elements = new T[n];
         }
 
-        public Matrix3x1(T[] elements)
+        public Vector(T[] elements)
         {
-            int len = elements.Length;
-            if (elements.Length == 3)
-                _elements = elements;
-            else
-                throw new IndexOutOfRangeException("Length of T[] elements must be 3");
+            //if (elements.Length == 3)
+            Length = elements.Length;
+            _elements = elements;
+           // else
+               // throw new IndexOutOfRangeException("Length of T[] elements must be 3");
            
+        }
+        public Vector(string VectorString)
+        {
+            string[] elements = VectorString.Split(';');
+            elements[0] = elements[0].TrimStart('[');
+            elements[elements.Length - 1] = elements[elements.Length - 1].TrimEnd(']');
+            double[] dElem;
+            //NumElem = elements.Length;
+            //int rowNumber = 0;
+
+            //T[NumElem] _elements = new N;
+
+            dElem = Array.ConvertAll(elements, new Converter<string, double>(Double.Parse));
+            Length = dElem.Length;
+            _elements = dElem;
         }
 
         /// <summary>
@@ -106,7 +122,7 @@ namespace Utilities
         /// If the array is null, the zero by zero null Matrix<T> is created
         /// </summary>
         /// <param name="elements">The type T array used to initialize the Matrix<T></param>
-        /*public Matrix3x1(T[,] elements)
+        /*public Vector(T[,] elements)
         {
             if (elements == null)
             {
@@ -126,13 +142,13 @@ namespace Utilities
             }
         }
         */
-       /* public Matrix3x1(SerializationInfo info, StreamingContext context)
-        {
-            //NumCols = info.GetInt32("NumCols");
-            //NumRows = info.GetInt32("NumCols");
-            _elements = (List<T>)info.GetValue("_elements", typeof(List<List<T>>));
-        }
-        */
+        /* public Vector(SerializationInfo info, StreamingContext context)
+         {
+             //NumCols = info.GetInt32("NumCols");
+             //NumRows = info.GetInt32("NumCols");
+             _elements = (List<T>)info.GetValue("_elements", typeof(List<List<T>>));
+         }
+         */
         #endregion
 
         #region Overrrides
@@ -148,7 +164,7 @@ namespace Utilities
             //foreach(List<T> row in _elements)
             //{
                 foreach (T element in _elements)
-                    s += element.ToString() + "," + " ";
+                    s += element.ToString() + ";" + " ";
                 //s = s.Substring(0, s.Length - 2) + "; ";
            // }
 
@@ -189,13 +205,14 @@ namespace Utilities
         /// <param name="v"></param>
         /// <param name="w"></param>
         /// <returns></returns>
-        public static T Dot(Matrix3x1<T> a, Matrix3x1<T> b)
+        public static T Dot(Vector<T> a, Vector<T> b)
         {
             /*if (!a.IsVector() || !b.IsVector())
                 throw new ArgumentException("Arguments of the dot product must to be vectors.");
-            else if (a.Length != b.Length)
-                throw new ArgumentException("Vectors must be of the same length.");
             */
+            if (a.Length != b.Length)
+                throw new ArgumentException("Vectors must be of the same length.");
+            
             T buf = (T)Convert.ChangeType(0, typeof(T));
             
             for (int i = 1; i <= a.Length; i++)
@@ -213,19 +230,19 @@ namespace Utilities
         /// <param name="a"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Matrix3x1<T> Cross(Matrix3x1<T> a, Matrix3x1<T> b)
+        public static Vector<T> Cross(Vector<T> a, Vector<T> b)
         {
             /*if (!a.IsVector() || !b.IsVector())
                 throw new ArgumentException("Arguments of the cross product must to be 3x1 vectors.");
-            else if (a.Length != 3 && b.Length != 3)
-                throw new ArgumentException("Arguments of the cross product must to be 3x1 vectors.");
             */
+            if (a.Length != 3 && b.Length != 3)
+                throw new ArgumentException("Arguments of the cross product must to be 3x1 vectors.");
             T[] temp = new T[3];
             temp[0] = (dynamic)a[2] * b[3] - (dynamic)a[3] * b[2];
             temp[1] = (dynamic)a[1] * b[3] - (dynamic)a[3] * b[1];
             temp[2] = (dynamic)a[1] * b[2] - (dynamic)a[2] * b[1];
 
-            Matrix3x1<T> c = new Matrix3x1<T>(temp);
+            Vector<T> c = new Vector<T>(temp);
             //if (a.NumCols == 3)
                 return c;
             //lse
@@ -238,12 +255,12 @@ namespace Utilities
         /// <param name="A"></param>
         /// <param name="B"></param>
         /// <returns></returns>
-        public static Matrix3x1<T> operator +(Matrix3x1<T> A, Matrix3x1<T> B)
+        public static Vector<T> operator +(Vector<T> A, Vector<T> B)
         {
-            //if (A.Size != B.Size)
-            //    throw new ArgumentException("Matrices must be the same dimension when adding.");
+            if (A.Length != B.Length)
+                throw new ArgumentException("Vectors must be the same length when adding.");
 
-            Matrix3x1<T> C = new Matrix3x1<T>();
+            Vector<T> C = new Vector<T>(A.Length);
 
             //for (int r = 1; r <= A.NumRows; r++)
             //{
@@ -263,9 +280,10 @@ namespace Utilities
         /// <param name="A"></param>
         /// <param name="B"></param>
         /// <returns></returns>
-        public static Matrix3x1<T> operator +(Matrix3x1<T> A, T b)
+        public static Vector<T> operator +(Vector<T> A, T b)
         {
-            Matrix3x1<T> C = new Matrix3x1<T>();
+
+            Vector<T> C = new Vector<T>(A.Length);
 
             //for (int r = 1; r <= A.NumRows; r++)
             //{
@@ -285,9 +303,10 @@ namespace Utilities
         /// <param name="A"></param>
         /// <param name="B"></param>
         /// <returns></returns>
-        public static Matrix3x1<T> operator +(T a, Matrix3x1<T> B)
+        public static Vector<T> operator +(T a, Vector<T> B)
         {
-            Matrix3x1<T> C = new Matrix3x1<T>();
+            
+            Vector<T> C = new Vector<T>(B.Length);
 
             C = B + a;
 
@@ -300,12 +319,13 @@ namespace Utilities
         /// <param name="A"></param>
         /// <param name="B"></param>
         /// <returns></returns>
-        public static Matrix3x1<T> operator -(Matrix3x1<T> A, Matrix3x1<T> B)
+        public static Vector<T> operator -(Vector<T> A, Vector<T> B)
         {
             //if (A.Size != B.Size)
-              //  throw new ArgumentException("Matrices must be the same dimension when subtracting.");
-
-            Matrix3x1<T> C = A + (-B);
+            //  throw new ArgumentException("Matrices must be the same dimension when subtracting.");
+            if (A.Length != B.Length)
+                throw new ArgumentException("Vectors must be the same length when adding.");
+            Vector<T> C = A + (-B);
 
             return C;
         }
@@ -317,9 +337,9 @@ namespace Utilities
         /// <param name="A"></param>
         /// <param name="b"></param>
         /// <returns></returns>
-        public static Matrix3x1<T> operator -(Matrix3x1<T> A, T b)
+        public static Vector<T> operator -(Vector<T> A, T b)
         {
-            Matrix3x1<T> C = new Matrix3x1<T>();
+            Vector<T> C = new Vector<T>(A.Length);
 
             //for (int r = 1; r <= A.NumRows; r++)
             //{
@@ -339,9 +359,9 @@ namespace Utilities
         /// <param name="a"></param>
         /// <param name="B"></param>
         /// <returns>Matrix<T></returns>
-        public static Matrix3x1<T> operator -(T a, Matrix3x1<T> B)
+        public static Vector<T> operator -(T a, Vector<T> B)
         {
-            Matrix3x1<T> C = new Matrix3x1<T>();
+            Vector<T> C = new Vector<T>(B.Length);
 
             C = -B + a;
 
@@ -353,9 +373,9 @@ namespace Utilities
         /// </summary>
         /// <param name="A"></param>
         /// <returns>Matrix<T></returns>
-        public static Matrix3x1<T> operator -(Matrix3x1<T> A)
+        public static Vector<T> operator -(Vector<T> A)
         {
-            Matrix3x1<T> C = new Matrix3x1<T>();
+            Vector<T> C = new Vector<T>(A.Length);
 
             //for (int r = 1; r <= A.NumRows; r++)
                 for (int c = 1; c <= 2; c++)
@@ -396,9 +416,9 @@ namespace Utilities
         /// <param name="A">Complex</param>
         /// <param name="B">Matrix<T></param>
         /// <returns>C = A * B</returns>
-        public static Matrix3x1<T> operator *(T a, Matrix3x1<T> B)
+        public static Vector<T> operator *(T a, Vector<T> B)
         {
-            Matrix3x1<T> C = new Matrix3x1<T>();
+            Vector<T> C = new Vector<T>(B.Length);
 
             //for (int r = 1; r <= B.NumRows; r++)
             //{
@@ -417,9 +437,9 @@ namespace Utilities
         /// <param name="A">Matrix<T></param>
         /// <param name="B">Complex</param>
         /// <returns>C = A * B</returns>
-        public static Matrix3x1<T> operator *(Matrix3x1<T> A, T b)
+        public static Vector<T> operator *(Vector<T> A, T b)
         {
-            Matrix3x1<T> C = new Matrix3x1<T>();
+            Vector<T> C = new Vector<T>(A.Length);
 
             C = b * A;
 
@@ -432,9 +452,9 @@ namespace Utilities
         /// <param name="A">Matrix<T></param>
         /// <param name="B">Complex</param>
         /// <returns>C = A / B</returns>
-        public static Matrix3x1<T> operator /(Matrix3x1<T> A, T b)
+        public static Vector<T> operator /(Vector<T> A, T b)
         {
-            Matrix3x1<T> C = new Matrix3x1<T>();
+            Vector<T> C = new Vector<T>(A.Length);
 
             //for (int r = 1; r <= A.NumRows; r++)
             //{
@@ -477,14 +497,19 @@ namespace Utilities
         /// <param name="A"></param>
         /// <param name="B"></param>
         /// <returns></returns>
-        public static bool operator ==(Matrix3x1<T> A, Matrix3x1<T> B)
+        public static bool operator ==(Vector<T> A, Vector<T> B)
         {
-           // if ((A.NumRows != B.NumRows) || (A.NumCols != B.NumCols))
+            // if ((A.NumRows != B.NumRows) || (A.NumCols != B.NumCols))
             //    return false;
             //else
+            if (A.Length != B.Length)
+                return false;
+            else
+            {
                 for (int i = 1; i <= 2; i++)
                     if ((dynamic)A[i] != B[i])
                         return false;
+            }
             return true;
         }
 
@@ -494,7 +519,7 @@ namespace Utilities
         /// <param name="A"></param>
         /// <param name="B"></param>
         /// <returns></returns>
-        public static bool operator !=(Matrix3x1<T> A, Matrix3x1<T> B)
+        public static bool operator !=(Vector<T> A, Vector<T> B)
         {
             return !(A == B);
         }
@@ -662,7 +687,7 @@ namespace Utilities
             if( col > 0 && col <= 2)
                 this[col] = value; // why do we access it like this?
             else
-                throw new ArgumentException("Element indicies out of Matrix3x1<T> bounds");
+                throw new ArgumentException("Element indicies out of Vector<T> bounds");
         }
         #endregion
 
@@ -770,7 +795,7 @@ namespace Utilities
         /// </summary>
         /// <param name="A"></param>
         /// <returns></returns>
-        public static T Max(Matrix3x1<T> A)
+        public static T Max(Vector<T> A)
         {
             /*if (A.IsColumnVector() || A.IsRowVector())
             {
@@ -899,9 +924,9 @@ namespace Utilities
         /// </summary>
         /// <param name="A"></param>
         /// <returns></returns>
-        public static Matrix3x1<T> Abs(Matrix3x1<T> A)
+        public static Vector<T> Abs(Vector<T> A)
         {
-            Matrix3x1<T> R = (Matrix3x1<T>)A.Clone();
+            Vector<T> R = (Vector<T>)A.Clone();
             int i = 1;
             foreach (T c in A)
             {
@@ -912,7 +937,7 @@ namespace Utilities
             return R;
         }
 
-        public static double Norm(Matrix3x1<T> A)
+        public static double Norm(Vector<T> A)
         {
             // TODO:  Handle the case when c is complex
             //if (A.IsRowVector() || A.IsColumnVector())
@@ -927,14 +952,14 @@ namespace Utilities
            //     throw new NotImplementedException("Matrix<T>.Norm(Matrix<T> A)");
         }
 
-        public static Matrix3x1<T> Cumprod(Matrix3x1<T> A)
+        public static Vector<T> Cumprod(Vector<T> A)
         {
-            return Matrix3x1<T>.Cumprod(A, 1);
+            return Vector<T>.Cumprod(A, 1);
         }
 
-        public static Matrix3x1<T> Cumprod(Matrix3x1<T> A, int Dim)
+        public static Vector<T> Cumprod(Vector<T> A, int Dim)
         {
-            Matrix3x1<T> C = (Matrix3x1<T>)A.Clone();
+            Vector<T> C = (Vector<T>)A.Clone();
 
             //if (Dim == 1)
             //{
@@ -960,14 +985,19 @@ namespace Utilities
 
         }
 
-        public static implicit operator Matrix3x1<T>(T[] c)
+        public static implicit operator Matrix<T>(Vector<T> v)
         {
-            return new Matrix3x1<T>(c);
+            return new Matrix<T>(v.ToString());
         }
 
-        public static explicit operator T(Matrix3x1<T> m)
+        public static implicit operator Vector<T>(T[] c)
         {
-            if (m.NumElements == 1)
+            return new Vector<T>(c);
+        }
+
+        public static explicit operator T(Vector<T> m)
+        {
+            if (m.Length == 1)
                 return m[1];
             else
                 throw new NotImplementedException("explicit operator T(Matrix<T> m) - Conversion from N by M Matrix<T> to double not possible when N, M > 1");
@@ -979,22 +1009,22 @@ namespace Utilities
 
         public object Clone() // ICloneable
         {
-            Matrix3x1<T> m = new Matrix3x1<T>(); //TODO: Why was there a ToArray? 
+            Vector<T> m = new Vector<T>(3); //TODO: Why was there a ToArray? 
             return m;
         }
 
         public void GetObjectData(SerializationInfo info, StreamingContext ctx)
         {
-            info.AddValue("NumRows", NumRows);
-            info.AddValue("NumCols", NumCols);
-            //info.AddValue("Length", this.Length);
-            //info.AddValue("Values", this.elements[1][1]);
-            info.AddValue("_elements", _elements, typeof(List<List<T>>));
+            //info.AddValue("NumRows", NumRows);
+            //info.AddValue("NumCols", NumCols);
+            info.AddValue("Length", this.Length);
+            //info.AddValue("Values", this.elements[1]);
+            info.AddValue("_elements", _elements, typeof(T[]));
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return new Matrix3x1Enum<T>(this);
+            return new VectorEnum<T>(this);
         }
 
             
@@ -1204,17 +1234,16 @@ namespace Utilities
         /// <param name="cols"></param>
         /// <returns></returns>
         /// 
-        /*
-        public Matrix<T> this[MatrixIndex rows, MatrixIndex cols]
+       
+        public Vector<T> this[MatrixIndex rows]
         {
             get
             {
-                Matrix<T> C = new Matrix<T>(rows.Length, cols.Length);
+                Vector<T> C = new Vector<T>(rows.Length);
 
                 for (int r = 1; r <= rows.Length; r++)
                 {
-                    for (int c = 1; c <= cols.Length; c++)
-                        C[r, c] = this[rows[r], cols[c]];
+                    C[r] = this[rows[r]];
                 }
 
                 return C;
@@ -1223,22 +1252,21 @@ namespace Utilities
             {
                 for (int r = 1; r <= rows.Length; r++)
                 {
-                    for (int c = 1; c <= cols.Length; c++)
-                        this[rows[r], cols[c]] = value[r, c];
+                    this[rows[r]] = value[r];
                 }
             }
         }
-        */
+        
         #endregion
     }
 
-    public class Matrix3x1Enum<T> : IEnumerator
+    public class VectorEnum<T> : IEnumerator
     {
-        public Matrix3x1<T> MatrixData;
+        public Vector<T> MatrixData;
 
         int position = -1;
 
-        public Matrix3x1Enum(Matrix3x1<T> data)
+        public VectorEnum(Vector<T> data)
         {
             MatrixData = data;
         }
@@ -1246,7 +1274,7 @@ namespace Utilities
         public bool MoveNext()
         {
             position++;
-            return (position < MatrixData.NumElements);
+            return (position < MatrixData.Length);
         }
         
         public void Reset()
@@ -1311,12 +1339,12 @@ namespace Utilities
         }
     }
     */
-    public class Matrix3x1Size
+    public class VectorSize
     {
         public int NumRows { get; set; }
         public int NumColumns { get; set; }
 
-        public Matrix3x1Size(int r, int c)
+        public VectorSize(int r, int c)
         {
             NumRows = r;
             NumColumns = c;

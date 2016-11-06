@@ -12,13 +12,13 @@ namespace Utilities
 {
     public static class GeometryUtilities
     {
-        public static bool hasLOS(Matrix3x1<double> posECI1, Matrix3x1<double> posECI2)
+        public static bool hasLOS(Vector<double> posECI1, Vector<double> posECI2)
         {
             // calculate the minimum distance to the center of the earth
-            double d = Matrix3x1<double>.Norm(Matrix3x1<double>.Cross(posECI2 - posECI1, posECI1)) / Matrix3x1<double>.Norm(posECI2 - posECI1);
+            double d = Vector<double>.Norm(Vector<double>.Cross(posECI2 - posECI1, posECI1)) / Vector<double>.Norm(posECI2 - posECI1);
             /* parameter t is is the parameter that represents where the minimum distance is
             d is a minimum at (posECI1) + t*(posECI2 - posECI1)*/
-            double t = -Matrix3x1<double>.Dot(posECI1, posECI2 - posECI1) / System.Math.Pow(Matrix3x1<double>.Norm(posECI2 - posECI1), 2);
+            double t = -Vector<double>.Dot(posECI1, posECI2 - posECI1) / System.Math.Pow(Vector<double>.Norm(posECI2 - posECI1), 2);
             /* if t > 1 or t < 0, then the minumim distance does not occur along the line segment connecting positions 1 and 2,
             and the two positions are visible from each other*/
             if (t >= 1 || t <= 0)
@@ -27,9 +27,9 @@ namespace Utilities
             return d >= SimParameters.EARTH_RADIUS;
         }
 
-        public static Matrix3x1<double> LLA2ECI(Matrix3x1<double> LLA, double JD )
+        public static Vector<double> LLA2ECI(Vector<double> LLA, double JD )
         {
-            Matrix3x1<double> pos = new Matrix3x1<double>();
+            Vector<double> pos = new Vector<double>(3);
 
             double lat = LLA[1]; //deg
             double lon = LLA[2]; //deg
@@ -47,14 +47,14 @@ namespace Utilities
             return pos;
         }
 
-        public static Matrix3x1<double> ECI2LLA( Matrix3x1<double> ECI, double JD )
+        public static Vector<double> ECI2LLA( Vector<double> ECI, double JD )
         {
-            Matrix3x1<double> pos = new Matrix3x1<double>();
+            Vector<double> pos = new Vector<double>(3);
             double x = ECI[1];
             double y = ECI[2];
             double z = ECI[3];
 
-            double r = Matrix3x1<double>.Norm(ECI);
+            double r = Vector<double>.Norm(ECI);
                 double templon = 180 / System.Math.PI * System.Math.Atan2(y, x); //deg
             double diff = templon - CT2LST(templon, JD);
             double lon = templon + diff;
@@ -93,9 +93,9 @@ namespace Utilities
             return lst;
         }
 
-        public static Matrix3x1<double> quat2euler(Matrix<double> q)
+        public static Vector<double> quat2euler(Matrix<double> q)
         {
-            Matrix3x1<double> eulerAngles = new Matrix3x1<double>();
+            Vector<double> eulerAngles = new Vector<double>(3);
 
             eulerAngles[1] = System.Math.Atan2(2 * (q[1] * q[2] + q[3] * q[4]), 1 - 2 * (q[1] * q[1] + q[2] * q[2]));
             eulerAngles[2] = System.Math.Asin(2 * (q[1] * q[3] - q[4] * q[1]));

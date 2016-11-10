@@ -178,8 +178,8 @@ namespace HSFUniverse
 
             Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions);
 
-           // for (int index = 1; index <= data.Length; index++)
-             //   _stateData[data[1, index]] = data[new MatrixIndex(2, data.NumRows), index];
+           for (int index = 1; index <= data.Length; index++)
+               _stateData[data[1, index]] = (Vector<double>)data[new MatrixIndex(2, data.NumRows), index];
 
             log.Info("Done Integrating");
         }

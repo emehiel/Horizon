@@ -8,6 +8,7 @@ using HSFSystem;
 using UserModel;
 using MissionElements;
 using log4net;
+using System.Threading.Tasks;
 
 namespace HSFScheduler
 {
@@ -56,7 +57,7 @@ namespace HSFScheduler
         /// <param name="tasks"></param>
         /// <param name="initialStateList"></param>
         /// <returns></returns>
-        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<Task> tasks, SystemState initialStateList)
+        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<MissionElements.Task> tasks, SystemState initialStateList)
         {
             log.Info("SIMULATING... ");
             // Create empty systemSchedule with initial state set
@@ -136,7 +137,8 @@ namespace HSFScheduler
                 //TODO: Parallelize this.
                 int k = 0;
 
-                foreach (var oldSystemSchedule in systemSchedules)
+                //Parallel.ForEach(systemSchedules, (oldSystemSchedule) =>
+                foreach(var oldSystemSchedule in systemSchedules)
                 {
                     potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
                     foreach (var newAccessStack in scheduleCombos)
@@ -199,7 +201,7 @@ namespace HSFScheduler
                 schedulesToCrop.Remove(schedulesToCrop[0]);
             }
 
-            schedulesToCrop.TrimExcess();
+            //schedulesToCrop.TrimExcess();
         }
 
         /// <summary>

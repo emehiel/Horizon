@@ -77,7 +77,7 @@ namespace Utilities
         /// Each list of type T numbers represents a row of the Matrix<T>,
         /// i.e., the Matrix<T> is stored in row major form
         /// </summary>
-        private Array _elements;
+        private T[] _elements;
 
         #endregion
 
@@ -89,7 +89,7 @@ namespace Utilities
         public Vector(int n)
         {
             Length = n;
-            T[] _elements = new T[n];
+            _elements = new T[n];
         }
 
         public Vector(T[] elements)
@@ -114,7 +114,7 @@ namespace Utilities
 
             dElem = Array.ConvertAll(elements, new Converter<string, double>(Double.Parse));
             Length = dElem.Length;
-            _elements = dElem;
+            _elements = (T[])Convert.ChangeType(dElem, typeof(T[]));
         }
 
         /// <summary>
@@ -142,13 +142,13 @@ namespace Utilities
             }
         }
         */
-        /* public Vector(SerializationInfo info, StreamingContext context)
+        public Vector(SerializationInfo info, StreamingContext context)
          {
-             //NumCols = info.GetInt32("NumCols");
+             Length = info.GetInt32("Length");
              //NumRows = info.GetInt32("NumCols");
-             _elements = (List<T>)info.GetValue("_elements", typeof(List<List<T>>));
+             _elements = (T[])info.GetValue("_elements", typeof(T[]));
          }
-         */
+         
         #endregion
 
         #region Overrrides
@@ -248,7 +248,7 @@ namespace Utilities
             //lse
                // return Matrix<T>.Transpose(c);
         }
-        
+
         /// <summary>
         /// Returns the Matrix<T> sum of two matrices
         /// </summary>
@@ -1002,7 +1002,15 @@ namespace Utilities
             else
                 throw new NotImplementedException("explicit operator T(Matrix<T> m) - Conversion from N by M Matrix<T> to double not possible when N, M > 1");
         }
-
+        public static explicit operator Vector<T>(Matrix<T> v)
+        {
+            if (v.NumCols == 1 || v.NumRows == 1)
+            {
+                return new Vector<T>(v.ToString());
+            }
+            else
+                throw new NotImplementedException();
+        }
         #endregion
 
         #region Interfaces
@@ -1052,7 +1060,7 @@ namespace Utilities
                     return this[r + 1, c + 1];
                 }
                 */
-                return this[index + 1];
+                return (dynamic)_elements[index-1];
             }
             set
             {
@@ -1067,7 +1075,7 @@ namespace Utilities
                     int r = ind - NumRows * c;
                     this[r + 1, c + 1] = value;
                 }*/
-                 this[index + 1] = value;
+                 _elements[index-1] =  value;
             }
         }
 

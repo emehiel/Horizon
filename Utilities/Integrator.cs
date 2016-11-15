@@ -18,7 +18,7 @@ namespace Utilities
             this.Options = new IntegratorOptions();
         }
         */
-        public static Matrix<double> RK45(EOMS dynamics, Matrix<double> timeSpan, Vector<double> initialState, IntegratorOptions options)
+        public static Matrix<double> RK45(EOMS dynamics, Matrix<double> timeSpan, Vector initialState, IntegratorOptions options)
         {
             return Integrator.RK45Helper(dynamics, timeSpan, initialState, options);
         }

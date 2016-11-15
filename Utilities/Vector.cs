@@ -160,9 +160,9 @@ namespace Utilities
             if (a.Length != 3 && b.Length != 3)
                 throw new ArgumentException("Arguments of the cross product must to be 3x1 vectors.");
             double[] temp = new double[3];
-            temp[0] = (dynamic)a[2] * b[3] - (dynamic)a[3] * b[2];
-            temp[1] = (dynamic)a[1] * b[3] - (dynamic)a[3] * b[1];
-            temp[2] = (dynamic)a[1] * b[2] - (dynamic)a[2] * b[1];
+            temp[0] = a[2] * b[3] - a[3] * b[2];
+            temp[1] = -a[1] * b[3] + a[3] * b[1];
+            temp[2] = a[1] * b[2] - a[2] * b[1];
 
             Vector c = new Vector(temp);
                 return c;

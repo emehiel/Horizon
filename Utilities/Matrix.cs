@@ -231,7 +231,7 @@ namespace Utilities
         public Matrix(SerializationInfo info, StreamingContext context)
         {
             NumCols = info.GetInt32("NumCols");
-            NumRows = info.GetInt32("NumCols");
+            NumRows = info.GetInt32("NumRows");
             _elements = (List<List<T>>)info.GetValue("_elements", typeof(List<List<T>>));
         }
         #endregion

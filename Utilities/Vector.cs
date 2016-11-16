@@ -70,16 +70,9 @@ namespace Utilities
             _elements = dElem;
         }
 
-        /// <summary>
-        /// Initializes a Matrix based on an array of T type numbers.
-        /// If the array is null, the zero by zero null Matrix is created
-        /// </summary>
-        /// <param name="elements">The type T array used to initialize the Matrix</param>
-        
         public Vector(SerializationInfo info, StreamingContext context)
          {
              Length = info.GetInt32("Length");
-             //NumRows = info.GetInt32("NumCols");
              _elements = (double[])info.GetValue("_elements", typeof(double[]));
          }
          
@@ -779,7 +772,7 @@ namespace Utilities
         {
 
             info.AddValue("Length", this.Length);
-            info.AddValue("_elements", _elements, typeof(double));
+            info.AddValue("_elements", _elements, typeof(double[]));
         }
 
         IEnumerator IEnumerable.GetEnumerator()

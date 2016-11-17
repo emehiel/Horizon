@@ -15,7 +15,7 @@ namespace Utilities
     {
         #region Properties
         /// <summary>
-        /// The number of rows in the Matrix
+        /// The number of elements in the vector
         /// </summary>
         /// 
         
@@ -26,13 +26,8 @@ namespace Utilities
 
         #region Members
 
-        // TODO:  Should I write a column class that encapsulates a column or is this too much abstraction?
-        // TODO:  Should we restructure the Matrix class to be a single list of complex numbers?
-
         /// <summary>
-        /// Each Matrix is represented as a list of lists of type T numbers.
-        /// Each list of type T numbers represents a row of the Matrix,
-        /// i.e., the Matrix is stored in row major form
+        /// The vector is an array 
         /// </summary>
         private double[] _elements;
 
@@ -60,11 +55,6 @@ namespace Utilities
             elements[0] = elements[0].TrimStart('[');
             elements[elements.Length - 1] = elements[elements.Length - 1].TrimEnd(']');
             double[] dElem;
-            //NumElem = elements.Length;
-            //int rowNumber = 0;
-
-            //T[NumElem] _elements = new N;
-
             dElem = Array.ConvertAll(elements, new Converter<string, double>(Double.Parse));
             Length = dElem.Length;
             _elements = dElem;
@@ -246,14 +236,10 @@ namespace Utilities
         {
             Vector C = new Vector(A.Length);
 
-            //for (int r = 1; r <= A.NumRows; r++)
-            //{
-                for (int c = 1; c <= 2; c++)
-                {
-                    C[c] = (dynamic)A[c] - b;
-                }
-            //}
-
+            for (int c = 1; c <= 2; c++)
+            {
+                C[c] = (dynamic)A[c] - b;
+            }
             return C;
         }
 
@@ -282,39 +268,13 @@ namespace Utilities
         {
             Vector C = new Vector(A.Length);
 
-            //for (int r = 1; r <= A.NumRows; r++)
-                for (int c = 1; c <= 2; c++)
-                    C[c] = -1 * (dynamic)A[c];
+            for (int c = 1; c <= 2; c++)
+                C[c] = -1 * (dynamic)A[c];
 
             return C;
         }
 
-        /// <summary>
-        /// Returns the Matrix product of two matricies
-        /// </summary>
-        /// <param name="A">Matrix</param>
-        /// <param name="B">Matrix</param>
-        /// <returns>C = A * B</returns>
-        /// 
-        /*
-        public static Matrix operator *(Matrix A, Matrix B)
-        {
-            if (A.NumCols != B.NumRows)
-                throw new ArgumentException("Inner Matrix dimensions must agree.");
 
-            Matrix C = new Matrix(A.NumRows, B.NumCols);
-
-            for (int r = 1; r <= A.NumRows; r++)
-            {
-                for (int c = 1; c <= B.NumCols; c++)
-                {
-                    C[r, c] = Matrix.Dot(A.GetRow(r), B.GetColumn(c));
-                }
-            }
-
-            return C;
-        }
-        */
         /// <summary>
         /// Returns the Matrix product of a Complex and a Matrix (elementwise)
         /// </summary>
@@ -325,13 +285,11 @@ namespace Utilities
         {
             Vector C = new Vector(B.Length);
 
-            //for (int r = 1; r <= B.NumRows; r++)
-            //{
-                for (int c = 1; c <= 2; c++)
-                {
-                    C[c] = (dynamic)a * B[c];
-                }
-            //}
+            for (int c = 1; c <= 2; c++)
+            {
+                C[c] = (dynamic)a * B[c];
+            }
+
 
             return C;
         }
@@ -361,41 +319,14 @@ namespace Utilities
         {
             Vector C = new Vector(A.Length);
 
-            //for (int r = 1; r <= A.NumRows; r++)
-            //{
-                for (int c = 1; c <= 2; c++)
-                {
-                    C[c] = (dynamic)A[c] / b;
-                }
-            //}
-
-            return C;
-        }
-
-        /// <summary>
-        /// Returns the quotient of a Matrix and a Matrix (elementwise)
-        /// </summary>
-        /// <param name="A">Matrix</param>
-        /// <param name="B">Matrix</param>
-        /// <returns>C = A / B</returns>
-        /*
-        public static Matrix operator /(Matrix A, Matrix B)
-        {
-            // TODO: Throw exception if A and B are different shape
-            Matrix C = new Matrix(A.NumRows, A.NumCols);
-            int i = 1;
-
-            for (int r = 1; r <= B.NumRows; r++)
+            for (int c = 1; c <= 2; c++)
             {
-                for (int c = 1; c <= B.NumCols; c++)
-                {
-                    C[r, c] = (dynamic)A[r, c] / B[r, c];
-                }
+                C[c] = (dynamic)A[c] / b;
             }
 
             return C;
         }
-        */
+
         /// <summary>
         /// Returns a boolean indicating if two matricies are equal
         /// </summary>
@@ -404,15 +335,13 @@ namespace Utilities
         /// <returns></returns>
         public static bool operator ==(Vector A, Vector B)
         {
-            // if ((A.NumRows != B.NumRows) || (A.NumCols != B.NumCols))
-            //    return false;
-            //else
+
             if (A.Length != B.Length)
                 return false;
             else
             {
                 for (int i = 1; i <= 2; i++)
-                    if ((dynamic)A[i] != B[i])
+                    if (A[i] != B[i])
                         return false;
             }
             return true;
@@ -432,37 +361,6 @@ namespace Utilities
         #endregion
 
         #region Dynamics
-
-        /// <summary>
-        /// Converts a Matrix to an array of doubletype numbers
-        /// </summary>
-        /// <returns></returns>
-        /*public T[,] ToArray()
-        {
-            T[,] T_Array = new T[NumRows, NumCols];
-
-            for (int r = 0; r < NumRows; r++)
-                for (int c = 0; c < NumCols; c++)
-                    T_Array[r, c] = this[r + 1, c + 1];
-
-            return T_Array;
-        }
-
-        public bool IsVector()
-        {
-            return (NumCols == 1 || NumRows == 1);
-        }
-
-        public bool IsRowVector()
-        {
-            return (NumRows == 1);
-        }
-
-        public bool IsColumnVector()
-        {
-            return (NumCols == 1);
-        }
-        */
         /// <summary>
         /// Returns true if all elements of the Matrix are real
         /// </summary>
@@ -482,104 +380,7 @@ namespace Utilities
         {
             return !IsReal();
         }
-        /*
-        public bool IsSquare()
-        {
-            return (NumRows == NumCols);
-        }
 
-        public bool IsNull()
-        {
-            return (NumCols == 0 && NumRows == 0);
-        }
-        */
-        /// <summary>
-        /// In place vertical concatination of this Matrix and Matrix A.
-        /// </summary>
-        /// <param name="A"></param>
-        /*public void Vertcat(Matrix A)
-        {
-            if (NumCols == A.NumCols)
-            {
-                int origNumRows = NumRows;
-                for (int i = 1; i <= A.NumRows; i++)
-                    SetRow(i + origNumRows, A.GetRow(i));
-            }
-            else
-                throw new ArgumentException("Vertical Concatination Requires Column Compatability");
-
-        }
-        */
-
-        /// <summary>
-        /// In place horizontal concatination of this Matrix and Matrix A.
-        /// </summary>
-        /// <param name="A"></param>
-       /* public void Horzcat(Matrix A)
-        {
-            if (NumRows == A.NumRows)
-            {
-                int origNumCols = NumCols;
-                for (int i = 1; i <= A.NumCols; i++)
-                    SetColumn(i + origNumCols, A.GetColumn(i));
-            }
-            else
-                throw new ArgumentException("Vertical Concatination Requires Column Compatability");
-        }
-        
-        /// <summary>
-        /// Returns a column of this Matrix
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public Matrix GetColumn(int c)
-        {
-            if (c < 1)
-                throw new ArgumentOutOfRangeException("Invalid column number", "Matrix indices must be non-negative");
-            else if (c > NumCols)
-                throw new ArgumentOutOfRangeException("Invalid column number", "Column index must not exceed size of Matrix");
-            else
-            {
-                Matrix C = new Matrix(NumRows, 1);
-                for (int r = 1; r <= NumRows; r++)
-                    C[r, 1] = this[r, c];
-                return C;
-            }
-        }
-        public void SetColumn(int col, Matrix colData)
-        {
-            if (colData.NumRows == NumRows)
-            {
-                for (int r = 1; r <= NumRows; r++)
-                    this[r, col] = colData[r, 1];
-            }
-            else
-                throw new ArgumentException("Column Size Not Compatable");
-        }
-
-        /// <summary>
-        /// Returns a row of this Matrix
-        /// </summary>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public Matrix GetRow(int r)
-        {
-            Matrix C = new Matrix(1, NumCols);
-            for (int c = 1; c <= NumCols; c++)
-                C[1, c] = this[r, c];
-            return C;
-        }
-        public void SetRow(int row, Matrix rowData)
-        {
-            if (rowData.NumCols == NumCols)
-            {
-                for (int c = 1; c <= NumCols; c++)
-                    this[row, c] = rowData[1, c];
-            }
-            else
-                throw new ArgumentException("Row Size Not Compatable");
-        }
-        */
         public void SetValue(int col, double value) ///Morgan Added this
         {
             if( col > 0 && col <= 2)
@@ -608,40 +409,7 @@ namespace Utilities
             }
             return max;
         }
-        /*
-        public static Matrix Max(Matrix A, Matrix B)
-        {
-            Matrix C = new Matrix(A.NumRows, A.NumCols);
-
-            int i = 1;
-            foreach (T c in A)
-            {
-                C[i] = (T)System.Math.Max((dynamic)A[i], (dynamic)B[i]);
-                i++;
-            }
-
-            return C;
-        }
-
-        /// <summary>
-        /// Returns a Matrix whos elements are the maximum of {A[i,j], b}.
-        /// </summary>
-        /// <param name="A"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static Matrix Max(Matrix A, T b)
-        {
-            Matrix C = (Matrix)A.Clone();
-            int i = 1;
-            foreach (T c in A)
-            {
-                C[i] = (T)System.Math.Max((dynamic)A[i], (dynamic)b);
-                i++;
-            }
-
-            return C;
-        }
-        */
+      
         public static double Min(Vector A)
         {
             double min = A[1];
@@ -651,40 +419,7 @@ namespace Utilities
             }
             return min;
         }
-        /*
-        public static Matrix Min(Matrix A, Matrix B)
-        {
-            Matrix C = new Matrix(A.NumCols, A.NumRows);
-
-            int i = 1;
-            foreach (T c in A)
-            {
-                C[i] = (T)System.Math.Min((dynamic)A[i], (dynamic)B[i]);
-                i++;
-            }
-
-            return C;
-        }
-
-        /// <summary>
-        /// Returns a Matrix whos elements are the minimum of {A[i,j], b}.
-        /// </summary>
-        /// <param name="A"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static Matrix Min(Matrix A, T b)
-        {
-            Matrix C = (Matrix)A.Clone();
-            int i = 1;
-            foreach (T c in A)
-            {
-                C[i] = (T)System.Math.Min((dynamic)A[i], (dynamic)b);
-                i++;
-            }
-
-            return C;
-        }
-        */
+       
         /// <summary>
         /// 
         /// </summary>
@@ -727,8 +462,7 @@ namespace Utilities
                     {
                         C[c] *= (dynamic)C[c-1];
                     }
-                return C;
-
+            return C;
 
         }
 
@@ -793,193 +527,14 @@ namespace Utilities
         {
             get
             {
-                /*if (NumRows == 1) // row vector
-                    return this[1, index];
-                else if (NumCols == 1) // coumn vector
-                    return this[index, 1];
-                else
-                {
-                    int ind = index - 1;
-                    int c = ind / NumRows;
-                    int r = ind - NumRows * c;
-                    return this[r + 1, c + 1];
-                }
-                */
-                return (dynamic)_elements[index-1];
+                return _elements[index-1];
             }
             set
             {
-                /*if (NumRows == 1) // row vector
-                    this[1, index] = value;
-                else if (NumCols == 1) // coumn vector
-                    this[index, 1] = value;
-                else
-                {
-                    int ind = index - 1;
-                    int c = ind / NumRows;
-                    int r = ind - NumRows * c;
-                    this[r + 1, c + 1] = value;
-                }*/
                  _elements[index-1] =  value;
             }
         }
 
-        /// <summary>
-        /// Gets or Sets the element of a Matrix based on (row, column) indexing
-        /// </summary>
-        /// <param name="r"></param>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        /*public T this[int r, int c]
-        {
-            get
-            {
-                if (r < 1 || c < 1)
-                    throw new IndexOutOfRangeException("Matrix indices must be non-negative");
-                else if (r > NumRows || c > NumCols)
-                    throw new IndexOutOfRangeException("Indices must not exceed size of Matrix");
-                else
-                    return _elements[r - 1][c - 1];
-            }
-            set
-            {
-                if (r < 1 || c < 1)
-                    throw new IndexOutOfRangeException("Matrix indices must be non-negative");
-
-                if (r > NumRows)
-                {
-                    for (int i = NumRows; i < r; i++)
-                    {
-                        _elements.Add(new List(NumCols));
-
-                        for (int j = 0; j < NumCols; j++)
-                            _elements[i].Add((T)Convert.ChangeType(0, typeof(T)));
-                    }
-
-                    NumRows = r;
-                }
-
-                if (c > NumCols)
-                {
-                    for (int i = 0; i < NumRows; i++)
-                    {
-                        for (int j = NumCols; j < c; j++)
-                            _elements[i].Add((T)Convert.ChangeType(0, typeof(T)));
-                    }
-
-                    NumCols = c;
-                }
-
-                _elements[r - 1][c - 1] = value;
-            }
-        }
-        */
-        /// <summary>
-        /// Returns an entire row of a matirx
-        /// </summary>
-        /// <param name="r"></param>
-        /// <param name="c">Should be "all" or ":"</param>
-        /// <returns></returns>
-        /*public Matrix this[int r, string c]
-        {
-            get
-            {
-                if (c.ToUpper() == "ALL" || c.ToUpper() == ":")
-                    return GetRow(r);
-                else
-                    throw new IndexOutOfRangeException("Invalid Column Selection");
-            }
-            set
-            {
-                if (c.ToUpper() == "ALL" || c.ToUpper() == ":")
-                    SetRow(r, value);
-                else
-                    throw new IndexOutOfRangeException("Invalid Column Selection");
-            }
-        }*/
-        /*
-        /// <summary>
-        /// Returns an entire column of a Matrix
-        /// </summary>
-        /// <param name="r">should be "all" or ":"</param>
-        /// <param name="c"></param>
-        /// <returns></returns>
-        public Matrix this[string r, int c]
-        {
-            get
-            {
-                if (r.ToUpper() == "ALL" || r.ToUpper() == ":")
-                    return GetColumn(c);
-                else
-                    throw new IndexOutOfRangeException("Column - No column selected");
-            }
-            set
-            {
-                if (NumRows == value.NumRows)
-                {
-                    if (r.ToUpper() == "ALL" || r.ToUpper() == ":")
-                    {
-                        for (int row = 1; row <= NumRows; row++)
-                            this[row, c] = value[row, 1];
-                    }
-                    else
-                        throw new IndexOutOfRangeException("Row - No Row Selected");
-                }
-                else
-                    throw new IndexOutOfRangeException("Column - Number of rows in Matrix is not the same as new column");
-            }
-        }
-        
-        public Matrix this[string r, MatrixIndex c]
-        {
-            get
-            {
-                if (r.ToUpper() == "ALL" || r.ToUpper() == ":")
-                    return this[new MatrixIndex(1, this.NumRows), c];
-                else
-                    throw new IndexOutOfRangeException("Column - No column selected");
-            }
-            set
-            {
-                if (c.Length == value.NumCols)
-                {
-                    if (r.ToUpper() == "ALL" || r.ToUpper() == ":")
-                    {
-                        this[new MatrixIndex(1, this.NumRows), c] = value;
-                    }
-                    else
-                        throw new IndexOutOfRangeException("Row - No Row Selected");
-                }
-                else
-                    throw new IndexOutOfRangeException("Column - Number of rows in Matrix is not the same as new column");
-            }
-        }
-
-        public Matrix this[MatrixIndex r, string c]
-        {
-            get
-            {
-                if (c.ToUpper() == "ALL" || c.ToUpper() == ":")
-                    return this[r, new MatrixIndex(1, NumCols)];
-                else
-                    throw new IndexOutOfRangeException("Column - No column selected");
-            }
-            set
-            {
-                if (r.Length == value.NumRows)
-                {
-                    if (c.ToUpper() == "ALL" || c.ToUpper() == ":")
-                    {
-                        this[r, new MatrixIndex(1, NumCols)] = value;
-                    }
-                    else
-                        throw new IndexOutOfRangeException("Row - No Row Selected");
-                }
-                else
-                    throw new IndexOutOfRangeException("Column - Number of rows in Matrix is not the same as new column");
-            }
-        }
-        */
         /// <summary>
         /// Returns the elements of a Matrix using the Matrix Index object
         /// </summary>
@@ -1050,48 +605,6 @@ namespace Utilities
             }
         }
     }
-
-
-    // TODO:  How to enumerate? element, row or column?
-    /*
-    public class MatrixColumnEnum : IEnumerator
-    {
-        public Matrix MatrixData;
-
-        int position = -1;
-
-        public MatrixColumnEnum(Matrix data)
-        {
-            MatrixData = data;
-        }
-
-        public bool MoveNext()
-        {
-            position++;
-            return (position < MatrixData.NumCols);
-        }
-
-        public void Reset()
-        {
-            position = -1;
-        }
-
-        public object Current
-        {
-            get
-            {
-                try
-                {
-                    return MatrixData.GetColumn(position + 1);
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    throw new InvalidOperationException();
-                }
-            }
-        }
-    }
-    */
     public class VectorSize
     {
         public int NumRows { get; set; }

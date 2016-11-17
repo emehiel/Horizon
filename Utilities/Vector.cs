@@ -708,9 +708,9 @@ namespace Utilities
 
             double temp = 0;
             foreach (double c in A)
-                temp += (dynamic)c * c;
+                temp += c * c;
 
-            return System.Math.Sqrt((dynamic)temp);
+            return System.Math.Sqrt(temp);
 
         }
 

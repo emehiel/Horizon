@@ -12,17 +12,17 @@ namespace Utilities
 {
     public static class GeometryUtilities
     {
-        public static bool hasLOS(Matrix<double> posECI1, Matrix<double> posECI2)
+        public static bool hasLOS(Vector posECI1, Vector posECI2)
         {
-            // calculate the minimum distance to the center of the earth
-            double d = Matrix<double>.Norm(Matrix<double>.Cross(posECI2 - posECI1, posECI1)) / Matrix<double>.Norm(posECI2 - posECI1);
             /* parameter t is is the parameter that represents where the minimum distance is
             d is a minimum at (posECI1) + t*(posECI2 - posECI1)*/
-            double t = -Matrix<double>.Dot(posECI1, posECI2 - posECI1) / System.Math.Pow(Matrix<double>.Norm(posECI2 - posECI1), 2);
+            double t = -Vector.Dot(posECI1, posECI2 - posECI1) / System.Math.Pow(Vector.Norm(posECI2 - posECI1), 2);
             /* if t > 1 or t < 0, then the minumim distance does not occur along the line segment connecting positions 1 and 2,
             and the two positions are visible from each other*/
             if (t >= 1 || t <= 0)
                 return true;
+            // calculate the minimum distance to the center of the earth
+            double d = Vector.Norm(Vector.Cross(posECI2 - posECI1, posECI1)) / Vector.Norm(posECI2 - posECI1);
             // otherwise compare the minimum distance to the radius of the earth
             return d >= SimParameters.EARTH_RADIUS;
         }

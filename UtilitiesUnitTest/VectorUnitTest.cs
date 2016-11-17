@@ -27,5 +27,13 @@ namespace UtilitiesUnitTest
 
             Assert.AreEqual(d, c);
         }
+        [TestMethod]
+        public void NormTest()
+        {
+            Vector a = new Vector(new double[] { 4, 3, -0 });
+            double b = Vector.Norm(a);
+            double c = 5;
+            Assert.AreEqual(c, b);
+        }
     }
 }

@@ -51,6 +51,17 @@ namespace UtilitiesUnitTest
 
             Assert.AreEqual(B, A);
         }
+        [TestMethod]
+        public void MatrixCross()
+        {
+            Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 } });
+            Matrix<double> B = new Matrix<double>(new double[,] { { 0, -1, -5 } });
+            Matrix<double> C = Matrix<double>.Cross(A, B);
+            Matrix<double> D = new Matrix<double>(new double[,] { { -7, 5, -1 } });
+
+            Assert.AreEqual(D, C);
+        }
+
 
         [TestMethod]
         public void MatrixDeepCopyTest()

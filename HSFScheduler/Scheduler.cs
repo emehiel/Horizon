@@ -128,7 +128,7 @@ namespace HSFScheduler
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
                 if (systemSchedules.Count > _maxNumSchedules)
                 {
-                    log.Info("Cropping Schedules...");
+                    log.Info("Cropping" + systemSchedules.Count + "Schedules.");
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
                     systemSchedules.Add(emptySchedule);
                 }

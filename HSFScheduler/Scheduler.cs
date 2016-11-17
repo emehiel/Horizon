@@ -88,7 +88,7 @@ namespace HSFScheduler
                 preGeneratedAccesses = Access.pregenerateAccessesByAsset(system, tasks, _startTime, _endTime, _stepLength);
                 //DWORD endPregenTickCount = GetTickCount();
                 //pregenTimeMs = endPregenTickCount - startPregenTickCount;
-                //writeAccessReport(access_pregen, tasks); - TODO:  Finish this code - EAM
+                Access.writeAccessReport(preGeneratedAccesses); //- TODO:  Finish this code - EAM
                 log.Info("Done pregenerating accesses. There are " + preGeneratedAccesses.Count + " accesses.");
             }
             // otherwise generate an exhaustive list of possibilities for assetTaskList
@@ -115,7 +115,7 @@ namespace HSFScheduler
 
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
-            int i = 1;
+            // int i = 1;
             List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
             List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)

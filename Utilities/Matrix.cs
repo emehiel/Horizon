@@ -323,7 +323,7 @@ namespace Utilities
 
             T[,] temp = new T[1, 3];
             temp[0, 0] = (dynamic)a[2] * b[3] - (dynamic)a[3] * b[2];
-            temp[0, 1] = (dynamic)a[1] * b[3] - (dynamic)a[3] * b[1];
+            temp[0, 1] = -(dynamic)a[1] * b[3] + (dynamic)a[3] * b[1];
             temp[0, 2] = (dynamic)a[1] * b[2] - (dynamic)a[2] * b[1];
 
             Matrix<T> c = new Matrix<T>(temp);

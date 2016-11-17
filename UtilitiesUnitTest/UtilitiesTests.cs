@@ -71,7 +71,15 @@ namespace UtilitiesUnitTest
 
             Assert.AreEqual(D, C);
         }
-
+        [TestMethod]
+        public void MatrixNorm()
+        {
+            Matrix<double> A = new Matrix<double>(new double[,] { { 0, -1, -5 } });
+            double B = Matrix<double>.Norm(A);
+            
+            double C = 5.099;
+            Assert.AreEqual(C, B, .0001);
+        }
         [TestMethod]
         public void MatrixDeepCopyTest()
         {

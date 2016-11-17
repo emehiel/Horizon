@@ -61,7 +61,16 @@ namespace UtilitiesUnitTest
 
             Assert.AreEqual(D, C);
         }
+        [TestMethod]
+        public void MatrixDot()
+        {
+            Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 } });
+            Matrix<double> B = new Matrix<double>(new double[,] { { 0, -1, -5 } });
+            double C = Matrix<double>.Dot(A, B);
+            double D = -17;
 
+            Assert.AreEqual(D, C);
+        }
 
         [TestMethod]
         public void MatrixDeepCopyTest()

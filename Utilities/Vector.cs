@@ -163,9 +163,9 @@ namespace Utilities
                 throw new ArgumentException("Vectors must be the same length when adding.");
 
             Vector C = new Vector(A.Length);
-            for (int c = 1; c <= 2; c++)
+            for (int c = 1; c <= A.Length; c++)
             {
-                C[c] = (dynamic)A[c] + B[c];
+                C[c] = A[c] + B[c];
             }
 
             return C;
@@ -183,9 +183,9 @@ namespace Utilities
 
             Vector C = new Vector(A.Length);
 
-            for (int c = 1; c <= 2; c++)
+            for (int c = 1; c <= A.Length; c++)
             {
-                C[c] = (dynamic)A[c] + b;
+                C[c] = A[c] + b;
             }
 
             return C;
@@ -236,9 +236,9 @@ namespace Utilities
         {
             Vector C = new Vector(A.Length);
 
-            for (int c = 1; c <= 2; c++)
+            for (int c = 1; c <= A.Length; c++)
             {
-                C[c] = (dynamic)A[c] - b;
+                C[c] = A[c] - b;
             }
             return C;
         }
@@ -268,8 +268,8 @@ namespace Utilities
         {
             Vector C = new Vector(A.Length);
 
-            for (int c = 1; c <= 2; c++)
-                C[c] = -1 * (dynamic)A[c];
+            for (int c = 1; c <= A.Length; c++)
+                C[c] = -1 * A[c];
 
             return C;
         }
@@ -285,9 +285,9 @@ namespace Utilities
         {
             Vector C = new Vector(B.Length);
 
-            for (int c = 1; c <= 2; c++)
+            for (int c = 1; c <= B.Length; c++)
             {
-                C[c] = (dynamic)a * B[c];
+                C[c] = a * B[c];
             }
 
 
@@ -319,9 +319,9 @@ namespace Utilities
         {
             Vector C = new Vector(A.Length);
 
-            for (int c = 1; c <= 2; c++)
+            for (int c = 1; c <= A.Length; c++)
             {
-                C[c] = (dynamic)A[c] / b;
+                C[c] = A[c] / b;
             }
 
             return C;
@@ -340,7 +340,7 @@ namespace Utilities
                 return false;
             else
             {
-                for (int i = 1; i <= 2; i++)
+                for (int i = 1; i <= A.Length; i++)
                     if (A[i] != B[i])
                         return false;
             }
@@ -383,7 +383,7 @@ namespace Utilities
 
         public void SetValue(int col, double value) ///Morgan Added this
         {
-            if( col > 0 && col <= 2)
+            if( col > 0 && col <= 100)
                 this[col] = value; // why do we access it like this?
             else
                 throw new ArgumentException("Element indicies out of Vector bounds");
@@ -458,9 +458,9 @@ namespace Utilities
         {
             Vector C = (Vector)A.Clone();
 
-                    for (int c = 1; c <= 2; c++)
+                    for (int c = 1; c <= A.Length; c++)
                     {
-                        C[c] *= (dynamic)C[c-1];
+                        C[c] *= C[c-1];
                     }
             return C;
 

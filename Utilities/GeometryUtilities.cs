@@ -26,7 +26,20 @@ namespace Utilities
             // otherwise compare the minimum distance to the radius of the earth
             return d >= SimParameters.EARTH_RADIUS;
         }
-
+        public static bool hasLOS(Matrix<double> posECI1, Matrix<double> posECI2)
+        {
+            /* parameter t is is the parameter that represents where the minimum distance is
+            d is a minimum at (posECI1) + t*(posECI2 - posECI1)*/
+            double t = -Matrix<double>.Dot(posECI1, posECI2 - posECI1) / System.Math.Pow(Matrix<double>.Norm(posECI2 - posECI1), 2);
+            /* if t > 1 or t < 0, then the minumim distance does not occur along the line segment connecting positions 1 and 2,
+            and the two positions are visible from each other*/
+            if (t >= 1 || t <= 0)
+                return true;
+            // calculate the minimum distance to the center of the earth
+            double d = Matrix<double>.Norm(Matrix<double>.Cross(posECI2 - posECI1, posECI1)) / Matrix<double>.Norm(posECI2 - posECI1);
+            // otherwise compare the minimum distance to the radius of the earth
+            return d >= SimParameters.EARTH_RADIUS;
+        }
         public static Vector LLA2ECI(Vector LLA, double JD )
         {
             Vector pos = new Vector(3);

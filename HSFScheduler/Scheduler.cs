@@ -89,7 +89,7 @@ namespace HSFScheduler
                 //DWORD endPregenTickCount = GetTickCount();
                 //pregenTimeMs = endPregenTickCount - startPregenTickCount;
                 //writeAccessReport(access_pregen, tasks); - TODO:  Finish this code - EAM
-                log.Info("Done pregenerating accesses");
+                log.Info("Done pregenerating accesses. There are " + preGeneratedAccesses.Count + " accesses.");
             }
             // otherwise generate an exhaustive list of possibilities for assetTaskList
             else
@@ -128,7 +128,7 @@ namespace HSFScheduler
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
                 if (systemSchedules.Count > _maxNumSchedules)
                 {
-                    log.Info("Cropping" + systemSchedules.Count + "Schedules.");
+                    log.Info("Cropping " + systemSchedules.Count + " Schedules.");
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
                     systemSchedules.Add(emptySchedule);
                 }

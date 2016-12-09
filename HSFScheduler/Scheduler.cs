@@ -9,6 +9,8 @@ using UserModel;
 using MissionElements;
 using log4net;
 using System.Threading.Tasks;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace HSFScheduler
 {
@@ -116,8 +118,10 @@ namespace HSFScheduler
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
             // int i = 1;
-            List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
-            List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
+            //List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
+            //List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
+            ConcurrentBag<SystemSchedule> potentialSystemSchedules = new ConcurrentBag<SystemSchedule>();
+            ConcurrentBag<SystemSchedule> systemCanPerformBag = new ConcurrentBag<SystemSchedule>();
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
             {
                 log.Info("Simulation Time " + currentTime);
@@ -138,9 +142,9 @@ namespace HSFScheduler
                 int k = 0;
 
                 //Parallel.ForEach(systemSchedules, (oldSystemSchedule) =>
-                foreach(var oldSystemSchedule in systemSchedules)
+                foreach (var oldSystemSchedule in systemSchedules)
                 {
-                    potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
+                    potentialSystemSchedules.Add(new SystemSchedule(new StateHistory(oldSystemSchedule.AllStates)));
                     foreach (var newAccessStack in scheduleCombos)
                     {
                         k++;
@@ -153,25 +157,27 @@ namespace HSFScheduler
 
                     }
                 }
+                //});
 
                 int numSched = 0;
-                foreach (var potentialSchedule in potentialSystemSchedules)
+                Parallel.ForEach(potentialSystemSchedules, (potentialSchedule) =>
+                //foreach (var potentialSchedule in potentialSystemSchedules)
                 {
 
 
                     if (Checker.CheckSchedule(system, potentialSchedule))
-                        systemCanPerformList.Add(potentialSchedule);
+                        systemCanPerformBag.Add(potentialSchedule);
                     numSched++;
-                }
-                foreach (SystemSchedule systemSchedule in systemCanPerformList)
+                });
+                foreach (SystemSchedule systemSchedule in systemCanPerformBag)
                     systemSchedule.ScheduleValue = ScheduleEvaluator.Evaluate(systemSchedule);
-
+                List<SystemSchedule> systemCanPerformList = systemCanPerformBag.ToList< SystemSchedule>();
                 systemCanPerformList.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
                 systemCanPerformList.Reverse();
                 // Merge old and new systemSchedules
                 var oldSystemCanPerfrom = new List<SystemSchedule>(systemCanPerformList);
                 systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedules
-                potentialSystemSchedules.Clear();
+                //potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
                 // Print completion percentage in command window
                 Console.WriteLine("Scheduler Status: {0}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);

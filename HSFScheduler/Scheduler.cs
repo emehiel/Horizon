@@ -171,6 +171,7 @@ namespace HSFScheduler
                 });
                 foreach (SystemSchedule systemSchedule in systemCanPerformBag)
                     systemSchedule.ScheduleValue = ScheduleEvaluator.Evaluate(systemSchedule);
+
                 List<SystemSchedule> systemCanPerformList = systemCanPerformBag.ToList< SystemSchedule>();
                 systemCanPerformList.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
                 systemCanPerformList.Reverse();
@@ -178,6 +179,7 @@ namespace HSFScheduler
                 var oldSystemCanPerfrom = new List<SystemSchedule>(systemCanPerformList);
                 systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedules
                 //potentialSystemSchedules.Clear();
+
                 systemCanPerformList.Clear();
                 // Print completion percentage in command window
                 Console.WriteLine("Scheduler Status: {0}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);

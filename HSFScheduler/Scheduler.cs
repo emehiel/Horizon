@@ -166,11 +166,12 @@ namespace HSFScheduler
                 foreach (SystemSchedule systemSchedule in systemCanPerformList)
                     systemSchedule.ScheduleValue = ScheduleEvaluator.Evaluate(systemSchedule);
 
-                systemCanPerformList.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
-                systemCanPerformList.Reverse();
+
                 // Merge old and new systemSchedules
                 var oldSystemCanPerfrom = new List<SystemSchedule>(systemCanPerformList);
                 systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedules
+                systemSchedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
+                systemSchedules.Reverse();
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
                 // Print completion percentage in command window

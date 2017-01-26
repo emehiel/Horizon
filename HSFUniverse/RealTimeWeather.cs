@@ -37,8 +37,8 @@ namespace HSFUniverse
         /// </summary>
         public RealTimeWeather()
         {
-            DateTime date = DateTime.Now;
-            CreateAtmosphere(date);
+            //DateTime date = DateTime.Now;
+            //CreateAtmosphere(date);
         }  
         /// <summary>
         /// Creates the atmosphere at the specfied time
@@ -85,7 +85,7 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="date"></param>
         /// <param name="gfscode"></param>
-        public void DownloadData(string gfscode)
+        private void DownloadData(string gfscode)
         {
             string directory = @"c:\Horizon\";
             System.IO.Directory.CreateDirectory(directory);

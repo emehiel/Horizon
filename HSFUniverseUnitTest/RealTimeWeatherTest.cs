@@ -7,6 +7,7 @@ namespace UniverseUnitTest
     [TestClass]
     public class RealTimeWeatherTest
     {
+        public DateTime TestTime = new DateTime(2017,1,20);
         /// <summary>
         /// Tests that DownloadData runs without exceptiong. Doesn't check for results.
         /// </summary>

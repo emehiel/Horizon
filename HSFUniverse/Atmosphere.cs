@@ -9,7 +9,6 @@ using Grib.Api;
 namespace HSFUniverse
 {
 
-
     public abstract class Atmosphere
     {
         protected SortedList<double, double> uVelocityData;
@@ -31,6 +30,7 @@ namespace HSFUniverse
 
 
     }
+
     /// <summary>
     /// The RealTimeWeather class generates near real time atmospheric conditions around the globe.
     /// It uses the GFS weather model outputs from the NWS to create lookup tables.
@@ -80,6 +80,7 @@ namespace HSFUniverse
         public void SetDate(DateTime date)
         {
             _date = date;
+            ConvertToNearestGFS();
         }
         #region Overrides
         /// <summary>
@@ -89,11 +90,11 @@ namespace HSFUniverse
         /// <param name="date"></param>
         public override void CreateAtmosphere()
         {
-            _gfscode = ConvertToNearestGFS(_date);
-            CreateFilename(_gfscode);
+            ConvertToNearestGFS();
+            CreateFilename();
             if (!System.IO.File.Exists(@"C:\Horizon\" + fileName))
             {
-                DownloadData(_gfscode);
+                DownloadData();
             }
             InterpretData();
             double airGasConstant = 286.9;
@@ -151,7 +152,7 @@ namespace HSFUniverse
                 url = new StringBuilder("http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.");
                 url.Append(_gfscode, 0, 10);
                 url.Append("/");
-                CreateFilename(_gfscode);
+                CreateFilename();
                 url.Append(fileName);
 
                 HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(url.ToString()));
@@ -168,8 +169,8 @@ namespace HSFUniverse
                     HttpWebResponse errorResponse = e.Response as HttpWebResponse;
                     if (errorResponse.StatusCode == HttpStatusCode.NotFound)
                     {
-                        _gfscode = UsePreviousDaysRun(_gfscode);
-                        CreateFilename(_gfscode);
+                        UsePreviousDaysRun();
+                        CreateFilename();
                     }
                     else
                     {
@@ -215,7 +216,7 @@ namespace HSFUniverse
                     /* Get the GribMessage at the specific location */
                     // FIXME: Allow the location to be changed
                     var msgLoc = from m in msg.GeoSpatialValues
-                                 where (m.Latitude.Equals(35)) && (m.Longitude.Equals(180+120))
+                                 where (m.Latitude.Equals(latitude)) && (m.Longitude.Equals(longitude))
                                  select m;
                     /* Get what pressure level the value is for */
                     string pressureLevel = msg["level"].AsString(); 
@@ -302,12 +303,12 @@ namespace HSFUniverse
         /// <returns name="gfscode">The updated gfscode</returns>
         private void UsePreviousDaysRun()
         {
-            DateTime date = new DateTime(Convert.ToInt16(_gfscode.Substring(0, 4)),
+            DateTime requestedDate = new DateTime(Convert.ToInt16(_gfscode.Substring(0, 4)),
                 Convert.ToInt16(_gfscode.Substring(4, 2)),
                 Convert.ToInt16(_gfscode.Substring(6, 2)),
                 Convert.ToInt16(_gfscode.Substring(8, 2)) + Convert.ToInt16(_gfscode.Substring(11, 3)),
                 0, 0);
-            date = date.AddDays(-1);
+            _date = requestedDate.AddDays(-1).ToLocalTime();
             ConvertToNearestGFS();
             _gfscode = _gfscode.Replace(_gfscode.Substring(11, 3), (((Convert.ToInt16(_gfscode.Substring(11, 3)) + 24)).ToString("d3")));
         }
@@ -340,10 +341,10 @@ namespace HSFUniverse
         }
       
     }
+
     /// <summary>
     /// Implementation of the 1976 standard atmosphere for altitudes below 84 km
     /// </summary>
-    
     //TODO: Check input altitude
     public class StandardAtmosphere : Atmosphere
     {

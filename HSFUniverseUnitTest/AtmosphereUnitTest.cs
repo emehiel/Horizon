@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HSFUniverse;
+using System.Collections.Generic;
 
 namespace HSFUniverse.Tests
 {
@@ -41,19 +42,27 @@ namespace HSFUniverse.Tests
         {
             string gfscode = "2017012518_060";
             RealTimeAtmosphere weatherData = new RealTimeAtmosphere();
+            PrivateObject obj = new PrivateObject(weatherData);
+
             /* Download the file if it does not exist. This only needs to be done once */
             if (!System.IO.File.Exists(@"C:\Horizon\gfs.t18z.pgrb2.0p50.f060.grb2"))
             {
-                PrivateObject obj = new PrivateObject(weatherData);
+                
                 obj.Invoke("DownloadData", gfscode);
             }
-            weatherData.InterpretData(gfscode);
+            obj.SetFieldOrProperty("_gfscode", gfscode);
+            obj.Invoke("CreateFilename");
+            obj.Invoke("InterpretData");
             int expectedCount = 31;
-            weatherData.temperature(1350);
-            //Assert.AreEqual(expectedCount, weatherData.pressureData.Count);
-            //Assert.AreEqual(expectedCount, weatherData.temperatureData.Count);
-            //Assert.AreEqual(expectedCount, weatherData.uVelocityData.Count);
-            //Assert.AreEqual(expectedCount, weatherData.vVelocityData.Count);
+            //weatherData.temperature(1350);
+            double pressure = ((SortedList<double, double>)obj.GetFieldOrProperty("pressureData")).Count;
+            double temperature = ((SortedList<double, double>)obj.GetFieldOrProperty("temperatureData")).Count;
+            double uVelocity = ((SortedList<double, double>)obj.GetFieldOrProperty("uVelocityData")).Count;
+            double vVelocity = ((SortedList<double, double>)obj.GetFieldOrProperty("vVelocityData")).Count;
+            Assert.AreEqual(expectedCount, pressure);
+            Assert.AreEqual(expectedCount, temperature);
+            Assert.AreEqual(expectedCount, uVelocity);
+            Assert.AreEqual(expectedCount, vVelocity);
         }
         /// <summary>
         /// Tests that the right gfscode format is generated from a datetime object
@@ -64,8 +73,9 @@ namespace HSFUniverse.Tests
             // TODO: Figure out how to test a future date. Have tested on the first release
             RealTimeAtmosphere weatherData = new RealTimeAtmosphere();
             PrivateObject obj = new PrivateObject(weatherData);
-            var datecode = obj.Invoke("ConvertToNearestGFS", (new DateTime(2017, 01, 20, 3, 6, 1)));
-            Assert.AreEqual("2017012006_005", datecode.ToString());
+            obj.SetFieldOrProperty("_date", (new DateTime(2017, 01, 20, 3, 6, 1)));
+            obj.Invoke("ConvertToNearestGFS");
+            Assert.AreEqual("2017012006_005", ((string)obj.GetFieldOrProperty("_gfscode")));
         }
         /// <summary>
         /// Tests that the new generated string correspondes to the same forecast time but
@@ -77,8 +87,9 @@ namespace HSFUniverse.Tests
             // TODO: Figure out how to test a future date. Have tested on the first release
             RealTimeAtmosphere weatherData = new RealTimeAtmosphere();
             PrivateObject obj = new PrivateObject(weatherData);
-            var gfscode = obj.Invoke("UsePreviousDaysRun", "2017012106_001");
-            Assert.AreEqual("2017012006_025", gfscode.ToString());
+            obj.SetFieldOrProperty("_gfscode", "2017012106_001");
+            obj.Invoke("UsePreviousDaysRun");
+            Assert.AreEqual("2017012006_025", ((string)obj.GetFieldOrProperty("_gfscode")));
         }
     }
 }

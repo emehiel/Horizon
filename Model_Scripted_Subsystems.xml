@@ -35,7 +35,7 @@
 			src="..\..\..\ssdr.py"
 			className="ssdr">
       <IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
-      <DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor"></DEPENDENCY>
+      <DEPENDENCY subsystemName="EOSensor" fcnName="Asset1.SSDRfromEOSensor"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
 			Type="scripted"
@@ -43,7 +43,7 @@
 			src="..\..\..\comm.py"
 			className="comm">
       <IC type="Double" key="DataRate(MB/s)" value="0.0"></IC>
-      <DEPENDENCY subsystemName="SSDR" fcnName="CommfromSSDR"></DEPENDENCY>
+      <DEPENDENCY subsystemName="SSDR" fcnName="Asset1.CommfromSSDR"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
 			Type="scripted"
@@ -55,10 +55,10 @@
 			penumbraSolarPower="75">
       <IC type="Double" key="DepthofDischarge" value="0.0"></IC>
       <IC type="Double" key="SolarPanelPowerIn" value="0.0"></IC>
-      <DEPENDENCY subsystemName="Comm" fcnName="PowerfromComm"></DEPENDENCY>
-      <DEPENDENCY subsystemName="Adcs" fcnName="PowerfromADCS"></DEPENDENCY>
-      <DEPENDENCY subsystemName="EOSensor" fcnName="PowerfromEOSensor"></DEPENDENCY>
-      <DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR"></DEPENDENCY>
+      <DEPENDENCY subsystemName="Comm" fcnName="Asset1.PowerfromComm"></DEPENDENCY>
+      <DEPENDENCY subsystemName="Adcs" fcnName="Asset1.PowerfromADCS"></DEPENDENCY>
+      <DEPENDENCY subsystemName="EOSensor" fcnName="Asset1.PowerfromEOSensor"></DEPENDENCY>
+      <DEPENDENCY subsystemName="SSDR" fcnName="Asset1.PowerfromSSDR"></DEPENDENCY>
     </SUBSYSTEM>
     <CONSTRAINT
 			value="0.25"

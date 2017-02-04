@@ -27,41 +27,41 @@ namespace Utilities
             return d >= SimParameters.EARTH_RADIUS;
         }
 
-        public static Matrix<double> LLA2ECI(Matrix<double> LLA, double JD )
+        public static Vector<double> LLA2ECI(Vector<double> LLA, double JD )
         {
-            Matrix<double> pos = new Matrix<double>(3, 1, 0.0);
+            Vector<double> pos = new Vector<double>(3);
 
-            double lat = LLA[1, 1]; //deg
-            double lon = LLA[2, 1]; //deg
-            double alt = LLA[3, 1]; //km
+            double lat = LLA[1]; //deg
+            double lon = LLA[2]; //deg
+            double alt = LLA[3]; //km
 
             double gst = CT2LST(lon, JD); //deg
             double theta = gst * System.Math.PI / 180.0; //(lon + gst) * M_PI/180.0; //rad
 
             double r = (SimParameters.EARTH_RADIUS + alt) * System.Math.Cos(lat * System.Math.PI / 180.0); // km
 
-            pos[1, 1] = r * System.Math.Cos(theta);// km
-            pos[2, 1] = r * System.Math.Sin(theta);// km
-            pos[3, 1] = (alt + SimParameters.EARTH_RADIUS) * System.Math.Sin(lat * System.Math.PI / 180.0);// km
+            pos[1] = r * System.Math.Cos(theta);// km
+            pos[2] = r * System.Math.Sin(theta);// km
+            pos[3] = (alt + SimParameters.EARTH_RADIUS) * System.Math.Sin(lat * System.Math.PI / 180.0);// km
 
             return pos;
         }
 
-        public static Matrix<double> ECI2LLA( Matrix<double> ECI, double JD )
+        public static Vector<double> ECI2LLA( Vector<double> ECI, double JD )
         {
-            Matrix<double> pos = new Matrix<double>(3, 1, 0.0);
-            double x = ECI[1, 1];
-            double y = ECI[2, 1];
-            double z = ECI[3, 1];
+            Vector<double> pos = new Vector<double>(3);
+            double x = ECI[1];
+            double y = ECI[2];
+            double z = ECI[3];
 
-            double r = Matrix<double>.Norm(ECI);
+            double r = Vector<double>.Norm(ECI);
                 double templon = 180 / System.Math.PI * System.Math.Atan2(y, x); //deg
             double diff = templon - CT2LST(templon, JD);
             double lon = templon + diff;
 
-            pos[1, 1] = 180 / System.Math.PI * System.Math.Atan2(z, System.Math.Sqrt(x * x + y * y)); //deg
-            pos[2, 1] = lon; //deg
-            pos[3, 1] = r - SimParameters.EARTH_RADIUS; //km
+            pos[1] = 180 / System.Math.PI * System.Math.Atan2(z, System.Math.Sqrt(x * x + y * y)); //deg
+            pos[2] = lon; //deg
+            pos[3] = r - SimParameters.EARTH_RADIUS; //km
             return pos;
         }
 
@@ -93,13 +93,13 @@ namespace Utilities
             return lst;
         }
 
-        public static Matrix<double> quat2euler(Matrix<double> q)
+        public static Vector<double> quat2euler(Matrix<double> q)
         {
-            Matrix<double> eulerAngles = new Matrix<double>(3, 1);
+            Vector<double> eulerAngles = new Vector<double>(3);
 
-            eulerAngles[1, 1] = System.Math.Atan2(2 * (q[1] * q[2] + q[3] * q[4]), 1 - 2 * (q[1] * q[1] + q[2] * q[2]));
-            eulerAngles[2, 1] = System.Math.Asin(2 * (q[1] * q[3] - q[4] * q[1]));
-            eulerAngles[3, 1] = System.Math.Atan2(2 * (q[1] * q[4] + q[2] * q[3]), 1 - 2 * (q[3] * q[3] + q[4] * q[4]));
+            eulerAngles[1] = System.Math.Atan2(2 * (q[1] * q[2] + q[3] * q[4]), 1 - 2 * (q[1] * q[1] + q[2] * q[2]));
+            eulerAngles[2] = System.Math.Asin(2 * (q[1] * q[3] - q[4] * q[1]));
+            eulerAngles[3] = System.Math.Atan2(2 * (q[1] * q[4] + q[2] * q[3]), 1 - 2 * (q[3] * q[3] + q[4] * q[4]));
 
             return eulerAngles;
         }

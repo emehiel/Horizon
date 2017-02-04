@@ -38,7 +38,7 @@ namespace HSFUniverse
         private PropagationType _propagatorType;
         private IntegratorOptions _integratorOptions;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private SortedList<double, Matrix<double>> _stateData;
+        private SortedList<double, Vector<double>> _stateData;
 
         #region Constructors
         public DynamicState(XmlNode dynamicStateXMLNode)
@@ -55,8 +55,8 @@ namespace HSFUniverse
                 string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value.ToString();
                 Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
             }
-            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
-            _stateData = new SortedList<double, Matrix<double>>();
+            Vector<double> ics = new Vector<double>(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
+            _stateData = new SortedList<double, Vector<double>>();
             _stateData.Add(0.0, ics);
 
             if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
@@ -88,7 +88,7 @@ namespace HSFUniverse
 
         }
 
-        public DynamicState(DynamicStateType type, EOMS eoms, Matrix<double> initialConditions)
+        public DynamicState(DynamicStateType type, EOMS eoms, Vector<double> initialConditions)
         {
             _stateData.Add(0.0, initialConditions);
             Type = type;
@@ -98,17 +98,17 @@ namespace HSFUniverse
         #endregion
 
 
-        public Matrix<double> InitialConditions()
+        public Vector<double> InitialConditions()
         {
             return _stateData[0.0];
         }
 
-        public void Add(double simTime, Matrix<double> dynamicState)
+        public void Add(double simTime, Vector<double> dynamicState)
         {
             _stateData.Add(simTime, dynamicState);
         }
 
-        public Matrix<double> DynamicStateECI(double simTime) //Should we be interpolating?
+        public Vector<double> DynamicStateECI(double simTime) //Should we be interpolating?
         {
             return this[simTime]; 
         }
@@ -119,9 +119,9 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Matrix<double> PositionECI(double simTime)
+        public Vector<double> PositionECI(double simTime)
         {
-            return this[simTime][new MatrixIndex(1, 3), 1];
+            return this[simTime][new MatrixIndex(1, 3)];
         }
 
         /// <summary>
@@ -129,9 +129,9 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Matrix<double> VelocityECI(double simTime)
+        public Vector<double> VelocityECI(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(4, 6), 1];
+            return _stateData[simTime][new MatrixIndex(4, 6)];
         }
 
         /// <summary>
@@ -139,9 +139,9 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Matrix<double> EulerAngles(double simTime)
+        public Vector<double> EulerAngles(double simTime)
         {
-            Matrix<double> eulerAngles = GeometryUtilities.quat2euler(Quaternions(simTime));
+            Vector<double> eulerAngles = GeometryUtilities.quat2euler(Quaternions(simTime));
             return eulerAngles;
         }
 
@@ -152,7 +152,7 @@ namespace HSFUniverse
         /// <returns></returns>
         public Matrix<double> Quaternions(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(7, 10), 1];
+            return _stateData[simTime][new MatrixIndex(7, 10)];
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace HSFUniverse
         /// <returns></returns>
         public Matrix<double> EulerRates(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(11, 13), 1];
+            return _stateData[simTime][new MatrixIndex(11, 13)];
         }
         #endregion
 
@@ -178,8 +178,8 @@ namespace HSFUniverse
 
             Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions);
 
-            for (int index = 1; index <= data.Length; index++)
-                _stateData[data[1, index]] = data[new MatrixIndex(2, data.NumRows), index];
+           for (int index = 1; index <= data.Length; index++)
+               _stateData[data[1, index]] = (Vector<double>)data[new MatrixIndex(2, data.NumRows), index];
 
             log.Info("Done Integrating");
         }
@@ -192,7 +192,7 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime">The simulation time key</param>
         /// <returns>The inertial dynamic state date of the asset</returns>
-        private Matrix<double> this[double simTime]
+        private Vector<double> this[double simTime]
         {
             get
             {
@@ -212,7 +212,7 @@ namespace HSFUniverse
                     if (hasNotPropagated)
                         PropagateState(SimParameters.SimEndSeconds);
 
-                    Matrix<double> dynamicStateAtSimTime;
+                    Vector<double> dynamicStateAtSimTime;
 
                     if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
                     {
@@ -220,16 +220,16 @@ namespace HSFUniverse
                         int slopeInd = 1;
                         if (simTime >= SimParameters.SimEndSeconds)
                             slopeInd = -1;
-                        KeyValuePair<double, Matrix<double>> lowerData = _stateData.ElementAt(lowerIndex);
-                        KeyValuePair<double, Matrix<double>> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
+                        KeyValuePair<double, Vector<double>> lowerData = _stateData.ElementAt(lowerIndex);
+                        KeyValuePair<double, Vector<double>> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
 
                         double lowerTime = lowerData.Key;
-                        Matrix<double> lowerState = lowerData.Value;
+                        Vector<double> lowerState = lowerData.Value;
 
                         double upperTime = upperData.Key;
-                        Matrix<double> upperState = upperData.Value;
+                        Vector<double> upperState = upperData.Value;
 
-                        Matrix<double> slope = (upperState - lowerState) / (upperTime - lowerTime);
+                        Vector<double> slope = (upperState - lowerState) / (upperTime - lowerTime);
 
                         dynamicStateAtSimTime = slope * (simTime - lowerTime) + lowerState;
                     }
@@ -253,7 +253,7 @@ namespace HSFUniverse
         /// <param name="targetPositionECI"></param>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public bool hasLOSTo(Matrix<double> targetPositionECI, double simTime)
+        public bool hasLOSTo(Vector<double> targetPositionECI, double simTime)
         {
             return GeometryUtilities.hasLOS(PositionECI(simTime), targetPositionECI);
         }
@@ -277,7 +277,7 @@ namespace HSFUniverse
 
             // data
             foreach (var d in _stateData)
-                csv.AppendLine(d.Key + "," + d.Value[1, 1] + "," + d.Value[2, 1] + "," + d.Value[3, 1] + "," + d.Value[4, 1] + "," + d.Value[5, 1] + "," + d.Value[6, 1]);
+                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6]);
 
             return csv.ToString();
         }

@@ -34,7 +34,7 @@ class comm(HSFSubsystem.Comm):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_COMMSUB)
-        dep.Add("PowerfromComm"+ "." + self.Asset.Name, depFunc1)
+        dep.Add("PowerfromComm", depFunc1)
         return dep
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
@@ -42,7 +42,7 @@ class comm(HSFSubsystem.Comm):
         if (self._task.Type == TaskType.COMM):
             newProf = self.DependencyCollector(event)
             if (newProf.Empty() == False):
-                event.State.setProfile(self.DATARATE_KEY, newProf)
+                event.State.SetProfile(self.DATARATE_KEY, newProf)
         return True
     def CanExtend(self, event, universe, extendTo):
         return super(comm, self).CanExtend(self, event, universe, extendTo)

@@ -6,7 +6,7 @@
 			<EOMS
 				EOMSType="scripted"
 				src="..\..\..\eomRocket.py"
-				className="eom">
+				className="eomRocket">
 			</EOMS>
 		</DynamicState>
 		<SUBSYSTEM

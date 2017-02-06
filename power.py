@@ -46,7 +46,7 @@ class power(HSFSubsystem.Power):
             #Logger.Report("Simulation ended")
             return False
 
-        olddod = self._newState.getLastValue(self.Dkeys[0]).Value
+        olddod = self._newState.GetLastValue(self.Dkeys[0]).Value
         powerOut = self.DependencyCollector(event)
         powerOut = powerOut + powerSubPowerOut
         position = self.Asset.AssetDynamicState
@@ -57,7 +57,7 @@ class power(HSFSubsystem.Power):
         freq = 5.0
         dodProf = HSFProfile[System.Double]()
         dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, exceeded, 0, olddod)
-        self._newState.addValue(self.DOD_KEY, dodProf[0])
+        self._newState.AddValue(self.DOD_KEY, dodProf[0])
         return True
     def CanExtend(self, event, universe, extendTo):
         return super(power, self).CanExtend(self, event, universe, extendTo)

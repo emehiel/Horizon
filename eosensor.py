@@ -10,7 +10,7 @@ clr.AddReferenceByName('HSFUniverse')
 clr.AddReferenceByName('UserModel')
 clr.AddReferenceByName('MissionElements')
 clr.AddReferenceByName('HSFSystem')
-
+#clr.AddReferenceByName('SystemState')
 import System.Xml
 import HSFSystem
 import HSFSubsystem
@@ -18,6 +18,7 @@ import MissionElements
 import Utilities
 import HSFUniverse
 import UserModel
+# from MissionElements import SystemState
 from HSFSystem import *
 from System.Xml import XmlNode
 from Utilities import *
@@ -34,9 +35,9 @@ class eosensor(HSFSubsystem.EOSensor):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_EOSENSORSUB)
-        dep.Add("PowerfromEOSensor"+ "." + self.Asset.Name, depFunc1)
+        dep.Add("PowerfromEOSensor", depFunc1)
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.SSDRSUB_NewDataProfile_EOSENSORSUB)
-        dep.Add("SSDRfromEOSensor"+ "." + self.Asset.Name, depFunc1)
+        dep.Add("SSDRfromEOSensor", depFunc1)
         return dep
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
@@ -49,7 +50,7 @@ class eosensor(HSFSubsystem.EOSensor):
                     pixels = self._midQualityPixels
                     timetocapture = self._midQualityTime
              if (value > self._highQualityTime):
-                pixels = self._highQualityPixels;
+                pixels = self._highQualityPixels
                 timetocapture = self._highQualityTime
 
              es = event.GetEventStart(self.Asset)
@@ -70,14 +71,14 @@ class eosensor(HSFSubsystem.EOSensor):
              pv_norm = m_pv / Matrix[System.Double].Norm(m_pv)
 
              incidenceang = 90 - 180 / Math.PI * Math.Acos(Matrix[System.Double].Dot(pos_norm, pv_norm))
-             self._newState.addValue(self.INCIDENCE_KEY, KeyValuePair[System.Double, System.Double](timage, incidenceang))
-             self._newState.addValue(self.INCIDENCE_KEY, KeyValuePair[System.Double, System.Double](timage + 1, 0.0))
+             self._newState.AddValue(self.INCIDENCE_KEY, KeyValuePair[System.Double, System.Double](timage, incidenceang))
+             self._newState.AddValue(self.INCIDENCE_KEY, KeyValuePair[System.Double, System.Double](timage + 1, 0.0))
 
-             self._newState.addValue(self.PIXELS_KEY, KeyValuePair[System.Double, System.Double](timage, pixels))
-             self._newState.addValue(self.PIXELS_KEY, KeyValuePair[System.Double, System.Double](timage + 1, 0.0))
+             self._newState.AddValue(self.PIXELS_KEY, KeyValuePair[System.Double, System.Double](timage, pixels))
+             self._newState.AddValue(self.PIXELS_KEY, KeyValuePair[System.Double, System.Double](timage + 1, 0.0))
 
-             self._newState.addValue(self.EOON_KEY, KeyValuePair[System.Double, System.Boolean](ts, True))
-             self._newState.addValue(self.EOON_KEY, KeyValuePair[System.Double, System.Boolean](te, False))
+             self._newState.AddValue(self.EOON_KEY, KeyValuePair[System.Double, System.Boolean](ts, True))
+             self._newState.AddValue(self.EOON_KEY, KeyValuePair[System.Double, System.Boolean](te, False))
              return True     
     def CanExtend(self, event, universe, extendTo):
         return super(eosensor, self).CanExtend(self, event, universe, extendTo)

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorizonMain", "Horizon\HorizonMain.csproj", "{6E6D45BA-6E13-4117-839E-469A59EEF191}"
 EndProject
@@ -34,6 +34,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Logging", "Logging\Logging.csproj", "{45BEE7E3-100B-4B95-8E59-2AE94503C1B4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingUnitTest", "LoggingUnitTest\LoggingUnitTest.csproj", "{701C5284-237E-44D2-8AE8-6F70F02259DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFMainUnitTest", "HSFMainUnitTest\HSFMainUnitTest.csproj", "{20099F21-A99C-4F8A-9C10-AE3C3102F320}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -132,6 +134,12 @@ Global
 		{701C5284-237E-44D2-8AE8-6F70F02259DC}.Realease Fast|Any CPU.Build.0 = Release|Any CPU
 		{701C5284-237E-44D2-8AE8-6F70F02259DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{701C5284-237E-44D2-8AE8-6F70F02259DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Realease Fast|Any CPU.ActiveCfg = Release|Any CPU
+		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Realease Fast|Any CPU.Build.0 = Release|Any CPU
+		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

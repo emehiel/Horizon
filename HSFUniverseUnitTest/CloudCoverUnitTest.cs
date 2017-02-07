@@ -8,7 +8,8 @@ namespace UniverseUnitTest
     [TestClass]
     public class CloudCoverUnitTest
     {
-        [TestMethod]
+        // TODO: Figure out what this was meant for.
+        /*[TestMethod]
         public void TestMethod1()
         {
             Sun mysun = new Sun();
@@ -18,6 +19,6 @@ namespace UniverseUnitTest
 
             esVec.GetRow(4);
 
-        }
+        }*/
     }
 }

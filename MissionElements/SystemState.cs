@@ -8,6 +8,7 @@ using System.Text;
 using Utilities;
 using System.Xml;
 using UserModel;
+using System.Collections.Concurrent;
 
 namespace MissionElements
 {
@@ -18,22 +19,22 @@ namespace MissionElements
         public SystemState Previous { get; set; }
 
         /** The Dictionary of integer Profiles. */
-        public Dictionary<StateVarKey<int>, HSFProfile<int>> Idata { get; private set; }
+        public ConcurrentDictionary<StateVarKey<int>, HSFProfile<int>> Idata { get; private set; }
 
         /** The Dictionary of double precision Profiles. */
-        public Dictionary<StateVarKey<double>, HSFProfile<double>> Ddata { get; private set; }
+        public ConcurrentDictionary<StateVarKey<double>, HSFProfile<double>> Ddata { get; private set; }
 
         /** The Dictionary of floating point value Profiles. */
         //   public Dictionary<StateVarKey<float>, HSFProfile<float>> Fdata { get; private set; }
 
         /** The Dictionary of boolean Profiles. */
-        public Dictionary<StateVarKey<bool>, HSFProfile<bool>> Bdata { get; private set; }
+        public ConcurrentDictionary<StateVarKey<bool>, HSFProfile<bool>> Bdata { get; private set; }
 
         /** The Dictionary of Matrix Profiles. */
-        public Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>> Mdata { get; private set; }
+        public ConcurrentDictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>> Mdata { get; private set; }
 
         /** The Dictionary of Quaternion Profiles. */
-        public Dictionary<StateVarKey<Quat>, HSFProfile<Quat>> Qdata { get; private set; }
+        public ConcurrentDictionary<StateVarKey<Quat>, HSFProfile<Quat>> Qdata { get; private set; }
 
 
         /// <summary>
@@ -42,11 +43,11 @@ namespace MissionElements
         public SystemState()
         {
             Previous = null;
-            Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>();
-            Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
-            Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
-            Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
-            Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
+            Idata = new ConcurrentDictionary<StateVarKey<int>, HSFProfile<int>>();
+            Ddata = new ConcurrentDictionary<StateVarKey<double>, HSFProfile<double>>();
+            Bdata = new ConcurrentDictionary<StateVarKey<bool>, HSFProfile<bool>>();
+            Mdata = new ConcurrentDictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
+            Qdata = new ConcurrentDictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
         }
 
 
@@ -57,11 +58,11 @@ namespace MissionElements
         public SystemState(SystemState previous)
         {
             Previous = previous;
-            Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>();
-            Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
-            Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
-            Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
-            Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
+            Idata = new ConcurrentDictionary<StateVarKey<int>, HSFProfile<int>>();
+            Ddata = new ConcurrentDictionary<StateVarKey<double>, HSFProfile<double>>();
+            Bdata = new ConcurrentDictionary<StateVarKey<bool>, HSFProfile<bool>>();
+            Mdata = new ConcurrentDictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
+            Qdata = new ConcurrentDictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
         }
         /// <summary>
         /// Use this constructor to create a copy of another state
@@ -71,11 +72,11 @@ namespace MissionElements
         public SystemState(SystemState state, int copy)
         {
             Previous = state.Previous;
-            Idata = new Dictionary<StateVarKey<int>, HSFProfile<int>>(state.Idata);
-            Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>(state.Ddata);
-            Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>(state.Bdata);
-            Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>(state.Mdata);
-            Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>(state.Qdata);
+            Idata = new ConcurrentDictionary<StateVarKey<int>, HSFProfile<int>>(state.Idata);
+            Ddata = new ConcurrentDictionary<StateVarKey<double>, HSFProfile<double>>(state.Ddata);
+            Bdata = new ConcurrentDictionary<StateVarKey<bool>, HSFProfile<bool>>(state.Bdata);
+            Mdata = new ConcurrentDictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>(state.Mdata);
+            Qdata = new ConcurrentDictionary<StateVarKey<Quat>, HSFProfile<Quat>>(state.Qdata);
         }
         /// <summary>
         /// combine two system states by adding the states from one into the other
@@ -225,10 +226,11 @@ namespace MissionElements
         public void SetProfile(StateVarKey<int> key, HSFProfile<int> profIn) {
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Idata.Add(key, profIn);
+                Idata.TryAdd(key, profIn);
             else { // Otherwise, erase whatever is there, and insert a new one.
-                Idata.Remove(key);
-                Idata.Add(key, profIn);
+                //Idata.TryRemove(key);
+                //Idata.TryAdd(key, profIn);
+                Idata.TryUpdate(key, valueOut, profIn);
             }
         }
 
@@ -242,7 +244,7 @@ namespace MissionElements
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut))
             { // If there's no Profile matching that key, insert a new one.
-                Idata.Add(key, valueIn);
+                Idata.TryAdd(key, valueIn);
             }
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
@@ -256,7 +258,7 @@ namespace MissionElements
         public void AddValue(StateVarKey<int> key, HSFProfile<int> profIn) {
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Idata.Add(key, profIn);
+                Idata.TryAdd(key, profIn);
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
         }
@@ -319,10 +321,11 @@ namespace MissionElements
         public void SetProfile(StateVarKey<double> key, HSFProfile<double> profIn) {
             HSFProfile<double> valueOut;
             if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Ddata.Add(key, profIn);
+                Ddata.TryAdd(key, profIn);
             else { // Otherwise, erase whatever is there, and insert a new one.
-                Ddata.Remove(key);
-                Ddata.Add(key, profIn);
+                //Ddata.Remove(key);
+                //Ddata.Add(key, profIn);
+                Ddata.TryUpdate(key, valueOut, profIn);
             }
         }
 
@@ -337,7 +340,7 @@ namespace MissionElements
             HSFProfile<double> valueOut;
             if (!Ddata.TryGetValue(key, out valueOut))
             { // If there's no Profile matching that key, insert a new one.
-                Ddata.Add(key, valueIn);
+                Ddata.TryAdd(key, valueIn);
             }
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
@@ -351,7 +354,7 @@ namespace MissionElements
         public void AddValue(StateVarKey<double> key, HSFProfile<double> profIn) {
             HSFProfile<double> valueOut;
             if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Ddata.Add(key, profIn);
+                Ddata.TryAdd(key, profIn);
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
         }
@@ -431,10 +434,11 @@ namespace MissionElements
         {
             HSFProfile<bool> valueOut;
             if (!Bdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Bdata.Add(key, profIn);
+                Bdata.TryAdd(key, profIn);
             else { // Otherwise, erase whatever is there, and insert a new one.
-                Bdata.Remove(key);
-                Bdata.Add(key, profIn);
+                //Bdata.Remove(key);
+                //Bdata.Add(key, profIn);
+                Bdata.TryUpdate(key, valueOut, profIn);
             }
         }
 
@@ -450,7 +454,7 @@ namespace MissionElements
             HSFProfile<bool> valueIn = new HSFProfile<bool>(pairIn);
             HSFProfile<bool> valueOut;
             if (!Bdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Bdata.Add(key, valueIn);
+                Bdata.TryAdd(key, valueIn);
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
         }
@@ -465,7 +469,7 @@ namespace MissionElements
         {
             HSFProfile<bool> valueOut;
             if (!Bdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Bdata.Add(key, profIn);
+                Bdata.TryAdd(key, profIn);
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
         }
@@ -537,10 +541,11 @@ namespace MissionElements
         {
             HSFProfile<Matrix<double>> valueOut;
             if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Mdata.Add(key, profIn);
+                Mdata.TryAdd(key, profIn);
             else { // Otherwise, erase whatever is there, and insert a new one.
-                Mdata.Remove(key);
-                Mdata.Add(key, profIn);
+                //Mdata.Remove(key);
+                //Mdata.Add(key, profIn);
+                Mdata.TryUpdate(key, valueOut, profIn);
             }
         }
 
@@ -554,7 +559,7 @@ namespace MissionElements
             HSFProfile<Matrix<double>> valueIn = new HSFProfile<Matrix<double>>(pairIn);
             HSFProfile<Matrix<double>> valueOut = new HSFProfile<Matrix<double>>();
             if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Mdata.Add(key, valueIn);
+                Mdata.TryAdd(key, valueIn);
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
         }
@@ -568,7 +573,7 @@ namespace MissionElements
         {
             HSFProfile<Matrix<double>> valueOut;
             if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Mdata.Add(key, profIn);
+                Mdata.TryAdd(key, profIn);
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
         }

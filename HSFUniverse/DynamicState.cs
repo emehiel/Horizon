@@ -38,7 +38,7 @@ namespace HSFUniverse
         private PropagationType _propagatorType;
         private IntegratorOptions _integratorOptions;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private SortedList<double, Vector<double>> _stateData;
+        private SortedList<double, Vector> _stateData;
 
         #region Constructors
         public DynamicState(XmlNode dynamicStateXMLNode)
@@ -55,8 +55,8 @@ namespace HSFUniverse
                 string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value.ToString();
                 Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
             }
-            Vector<double> ics = new Vector<double>(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
-            _stateData = new SortedList<double, Vector<double>>();
+            Vector ics = new Vector(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
+            _stateData = new SortedList<double, Vector>();
             _stateData.Add(0.0, ics);
 
             if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
@@ -88,7 +88,7 @@ namespace HSFUniverse
 
         }
 
-        public DynamicState(DynamicStateType type, EOMS eoms, Vector<double> initialConditions)
+        public DynamicState(DynamicStateType type, EOMS eoms, Vector initialConditions)
         {
             _stateData.Add(0.0, initialConditions);
             Type = type;
@@ -98,17 +98,17 @@ namespace HSFUniverse
         #endregion
 
 
-        public Vector<double> InitialConditions()
+        public Vector InitialConditions()
         {
             return _stateData[0.0];
         }
 
-        public void Add(double simTime, Vector<double> dynamicState)
+        public void Add(double simTime, Vector dynamicState)
         {
             _stateData.Add(simTime, dynamicState);
         }
 
-        public Vector<double> DynamicStateECI(double simTime) //Should we be interpolating?
+        public Vector DynamicStateECI(double simTime) //Should we be interpolating?
         {
             return this[simTime]; 
         }
@@ -119,7 +119,7 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Vector<double> PositionECI(double simTime)
+        public Vector PositionECI(double simTime)
         {
             return this[simTime][new MatrixIndex(1, 3)];
         }
@@ -129,7 +129,7 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Vector<double> VelocityECI(double simTime)
+        public Vector VelocityECI(double simTime)
         {
             return _stateData[simTime][new MatrixIndex(4, 6)];
         }
@@ -139,9 +139,9 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Vector<double> EulerAngles(double simTime)
+        public Vector EulerAngles(double simTime)
         {
-            Vector<double> eulerAngles = GeometryUtilities.quat2euler(Quaternions(simTime));
+            Vector eulerAngles = GeometryUtilities.quat2euler(Quaternions(simTime));
             return eulerAngles;
         }
 
@@ -179,7 +179,7 @@ namespace HSFUniverse
             Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions);
 
            for (int index = 1; index <= data.Length; index++)
-               _stateData[data[1, index]] = (Vector<double>)data[new MatrixIndex(2, data.NumRows), index];
+               _stateData[data[1, index]] = (Vector)data[new MatrixIndex(2, data.NumRows), index];
 
             log.Info("Done Integrating");
         }
@@ -192,7 +192,7 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime">The simulation time key</param>
         /// <returns>The inertial dynamic state date of the asset</returns>
-        private Vector<double> this[double simTime]
+        private Vector this[double simTime]
         {
             get
             {
@@ -212,7 +212,7 @@ namespace HSFUniverse
                     if (hasNotPropagated)
                         PropagateState(SimParameters.SimEndSeconds);
 
-                    Vector<double> dynamicStateAtSimTime;
+                    Vector dynamicStateAtSimTime;
 
                     if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
                     {
@@ -220,16 +220,16 @@ namespace HSFUniverse
                         int slopeInd = 1;
                         if (simTime >= SimParameters.SimEndSeconds)
                             slopeInd = -1;
-                        KeyValuePair<double, Vector<double>> lowerData = _stateData.ElementAt(lowerIndex);
-                        KeyValuePair<double, Vector<double>> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
+                        KeyValuePair<double, Vector> lowerData = _stateData.ElementAt(lowerIndex);
+                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
 
                         double lowerTime = lowerData.Key;
-                        Vector<double> lowerState = lowerData.Value;
+                        Vector lowerState = lowerData.Value;
 
                         double upperTime = upperData.Key;
-                        Vector<double> upperState = upperData.Value;
+                        Vector upperState = upperData.Value;
 
-                        Vector<double> slope = (upperState - lowerState) / (upperTime - lowerTime);
+                        Vector slope = (upperState - lowerState) / (upperTime - lowerTime);
 
                         dynamicStateAtSimTime = slope * (simTime - lowerTime) + lowerState;
                     }
@@ -253,7 +253,7 @@ namespace HSFUniverse
         /// <param name="targetPositionECI"></param>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public bool hasLOSTo(Vector<double> targetPositionECI, double simTime)
+        public bool hasLOSTo(Vector targetPositionECI, double simTime)
         {
             return GeometryUtilities.hasLOS(PositionECI(simTime), targetPositionECI);
         }

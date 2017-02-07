@@ -181,19 +181,19 @@ namespace HSFSubsystem
             SystemState state = new SystemState();
             foreach(var key in Ikeys)
             {
-                state.Idata.Add(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Idata.TryAdd(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Bkeys)
             {
-                state.Bdata.Add(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Bdata.TryAdd(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Dkeys)
             {
-                state.Ddata.Add(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Ddata.TryAdd(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Mkeys)
             {
-                state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Mdata.TryAdd(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             return state;
         }

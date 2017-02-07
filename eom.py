@@ -20,7 +20,7 @@ class eom(Utilities.OrbitalEOMS):
         mur3 = -self._mu / r3
         self._A[4, 1] = mur3
         self._A[5, 2] = mur3
-        self. _A[6, 3] = mur3
+        self._A[6, 3] = mur3
         dy = Matrix[System.Double]()
         dy = self._A * y
         return dy

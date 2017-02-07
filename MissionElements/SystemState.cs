@@ -237,7 +237,7 @@ namespace MissionElements
         /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
         /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
         /// <param name="pairIn"></param>
-        void AddValue(StateVarKey<int> key, KeyValuePair<double, int> pairIn) {
+        public void AddValue(StateVarKey<int> key, KeyValuePair<double, int> pairIn) {
             HSFProfile<int> valueIn = new HSFProfile<int>(pairIn);
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut))

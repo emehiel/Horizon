@@ -335,31 +335,27 @@ namespace Utilities
         }
 
         /// <summary>
-        /// Returns the Vector<T> product of two matricies
+        /// Returns the Vector<T> product of a vector and a matrix
         /// </summary>
         /// <param name="A">Matrix<T></param>
         /// <param name="B">Matrix<T></param>
         /// <returns>C = A * B</returns>
-        /// 
-        /*
-        public static Matrix<T> operator *(Matrix<T> A, Matrix<T> B)
+        ///     
+        public static Vector<T> operator *(Vector<T> a, Matrix<T> B)
         {
-            if (A.NumCols != B.NumRows)
+            if (a.Length != B.NumRows)
                 throw new ArgumentException("Inner Matrix<T> dimensions must agree.");
 
-            Matrix<T> C = new Matrix<T>(A.NumRows, B.NumCols);
+            Vector<T> C = new Vector<T>(a.Length);
 
-            for (int r = 1; r <= A.NumRows; r++)
-            {
                 for (int c = 1; c <= B.NumCols; c++)
                 {
-                    C[r, c] = Matrix<T>.Dot(A.GetRow(r), B.GetColumn(c));
-                }
+                    C[c] = Matrix<T>.Dot(a[c], B.GetColumn(c));
             }
 
             return C;
         }
-        */
+
         /// <summary>
         /// Returns the Vector<T> product of a Complex and a Vector<T> (elementwise)
         /// </summary>

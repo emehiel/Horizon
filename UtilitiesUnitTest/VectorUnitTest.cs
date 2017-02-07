@@ -37,5 +37,19 @@ namespace UtilitiesUnitTest
             double c = 13079;
             Assert.AreEqual(c, b, 1);
         }
+        [TestMethod]
+        public void  MatrixVectorMultiplicationTest()
+        {
+            Vector a = new Vector(new double[] { 1, 2, 3 });
+            Matrix<double> B = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
+            Vector result = a * B;
+            Vector expected = new Vector(new double[] { 30, 36, 42 });
+            Assert.AreEqual(expected, result);
+
+            B = new Matrix<double>(new double[,] { { 1 }, { 2 }, { 3 } });
+            result = a * B;
+            expected = new Vector(new double[] { 14 });
+            Assert.AreEqual(expected, result);
+        }
     }
 }

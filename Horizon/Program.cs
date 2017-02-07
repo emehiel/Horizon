@@ -7,7 +7,6 @@ using System.IO;
 using System.Xml;
 using System.Text;
 using HSFScheduler;
-using Utilities;
 using MissionElements;
 using UserModel;
 using HSFUniverse;

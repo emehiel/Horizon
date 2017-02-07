@@ -274,6 +274,22 @@ namespace Utilities
             return C;
         }
 
+        public static Vector operator *(Vector a, Matrix<double> B)
+        {
+            if (a.Length != B.NumRows)
+                throw new InvalidOperationException("The vector a must be length of the number of rows in the Matrix B");
+            Vector d = new Vector(B.NumCols);
+            for (int c = 1; c <= B.NumCols; c++)
+            {
+                for (int r = 1; r <= a.Length; r++)
+                {
+                    d[c] = d[c] + a[r] * B[r, c];
+                }
+                
+            }
+
+            return d;
+        }
 
         /// <summary>
         /// Returns the Matrix product of a Complex and a Matrix (elementwise)

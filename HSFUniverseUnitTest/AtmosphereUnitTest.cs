@@ -26,7 +26,8 @@ namespace HSFUniverse.Tests
             PrivateObject obj = new PrivateObject(weatherData);
             if (false)
             {
-                obj.Invoke("DownloadData", gfscode);
+                obj.SetFieldOrProperty("_gfscode", gfscode);
+                obj.Invoke("DownloadData");
             }
             else
             {
@@ -43,14 +44,14 @@ namespace HSFUniverse.Tests
             string gfscode = "2017012518_060";
             RealTimeAtmosphere weatherData = new RealTimeAtmosphere();
             PrivateObject obj = new PrivateObject(weatherData);
-
+            obj.SetFieldOrProperty("_gfscode", gfscode);
             /* Download the file if it does not exist. This only needs to be done once */
             if (!System.IO.File.Exists(@"C:\Horizon\gfs.t18z.pgrb2.0p50.f060.grb2"))
             {
                 
-                obj.Invoke("DownloadData", gfscode);
+                obj.Invoke("DownloadData");
             }
-            obj.SetFieldOrProperty("_gfscode", gfscode);
+            
             obj.Invoke("CreateFilename");
             obj.Invoke("InterpretData");
             int expectedCount = 31;

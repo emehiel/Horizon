@@ -242,11 +242,7 @@ namespace UtilitiesUnitTest
 
             Assert.IsTrue(result);
         }
-        [TestMethod]
-        public void ComplexGetHashCode()
-        {
-            Assert.Fail("Not Implemented");
-        }
+
         [TestMethod]
         public void ComplexIsReal()
         {

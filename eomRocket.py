@@ -35,6 +35,10 @@ class eomRocket(Utilities.EOMS):
     def DragCalculation(self, t, y):
         return 1
 
-class dragRocket
+class dragRocket:
     cd = 0.5
-    def GetAtmosphere(height)
+    atmos = StandardAtmosphere
+    def GetAtmosphere(height):
+        atmos.CreateAtmosphere()
+
+        

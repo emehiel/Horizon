@@ -15,7 +15,16 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Utilities\Util
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesUnitTest", "UtilitiesUnitTest\UtilitiesUnitTest.csproj", "{89680083-21CD-4FE8-A477-1F6884AD2E0E}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{BFBF5556-6EDB-4745-9C72-918C89C748AC}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Python Files", "Python Files", "{BFBF5556-6EDB-4745-9C72-918C89C748AC}"
+	ProjectSection(SolutionItems) = preProject
+		Adcs.py = Adcs.py
+		comm.py = comm.py
+		eomRocket.py = eomRocket.py
+		eosensor.py = eosensor.py
+		eval.py = eval.py
+		power.py = power.py
+		ssdr.py = ssdr.py
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissionElementsUnitTest", "MissionElementsUnitTest\MissionElementsUnitTest.csproj", "{29CAA65F-B807-4845-B04D-AA0526A3F8FA}"
 EndProject

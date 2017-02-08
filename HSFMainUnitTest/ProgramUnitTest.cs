@@ -101,7 +101,7 @@ namespace HSFMainUnitTest
             program.CreateSchedules(systemTasks);
 
             double actual = program.schedules.Count;
-            double expected = 18; 
+            double expected = 19; 
             Assert.AreEqual(expected, actual);
         }
         /// <summary>

@@ -94,7 +94,6 @@
     <Compile Include="Integrator.cs" />
     <Compile Include="IntegratorOptions.cs" />
     <Compile Include="CollectionExtentions.cs" />
-    <Compile Include="Math\MyClass.cs" />
     <Compile Include="Vector.cs" />
     <Compile Include="Matrix.cs" />
     <Compile Include="MatrixIndex.cs" />
@@ -113,14 +112,7 @@
     <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="bin\Debug\Utilities.dll" />
-    <Content Include="bin\Debug\Utilities.pdb" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="bin\Release\" />
-    <Folder Include="obj\Debug\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\UserModel\UserModel.csproj">
       <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>

@@ -19,22 +19,15 @@ namespace HSFUniverse.Tests
         /// to true for it to actually download data. This because the file is ~70 MB and 
         /// we want to save bandwidth and time when running other tests.
         /// </remarks>
-        [TestMethod]
+        [TestMethod, Ignore]
         public void DownloadDataTest()
         {
             string gfscode = "2017012518_060";
             /* Don't kill the network by accidentally running this a bunch */
             RealTimeAtmosphere weatherData = new RealTimeAtmosphere();
             PrivateObject obj = new PrivateObject(weatherData);
-            if (false)
-            {
-                obj.SetFieldOrProperty("_gfscode", gfscode);
-                obj.Invoke("DownloadData");
-            }
-            else
-            {
-                Assert.Inconclusive("Did not run test. Must change if statement to true because of large file size");
-            }
+            obj.SetFieldOrProperty("_gfscode", gfscode);
+            obj.Invoke("DownloadData");
 
         }
         /// <summary>

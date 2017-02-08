@@ -42,7 +42,7 @@ namespace HSFMainUnitTest
         /// <summary>
         /// Test to verify the correct dependencies are loaded
         /// </summary>
-        [TestMethod]
+        [TestMethod, Ignore]
         public void TestDependencies()
         {
 
@@ -62,7 +62,7 @@ namespace HSFMainUnitTest
         /// <summary>
         /// Test to verify that the correct Constraints are created
         /// </summary>
-        [TestMethod]
+        [TestMethod, Ignore]
         public void TestConstraints()
         {
             string simulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML"; // TODO: Update

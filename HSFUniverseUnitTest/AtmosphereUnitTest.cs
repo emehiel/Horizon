@@ -28,7 +28,6 @@ namespace HSFUniverse.Tests
             PrivateObject obj = new PrivateObject(weatherData);
             obj.SetFieldOrProperty("_gfscode", gfscode);
             obj.Invoke("DownloadData");
-
         }
         /// <summary>
         /// Tests to make sure that the InterpretData method generates data for each of the defined pressure levels (31 total)

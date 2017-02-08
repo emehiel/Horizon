@@ -265,6 +265,7 @@ namespace HSFUniverse
             /* Check if time is in the future */
             if (DateTime.UtcNow < _date)
             {
+                throw new Exception("Build shouldn't enter here on server");
                 /* Validate that model forecast is within range and then find nearest hourly forecast time */
                 TimeSpan ts = _date - DateTime.UtcNow;
                 if (ts.Hours < 196)

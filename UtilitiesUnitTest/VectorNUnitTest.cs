@@ -2,7 +2,7 @@
 using System;
 using NUnit.Framework;
 using Utilities;
-namespace NUnit.Samples.Money
+namespace UtilitiesUnitTest
 
 {
     [TestFixture]

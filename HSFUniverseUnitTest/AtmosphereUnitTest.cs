@@ -2,12 +2,14 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HSFUniverse;
 using System.Collections.Generic;
+using System.IO;
 
 namespace HSFUniverse.Tests
 {
     [TestClass]
     public class RealTimeWeatherTest
     {
+        // TODO: Not sure if I want to move to NUnit here. Discuss with Mehiel 
         public DateTime TestTime = new DateTime(2017,1,20);
         /// <summary>
         /// Tests that DownloadData runs without exceptiong. Doesn't check for results.
@@ -46,7 +48,7 @@ namespace HSFUniverse.Tests
             PrivateObject obj = new PrivateObject(weatherData);
             obj.SetFieldOrProperty("_gfscode", gfscode);
             /* Download the file if it does not exist. This only needs to be done once */
-            if (!System.IO.File.Exists(@"C:\Horizon\gfs.t18z.pgrb2.0p50.f060.grb2"))
+            if (!System.IO.File.Exists(Directory.GetCurrentDirectory() + @"\..\..\Data\gfs.t18z.pgrb2.0p50.f060.grb2"))
             {
                 
                 obj.Invoke("DownloadData");
@@ -74,7 +76,7 @@ namespace HSFUniverse.Tests
             // TODO: Figure out how to test a future date. Have tested on the first release
             RealTimeAtmosphere weatherData = new RealTimeAtmosphere();
             PrivateObject obj = new PrivateObject(weatherData);
-            obj.SetFieldOrProperty("_date", (new DateTime(2017, 01, 20, 3, 6, 1)));
+            obj.SetFieldOrProperty("_date", (new DateTime(2017, 01, 20, 11, 6, 1, DateTimeKind.Utc)));
             obj.Invoke("ConvertToNearestGFS");
             Assert.AreEqual("2017012006_005", ((string)obj.GetFieldOrProperty("_gfscode")));
         }

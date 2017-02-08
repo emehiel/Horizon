@@ -85,6 +85,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Data\gfs.t18z.pgrb2.0p50.f060.grb2" />
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>

@@ -5,10 +5,13 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Grib.Api;
+using System.IO;
 
 namespace HSFUniverse
 {
-
+    // TODO: Need to rethink public vs private. Also need to find alternative data source. I thought my current source was 
+    // 2 months. It is only about a week. 
+    // TODO: make it possible to specify a specfic filename/path easily
     public abstract class Atmosphere
     {
         protected SortedList<double, double> uVelocityData;
@@ -200,12 +203,12 @@ namespace HSFUniverse
             Dictionary<double, double> h = new Dictionary<double, double>();
             Dictionary<double, double> t = new Dictionary<double, double>();
             // FIXME: Get relative path
-            Environment.SetEnvironmentVariable("GRIB_API_DIR_ROOT", @"C:\Users\steve\Source\Repos\Horizon\packages\Grib.Api.0.7.1", EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("GRIB_API_DIR_ROOT", Directory.GetCurrentDirectory() + @"\..\..\..\packages\Grib.Api.0.7.1", EnvironmentVariableTarget.Process);
             if (string.IsNullOrEmpty(fileName))
             {
                 throw new System.IO.FileNotFoundException("Filename not defined");
             }
-            using (GribFile file = new GribFile(@"c:/Horizon/" + fileName))
+            using (GribFile file = new GribFile(Directory.GetCurrentDirectory() + @"\..\..\Data\" + fileName))
             {
                 /* Get the data for the values we want (u and v wind velocitys and height) */ 
                 var weatherData = from m in file

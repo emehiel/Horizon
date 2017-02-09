@@ -38,6 +38,7 @@ namespace HSFUniverse.Tests
         {
             string gfscode = "2017012518_060";
             RealTimeAtmosphere weatherData = new RealTimeAtmosphere();
+            
             PrivateObject obj = new PrivateObject(weatherData);
             obj.SetFieldOrProperty("_gfscode", gfscode);
             /* Download the file if it does not exist. This only needs to be done once */
@@ -46,8 +47,8 @@ namespace HSFUniverse.Tests
                 
                 obj.Invoke("DownloadData");
             }
-            
-            obj.Invoke("CreateFilename");
+
+            obj.SetFieldOrProperty("_filePath", Directory.GetCurrentDirectory() + @"\..\..\Data\gfs.t18z.pgrb2.0p50.f060.grb2");
             obj.Invoke("InterpretData");
             int expectedCount = 31;
             //weatherData.temperature(1350);

@@ -9,8 +9,8 @@ using System.IO;
 
 namespace HSFUniverse
 {
-    // TODO: Need to rethink public vs private. Also need to find alternative data source. I thought my current source was 
-    // 2 months. It is only about a week. 
+    // TODO: Need to rethink public vs private. 
+    // TODO: Need to find alternative data source. I thought my current source was 2 months. It is only about a week. 
     // TODO: make it possible to specify a specfic filename/path easily
     public abstract class Atmosphere
     {
@@ -18,7 +18,7 @@ namespace HSFUniverse
         protected SortedList<double, double> vVelocityData;
         protected SortedList<double, double> pressureData;
         protected SortedList<double, double> temperatureData;
-        protected SortedList<double, double> densityData;
+        public SortedList<double, double> densityData;
 
         protected const double GRAVITY = 9.80665;
         protected const double IDEAL_GAS = 286.9;
@@ -48,15 +48,16 @@ namespace HSFUniverse
     public class RealTimeAtmosphere : Atmosphere
     {
 
-        private string _fileName;
+        private string _filePath;
         private double _latitude;
         private double _longitude;
         private DateTime _date = DateTime.Now;
         private string _gfscode;
 
-        public string fileName
+        public string filePath
         {
-            get { return _fileName; }
+            get { return _filePath; }
+            set { _filePath = value;  }
         }
         public double latitude
         {
@@ -85,6 +86,7 @@ namespace HSFUniverse
             _date = date;
             ConvertToNearestGFS();
         }
+
         #region Overrides
         /// <summary>
         /// Downloads (if necessary) the weather data and generates the atmospheric lookup tables 
@@ -94,13 +96,17 @@ namespace HSFUniverse
         public override void CreateAtmosphere()
         {
             ConvertToNearestGFS();
-            CreateFilename();
-            if (!System.IO.File.Exists(@"C:\Horizon\" + fileName))
+            if (_filePath == null)
+            {
+                CreateFilename();
+            }
+            if (!System.IO.File.Exists(_filePath))
             {
                 DownloadData();
             }
             InterpretData();
             double airGasConstant = 286.9;
+            densityData = new SortedList<double, double>();
             foreach(double h in pressureData.Keys)
             {
                 densityData.Add(h, pressureData[h] / temperatureData[h] / airGasConstant);
@@ -133,12 +139,12 @@ namespace HSFUniverse
         /// <param name="gfscode"></param>
         private void CreateFilename()
         {
-            StringBuilder name = new StringBuilder("gfs.t");
+            StringBuilder name = new StringBuilder("C:\\Horizon\\gfs.t");
             name.Append(_gfscode, 8, 2);
             name.Append("z.pgrb2.0p50.f"); // use the .5 deg resolution data. can also use 1 or .25 deg if desired
             name.Append(_gfscode, 11, 3);
             name.Append(".grb2");
-            _fileName = name.ToString();
+            _filePath = name.ToString();
         }
         /// <summary>
         /// 
@@ -156,7 +162,7 @@ namespace HSFUniverse
                 url.Append(_gfscode, 0, 10);
                 url.Append("/");
                 CreateFilename();
-                url.Append(fileName);
+                url.Append(_filePath);
 
                 HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(url.ToString()));
                 request.Method = "HEAD";
@@ -183,7 +189,7 @@ namespace HSFUniverse
             }
             
             WebClient webClient = new WebClient();
-            webClient.DownloadFile(new Uri(url.ToString()), directory + fileName); // Maybe want to make Async. Want to see what other initial tasks need to be done.
+            webClient.DownloadFile(new Uri(url.ToString()), directory + filePath); // Maybe want to make Async. Want to see what other initial tasks need to be done.
             
         }
         /// <summary>
@@ -202,13 +208,13 @@ namespace HSFUniverse
             Dictionary<double, double> v = new Dictionary<double, double>();
             Dictionary<double, double> h = new Dictionary<double, double>();
             Dictionary<double, double> t = new Dictionary<double, double>();
-            // FIXME: Get relative path
+
             Environment.SetEnvironmentVariable("GRIB_API_DIR_ROOT", Directory.GetCurrentDirectory() + @"\..\..\..\packages\Grib.Api.0.7.1", EnvironmentVariableTarget.Process);
-            if (string.IsNullOrEmpty(fileName))
+            if (string.IsNullOrEmpty(_filePath))
             {
                 throw new System.IO.FileNotFoundException("Filename not defined");
             }
-            using (GribFile file = new GribFile(Directory.GetCurrentDirectory() + @"\..\..\Data\" + fileName))
+            using (GribFile file = new GribFile(_filePath))
             {
                 /* Get the data for the values we want (u and v wind velocitys and height) */ 
                 var weatherData = from m in file
@@ -217,7 +223,6 @@ namespace HSFUniverse
                 foreach (GribMessage msg in weatherData)
                 { 
                     /* Get the GribMessage at the specific location */
-                    // FIXME: Allow the location to be changed
                     var msgLoc = from m in msg.GeoSpatialValues
                                  where (m.Latitude.Equals(latitude)) && (m.Longitude.Equals(longitude))
                                  select m;
@@ -338,6 +343,7 @@ namespace HSFUniverse
         /// <returns> Interpolated value</returns>
         private double LinearInterpolate(SortedList<double, double> data, double height)
         {
+            // FIXME: Need to extend range. At least to ground level
             IEnumerable<KeyValuePair<double, double>> dataBelow = temperatureData.TakeWhile(x => x.Key <= height);
             double keyBelow = dataBelow.Last().Key;
             double keyAbove = temperatureData.ElementAt(dataBelow.Count() + 1).Key;

@@ -16,7 +16,6 @@ from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
 class eomRocket(Utilities.EOMS):
-    #atmos = RealTimeAtmosphere()
     def __init__(self):
         self.atmos = RealTimeAtmosphere()
         self.atmos.filePath = "C:\\Horizon\\gfs.t06z.pgrb2.0p50.f006.grb2"

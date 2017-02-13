@@ -34,7 +34,6 @@ namespace Utilities
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
             _pythonInstance = ops.CreateInstance(pythonType);
-
         }
         #endregion
 

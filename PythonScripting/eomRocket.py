@@ -33,12 +33,10 @@ class eomRocket(Utilities.EOMS):
         self.HSFinput.InitInput(input)
         self.HSFinput.LoadSubsystems()
         self.groundlevel = self.HSFinput.assetList[0].AssetDynamicState.InitialConditions()[3]
-        print self.groundlevel
     def PythonAccessor(self, t, y):
         _mu = 398600
         r3 = System.Math.Pow(Matrix[System.Double].Norm(y[MatrixIndex(1, 3), 1]), 3)
         mur3 = -_mu / r3
-
         if y[3,1] < self.groundlevel:
             y[3,1] = self.groundlevel #Can't be below ground
         thrust = self.ThrustCalculation(t)
@@ -66,10 +64,6 @@ class eomRocket(Utilities.EOMS):
             
         dy = Matrix[System.Double]()
         dy = translation
-        if (y[3,1] + dy[3,1] < self.groundlevel):
-            print t
-            dy[3,1] = abs(y[3,1] - self.groundlevel)
-            
         return dy 
     def DragCalculation(self, y):
         Cd = 0.5 #Approximate Cd of a rocket

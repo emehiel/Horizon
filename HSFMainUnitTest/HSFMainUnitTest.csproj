@@ -59,9 +59,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Horizon\HorizonMain.csproj">
+    <ProjectReference Include="..\Horizon\Horizon.csproj">
       <Project>{6e6d45ba-6e13-4117-839e-469a59eef191}</Project>
-      <Name>HorizonMain</Name>
+      <Name>Horizon</Name>
     </ProjectReference>
     <ProjectReference Include="..\HSFScheduler\HSFScheduler.csproj">
       <Project>{241171AB-18B2-45A0-848A-62B2EF751644}</Project>

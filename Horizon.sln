@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HorizonMain", "Horizon\HorizonMain.csproj", "{6E6D45BA-6E13-4117-839E-469A59EEF191}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horizon", "Horizon\Horizon.csproj", "{6E6D45BA-6E13-4117-839E-469A59EEF191}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFSchedulerUnitTest", "HSFSchedulerUnitTest\HSFSchedulerUnitTest.csproj", "{7411839B-05D5-4651-B8CA-C0B459FCFE5B}"
 EndProject
@@ -34,6 +34,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggingUnitTest", "LoggingUnitTest\LoggingUnitTest.csproj", "{701C5284-237E-44D2-8AE8-6F70F02259DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFMainUnitTest", "HSFMainUnitTest\HSFMainUnitTest.csproj", "{20099F21-A99C-4F8A-9C10-AE3C3102F320}"
+EndProject
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PythonScripting", "PythonScripting\PythonScripting.pyproj", "{86CD6C09-54D0-41BA-A4C2-FA292ABE1033}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -138,6 +140,9 @@ Global
 		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Realease Fast|Any CPU.Build.0 = Release|Any CPU
 		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86CD6C09-54D0-41BA-A4C2-FA292ABE1033}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86CD6C09-54D0-41BA-A4C2-FA292ABE1033}.Realease Fast|Any CPU.ActiveCfg = Release|Any CPU
+		{86CD6C09-54D0-41BA-A4C2-FA292ABE1033}.Release|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

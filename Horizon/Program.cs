@@ -28,7 +28,7 @@ namespace Horizon
         Dependency dependencies = Dependency.Instance;
 
         // Initialize List to hold assets and subsystem nodes
-        List<Asset> assetList = new List<Asset>();
+        public List<Asset> assetList = new List<Asset>();
         List<Subsystem> subList = new List<Subsystem>();
 
         // Maps used to set up preceeding nodes
@@ -44,7 +44,7 @@ namespace Horizon
         //Create Lists to hold all the initial condition and dependency nodes to be parsed later
         List<XmlNode> ICNodes = new List<XmlNode>();
         List<XmlNode> DepNodes = new List<XmlNode>();
-        SystemState initialSysState = new SystemState();
+        public SystemState initialSysState = new SystemState();
 
         XmlNode evaluatorNode;
         Evaluator schedEvaluator;
@@ -86,7 +86,7 @@ namespace Horizon
 
             // Mehiel's way
             string stateDataFilePath = @"C:\HorizonLog\" + string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}", DateTime.Now);
-            SystemSchedule.WriteSchedule(program.schedules[0], stateDataFilePath);
+            //SystemSchedule.WriteSchedule(program.schedules[0], stateDataFilePath);
 
             var csv = new StringBuilder();
             csv.Clear();

@@ -1,0 +1,13 @@
+<MODEL>
+	<ASSET assetName="Asset1">
+		<DynamicState
+			DynamicStateType="PREDETERMINED_ECI"
+			ICs="[0.0; 0.0; 6378.137; 0.0; 0; 0]">
+			<EOMS
+				EOMSType="scripted"
+				src="..\..\..\PythonScripting\eomRocket.py"
+				className="eomRocket">
+			</EOMS>
+		</DynamicState>
+	</ASSET>
+</MODEL>

@@ -15,6 +15,7 @@ import Utilities
 import HSFUniverse
 import math
 import MissionElements
+
 from MissionElements import Asset
 from Horizon import Program
 from Utilities import *
@@ -42,7 +43,6 @@ class eomRocket(Utilities.EOMS):
         thrust = self.ThrustCalculation(t)
         drag = self.DragCalculation(y)  
         translation = Matrix[System.Double]()
-
         #Set the velocity equal to 0 once on the ground
         if y[3,1] < self.groundlevel:
             #The position of the rocket is constant once on the ground
@@ -61,23 +61,35 @@ class eomRocket(Utilities.EOMS):
             translation[4,1] = mur3 * y[1,1] 
             translation[5,1] = mur3 * y[2,1] 
             translation[6,1] = (mur3 * y[3,1]) + thrust - math.copysign(drag, y[6,1])  
-            
+        rotation = Matrix[System.Double]()    
         dy = Matrix[System.Double]()
         dy = translation
         return dy 
     def DragCalculation(self, y):
-        Cd = 0.5 #Approximate Cd of a rocket
+        Cd = 0.4296 #Approximate Cd of a rocket at 45 m/s based on prelim CFD
         area = math.pow(.2214,2) * math.pi #Reference area is the cross sectional area
         dynamicPressure = 0.5 * self.atmos.density((y[3,1]-6378)*1000) * math.pow(y[6,1]*1000,2)
         return (dynamicPressure * Cd * area/ 68)/1000
-       
+    def MomentCalculations(self, y): 
+            pass   
     def ThrustCalculation(self, t):
         # Return the average thrust in Newtons for the entire burn time
         # Not accurate but will give the approximate solution 
         if t < 18: #Burn for 18 seconds
             return 6*9.81/1000 # 6g thrust
         else:
-            return 0.0    
+            return 0.0   
+def LinearInterpolate(x, v, xq):
+    if len(x) != len(v):
+        Exception
+    for index in range(len(x)):
+        if xq < x[index]:
+            below = x[index-1]
+            above = x[index]
+            break
+    vq = v[index-1]+(above-below)*(xq-v[index-1])/(above-below)
+    return vq
+ 
 
 
 

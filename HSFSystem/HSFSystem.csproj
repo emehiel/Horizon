@@ -91,6 +91,7 @@
     <Compile Include="Constraint.cs" />
     <Compile Include="ConstraintFactory.cs" />
     <Compile Include="Dependency.cs" />
+    <Compile Include="IMU.cs" />
     <Compile Include="SingleConstraint.cs" />
     <Compile Include="EOSensor.cs" />
     <Compile Include="ISubsystem.cs" />

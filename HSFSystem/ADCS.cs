@@ -27,10 +27,10 @@ namespace HSFSubsystem
         /// <param name="ADCSNode"></param>
         /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public ADCS(XmlNode ADCSNode, Dependency dependencies, Asset asset) 
+        public ADCS(XmlNode ADCSNode, Dependency dependencies, Asset asset) : base(ADCSNode, dependencies, asset) 
         {
             DefaultSubName = "Adcs";
-            Asset = asset;
+            //Asset = asset;
             GetSubNameFromXmlNode(ADCSNode);
             /*double slewTime;
             if (ADCSNode.Attributes["timetoslew"].Value != null)
@@ -50,9 +50,10 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="ADCSNode"></param>
         /// <param name="asset"></param>
-        public ADCS(XmlNode ADCSNode, Asset asset)
+        public ADCS(XmlNode ADCSNode, Asset asset) : base(ADCSNode, asset)
         {
-            Asset = asset;
+            DefaultSubName = "Adcs";
+            //Asset = asset;
             GetSubNameFromXmlNode(ADCSNode);
             POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
             addKey(POINTVEC_KEY);

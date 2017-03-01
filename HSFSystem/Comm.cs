@@ -24,10 +24,10 @@ namespace HSFSubsystem
         /// <param name="CommXmlNode"></param>
         /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public Comm(XmlNode CommXmlNode, Dependency dependencies, Asset asset)
+        public Comm(XmlNode CommXmlNode, Dependency dependencies, Asset asset) : base(CommXmlNode, dependencies, asset)
         {
             DefaultSubName = "Comm";
-            Asset = asset;
+            //Asset = asset;
             GetSubNameFromXmlNode(CommXmlNode);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             DependentSubsystems = new List<Subsystem>();
@@ -41,10 +41,10 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="CommXmlNode"></param>
         /// <param name="asset"></param>
-        public Comm(XmlNode CommXmlNode, Asset asset)
+        public Comm(XmlNode CommXmlNode, Asset asset) : base(CommXmlNode, asset)
         {
             DefaultSubName = "Comm";
-            Asset = asset;
+            //Asset = asset;
             GetSubNameFromXmlNode(CommXmlNode);
             DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "datarate(mb/s)");
             addKey(DATARATE_KEY);

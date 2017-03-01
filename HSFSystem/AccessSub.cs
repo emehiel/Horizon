@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2016 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+
 using System;
 using System.Collections.Generic;
 using System.Xml;
 using HSFUniverse;
+//using HSFSystem; // used for dependency on constructor
 using MissionElements;
 using Utilities;
 
@@ -16,10 +18,10 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="subNode"></param>
         /// <param name="asset"></param>
-        public AccessSub(XmlNode subNode, Asset asset)
+        public AccessSub(XmlNode subNode, Asset asset) : base(subNode, asset)
         {
-            Asset = asset;
             DefaultSubName = "AccessToTarget";
+            //Asset = asset;
             GetSubNameFromXmlNode(subNode);
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();

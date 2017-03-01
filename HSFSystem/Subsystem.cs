@@ -41,11 +41,11 @@ namespace HSFSubsystem
         }
         public Subsystem(XmlNode xmlNode, Asset asset)
         {
-
+            Asset = asset;
         }
         public Subsystem(XmlNode xmlNode, Dependency deps, Asset asset)
         {
-
+            Asset = asset;
         }
         #endregion
 

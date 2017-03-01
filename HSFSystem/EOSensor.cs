@@ -39,7 +39,6 @@ namespace HSFSubsystem
         public EOSensor(XmlNode EOSensorXmlNode, Dependency dependencies, Asset asset) : base(EOSensorXmlNode, dependencies, asset)
         {
             DefaultSubName = "EOSensor";
-            //Asset = asset;
             GetSubNameFromXmlNode(EOSensorXmlNode);
             PIXELS_KEY = new StateVarKey<double>(Asset.Name +"." + "numpixels");
             INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "incidenceangle");
@@ -73,7 +72,6 @@ namespace HSFSubsystem
         public EOSensor(XmlNode EOSensorXmlNode, Asset asset) : base(EOSensorXmlNode, asset)
         {
             DefaultSubName = "EOSensor";
-            //Asset = asset;
             GetSubNameFromXmlNode(EOSensorXmlNode);
             PIXELS_KEY = new StateVarKey<double>(Asset.Name + "." + "numpixels");
             INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "incidenceangle");

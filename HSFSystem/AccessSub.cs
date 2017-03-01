@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using HSFUniverse;
-//using HSFSystem; // used for dependency on constructor
 using MissionElements;
 using Utilities;
 
@@ -21,7 +20,6 @@ namespace HSFSubsystem
         public AccessSub(XmlNode subNode, Asset asset) : base(subNode, asset)
         {
             DefaultSubName = "AccessToTarget";
-            //Asset = asset;
             GetSubNameFromXmlNode(subNode);
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();

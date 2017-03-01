@@ -36,7 +36,6 @@ namespace HSFSubsystem
         public Power(XmlNode PowerNode, Dependency dependencies, Asset asset) : base(PowerNode, dependencies, asset)
         {
             DefaultSubName = "Power";
-            //Asset = asset;
             GetSubNameFromXmlNode(PowerNode);
             DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
             POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");
@@ -60,7 +59,6 @@ namespace HSFSubsystem
         public Power(XmlNode PowerNode, Asset asset) : base(PowerNode, asset)
         {
             DefaultSubName = "Power";
-            //Asset = asset;
             GetSubNameFromXmlNode(PowerNode);
             DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
             POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");

@@ -27,9 +27,10 @@ namespace HSFSubsystem
         /// <param name="ADCSNode"></param>
         /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public ADCS(XmlNode ADCSNode, Dependency dependencies, Asset asset) : base(ADCSNode, dependencies, asset) 
+        public ADCS(XmlNode ADCSNode, Dependency dependencies, Asset asset)
         {
             DefaultSubName = "Adcs";
+            Asset = asset;
             GetSubNameFromXmlNode(ADCSNode);
             /*double slewTime;
             if (ADCSNode.Attributes["timetoslew"].Value != null)

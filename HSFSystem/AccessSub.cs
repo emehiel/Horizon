@@ -17,9 +17,10 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="subNode"></param>
         /// <param name="asset"></param>
-        public AccessSub(XmlNode subNode, Asset asset) : base(subNode, asset)
+        public AccessSub(XmlNode subNode, Asset asset)
         {
             DefaultSubName = "AccessToTarget";
+            Asset = asset;
             GetSubNameFromXmlNode(subNode);
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();

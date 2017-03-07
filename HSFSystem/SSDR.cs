@@ -27,9 +27,10 @@ namespace HSFSubsystem
         /// <param name="SSDRXmlNode"></param>
         /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public SSDR(XmlNode SSDRXmlNode, Dependency dependencies, Asset asset) : base(SSDRXmlNode, dependencies, asset)
+        public SSDR(XmlNode SSDRXmlNode, Dependency dependencies, Asset asset)
         {
             DefaultSubName = "SSDR";
+            Asset = asset;
             GetSubNameFromXmlNode(SSDRXmlNode);
             if (SSDRXmlNode.Attributes["bufferSize"] != null)
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
@@ -47,9 +48,10 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="SSDRXmlNode"></param>
         /// <param name="asset"></param>
-        public SSDR(XmlNode SSDRXmlNode, Asset asset) : base(SSDRXmlNode, asset)
+        public SSDR(XmlNode SSDRXmlNode, Asset asset)
         {
             DefaultSubName = "SSDR";
+            Asset = asset;
             GetSubNameFromXmlNode(SSDRXmlNode);
             if (SSDRXmlNode.Attributes["bufferSize"] != null)
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));

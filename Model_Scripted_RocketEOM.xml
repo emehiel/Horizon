@@ -6,7 +6,9 @@
 			<EOMS
 				EOMSType="scripted"
 				src="..\..\..\PythonScripting\eomRocket.py"
-				className="eomRocket">
+				className="eomRocket"
+				Cd = "0.4296"
+				Ground = "6378.0">
 			</EOMS>
 		</DynamicState>
 	</ASSET>

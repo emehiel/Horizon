@@ -10,30 +10,35 @@ clr.AddReferenceByName('Utilities')
 clr.AddReferenceByName('HSFUniverse')
 clr.AddReferenceByName('Horizon')
 clr.AddReferenceByName('MissionElements')
+clr.AddReferenceByName('UserModel')
 import Horizon
 import Utilities
 import HSFUniverse
 import math
 import MissionElements
+import UserModel
 
+from UserModel import XmlParser
 from MissionElements import Asset
 from Horizon import Program
 from Utilities import *
 from HSFUniverse import *
 from System.Collections.Generic import Dictionary
 from System import Array
+from System import Xml
 from IronPython.Compiler import CallTarget0
 
 class eomRocket(Utilities.EOMS):
-    def __init__(self):
+    #Cd = 0.0
+    def __new__(cls, scriptedNode):
+        obj = Utilities.ScriptedEOMS.__new__(cls)
+        cls.Cd = float(scriptedNode.Attributes["Cd"].Value)
+        cls.groundlevel =float(scriptedNode.Attributes["Ground"].Value)
+        return obj
+    def __init__(self, scriptedNode):
         self.atmos = StandardAtmosphere()
         #self.atmos.filePath = "C:\\Horizon\\gfs.t06z.pgrb2.0p50.f006.grb2"
         self.atmos.CreateAtmosphere()
-        self.HSFinput = Horizon.Program()
-        input = Array[str](['-s', '..\\..\\..\\SimulationInput_RocketScripted.xml', '-m',  '..\\..\\..\\Model_Scripted_RocketEOMICs.xml'])
-        self.HSFinput.InitInput(input)
-        self.HSFinput.LoadSubsystems()
-        self.groundlevel = self.HSFinput.assetList[0].AssetDynamicState.InitialConditions()[3]
     def PythonAccessor(self, t, y):
         _mu = 398600
         r3 = System.Math.Pow(Matrix[System.Double].Norm(y[MatrixIndex(1, 3), 1]), 3)
@@ -66,10 +71,10 @@ class eomRocket(Utilities.EOMS):
         dy = translation
         return dy 
     def DragCalculation(self, y):
-        Cd = 0.4296 #Approximate Cd of a rocket at 45 m/s based on prelim CFD
+        #Cd = 0.4296 #Approximate Cd of a rocket at 45 m/s based on prelim CFD
         area = math.pow(.2214,2) * math.pi #Reference area is the cross sectional area
         dynamicPressure = 0.5 * self.atmos.density((y[3,1]-6378)*1000) * math.pow(y[6,1]*1000,2)
-        return (dynamicPressure * Cd * area/ 68)/1000
+        return (dynamicPressure * self.Cd * area/ 68)/1000
     def MomentCalculations(self, y): 
             pass   
     def ThrustCalculation(self, t):
@@ -78,7 +83,8 @@ class eomRocket(Utilities.EOMS):
         if t < 18: #Burn for 18 seconds
             return 6*9.81/1000 # 6g thrust
         else:
-            return 0.0   
+            return 0.0 
+
 def LinearInterpolate(x, v, xq):
     if len(x) != len(v):
         Exception
@@ -89,7 +95,6 @@ def LinearInterpolate(x, v, xq):
             break
     vq = v[index-1]+(above-below)*(xq-v[index-1])/(above-below)
     return vq
- 
 
 
 

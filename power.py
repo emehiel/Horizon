@@ -60,7 +60,7 @@ class power(HSFSubsystem.Power):
         self._newState.AddValue(self.DOD_KEY, dodProf[0])
         return True
     def CanExtend(self, event, universe, extendTo):
-        return super(power, self).CanExtend(self, event, universe, extendTo)
+        return super(power, self).CanExtend(event, universe, extendTo)
     def GetSolarPanelPower(self, shadow):
         return super(power, self).GetSolarPanelPower(shadow)
     def CalcSolarPanelPowerProfile(self, start, end, state, position, universe):

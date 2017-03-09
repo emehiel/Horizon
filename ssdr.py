@@ -73,7 +73,7 @@ class ssdr(HSFSubsystem.SSDR):
              return True
         return True
     def CanExtend(self, event, universe, extendTo):
-        return super(ssdr, self).CanExtend(self, event, universe, extendTo)
+        return super(ssdr, self).CanExtend(event, universe, extendTo)
     def POWERSUB_PowerProfile_SSDRSUB(self, event):
         return super(ssdr, self).POWERSUB_PowerProfile_SSDRSUB(event)
     def COMMSUB_DataRateProfile_SSDRSUB(self, event):

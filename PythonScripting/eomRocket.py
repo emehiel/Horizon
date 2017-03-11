@@ -29,7 +29,6 @@ from System import Xml
 from IronPython.Compiler import CallTarget0
 
 class eomRocket(Utilities.EOMS):
-    #Cd = 0.0
     def __new__(cls, scriptedNode):
         obj = Utilities.ScriptedEOMS.__new__(cls)
         cls.Cd = float(scriptedNode.Attributes["Cd"].Value)

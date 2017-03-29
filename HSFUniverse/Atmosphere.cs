@@ -344,6 +344,16 @@ namespace HSFUniverse
         private double LinearInterpolate(SortedList<double, double> data, double height)
         {
             // FIXME: Need to extend range. At least to ground level
+            if (height < temperatureData.Keys.First())
+            {
+                Console.WriteLine("Clipping Data Point");
+                return data.Values.First();
+            }
+            else if (height > temperatureData.Keys.Last())
+            {
+                Console.WriteLine("Clipping Data Point");
+                return data.Values.Last();
+            }
             IEnumerable<KeyValuePair<double, double>> dataBelow = temperatureData.TakeWhile(x => x.Key <= height);
             double keyBelow = dataBelow.Last().Key;
             double keyAbove = temperatureData.ElementAt(dataBelow.Count() + 1).Key;
@@ -395,11 +405,11 @@ namespace HSFUniverse
         }
         public override double uVelocity(double height)
         {
-            throw new NotImplementedException();
+            return 0.0;
         }
         public override double vVelocity(double height)
         {
-            throw new NotImplementedException();
+            return 0.0;
         }
     }
 }

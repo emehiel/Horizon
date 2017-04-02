@@ -10,6 +10,10 @@ end
 
 
 
-plot(M(:,1), (M(:,4)-M(1,4)).*1000); title('Altitude (m)') 
+plot(M(:,1), (M(:,2)-M(1,2)).*1000*3.2808); title('Altitude (ft)') 
 figure()
-plot(M(:,1), M(:,7).*1000); title('Velocity (m/s)')
+plot(M(:,1), M(:,5).*1000); title('Velocity (m/s)')
+
+
+figure()
+plot((M(:,3)-M(1,3)).*1000*3.2808, (M(:,4)-M(1,4)).*1000*3.2808); title('Downrange Position (ft)') 

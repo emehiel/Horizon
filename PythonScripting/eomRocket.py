@@ -34,7 +34,7 @@ class eomRocket(Utilities.EOMS):
     def __init__(self, scriptedNode):
         
         # Load individula aero coeffs for testing purposes
-        self.aero = Aerodynamics(scriptedNode.Attributes["AeroCoeffPath"].Value)
+        self.aero = Aerodynamics(scriptedNode["Aerodynamics"].Attributes["AeroCoeffPath"].Value)
         #self.Cx = float(scriptedNode["Aerodynamics"].Attributes["Cx"].Value)
         #self.Cy = float(scriptedNode["Aerodynamics"].Attributes["Cy"].Value)
         #self.Cz = float(scriptedNode["Aerodynamics"].Attributes["Cz"].Value)

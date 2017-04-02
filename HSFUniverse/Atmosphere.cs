@@ -232,13 +232,13 @@ namespace HSFUniverse
                     /* Put the value in the corresponding dictionary by using the short name */
                     switch (msg.ShortName)
                         {
-                        case "u": u.Add(Convert.ToDouble(pressureLevel), msgLoc.Last().Value);
+                        case "u": u.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
                             break;
-                        case "v": v.Add(Convert.ToDouble(pressureLevel), msgLoc.Last().Value);
+                        case "v": v.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
                             break;
-                        case "t": t.Add(Convert.ToDouble(pressureLevel), msgLoc.Last().Value);
+                        case "t": t.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
                             break;
-                        case "gh": h.Add(Convert.ToDouble(pressureLevel), msgLoc.Last().Value);
+                        case "gh": h.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
                             break;
                         }
                 }
@@ -254,7 +254,7 @@ namespace HSFUniverse
                 vVelocityData = new SortedList<double, double>(v, Comparer<double>.Default);
                 temperatureData = new SortedList<double, double>(t, Comparer<double>.Default);
                 pressureData = new SortedList<double, double>(h, Comparer<double>.Default);
-
+                
                 Console.WriteLine("Finished Sorting");
             }
         }
@@ -344,20 +344,20 @@ namespace HSFUniverse
         private double LinearInterpolate(SortedList<double, double> data, double height)
         {
             // FIXME: Need to extend range. At least to ground level
-            if (height < temperatureData.Keys.First())
+            if (height < data.Keys.First())
             {
-                Console.WriteLine("Clipping Data Point");
+                //Console.WriteLine("Clipping Data Point");
                 return data.Values.First();
             }
-            else if (height > temperatureData.Keys.Last())
+            else if (height > data.Keys.Last())
             {
-                Console.WriteLine("Clipping Data Point");
+                //Console.WriteLine("Clipping Data Point");
                 return data.Values.Last();
             }
-            IEnumerable<KeyValuePair<double, double>> dataBelow = temperatureData.TakeWhile(x => x.Key <= height);
+            IEnumerable<KeyValuePair<double, double>> dataBelow = data.TakeWhile(x => x.Key <= height);
             double keyBelow = dataBelow.Last().Key;
             double keyAbove = temperatureData.ElementAt(dataBelow.Count() + 1).Key;
-            return (temperatureData[keyAbove] + temperatureData[keyBelow]) / (keyAbove - keyBelow) * (height - keyBelow);
+            return (data[keyAbove] + data[keyBelow]) / (keyAbove - keyBelow) * (height - keyBelow);
         }
       
     }

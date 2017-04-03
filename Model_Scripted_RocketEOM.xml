@@ -2,39 +2,13 @@
 	<ASSET assetName="Asset1">
 		<DynamicState
 			DynamicStateType="PREDETERMINED_ECI"
-			ICs="[6378.137; 0.0; 0.0; 0.0; 0; 0; 0; 0; 0]">
+			ICs="[0.0; 0.0; 6378.137; 0.0; 0; 0]">
 			<EOMS
 				EOMSType="scripted"
 				src="..\..\..\PythonScripting\eomRocket.py"
 				className="eomRocket"
+				Cd = "0.4296"
 				Ground = "6378.0">
-				<!--AeroCoeffPath = "\AeroData.txt" -->
-				<Aerodynamics	
-				Cx = "0.43468"
-				Cy = "0.0025334"
-				Cz = "0.0025334"
-				Cm = "0.0041546"
-				Cl = "0"  
-				Cn = "-0.00028239"
-				></Aerodynamics>
-				<MassProp
-				Ixx = "58.79"
-				Iyy = "58.79"
-				Izz = "0.19"
-				InitMass = "54.5"
-				FinalMass = "35"
-				></MassProp>
-				<Propulsion
-				Thrust = "2500"
-				BurnTime = "17"
-				></Propulsion>
-				<Atmosphere
-				AtmosphereType = "RealTime"
-				Date = "03-28-2017"
-				Latitude = "33"
-				Longitude = "-107" 	
-				></Atmosphere>
-			
 			</EOMS>
 		</DynamicState>
 	</ASSET>

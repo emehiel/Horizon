@@ -1,0 +1,11 @@
+<MODEL>
+	<ASSET assetName="Asset1">
+		<DynamicState
+			DynamicStateType="PREDETERMINED_ECI"
+			ICs="[0.0; 0.0; 6378.137; 0.0; 0; 0]">
+			<EOMS
+				EOMSType="orbital_EOMS"> <?Dummy EOM to set the inital conditions?>
+			</EOMS>
+		</DynamicState>
+	</ASSET>
+</MODEL>

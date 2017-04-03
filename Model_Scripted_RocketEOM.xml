@@ -8,9 +8,8 @@
 				src="..\..\..\PythonScripting\eomRocket.py"
 				className="eomRocket"
 				Ground = "6378.0">
-				 
-				<Aerodynamics
-				AeroCoeffPath = "C:\Horizon\aerodata.csv"	
+				<!--AeroCoeffPath = "\AeroData.txt" -->
+				<Aerodynamics	
 				Cx = "0.43468"
 				Cy = "0.0025334"
 				Cz = "0.0025334"

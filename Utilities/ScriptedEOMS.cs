@@ -33,7 +33,7 @@ namespace Utilities
             var ops = engine.Operations;
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
-            _pythonInstance = ops.CreateInstance(pythonType);
+            _pythonInstance = ops.CreateInstance(pythonType, scriptedNode);
         }
         #endregion
 

@@ -29,16 +29,7 @@
     <InterpreterReference Include="{fcc291aa-427c-498c-a4d7-4502d6449b8c}\2.7" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aerodynamics.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="eomRocket.py" />
-    <Compile Include="MassProperties.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="StateEstimation.py">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Horizon\Horizon.csproj">

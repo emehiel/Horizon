@@ -17,7 +17,7 @@ import HSFUniverse
 import math
 import MissionElements
 import UserModel
-import csv
+#import csv
 
 from UserModel import XmlParser
 from MissionElements import Asset
@@ -34,16 +34,16 @@ class eomRocket(Utilities.EOMS):
     def __init__(self, scriptedNode):
         
         # Load individula aero coeffs for testing purposes
-        self.aero = Aerodynamics(scriptedNode.Attributes["AeroCoeffPath"].Value)
-        #self.Cx = float(scriptedNode["Aerodynamics"].Attributes["Cx"].Value)
-        #self.Cy = float(scriptedNode["Aerodynamics"].Attributes["Cy"].Value)
-        #self.Cz = float(scriptedNode["Aerodynamics"].Attributes["Cz"].Value)
-        #self.Cl = float(scriptedNode["Aerodynamics"].Attributes["Cl"].Value)
-        #self.Cm = float(scriptedNode["Aerodynamics"].Attributes["Cm"].Value)
-        #self.Cn = float(scriptedNode["Aerodynamics"].Attributes["Cn"].Value)
+        #self.aero = Aerodynamics(scriptedNode.Attributes["AeroCoeffPath"].Value)
+        self.Cx = float(scriptedNode["Aerodynamics"].Attributes["Cx"].Value)
+        self.Cy = float(scriptedNode["Aerodynamics"].Attributes["Cy"].Value)
+        self.Cz = float(scriptedNode["Aerodynamics"].Attributes["Cz"].Value)
+        self.Cl = float(scriptedNode["Aerodynamics"].Attributes["Cl"].Value)
+        self.Cm = float(scriptedNode["Aerodynamics"].Attributes["Cm"].Value)
+        self.Cn = float(scriptedNode["Aerodynamics"].Attributes["Cn"].Value)
         self.groundlevel = float(scriptedNode.Attributes["Ground"].Value)
 
-        print self.aero.CurrentAero(.5, 0);
+        #print self.aero.CurrentAero(.5, 0);
 
         # Assume a constant Inertia Matrix for now
         self.Ixx = float(scriptedNode["MassProp"].Attributes["Ixx"].Value)

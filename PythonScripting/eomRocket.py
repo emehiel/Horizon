@@ -44,7 +44,7 @@ class eomRocket(Utilities.EOMS):
         self.groundlevel = float(scriptedNode.Attributes["Ground"].Value)
         #print self.aero.CurrentAero(.5, 0);
         #self.aero = aero.__init__
-        print self.aero.CurrentAero(0.51)
+        #print self.aero.CurrentAero(0.51)
         # Assume a constant Inertia Matrix for now
         self.Ixx = float(scriptedNode["MassProp"].Attributes["Ixx"].Value)
         self.Iyy = float(scriptedNode["MassProp"].Attributes["Iyy"].Value)
@@ -59,14 +59,14 @@ class eomRocket(Utilities.EOMS):
         self.BurnTime = float(scriptedNode["Propulsion"].Attributes["BurnTime"].Value)
 
         # Use the standard atmosphere model for now because it is much faster to load
-        self.atmos = StandardAtmosphere()
-        #self.atmos = RealTimeAtmosphere()
-        #self.atmos.filePath = "C:\\Horizon\\gfs.t06z.pgrb2.0p50.f006.grb2"
-        #lat = float(scriptedNode["Atmosphere"].Attributes["Latitude"].Value)
-        #lon = float(scriptedNode["Atmosphere"].Attributes["Longitude"].Value)
-        #lat = 33
-        #long = -107
-        #self.atmos.SetLocation(lat, long)
+        #self.atmos = StandardAtmosphere()
+        self.atmos = RealTimeAtmosphere()
+        self.atmos.filePath = "C:\\Horizon\\gfs.t06z.pgrb2.0p50.f006.grb2"
+        lat = float(scriptedNode["Atmosphere"].Attributes["Latitude"].Value)
+        lon = float(scriptedNode["Atmosphere"].Attributes["Longitude"].Value)
+        lat = 33
+        long = -107
+        self.atmos.SetLocation(lat, long)
         self.atmos.CreateAtmosphere()
     def PythonAccessor(self, t, y):
         _mu = 398600

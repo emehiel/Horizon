@@ -29,6 +29,7 @@
     <InterpreterReference Include="{fcc291aa-427c-498c-a4d7-4502d6449b8c}\2.7" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Aerodynamics.py" />
     <Compile Include="eomRocket.py" />
   </ItemGroup>
   <ItemGroup>

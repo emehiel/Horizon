@@ -31,6 +31,9 @@ namespace Utilities
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
+            var p = engine.GetSearchPaths();
+            p.Add("..\\..\\..\\PythonScripting\\");
+            engine.SetSearchPaths(p);
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
             _pythonInstance = ops.CreateInstance(pythonType, scriptedNode);

@@ -17,6 +17,7 @@ import HSFUniverse
 import math
 import MissionElements
 import UserModel
+import Aerodynamics
 #import csv
 
 from UserModel import XmlParser
@@ -32,19 +33,18 @@ from IronPython.Compiler import CallTarget0
 class eomRocket(Utilities.EOMS):
     
     def __init__(self, scriptedNode):
-        
         # Load individula aero coeffs for testing purposes
-        #self.aero = Aerodynamics(scriptedNode.Attributes["AeroCoeffPath"].Value)
-        self.Cx = float(scriptedNode["Aerodynamics"].Attributes["Cx"].Value)
-        self.Cy = float(scriptedNode["Aerodynamics"].Attributes["Cy"].Value)
-        self.Cz = float(scriptedNode["Aerodynamics"].Attributes["Cz"].Value)
-        self.Cl = float(scriptedNode["Aerodynamics"].Attributes["Cl"].Value)
-        self.Cm = float(scriptedNode["Aerodynamics"].Attributes["Cm"].Value)
-        self.Cn = float(scriptedNode["Aerodynamics"].Attributes["Cn"].Value)
+        self.aero = Aerodynamics.Aerodynamics();
+        #self.Cx = float(scriptedNode["Aerodynamics"].Attributes["Cx"].Value)
+        #self.Cy = float(scriptedNode["Aerodynamics"].Attributes["Cy"].Value)
+        #self.Cz = float(scriptedNode["Aerodynamics"].Attributes["Cz"].Value)
+        #self.Cl = float(scriptedNode["Aerodynamics"].Attributes["Cl"].Value)
+        #self.Cm = float(scriptedNode["Aerodynamics"].Attributes["Cm"].Value)
+        #self.Cn = float(scriptedNode["Aerodynamics"].Attributes["Cn"].Value)
         self.groundlevel = float(scriptedNode.Attributes["Ground"].Value)
-
         #print self.aero.CurrentAero(.5, 0);
-
+        #self.aero = aero.__init__
+        print self.aero.CurrentAero(0.51)
         # Assume a constant Inertia Matrix for now
         self.Ixx = float(scriptedNode["MassProp"].Attributes["Ixx"].Value)
         self.Iyy = float(scriptedNode["MassProp"].Attributes["Iyy"].Value)
@@ -79,6 +79,14 @@ class eomRocket(Utilities.EOMS):
         else:
             mass = self.FinalMass
         thrust = self.ThrustCalculation(t, mass)
+        mach = math.sqrt(math.pow(y[4,1],2) + math.pow(y[5,1],2) + math.pow(y[6,1],2))/340 #TODO: Calculate spdofsnd
+        aero = self.aero.CurrentAero(mach)
+        self.Cx = aero[0]
+        self.Cy = aero[1]
+        self.Cz = aero[2]
+        self.Cm = aero[3]
+        self.Cl = aero[4]
+        self.Cn = aero[5]
         forces = self.ForceCalculation(y, mass)
         moments = self.MomentCalculations(y)
         p = y[7,1]
@@ -147,27 +155,8 @@ class eomRocket(Utilities.EOMS):
             return 0.0 
 
 
-class Aerodynamics():
-    def __init__(csvpath):
-        aeroreader = csv.reader(csvpath)
-        i = 0
-        for row in aeroreader:
-            self.mach[i] = row[1]
-            self.cx[i] = row[2] #Drag
-            self.cy[i] = row[3] #Normal Force
-            self.cz[i] = row[3] #Side force, symmetric so can be equal
-            self.cm[i] = row[4] #Pitch Moment
-            self.cn[i] = row[5] #Yaw Moment
-            self.cl[i] = row[7] #Rolling Moment
-            i = i+1
-    def CurrentAero(self, mach, alpha):
-        cx = LinearInterpolate(self.mach, self.cx, mach)
-        cy = LinearInterpolate(self.mach, self.cy, mach)
-        cz = LinearInterpolate(self.mach, self.cz, mach)
-        cm = LinearInterpolate(self.mach, self.cm, mach)
-        cn = LinearInterpolate(self.mach, self.cn, mach)
-        cl = LinearInterpolate(self.mach, self.cl, mach)
-        return [cx, cy, cz, cm, cn, cl]
+
+        
 def LinearInterpolate(x, v, xq):
     if len(x) != len(v):
         Exception
@@ -178,5 +167,5 @@ def LinearInterpolate(x, v, xq):
             break
         if index == len(x): #Clip at the highest value
             return v[index]
-    vq = v[index-1]+(above-below)*(xq-v[index-1])/(above-below)
+    vq = v[index-1]+(xq-below)*(v[index]-v[index-1])/(above-below)
     return vq

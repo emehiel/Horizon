@@ -29,7 +29,7 @@ namespace Horizon
 
         // Initialize List to hold assets and subsystem nodes
         public List<Asset> assetList = new List<Asset>();
-        List<Subsystem> subList = new List<Subsystem>();
+        public List<Subsystem> subList = new List<Subsystem>();
 
         // Maps used to set up preceeding nodes
         Dictionary<ISubsystem, XmlNode> subsystemXMLNodeMap = new Dictionary<ISubsystem, XmlNode>();

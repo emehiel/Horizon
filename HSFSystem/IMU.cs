@@ -10,7 +10,7 @@ using MissionElements;
 
 namespace HSFSystem
 {
-    class IMU:Subsystem
+    public class IMU:Subsystem
     {
         #region Attributes
         protected double _accNoiseDensity = 0;
@@ -19,6 +19,9 @@ namespace HSFSystem
         protected double _accMax = Double.MaxValue;
         protected double _accMin = Double.MinValue;
         protected double _accOutputRate = 100;
+        protected double _accNonLinearity = 0;
+        protected double _accCrossAxis = 0;
+        protected double _accScaleFactor = 1;
         protected double _gyrNaturalFrequency = 150;
         protected double _gyrDampingRatio = 0.707;
         protected double _gyrMax = Double.MaxValue;
@@ -26,15 +29,20 @@ namespace HSFSystem
         protected double _gyrRateNoiseDensity = 0;
         protected double _gyrBias = 0;
         protected double _gyrOutputRate = 100;
+        protected double _gyrScaleFactor = 1;
+        protected double _gyrAccelSensitivity = 0;
+        protected double _gyrCrossAxis = 0;
+        protected double _gyrNonLinearity = 0;
         static private Random rand = new Random(); 
         #endregion
-        public IMU(XmlNode IMUNode, Dependency dependencies, Asset asset)
+        public IMU(XmlNode SubNode, Asset asset)
         {
             DefaultSubName = "IMU";
             Asset = asset;
-            GetSubNameFromXmlNode(IMUNode);
+            GetSubNameFromXmlNode(SubNode["ASSET"].ChildNodes[1]);
             int gyr = 0;
             int acc = 1;
+            XmlNode IMUNode = SubNode["ASSET"].ChildNodes[1];
             if (IMUNode.ChildNodes[1].Name.Equals("Gyro"))
             {
                 gyr = 1;
@@ -55,6 +63,14 @@ namespace HSFSystem
                 _gyrBias = (double)Convert.ChangeType(IMUNode.ChildNodes[gyr].Attributes["gyroBias"].Value.ToString(), typeof(double));
             if (IMUNode.ChildNodes[gyr].Attributes["gyroOutputRate"] != null)
                 _gyrOutputRate = (double)Convert.ChangeType(IMUNode.ChildNodes[gyr].Attributes["gyroOutputRate"].Value.ToString(), typeof(double));
+            if (IMUNode.ChildNodes[gyr].Attributes["gyroOutputRate"] != null)
+                _gyrScaleFactor = (double)Convert.ChangeType(IMUNode.ChildNodes[gyr].Attributes["gyroScaleFactor"].Value.ToString(), typeof(double));
+            if (IMUNode.ChildNodes[gyr].Attributes["gyroOutputRate"] != null)
+                _gyrNonLinearity = (double)Convert.ChangeType(IMUNode.ChildNodes[gyr].Attributes["gyroNonLinearity"].Value.ToString(), typeof(double));
+            if (IMUNode.ChildNodes[gyr].Attributes["gyroOutputRate"] != null)
+                _gyrAccelSensitivity = (double)Convert.ChangeType(IMUNode.ChildNodes[gyr].Attributes["gyroAccelSensitivity"].Value.ToString(), typeof(double));
+            if (IMUNode.ChildNodes[gyr].Attributes["gyroOutputRate"] != null)
+                _gyrCrossAxis = (double)Convert.ChangeType(IMUNode.ChildNodes[gyr].Attributes["gyroCrossAxis"].Value.ToString(), typeof(double));
             if (IMUNode.ChildNodes[acc].Attributes["accNoiseDensity"] != null)
                 _accNoiseDensity = (double)Convert.ChangeType(IMUNode.ChildNodes[acc].Attributes["accNoiseDensity"].Value.ToString(), typeof(double));
             if (IMUNode.ChildNodes[acc].Attributes["accNaturalFrequency"] != null)
@@ -67,17 +83,61 @@ namespace HSFSystem
                 _accMin = (double)Convert.ChangeType(IMUNode.ChildNodes[acc].Attributes["accMin"].Value.ToString(), typeof(double));
             if (IMUNode.ChildNodes[acc].Attributes["accOutputRate"] != null)
                 _accOutputRate = (double)Convert.ChangeType(IMUNode.ChildNodes[acc].Attributes["accOutputRate"].Value.ToString(), typeof(double));
+            if (IMUNode.ChildNodes[acc].Attributes["accNonLinearity"] != null)
+                _accNonLinearity = (double)Convert.ChangeType(IMUNode.ChildNodes[acc].Attributes["accNonLinearity"].Value.ToString(), typeof(double));
+            if (IMUNode.ChildNodes[acc].Attributes["accCrossAxis"] != null)
+                _accCrossAxis = (double)Convert.ChangeType(IMUNode.ChildNodes[acc].Attributes["accCrossAxis"].Value.ToString(), typeof(double));
+            if (IMUNode.ChildNodes[acc].Attributes["accScaleFactor"] != null)
+                _accScaleFactor = (double)Convert.ChangeType(IMUNode.ChildNodes[acc].Attributes["accScaleFactor"].Value.ToString(), typeof(double));
 
         }
-        public double Gyroscope()
+        /*public IMU(XmlNode IMUNode, Asset asset) : this(IMUNode)
         {
-            double noise = GaussianWhiteNoise(0, _gyrRateNoiseDensity*_gyrOutputRate);
-            throw new NotImplementedException();
+            Asset = asset;
         }
-        public double Accelerometer()
+        */
+        public List<double> Gyroscope(List<double> truth)
         {
-            double noise = GaussianWhiteNoise(0, _accNoiseDensity*_accOutputRate);
-            throw new NotImplementedException();
+            double noiseX = GaussianWhiteNoise(0, _gyrRateNoiseDensity); // *_gyrOutputRate);
+            double noiseY = GaussianWhiteNoise(0, _gyrRateNoiseDensity); // * _gyrOutputRate);
+            double noiseZ = GaussianWhiteNoise(0, _gyrRateNoiseDensity); // * _gyrOutputRate);
+
+            List<double> reading = new List<double>(3);
+
+            reading.Add(truth[0] + noiseX);
+            reading.Add(truth[1] + noiseY);
+            reading.Add(truth[2] + noiseZ);
+            /* Check for Saturation of sensor */
+            int i = 0;
+            foreach( double val in reading.ToList())
+            {
+                if (val > _gyrMax) { reading[i] = _gyrMax; }
+                if (val < _gyrMin) { reading[i] = _gyrMin; }
+                i++;
+            }
+            return reading;
+        }
+        public List<double> Accelerometer(List<double> truth)
+        {
+            double noiseX = GaussianWhiteNoise(0, _accNoiseDensity*_accOutputRate);
+            double noiseY = GaussianWhiteNoise(0, _accNoiseDensity * _accOutputRate);
+            double noiseZ = GaussianWhiteNoise(0, _accNoiseDensity * _accOutputRate);
+
+            List<double> reading = new List<double>();
+
+            reading[0] = truth[0] + noiseX;
+            reading[1] = truth[1] + noiseY;
+            reading[2] = truth[2] + noiseZ;
+
+            /* Check for Saturation of sensor */
+            int i = 0;
+            foreach (double val in reading)
+            {
+                if (val > _accMax) { reading[i] = _accMax; }
+                if (val < _accMin) { reading[i] = _accMin; }
+                i++;
+            }
+            return reading;
         }
 
         public double GaussianWhiteNoise(double mean, double stdDev)

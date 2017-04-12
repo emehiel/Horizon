@@ -53,6 +53,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -67,11 +68,29 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="IMUTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Horizon\Horizon.csproj">
+      <Project>{6e6d45ba-6e13-4117-839e-469a59eef191}</Project>
+      <Name>Horizon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFSystem\HSFSystem.csproj">
+      <Project>{72FA2884-1D92-4088-9FAC-60564F9971F8}</Project>
+      <Name>HSFSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MissionElements\MissionElements.csproj">
+      <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
+      <Name>MissionElements</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UserModel\UserModel.csproj">
+      <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
+      <Name>UserModel</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

@@ -10,13 +10,7 @@
 				Ground = "6378.0">
 				
 				<Aerodynamics	
-					AeroCoeffPath = "\aerodata.py"
-					Cx = "0.43468"
-					Cy = "0.0025334"
-					Cz = "0.0025334"
-					Cm = "0.0041546"
-					Cl = "0"  
-					Cn = "-0.00028239"
+					AeroCoeffPath = "C:\Users\steve\Source\Repos\Horizon\Aerodynamics.py"
 				></Aerodynamics>
 				<MassProp
 					Ixx = "58.79"
@@ -35,8 +29,38 @@
 					Latitude = "33"
 					Longitude = "-107" 	
 				></Atmosphere>
-			
+				<StateEstimation
+					
+				
+				></StateEstimation>
 			</EOMS>
 		</DynamicState>
+		<Subsystem
+			Type="IMU"
+			subsystemName = "imu">
+			<Gyro
+				gyroRateNoiseDensity = "0.03"
+				gyroNaturalFrequency = "30"
+				gyroDampingRatio = "0.707"
+				gyroScaleFactor = "14.375"
+				gyroNonLinearity = "0.2"
+				gyroAccelSensitivity = ".1"
+				gyroCrossAxis = "2"
+				gyroMax = "2000"
+				gyroMin = "-2000"
+				gyroBias = "0"
+				gyroOutputRate = "1000"
+			></Gyro>
+			<Accelerometer
+				accNoiseDensity = "1.0"
+				accNonLinearity = "0.5"
+				accCrossAxis = "1"
+				accScaleFactor = "0.0078"
+				accMax = "4"
+				accMin = "-4"
+				accOutputRate = "1000"
+				accBias = "0.080"
+			></Accelerometer>
+		</Subsystem>
 	</ASSET>
 </MODEL>

@@ -330,7 +330,7 @@ namespace Utilities
             if (a.NumCols == 3)
                 return c;
             else
-                return Matrix<T>.Transpose(c);
+                return Transpose(c);
         }
 
         /// <summary>

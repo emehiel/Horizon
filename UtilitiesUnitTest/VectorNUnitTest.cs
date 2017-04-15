@@ -37,6 +37,11 @@ namespace UtilitiesUnitTest
         {
             Assert.That(() => a * B, Is.EqualTo(c));
         }
+        [TestCaseSource(typeof(VectorMatrixData), "TestCases")]
+        public void VectorMatrixMultiplicationTest(Matrix<double> A, Vector b, Vector c)
+        {
+            Assert.That(() => A * b, Is.EqualTo(c));
+        }
     }
     public class DotProductData
     {
@@ -91,18 +96,33 @@ namespace UtilitiesUnitTest
         {
             get
             {
-                yield return new TestCaseData(new Vector(new double[] { 1,2,3 }),
+                yield return new TestCaseData(new Vector(new double[] { 1, 2, 3 }),
                     new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } }),
                     new Vector(new double[] { 30, 36, 42 }));
 
                 yield return new TestCaseData(new Vector(new double[] { 1, 2, 3 }),
-                    new Matrix<double>(new double[,] { { 1 }, { 2 }, { 3 } }), 
+                    new Matrix<double>(new double[,] { { 1 }, { 2 }, { 3 } }),
                     new Vector(new double[] { 14 }));
 
                 yield return new TestCaseData(new Vector(new double[] { 0 }),
                     new Matrix<double>(new double[,] { { 0 } }),
                     new Vector(new double[] { 0 }));
+
             }
         }
     }
+        public class VectorMatrixData
+        {
+            public static IEnumerable TestCases
+            {
+                get
+                {
+                    yield return new TestCaseData(new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } }),
+                        new Vector(new double[] { 1, 2, 3 }),
+                        new Vector(new double[] { 14, 32, 50 }));
+
+                }
+            }
+        }
+    
 }

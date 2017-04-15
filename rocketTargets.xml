@@ -1,0 +1,13 @@
+<TARGETDECK>
+	<TARGET
+		TargetName = "control"
+		TaskType = "EMPTY"
+		TargetType = "LocationTarget"
+		MaxTimes = "1000000"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33; -107; 0]">
+		</DynamicState>
+    </TARGET>
+</TARGETDECK>

@@ -7,6 +7,7 @@ using HSFSystem;
 using HSFSubsystem;
 using System.Xml;
 using MissionElements;
+using Utilities;
 
 namespace HSFSystem
 {
@@ -39,11 +40,11 @@ namespace HSFSystem
         {
             DefaultSubName = "IMU";
             Asset = asset;
-            GetSubNameFromXmlNode(SubNode["ASSET"].ChildNodes[1]);
+            GetSubNameFromXmlNode(SubNode);
             int gyr = 0;
             int acc = 1;
-            XmlNode IMUNode = SubNode["ASSET"].ChildNodes[1];
-            if (IMUNode.ChildNodes[1].Name.Equals("Gyro"))
+            XmlNode IMUNode = SubNode;
+            if (SubNode.ChildNodes[1].Name.Equals("Gyro"))
             {
                 gyr = 1;
                 acc = 0;
@@ -91,11 +92,13 @@ namespace HSFSystem
                 _accScaleFactor = (double)Convert.ChangeType(IMUNode.ChildNodes[acc].Attributes["accScaleFactor"].Value.ToString(), typeof(double));
 
         }
-        /*public IMU(XmlNode IMUNode, Asset asset) : this(IMUNode)
+        public IMU(XmlNode SubNode, Dependency dependencies ,Asset asset) : this(SubNode, asset)
         {
-            Asset = asset;
+            DependentSubsystems = new List<Subsystem>();
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+            dependencies.Add("MeasurementsFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_MeasurementsFrom_IMUSUB));
         }
-        */
+        
         public List<double> Gyroscope(List<double> truth)
         {
             double noiseX = GaussianWhiteNoise(0, _gyrRateNoiseDensity); // *_gyrOutputRate);
@@ -139,7 +142,12 @@ namespace HSFSystem
             }
             return reading;
         }
-
+        public HSFProfile<double> STATESUB_MeasurementsFrom_IMUSUB(Event currentEvent)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            //currentEvent.State;
+            return prof1;
+        }
         public double GaussianWhiteNoise(double mean, double stdDev)
         // http://stackoverflow.com/a/218600
         {

@@ -35,7 +35,7 @@
 				></StateEstimation>
 			</EOMS>
 		</DynamicState>
-		<Subsystem
+		<SUBSYSTEM
 			Type="IMU"
 			subsystemName = "imu">
 			<Gyro
@@ -61,6 +61,18 @@
 				accOutputRate = "1000"
 				accBias = "0.080"
 			></Accelerometer>
-		</Subsystem>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+		Type = "scripted"
+		subsystemName = "stateestimator"
+			src = "..\..\..\PythonScripting\StateEstimation.py"
+			className ="StateEstimation">
+		</SUBSYSTEM>
+		<SUBSYSTEM
+		Type = "scripted"
+		subsystemName = "GPS"
+			src = "..\..\..\PythonScripting\GPS.py"
+			className = "GPS">
+		</SUBSYSTEM>
 	</ASSET>
 </MODEL>

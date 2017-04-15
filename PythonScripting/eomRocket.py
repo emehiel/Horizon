@@ -87,8 +87,10 @@ class eomRocket(Utilities.EOMS):
         self.Cm = aero[3]
         self.Cl = aero[4]
         self.Cn = aero[5]
+        alt = (y[1,1] -6378) * 1000
+        vel = self.GetRelativeVelocity(alt, y)
         forces = self.ForceCalculation(y, mass)
-        moments = self.MomentCalculations(y)
+        moments = self.MomentCalculations(alt, vel)
         p = y[7,1]
         q = y[8,1]
         r = y[9,1]  
@@ -131,13 +133,12 @@ class eomRocket(Utilities.EOMS):
         dy[9,1] = rdot
         
         return dy 
-    def ForceCalculation(self, y, mass):
+    def ForceCalculation(self, alt, vel, mass):
         # TODO: Frame Change for wind.
-        alt = (y[1,1]-6378)*1000;
         dens = self.atmos.density(alt)
-        Fx = (0.5 * dens * math.pow(y[4,1]*1000,2) * self.Cx *  math.pow(.1106,2) * math.pi)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
-        Fy = (0.5 * dens * math.pow(y[5,1]*1000 + self.atmos.uVelocity(alt),2) * self.Cy * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
-        Fz = (0.5 * dens * math.pow(y[6,1]*1000 + self.atmos.vVelocity(alt),2) * self.Cz * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        Fx = (0.5 * dens * math.pow(vel[1]*1000,2) * self.Cx *  math.pow(.1106,2) * math.pi)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        Fy = (0.5 * dens * math.pow(vel[2]*1000,2) * self.Cy * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        Fz = (0.5 * dens * math.pow(vel[3]*1000 ,2) * self.Cz * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
         return [Fx, Fy, Fz]
     def MomentCalculations(self, y):
         area = math.pow(.1106,2) * math.pi #Reference area is the cross sectional area
@@ -153,10 +154,55 @@ class eomRocket(Utilities.EOMS):
             return self.Thrust/mass/1000 # kg*m/s^2/kg = m/s^2/100 -> [km/s^2]
         else:
             return 0.0 
+    def GetRelativeVelocity(self, alt, y):
+        # Rename variables for later
+        u = self.atmos.uVelocity(alt);
+        v = self.atmos.vVelocity(alt);
+        p = y[7,1]
+        q = y[8,1]
+        r = y[9,1]
+        print "here"
+        vel = Vector(3)
+        print "velocity: " 
+        print vel
+        vel[1] = y[4,1]
+        vel[2] = y[5,1]
+        vel[3] = y[6,1]
+        C = self.CreateRotationMatrix(p, q, r)
+        print "C"
+        C = C.Transpose(C)
+        print "DCM: " 
+        print C
+        vel = C*vel
+        vel[1] = vel[1] + u
+        vel[2] = vel[2] + v
 
+        return vel
 
-
+    def CreateRotationMatrix(self, p, q, r):
+        Cx = Matrix[System.Double](3)
+        Cy = Matrix[System.Double](3)
+        Cz = Matrix[System.Double](3)
+        C = Matrix[System.Double](3)
         
+        Cx[1,1] = 1
+        Cx[2,2] = math.cos(math.radians(p))
+        Cx[2,3] = -math.sin(math.radians(p))
+        Cx[3,2] = math.sin(math.radians(p))
+        Cx[3,3] = math.cos(math.radians(p))
+
+        Cy[2,2] = 1
+        Cy[1,1] = math.cos(math.radians(p))
+        Cy[3,1] = -math.sin(math.radians(p))
+        Cy[1,3] = math.sin(math.radians(p))
+        Cy[3,3] = math.cos(math.radians(p))
+
+        Cz[3,3] = 1
+        Cz[1,1] = math.cos(math.radians(p))
+        Cz[1,2] = -math.sin(math.radians(p))
+        Cz[2,1] = math.sin(math.radians(p))
+        Cz[2,2] = math.cos(math.radians(p))
+        return Cz*Cy*Cx
 def LinearInterpolate(x, v, xq):
     if len(x) != len(v):
         Exception

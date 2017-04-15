@@ -31,6 +31,8 @@
   <ItemGroup>
     <Compile Include="Aerodynamics.py" />
     <Compile Include="eomRocket.py" />
+    <Compile Include="GPS.py" />
+    <Compile Include="StateEstimation.py" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Horizon\Horizon.csproj">

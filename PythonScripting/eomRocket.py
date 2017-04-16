@@ -68,6 +68,10 @@ class eomRocket(Utilities.EOMS):
         self.lengthRef = float(scriptedNode.Attributes["ReferenceLength"].Value);
         self.areaRef = float(scriptedNode.Attributes["ReferenceArea"].Value);
     def PythonAccessor(self, t, y):
+        # X -> Through the nose
+        # p= roll, q = pitch, r = yaw
+        # pitch about y, yaw about z, roll about x
+
         _mu = 398600
         r3 = System.Math.Pow(Matrix[System.Double].Norm(y[MatrixIndex(1, 3), 1]), 3)
         mur3 = -_mu / r3
@@ -133,7 +137,6 @@ class eomRocket(Utilities.EOMS):
         
         return dy 
     def ForceCalculation(self, alt, vel, mass):
-        # TODO: Frame Change for wind.
         dens = self.atmos.density(alt)
         Fx = (0.5 * dens * math.pow(vel[1],2) * self.Cx *  math.pow(.1106,2) * math.pi)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
         Fy = (0.5 * dens * math.pow(vel[2],2) * self.Cy * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
@@ -142,9 +145,10 @@ class eomRocket(Utilities.EOMS):
     def MomentCalculations(self, alt, vel):
         area = math.pow(.1106,2) * math.pi #Reference area is the cross sectional area
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[1],2)
-        Mx = self.Cm*dynamicPressure*area
+        Mx = self.Cl*dynamicPressure*area
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[2],2)
-        My = self.Cl*dynamicPressure*area
+        area = .2302*4.5
+        My = self.Cm*dynamicPressure*area
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[3],2)
         Mz = self.Cn*dynamicPressure*area
         return [Mx, My, Mz]
@@ -193,16 +197,16 @@ class eomRocket(Utilities.EOMS):
         Cx[3,3] = math.cos(math.radians(p))
 
         Cy[2,2] = 1
-        Cy[1,1] = math.cos(math.radians(p))
-        Cy[3,1] = -math.sin(math.radians(p))
-        Cy[1,3] = math.sin(math.radians(p))
-        Cy[3,3] = math.cos(math.radians(p))
+        Cy[1,1] = math.cos(math.radians(q))
+        Cy[3,1] = -math.sin(math.radians(q))
+        Cy[1,3] = math.sin(math.radians(q))
+        Cy[3,3] = math.cos(math.radians(q))
 
         Cz[3,3] = 1
-        Cz[1,1] = math.cos(math.radians(p))
-        Cz[1,2] = -math.sin(math.radians(p))
-        Cz[2,1] = math.sin(math.radians(p))
-        Cz[2,2] = math.cos(math.radians(p))
+        Cz[1,1] = math.cos(math.radians(r))
+        Cz[1,2] = -math.sin(math.radians(r))
+        Cz[2,1] = math.sin(math.radians(r))
+        Cz[2,2] = math.cos(math.radians(r))
         return Cz*Cy*Cx
 def LinearInterpolate(x, v, xq):
     if len(x) != len(v):

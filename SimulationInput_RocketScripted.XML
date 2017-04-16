@@ -8,7 +8,7 @@
 	<SCHEDULER_PARAMETERS
 		maxNumSchedules="2"
 		numSchedCropTo="1"
-		simStepSeconds="5.0">
+		simStepSeconds="0.010">
 		<SCRIPTED_EVALUATOR
 			src="..\..\..\eval.py"
 			className="eval">

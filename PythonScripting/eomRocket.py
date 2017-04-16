@@ -33,18 +33,10 @@ from IronPython.Compiler import CallTarget0
 class eomRocket(Utilities.EOMS):
     
     def __init__(self, scriptedNode):
-        # Load individula aero coeffs for testing purposes
+        # Aerodynamics
         self.aero = Aerodynamics.Aerodynamics();
-        #self.Cx = float(scriptedNode["Aerodynamics"].Attributes["Cx"].Value)
-        #self.Cy = float(scriptedNode["Aerodynamics"].Attributes["Cy"].Value)
-        #self.Cz = float(scriptedNode["Aerodynamics"].Attributes["Cz"].Value)
-        #self.Cl = float(scriptedNode["Aerodynamics"].Attributes["Cl"].Value)
-        #self.Cm = float(scriptedNode["Aerodynamics"].Attributes["Cm"].Value)
-        #self.Cn = float(scriptedNode["Aerodynamics"].Attributes["Cn"].Value)
-        self.groundlevel = float(scriptedNode.Attributes["Ground"].Value)
-        #print self.aero.CurrentAero(.5, 0);
-        #self.aero = aero.__init__
-        #print self.aero.CurrentAero(0.51)
+
+        #Mass Properties
         # Assume a constant Inertia Matrix for now
         self.Ixx = float(scriptedNode["MassProp"].Attributes["Ixx"].Value)
         self.Iyy = float(scriptedNode["MassProp"].Attributes["Iyy"].Value)
@@ -58,16 +50,23 @@ class eomRocket(Utilities.EOMS):
         self.Thrust = float(scriptedNode["Propulsion"].Attributes["Thrust"].Value)
         self.BurnTime = float(scriptedNode["Propulsion"].Attributes["BurnTime"].Value)
 
-        # Use the standard atmosphere model for now because it is much faster to load
-        self.atmos = StandardAtmosphere()
-        #self.atmos = RealTimeAtmosphere()
-        #self.atmos.filePath = "C:\\Horizon\\gfs.t06z.pgrb2.0p50.f006.grb2"
-        #lat = float(scriptedNode["Atmosphere"].Attributes["Latitude"].Value)
-        #lon = float(scriptedNode["Atmosphere"].Attributes["Longitude"].Value)
-        #lat = 33
-        #long = -107
-        #self.atmos.SetLocation(lat, long)
+        # Atmosphere
+        if("Standard" == scriptedNode["Atmosphere"].Attributes["Type"].Value):
+            self.atmos = StandardAtmosphere()
+        elif("RealTime" == scriptedNode["Atmosphere"].Attributes["Type"].Value):
+            self.atmos = RealTimeAtmosphere()
+            self.atmos.filePath = "C:\\Horizon\\gfs.t06z.pgrb2.0p50.f006.grb2"
+            lat = float(scriptedNode["Atmosphere"].Attributes["Latitude"].Value)
+            long = float(scriptedNode["Atmosphere"].Attributes["Longitude"].Value)
+            self.atmos.SetLocation(lat, long)
+        else:
+            Exception;
         self.atmos.CreateAtmosphere()
+
+        # Physical Properties
+        self.groundlevel = float(scriptedNode.Attributes["Ground"].Value)
+        self.lengthRef = float(scriptedNode.Attributes["ReferenceLength"].Value);
+        self.areaRef = float(scriptedNode.Attributes["ReferenceArea"].Value);
     def PythonAccessor(self, t, y):
         _mu = 398600
         r3 = System.Math.Pow(Matrix[System.Double].Norm(y[MatrixIndex(1, 3), 1]), 3)
@@ -87,9 +86,9 @@ class eomRocket(Utilities.EOMS):
         self.Cm = aero[3]
         self.Cl = aero[4]
         self.Cn = aero[5]
-        alt = (y[1,1] -6378) * 1000
+        alt = (y[1,1] - 6378) * 1000
         vel = self.GetRelativeVelocity(alt, y)
-        forces = self.ForceCalculation(y, mass)
+        forces = self.ForceCalculation(alt,vel, mass)
         moments = self.MomentCalculations(alt, vel)
         p = y[7,1]
         q = y[8,1]
@@ -109,9 +108,9 @@ class eomRocket(Utilities.EOMS):
             rdot = 0.0
         else:
             #The position of the rocket is simply the velocity integrated
-            vx = y[4,1]    
-            vy = y[5,1]
-            vz = y[6,1]
+            vx = (vel[1]*self.dcm.Transpose(self.dcm))/1000
+            vy = (vel[2]*self.dcm.Transpose(self.dcm))/1000
+            vz = (vel[3]*self.dcm.Transpose(self.dcm))/1000
             #The velocity of the rocket. Uses the orbital motion eqns for gravity
             ax = (mur3 * y[1,1]) + thrust - math.copysign(forces[0], y[4,1])
             ay = (mur3 * y[2,1]) - math.copysign(forces[1], y[5,1]) #TODO: Make sign correct
@@ -136,15 +135,17 @@ class eomRocket(Utilities.EOMS):
     def ForceCalculation(self, alt, vel, mass):
         # TODO: Frame Change for wind.
         dens = self.atmos.density(alt)
-        Fx = (0.5 * dens * math.pow(vel[1]*1000,2) * self.Cx *  math.pow(.1106,2) * math.pi)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
-        Fy = (0.5 * dens * math.pow(vel[2]*1000,2) * self.Cy * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
-        Fz = (0.5 * dens * math.pow(vel[3]*1000 ,2) * self.Cz * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        Fx = (0.5 * dens * math.pow(vel[1],2) * self.Cx *  math.pow(.1106,2) * math.pi)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        Fy = (0.5 * dens * math.pow(vel[2],2) * self.Cy * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        Fz = (0.5 * dens * math.pow(vel[3],2) * self.Cz * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
         return [Fx, Fy, Fz]
-    def MomentCalculations(self, y):
+    def MomentCalculations(self, alt, vel):
         area = math.pow(.1106,2) * math.pi #Reference area is the cross sectional area
-        dynamicPressure = 0.5 * self.atmos.density((y[1,1]-6378)*1000) * self.atmos.uVelocity((y[1,1]-6378)*1000)
+        dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[1],2)
         Mx = self.Cm*dynamicPressure*area
+        dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[2],2)
         My = self.Cl*dynamicPressure*area
+        dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[3],2)
         Mz = self.Cn*dynamicPressure*area
         return [Mx, My, Mz]
     def ThrustCalculation(self, t, mass):
@@ -158,22 +159,22 @@ class eomRocket(Utilities.EOMS):
         # Rename variables for later
         u = self.atmos.uVelocity(alt);
         v = self.atmos.vVelocity(alt);
+        #u = 1;
+        #v = 1;
         p = y[7,1]
         q = y[8,1]
         r = y[9,1]
-        print "here"
         vel = Vector(3)
-        print "velocity: " 
-        print vel
-        vel[1] = y[4,1]
-        vel[2] = y[5,1]
-        vel[3] = y[6,1]
+        vel[1] = y[4,1]*1000
+        vel[2] = y[5,1]*1000
+        vel[3] = y[6,1]*1000
         C = self.CreateRotationMatrix(p, q, r)
-        print "C"
-        C = C.Transpose(C)
-        print "DCM: " 
-        print C
-        vel = C*vel
+        self.dcm= C.Transpose(C)
+        #C = Matrix[System.Double](3)
+        #C[1,1] = 1
+        #C[2,2] = 1
+        #C[3,3] = 1
+        vel = self.dcm*vel
         vel[1] = vel[1] + u
         vel[2] = vel[2] + v
 

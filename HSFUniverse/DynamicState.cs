@@ -272,12 +272,15 @@ namespace HSFUniverse
             string vx = Name + "_V_x,";
             string vy = Name + "_V_y,";
             string vz = Name + "_V_z,";
+            string p = Name + "_p,";
+            string q = Name + "_q,";
+            string r = Name + "_r,";
             // header
-            csv.AppendLine(t + rx + ry + rz + vx + vy + vz);
+            csv.AppendLine(t + rx + ry + rz + vx + vy + vz + p + q + r);
 
             // data
             foreach (var d in _stateData)
-                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6]);
+                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6] + "," + d.Value[7] + "," + d.Value[8] + "," + d.Value[9]);
 
             return csv.ToString();
         }

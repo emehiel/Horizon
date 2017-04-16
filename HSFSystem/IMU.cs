@@ -8,12 +8,15 @@ using HSFSubsystem;
 using System.Xml;
 using MissionElements;
 using Utilities;
+using HSFUniverse;
 
 namespace HSFSystem
 {
     public class IMU:Subsystem
     {
         #region Attributes
+        // TODO update keys to accept vector
+        protected StateVarKey<Matrix<double>> MEASURE_KEY;
         protected double _accNoiseDensity = 0;
         protected double _accNaturalFrequency = 150;
         protected double _accDampingratio = 0.707;
@@ -34,8 +37,9 @@ namespace HSFSystem
         protected double _gyrAccelSensitivity = 0;
         protected double _gyrCrossAxis = 0;
         protected double _gyrNonLinearity = 0;
-        static private Random rand = new Random(); 
+        static private Random rand = new Random();
         #endregion
+        #region Constructors
         public IMU(XmlNode SubNode, Asset asset)
         {
             DefaultSubName = "IMU";
@@ -97,8 +101,32 @@ namespace HSFSystem
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             dependencies.Add("MeasurementsFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_MeasurementsFrom_IMUSUB));
+            MEASURE_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "measurements");
+            addKey(MEASURE_KEY);
         }
-        
+        #endregion
+        #region Overrides
+        /// <summary>
+        /// An override of the Subsystem CanPerform method
+        /// </summary>
+        /// <param name="proposedEvent"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
+        public override bool CanPerform(Event proposedEvent, Universe environment)
+        {
+            IsEvaluated = true;
+            if (!base.CanPerform(proposedEvent, environment))
+                return false;
+            if (_task.Type == TaskType.FLYALONG)
+            {
+                HSFProfile<double> newProf = DependencyCollector(proposedEvent);
+                if (!newProf.Empty())
+                    proposedEvent.State.SetProfile(MEASURE_KEY, newProf);
+            }
+            return true;
+        }
+        #endregion
+        #region Methods
         public List<double> Gyroscope(List<double> truth)
         {
             double noiseX = GaussianWhiteNoise(0, _gyrRateNoiseDensity); // *_gyrOutputRate);
@@ -142,12 +170,7 @@ namespace HSFSystem
             }
             return reading;
         }
-        public HSFProfile<double> STATESUB_MeasurementsFrom_IMUSUB(Event currentEvent)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            //currentEvent.State;
-            return prof1;
-        }
+
         public double GaussianWhiteNoise(double mean, double stdDev)
         // http://stackoverflow.com/a/218600
         {
@@ -159,5 +182,15 @@ namespace HSFSystem
                          mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
             return randNormal;
         }
+        #endregion
+        #region Dependencies
+        public HSFProfile<double> STATESUB_MeasurementsFrom_IMUSUB(Event currentEvent)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            //currentEvent.State;
+            return prof1;
+        }
+        #endregion
+
     }
 }

@@ -2,32 +2,34 @@
 	<ASSET assetName="Asset1">
 		<DynamicState
 			DynamicStateType="PREDETERMINED_ECI"
-			ICs="[6378.137; 0.0; 0.0; 0.0; 0; 0; 0; 0; 0]">
+			ICs="[6378.137; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0]">
 			<EOMS
 				EOMSType="scripted"
 				src="..\..\..\PythonScripting\eomRocket.py"
 				className="eomRocket"
-				Ground = "6378.0">
+				Ground="6378.0"
+				ReferenceLength="2"
+				ReferenceArea=".2">
 				
 				<Aerodynamics	
-					AeroCoeffPath = "C:\Users\steve\Source\Repos\Horizon\Aerodynamics.py"
+					AeroCoeffPath="C:\Users\steve\Source\Repos\Horizon\Aerodynamics.py"
 				></Aerodynamics>
 				<MassProp
-					Ixx = "58.79"
-					Iyy = "58.79"
-					Izz = "0.19"
-					InitMass = "54.5"
-					FinalMass = "35"
+					Ixx="58.79"
+					Iyy="58.79"
+					Izz="0.19"
+					InitMass="54.5"
+					FinalMass="35"
 				></MassProp>
 				<Propulsion
-					Thrust = "2500"
-					BurnTime = "17"
+					Thrust="2500"
+					BurnTime="17"
 				></Propulsion>
 				<Atmosphere
-					AtmosphereType = "RealTime"
-					Date = "03-28-2017"
-					Latitude = "33"
-					Longitude = "-107" 	
+					Type="RealTime"
+					Date="03-28-2017"
+					Latitude="35.347"
+					Longitude="-117.808" 	
 				></Atmosphere>
 				<StateEstimation
 					
@@ -37,42 +39,42 @@
 		</DynamicState>
 		<SUBSYSTEM
 			Type="IMU"
-			subsystemName = "imu">
+			subsystemName= "imu">
 			<Gyro
-				gyroRateNoiseDensity = "0.03"
-				gyroNaturalFrequency = "30"
-				gyroDampingRatio = "0.707"
-				gyroScaleFactor = "14.375"
-				gyroNonLinearity = "0.2"
-				gyroAccelSensitivity = ".1"
-				gyroCrossAxis = "2"
-				gyroMax = "2000"
-				gyroMin = "-2000"
-				gyroBias = "0"
-				gyroOutputRate = "1000"
+				gyroRateNoiseDensity= "0.03"
+				gyroNaturalFrequency= "30"
+				gyroDampingRatio= "0.707"
+				gyroScaleFactor= "14.375"
+				gyroNonLinearity= "0.2"
+				gyroAccelSensitivity= ".1"
+				gyroCrossAxis= "2"
+				gyroMax= "2000"
+				gyroMin= "-2000"
+				gyroBias= "0"
+				gyroOutputRate= "1000"
 			></Gyro>
 			<Accelerometer
-				accNoiseDensity = "1.0"
-				accNonLinearity = "0.5"
-				accCrossAxis = "1"
-				accScaleFactor = "0.0078"
-				accMax = "4"
-				accMin = "-4"
-				accOutputRate = "1000"
-				accBias = "0.080"
+				accNoiseDensity= "1.0"
+				accNonLinearity= "0.5"
+				accCrossAxis= "1"
+				accScaleFactor= "0.0078"
+				accMax= "4"
+				accMin= "-4"
+				accOutputRate= "1000"
+				accBias= "0.080"
 			></Accelerometer>
 		</SUBSYSTEM>
 		<SUBSYSTEM
-		Type = "scripted"
-		subsystemName = "stateestimator"
-			src = "..\..\..\PythonScripting\StateEstimation.py"
-			className ="StateEstimation">
+		Type= "scripted"
+		subsystemName= "stateestimator"
+			src= "..\..\..\PythonScripting\StateEstimation.py"
+			className="StateEstimation">
 		</SUBSYSTEM>
 		<SUBSYSTEM
-		Type = "scripted"
-		subsystemName = "GPS"
-			src = "..\..\..\PythonScripting\GPS.py"
-			className = "GPS">
+		Type= "scripted"
+		subsystemName= "GPS"
+			src= "..\..\..\PythonScripting\GPS.py"
+			className= "GPS">
 		</SUBSYSTEM>
 	</ASSET>
 </MODEL>

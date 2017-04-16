@@ -95,18 +95,28 @@ namespace HSFScheduler
             {
                 log.Info("Generating Exhaustive Task Combinations... ");
                 Stack<Stack<Access>> exhaustive = new Stack<Stack<Access>>();
-                Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
+                
 
                 foreach (var asset in system.Assets)
                 {
+                    Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
                     foreach (var task in tasks)
                         allAccesses.Push(new Access(asset, task));
                     allAccesses.Push(new Access(asset, null));
                     exhaustive.Push(allAccesses);
-                    allAccesses.Clear();
+                    //allAccesses.Clear();
                 }
 
-                scheduleCombos = (Stack<Stack<Access>>)exhaustive.CartesianProduct();
+                //scheduleCombos = (Stack<Stack<Access>>)exhaustive.CartesianProduct();
+                IEnumerable<IEnumerable<Access>> allScheduleCombos = exhaustive.CartesianProduct();
+
+                //Stack<Stack<Access>> allOfThem = new Stack<Stack<Access>>();
+                foreach (var accessStack in allScheduleCombos)
+                {
+                    Stack<Access> someOfThem = new Stack<Access>(accessStack);
+                    scheduleCombos.Push(someOfThem);
+                }
+
                 log.Info("Done generating exhaustive task combinations");
             }
 

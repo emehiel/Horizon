@@ -55,7 +55,8 @@ namespace Utilities
             IEnumerable<IEnumerable<T>> result = emptyProduct;
             foreach (IEnumerable<T> sequence in sequences)
             {
-                result = from accseq in result from item in sequence select accseq.Concat(new[] { item });
+                var s = sequence;
+                result = from accseq in result from item in s select accseq.Concat(new[] { item });
             }
             return result;
         }

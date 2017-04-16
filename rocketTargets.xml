@@ -6,8 +6,30 @@
 		MaxTimes = "1000000"
 		Value = "1">
 		<DynamicState
-			DynamicStateType = "DYNAMIC_ECI"
-			ICs = "[2.3286; 4.6617; 3.6666]">
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33; -107; 0]">
 		</DynamicState>
-    </TARGET>
+	</TARGET>
+	<TARGET
+		TargetName = "deployDrougue"
+		TaskType = "FLYALONG"
+		TargetType = "FlyingAlong"
+		MaxTimes = "1"
+		Value = "100">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33; -107; 0]">
+		</DynamicState>
+	</TARGET>
+		<TARGET
+		TargetName = "deployMain"
+		TaskType = "FLYALONG"
+		TargetType = "FlyingAlong"
+		MaxTimes = "1"
+		Value = "100">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33; -107; 0]">
+		</DynamicState>
+	</TARGET>
 </TARGETDECK>

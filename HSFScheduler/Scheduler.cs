@@ -74,7 +74,7 @@ namespace HSFScheduler
                 else
                     canPregenAccess = false;
             }
-
+            
             // if accesses can be pregenerated, do it now
             Stack<Access> preGeneratedAccesses = new Stack<Access>();
             Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
@@ -102,7 +102,7 @@ namespace HSFScheduler
                     Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
                     foreach (var task in tasks)
                         allAccesses.Push(new Access(asset, task));
-                    allAccesses.Push(new Access(asset, null));
+                    //allAccesses.Push(new Access(asset, null)); //TODO DO we need this?
                     exhaustive.Push(allAccesses);
                     //allAccesses.Clear();
                 }
@@ -181,6 +181,7 @@ namespace HSFScheduler
                 systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedules
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
+                
                 // Print completion percentage in command window
                 Console.WriteLine("Scheduler Status: {0}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
             }

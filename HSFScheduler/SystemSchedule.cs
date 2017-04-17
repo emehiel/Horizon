@@ -59,7 +59,7 @@ namespace HSFScheduler
                         taskStarts.Add(access.Asset, access.AccessStart);
                     else
                     {
-                        Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart + " AccessEnd: " + access.AccessEnd);
+                        //Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart + " AccessEnd: " + access.AccessEnd);
                         taskStarts.Add(access.Asset, newEventStartTime);
                     }
                     tasks.Add(access.Asset, access.Task);

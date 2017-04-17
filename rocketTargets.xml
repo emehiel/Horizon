@@ -12,8 +12,8 @@
 	</TARGET>
 	<TARGET
 		TargetName = "deployDrougue"
-		TaskType = "FLYALONG"
-		TargetType = "FlyingAlong"
+		TaskType = "RECOVERY"
+		TargetType = "Recovery"
 		MaxTimes = "1"
 		Value = "100">
 		<DynamicState
@@ -23,8 +23,8 @@
 	</TARGET>
 		<TARGET
 		TargetName = "deployMain"
-		TaskType = "FLYALONG"
-		TargetType = "FlyingAlong"
+		TaskType = "RECOVERY"
+		TargetType = "Recovery"
 		MaxTimes = "1"
 		Value = "100">
 		<DynamicState

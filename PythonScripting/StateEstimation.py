@@ -19,8 +19,8 @@ import MissionElements
 import Utilities
 import HSFUniverse
 import UserModel
-from HSFSubsystem import *
 from HSFSystem import *
+from HSFSubsystem import Subsystem
 from System.Xml import XmlNode
 from Utilities import *
 from HSFUniverse import *
@@ -33,20 +33,24 @@ from IronPython.Compiler import CallTarget0
 class StateEstimation(Subsystem):
     def __init__(self, node, asset):
         self.dt = 1/100
+        #dependencies.Add("StateFromStateEst"+"."+Asset.Name, Func[Event, HSFProfile[Matrix[System.Double]]](ADCSSub_State_STATESUB))
         pass
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
+        depFunc1 = Func[Event,  Utilities.HSFProfile[Utilities.Matrix[System.Double]]](self.ADCSSub_State_STATESUB)
+        dep.Add("StateFromStateEst", depFunc1)
         return dep
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
-
         # Quaternion Integration
         # ref: Strapdown Inertial Navigation Technology 2nd ed, Titterton + Weston, p319
+        
+        
         sigma = Vector(3)
-        sigma[1] = wx * self.dt
-        sigma[2] = wy * self.dt
-        sigma[3] = wz * self.dt
+        #sigma[1] = wx * self.dt
+        #sigma[2] = wy * self.dt
+        #sigma[3] = wz * self.dt
 
 
         SIGMA = Matrix[System.Double](4)
@@ -67,11 +71,17 @@ class StateEstimation(Subsystem):
         SIGMA[4,3] = -sigma[1]
         SIGMA[4,4] = 0
 
-        qk1 = math.exp(SIGMA/2)*qk
+        #qk1 = math.exp(SIGMA/2)*qk
 
 
-        return super(subsystem, self).CanPerform(event, universe)
+        return True
+    def ADCSSub_State_STATESUB(self, event):
+        prof1 = HSFProfile[System.Double]()
+        prof1[event.GetEventStart(self.Asset)] = 30
+        prof1[event.GetTaskStart(self.Asset)] = 60
+        prof1[event.GetTaskEnd(self.Asset)] = 30
+        return prof1
     def CanExtend(self, event, universe, extendTo):
-        return super(subsystem, self).CanExtend(self, event, universe, extendTo)
+        return super(StateEstimation, self).CanExtend(self, event, universe, extendTo)
     def DependencyCollector(self, currentEvent):
-        return super(subsystem, self).DependencyCollector(currentEvent)
+        return super(StateEstimation, self).DependencyCollector(currentEvent)

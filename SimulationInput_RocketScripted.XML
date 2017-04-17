@@ -9,9 +9,5 @@
 		maxNumSchedules="2"
 		numSchedCropTo="1"
 		simStepSeconds="0.010">
-		<SCRIPTED_EVALUATOR
-			src="..\..\..\eval.py"
-			className="eval">
-		</SCRIPTED_EVALUATOR>
 	</SCHEDULER_PARAMETERS>
 </SCENARIO>

@@ -26,7 +26,7 @@
 					BurnTime="17"
 				></Propulsion>
 				<Atmosphere
-					Type="RealTime"
+					Type="Standard"
 					Date="03-28-2017"
 					Latitude="35.347"
 					Longitude="-117.808" 	
@@ -75,6 +75,12 @@
 		subsystemName= "GPS"
 			src= "..\..\..\PythonScripting\GPS.py"
 			className= "GPS">
+		</SUBSYSTEM>
+		<SUBSYSTEM
+		Type= "scripted"
+		subsystemName= "Recovery"
+			src= "..\..\..\PythonScripting\Recovery.py"
+			className= "Recovery">
 		</SUBSYSTEM>
 	</ASSET>
 </MODEL>

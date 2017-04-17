@@ -91,7 +91,7 @@ namespace MissionElements
     // TODO Double check task type
 
     // The three types of tasks supported by Horizon
-    public enum TaskType { EMPTY, COMM, IMAGING, FLYALONG }
+    public enum TaskType { EMPTY, COMM, IMAGING, FLYALONG, RECOVERY }
 
   
 }

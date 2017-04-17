@@ -237,6 +237,35 @@ namespace HSFUniverse
                 return dynamicStateAtSimTime;
 
                 }
+                else if (Type == DynamicStateType.DYNAMIC_ECI || Type == DynamicStateType.DYNAMIC_LLA)
+                {
+                    //bool hasNotPropagated = _stateData.Count() == 1;
+                    //if (hasNotPropagated)
+                    PropagateState(_stateData.Keys.Last() + SchedParameters.SimStepSeconds);
+
+                    Vector dynamicStateAtSimTime;
+
+                    if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
+                    {
+                        int lowerIndex = _stateData.Keys.LowerBoundIndex(simTime);
+                        int slopeInd = 1;
+                        if (simTime >= SimParameters.SimEndSeconds)
+                            slopeInd = -1;
+                        KeyValuePair<double, Vector> lowerData = _stateData.ElementAt(lowerIndex);
+                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
+
+                        double lowerTime = lowerData.Key;
+                        Vector lowerState = lowerData.Value;
+
+                        double upperTime = upperData.Key;
+                        Vector upperState = upperData.Value;
+
+                        Vector slope = (upperState - lowerState) / (upperTime - lowerTime);
+
+                        dynamicStateAtSimTime = slope * (simTime - lowerTime) + lowerState;
+                    }
+                    return dynamicStateAtSimTime;
+                }
                 else
                     return null; // TODO: Throw exception?
 

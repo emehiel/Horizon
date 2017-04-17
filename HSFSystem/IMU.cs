@@ -100,7 +100,7 @@ namespace HSFSystem
         {
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            dependencies.Add("MeasurementsFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_MeasurementsFrom_IMUSUB));
+            dependencies.Add("MeasurementsFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<Matrix<double>>>(STATESUB_MeasurementsFrom_IMUSUB));
             MEASURE_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "measurements");
             addKey(MEASURE_KEY);
         }
@@ -117,6 +117,11 @@ namespace HSFSystem
             IsEvaluated = true;
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
+            if(_task == null)
+            {
+                return true; // TODO Is this what we want to do?
+
+            }
             if (_task.Type == TaskType.FLYALONG)
             {
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);
@@ -127,20 +132,20 @@ namespace HSFSystem
         }
         #endregion
         #region Methods
-        public List<double> Gyroscope(List<double> truth)
+        public Vector Gyroscope(Vector truth)
         {
             double noiseX = GaussianWhiteNoise(0, _gyrRateNoiseDensity); // *_gyrOutputRate);
             double noiseY = GaussianWhiteNoise(0, _gyrRateNoiseDensity); // * _gyrOutputRate);
             double noiseZ = GaussianWhiteNoise(0, _gyrRateNoiseDensity); // * _gyrOutputRate);
 
-            List<double> reading = new List<double>(3);
+            Vector reading = new Vector(3);
 
-            reading.Add(truth[0] + noiseX);
-            reading.Add(truth[1] + noiseY);
-            reading.Add(truth[2] + noiseZ);
+            reading[1] = (truth[1] + noiseX);
+            reading[2] = (truth[2] + noiseY);
+            reading[3] = (truth[3] + noiseZ);
             /* Check for Saturation of sensor */
-            int i = 0;
-            foreach( double val in reading.ToList())
+            int i = 1;
+            foreach( double val in reading)
             {
                 if (val > _gyrMax) { reading[i] = _gyrMax; }
                 if (val < _gyrMin) { reading[i] = _gyrMin; }
@@ -148,20 +153,20 @@ namespace HSFSystem
             }
             return reading;
         }
-        public List<double> Accelerometer(List<double> truth)
+        public Vector Accelerometer(Vector truth)
         {
             double noiseX = GaussianWhiteNoise(0, _accNoiseDensity*_accOutputRate);
             double noiseY = GaussianWhiteNoise(0, _accNoiseDensity * _accOutputRate);
             double noiseZ = GaussianWhiteNoise(0, _accNoiseDensity * _accOutputRate);
 
-            List<double> reading = new List<double>();
+            Vector reading = new Vector(3);
 
-            reading[0] = truth[0] + noiseX;
-            reading[1] = truth[1] + noiseY;
-            reading[2] = truth[2] + noiseZ;
+            reading[1] = truth[1] + noiseX;
+            reading[2] = truth[2] + noiseY;
+            reading[3] = truth[3] + noiseZ;
 
             /* Check for Saturation of sensor */
-            int i = 0;
+            int i = 1;
             foreach (double val in reading)
             {
                 if (val > _accMax) { reading[i] = _accMax; }
@@ -184,10 +189,20 @@ namespace HSFSystem
         }
         #endregion
         #region Dependencies
-        public HSFProfile<double> STATESUB_MeasurementsFrom_IMUSUB(Event currentEvent)
+        public HSFProfile<Matrix<double>> STATESUB_MeasurementsFrom_IMUSUB(Event currentEvent)
         {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
+            HSFProfile<Matrix<double>> prof1 = new HSFProfile<Matrix<double>>();
             //currentEvent.State;
+            Vector gyr = Gyroscope(new Vector(3));
+            Vector acc = Accelerometer(new Vector(3));
+            Matrix<double> measurement = new Matrix<double>(6,1);
+            measurement[1,1] = acc[1];
+            measurement[2,1] = acc[2];
+            measurement[3,1] = acc[3];
+            measurement[4,1] = gyr[1];
+            measurement[5,1] = gyr[2];
+            measurement[6,1] = gyr[3];
+            prof1[currentEvent.GetTaskEnd(Asset)] = measurement;
             return prof1;
         }
         #endregion

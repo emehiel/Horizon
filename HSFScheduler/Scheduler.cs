@@ -139,6 +139,13 @@ namespace HSFScheduler
                 {
                     log.Info("Cropping " + systemSchedules.Count + " Schedules.");
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
+                    /* Hacky way to propogate only once per schedule */
+                    if (!canPregenAccess)
+                    {
+                        system.Assets[0].AssetDynamicState.hasNotPropagated = true;
+                        system.Assets[0].AssetDynamicState.PositionECI(currentTime);
+                        system.Assets[0].AssetDynamicState.hasNotPropagated = false;
+                    }
                     systemSchedules.Add(emptySchedule);
                 }
 
@@ -182,6 +189,7 @@ namespace HSFScheduler
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
                 
+                    
                 // Print completion percentage in command window
                 Console.WriteLine("Scheduler Status: {0}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
             }

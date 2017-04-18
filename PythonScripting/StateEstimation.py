@@ -33,6 +33,8 @@ from IronPython.Compiler import CallTarget0
 class StateEstimation(Subsystem):
     def __init__(self, node, asset):
         self.dt = 1/100
+        #depFunc1 = Func[Event,  Utilities.HSFProfile[Utilities.Matrix[System.Double]]](self.ADCSSub_State_STATESUB)
+        #self.SubsystemDependencyFunctions.Add("StateFromStateEst"+"."+Asset.Name, depFunc1)
         #dependencies.Add("StateFromStateEst"+"."+Asset.Name, Func[Event, HSFProfile[Matrix[System.Double]]](ADCSSub_State_STATESUB))
         pass
     def GetDependencyDictionary(self):
@@ -41,12 +43,17 @@ class StateEstimation(Subsystem):
         dep.Add("StateFromStateEst", depFunc1)
         return dep
     def GetDependencyCollector(self):
+
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
         # Quaternion Integration
         # ref: Strapdown Inertial Navigation Technology 2nd ed, Titterton + Weston, p319
-        
-        
+        #dependicies = self.GetDependencyCollector();
+        #return dependicies
+        for depend in self.DependentSubsystems:
+            print depend
+
+        return self.DependencyCollector(event)
         sigma = Vector(3)
         #sigma[1] = wx * self.dt
         #sigma[2] = wy * self.dt
@@ -82,6 +89,7 @@ class StateEstimation(Subsystem):
         prof1[event.GetTaskEnd(self.Asset)] = 30
         return prof1
     def CanExtend(self, event, universe, extendTo):
-        return super(StateEstimation, self).CanExtend(self, event, universe, extendTo)
+        return True
+        #return super(StateEstimation, self).CanExtend(event, universe, extendTo)
     def DependencyCollector(self, currentEvent):
         return super(StateEstimation, self).DependencyCollector(currentEvent)

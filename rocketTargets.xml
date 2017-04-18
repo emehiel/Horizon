@@ -11,7 +11,7 @@
 		</DynamicState>
 	</TARGET>
 	<TARGET
-		TargetName = "deployDrougue"
+		TargetName = "deployDrogue"
 		TaskType = "RECOVERY"
 		TargetType = "Recovery"
 		MaxTimes = "1"

@@ -35,7 +35,7 @@ class eomRocket(Utilities.EOMS):
     def __init__(self, scriptedNode):
         # Aerodynamics
         self.aero = Aerodynamics.Aerodynamics();
-
+        self.printOnce = True
         #Mass Properties
         # Assume a constant Inertia Matrix for now
         self.Ixx = float(scriptedNode["MassProp"].Attributes["Ixx"].Value)
@@ -49,13 +49,18 @@ class eomRocket(Utilities.EOMS):
         # Propulsion
         self.Thrust = float(scriptedNode["Propulsion"].Attributes["Thrust"].Value)
         self.BurnTime = float(scriptedNode["Propulsion"].Attributes["BurnTime"].Value)
-
+        self.thrustData = []
+        text_file = open("C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
+        for line in text_file:
+            lines = [float(elt.strip()) for elt in line.split('\t')]
+            self.thrustData.append(lines)
+        text_file.close()
         # Atmosphere
         if("Standard" == scriptedNode["Atmosphere"].Attributes["Type"].Value):
             self.atmos = StandardAtmosphere()
         elif("RealTime" == scriptedNode["Atmosphere"].Attributes["Type"].Value):
             self.atmos = RealTimeAtmosphere()
-            self.atmos.filePath = "C:\\Horizon\\gfs.t06z.pgrb2.0p50.f006.grb2"
+            self.atmos.filePath = "C:\\Horizon\\041517\\gfs.t18z.pgrb2.0p50.f003.grb2"
             lat = float(scriptedNode["Atmosphere"].Attributes["Latitude"].Value)
             long = float(scriptedNode["Atmosphere"].Attributes["Longitude"].Value)
             self.atmos.SetLocation(lat, long)
@@ -90,14 +95,14 @@ class eomRocket(Utilities.EOMS):
         self.Cm = aero[3]
         self.Cl = aero[4]
         self.Cn = aero[5]
-        alt = (y[1,1] - 6378) * 1000
+        alt = (y[1,1] - self.groundlevel) * 1000
         vel = self.GetRelativeVelocity(alt, y)
         forces = self.ForceCalculation(alt,vel, mass)
         moments = self.MomentCalculations(alt, vel)
         p = y[7,1]
         q = y[8,1]
         r = y[9,1]  
-        translation = Matrix[System.Double]()
+        dy = Matrix[System.Double](9, 1)
         #Set the velocity equal to 0 once on the ground
         if y[1,1] < self.groundlevel:
             #The position of the rocket is constant once on the ground
@@ -119,11 +124,10 @@ class eomRocket(Utilities.EOMS):
             ax = (mur3 * y[1,1]) + thrust - math.copysign(forces[0], y[4,1])
             ay = (mur3 * y[2,1]) - math.copysign(forces[1], y[5,1]) #TODO: Make sign correct
             az = (mur3 * y[3,1]) - math.copysign(forces[2], y[6,1])
-            pdot = (moments[0] - (self.Izz - self.Iyy)*q*r)/self.Ixx
-            qdot = (moments[1] - (self.Ixx - self.Izz)*p*r)/self.Iyy
-            rdot = (moments[2] - (self.Iyy - self.Ixx)*p*q)/self.Izz
-       
-        dy = Matrix[System.Double]()
+            pdot = ((moments[0]/1000) - (self.Izz - self.Iyy)*q*r)/self.Ixx
+            qdot = ((moments[1]/1000 + forces[1]*mass*1000*1.5*self.areaRef) - (self.Ixx - self.Izz)*p*r)/self.Iyy
+            rdot = ((moments[2]/1000 + forces[2]*mass*1000*1.5*self.areaRef) - (self.Iyy - self.Ixx)*p*q)/self.Izz
+        #print moments, forces
         
         dy[1,1] = vx
         dy[2,1] = vy
@@ -138,27 +142,40 @@ class eomRocket(Utilities.EOMS):
         return dy 
     def ForceCalculation(self, alt, vel, mass):
         dens = self.atmos.density(alt)
-        Fx = (0.5 * dens * math.pow(vel[1],2) * self.Cx *  math.pow(.1106,2) * math.pi)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
-        Fy = (0.5 * dens * math.pow(vel[2],2) * self.Cy * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
-        Fz = (0.5 * dens * math.pow(vel[3],2) * self.Cz * .2302*4.5)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        #print mass, vel[1]
+        Fx = (0.5 * dens * math.pow(vel[1],2) * (self.Cx+.1) * self.areaRef)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        Fy = (0.5 * dens * math.pow(vel[2],2) * (self.Cy+.01) * self.areaRef)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        Fz = (0.5 * dens * math.pow(vel[3],2) * (self.Cz+.01) * self.areaRef)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
         return [Fx, Fy, Fz]
     def MomentCalculations(self, alt, vel):
         area = math.pow(.1106,2) * math.pi #Reference area is the cross sectional area
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[1],2)
-        Mx = self.Cl*dynamicPressure*area
+        Mx = self.Cl*dynamicPressure*self.areaRef
+        #print self.Cl, Mx
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[2],2)
         area = .2302*4.5
-        My = self.Cm*dynamicPressure*area
+        My = self.Cm*dynamicPressure*self.areaRef
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[3],2)
-        Mz = self.Cn*dynamicPressure*area
+        Mz = self.Cn*dynamicPressure*self.areaRef
+        #print self.Cn
+        #print vel[1], dynamicPressure, self.atmos.density(alt), alt
+        #print Mz
         return [Mx, My, Mz]
     def ThrustCalculation(self, t, mass):
         # Return the average thrust in Newtons for the entire burn time
         # Not accurate but will give the approximate solution 
-        if t < self.BurnTime:
-            return self.Thrust/mass/1000 # kg*m/s^2/kg = m/s^2/100 -> [km/s^2]
-        else:
-            return 0.0 
+        for datapoint in self.thrustData:
+            if datapoint[0] == -1:
+                if self.printOnce:
+                    print "Motor burnout at time ", t
+                    self.printOnce = False
+                return 0.0
+            if datapoint[0] > t:
+                thrust = datapoint[1]
+                break
+        #print thrust
+        return thrust/mass/1000 # kg*m/s^2/kg = m/s^2/100 -> [km/s^2]
+        
     def GetRelativeVelocity(self, alt, y):
         # Rename variables for later
         u = self.atmos.uVelocity(alt);

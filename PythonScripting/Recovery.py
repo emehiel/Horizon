@@ -32,6 +32,7 @@ from IronPython.Compiler import CallTarget0
 class Recovery(Subsystem):
     def __init__(self, node, asset):
         self.drougueDeployed = False
+        self.mainDeployed = False
         self.Asset = asset
         pass
     def GetDependencyDictionary(self):
@@ -40,23 +41,31 @@ class Recovery(Subsystem):
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
-        print self._task
-        ts = event.GetTaskStart(self.Asset)
+        #print self._task
+        ts = event.GetEventStart(self.Asset)
         position = self.Asset.AssetDynamicState
-        state = position.PositionECI(ts)
-        print state[1]
+        pos = position.PositionECI(ts)
+        vel = position.VelocityECI(ts)
+        #print state[1]
         if (self._task.Type == TaskType.RECOVERY):
-            if self._task == "deployMain" and self.drougeDeployed:
-                print "Main Parachute Deployed"
-                return True
-            if self._task == "deployDrogue" and state[1] > 6379 and state[4] < .010:
+            drogueTask = (self._task.Target.Name == "deployDrogue")
+            aboveAlt = (pos[1] > 6379)
+            velLow = vel[1] < 0
+            #print self._task, drogueTask, aboveAlt, velLow, self.drougueDeployed, pos[1], vel[1]
+            if drogueTask and aboveAlt and velLow and not self.drougueDeployed:
                 print "Drogue Parachute Deployed"
                 self.drougueDeployed = True
                 return True
+            if self._task.Target.Name == "deployMain" and self.drougueDeployed and pos[1] < 6379 and not self.mainDeployed:
+                print "Main Parachute Deployed"
+                self.mainDeployed = True
+                return True
+
             return False
         return True
         
     def CanExtend(self, event, universe, extendTo):
-        return super(Recovery, self).CanExtend(self, event, universe, extendTo)
+        return True
+        #return super(Recovery, self).CanExtend(event, universe, extendTo)
     def DependencyCollector(self, currentEvent):
         return super(Recovery, self).DependencyCollector(currentEvent)

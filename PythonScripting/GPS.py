@@ -40,6 +40,7 @@ class GPS(Subsystem):
     def CanPerform(self, event, universe):
         return True
     def CanExtend(self, event, universe, extendTo):
-        return super(GPS, self).CanExtend(self, event, universe, extendTo)
+        return True
+        #return super(GPS, self).CanExtend(event, universe, extendTo)
     def DependencyCollector(self, currentEvent):
         return super(GPS, self).DependencyCollector(currentEvent)

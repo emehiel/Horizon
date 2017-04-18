@@ -195,7 +195,7 @@ namespace HSFSystem
             //currentEvent.State;
             Vector gyr = Gyroscope(new Vector(3));
             Vector acc = Accelerometer(new Vector(3));
-            Matrix<double> measurement = new Matrix<double>(6,1);
+            Matrix<double> measurement = new Matrix<double>(6,1); //TODO add vecotr profile type
             measurement[1,1] = acc[1];
             measurement[2,1] = acc[2];
             measurement[3,1] = acc[3];

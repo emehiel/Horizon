@@ -35,6 +35,7 @@ namespace HSFUniverse
         public DynamicStateType Type { get; private set; }
         public EOMS Eoms { get; private set; }
         public string Name { get; private set; }
+        public bool hasNotPropagated { get; set; }
         private PropagationType _propagatorType;
         private IntegratorOptions _integratorOptions;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -100,7 +101,7 @@ namespace HSFUniverse
 
         public Vector InitialConditions()
         {
-            return _stateData[0.0];
+            return _stateData.Values.Last();
         }
 
         public void Add(double simTime, Vector dynamicState)
@@ -178,9 +179,9 @@ namespace HSFUniverse
 
             Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions);
 
-           for (int index = 1; index <= data.Length; index++)
-               _stateData[data[1, index]] = (Vector)data[new MatrixIndex(2, data.NumRows), index];
-
+           //for (int index = 1; index <= data.Length; index++)
+            _stateData[data[1, 1]] = (Vector)data[new MatrixIndex(2, data.NumRows), 1];
+            _stateData[data[1, data.Length]] = (Vector)data[new MatrixIndex(2, data.NumRows), data.Length];
             log.Info("Done Integrating");
         }
  
@@ -240,8 +241,8 @@ namespace HSFUniverse
                 else if (Type == DynamicStateType.DYNAMIC_ECI || Type == DynamicStateType.DYNAMIC_LLA)
                 {
                     //bool hasNotPropagated = _stateData.Count() == 1;
-                    //if (hasNotPropagated)
-                    PropagateState(_stateData.Keys.Last() + SchedParameters.SimStepSeconds);
+                    if (hasNotPropagated)
+                        PropagateState(_stateData.Keys.Last() + SchedParameters.SimStepSeconds);
 
                     Vector dynamicStateAtSimTime;
 

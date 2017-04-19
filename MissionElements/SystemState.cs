@@ -577,6 +577,114 @@ namespace MissionElements
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
         }
+
+
+        /// <summary>
+        /// Returns the integer Profile for this state and all previous states merged into one Profile
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public HSFProfile<Quat> GetFullProfile(StateVarKey<Quat> key)
+        {
+            HSFProfile<Quat> valueOut = new HSFProfile<Quat>();
+            if (Qdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Qdata.TryGetValue(key, out valueOut))
+                { //see if our key is in there
+                    if (Previous != null) // Check whether we are at the first state
+                        return HSFProfile<Quat>.MergeProfiles(valueOut, Previous.GetFullProfile(key));
+                    return valueOut;
+                }
+            }
+            if (Previous != null)
+                return Previous.GetFullProfile(key); // If no data, return profile from previous states
+            return valueOut; //return empty profile
+        }
+
+        /// <summary>
+        /// Sets the integer Profile in the state with its matching key. If a Profile is found already under
+        /// that key, this will overwrite the old Profile.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="profIn"></param>
+        public void SetProfile(StateVarKey<Quat> key, HSFProfile<Quat> profIn)
+        {
+            HSFProfile<Quat> valueOut;
+            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Qdata.TryAdd(key, profIn);
+            else
+            { // Otherwise, erase whatever is there, and insert a new one.
+                //Idata.TryRemove(key);
+                //Idata.TryAdd(key, profIn);
+                Qdata.TryUpdate(key, valueOut, profIn);
+            }
+        }
+
+        /// <summary>
+        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
+        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
+        /// <param name="pairIn"></param>
+        public void AddValue(StateVarKey<Quat> key, KeyValuePair<double, Quat> pairIn)
+        {
+            HSFProfile<Quat> valueIn = new HSFProfile<Quat>(pairIn);
+            HSFProfile<Quat> valueOut;
+            if (!Qdata.TryGetValue(key, out valueOut))
+            { // If there's no Profile matching that key, insert a new one.
+                Qdata.TryAdd(key, valueIn);
+            }
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
+        }
+
+        /// <summary>
+        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
+        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
+        /// <param name="pairIn"></param>
+        public void AddValue(StateVarKey<Quat> key, HSFProfile<Quat> profIn)
+        {
+            HSFProfile<Quat> valueOut;
+            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Qdata.TryAdd(key, profIn);
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(profIn);
+        }
+        /// <summary>
+        ///  Gets the last int value set for the given state variable key in the state. If no value is found
+        ///  it checks the previous state, continuing all the way to the initial state.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public KeyValuePair<double, Quat> GetLastValue(StateVarKey<Quat> key)
+        {
+            HSFProfile<Quat> valueOut;
+            if (Qdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Qdata.TryGetValue(key, out valueOut)) //see if our key is in there
+                    return valueOut.Last(); //found it, return it TODO: return last value or pair?
+            }
+            return Previous.GetLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
+        /// <summary>
+        ///  Gets the integer value of the state at a certain time.
+        ///  If the exact time is not found, the data is assumed to be on a zero-order hold, and the last value set is found.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public KeyValuePair<double, Quat> GetValueAtTime(StateVarKey<Quat> key, double time)
+        {
+            HSFProfile<Quat> valueOut;
+            if (Qdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Qdata.TryGetValue(key, out valueOut) && Ddata[key].LastTime() <= time) //see if our key is in there
+                    return valueOut.DataAtTime(time);
+            }
+            return Previous.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
         //maybe add this functionality to subsystem? but then we would need to pass the state to the constructor
         public static SystemState setInitialSystemState(List<XmlNode> ICNodes, Asset asset)
         {

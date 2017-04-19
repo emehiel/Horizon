@@ -36,6 +36,7 @@ namespace HSFUniverse
         public EOMS Eoms { get; private set; }
         public string Name { get; private set; }
         public bool hasNotPropagated { get; set; }
+        public IntegratorParameters IntegratorParameters = new IntegratorParameters();
         private PropagationType _propagatorType;
         private IntegratorOptions _integratorOptions;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -57,7 +58,7 @@ namespace HSFUniverse
                 Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
             }
             Vector ics = new Vector(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
-            _stateData = new SortedList<double, Vector>();
+            _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds/SchedParameters.SimStepSeconds));
             _stateData.Add(0.0, ics);
 
             if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
@@ -177,7 +178,7 @@ namespace HSFUniverse
             Matrix <double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
             // Update the integrator parameters using the information in the XML Node
 
-            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions);
+            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions, IntegratorParameters);
 
            //for (int index = 1; index <= data.Length; index++)
             _stateData[data[1, 1]] = (Vector)data[new MatrixIndex(2, data.NumRows), 1];

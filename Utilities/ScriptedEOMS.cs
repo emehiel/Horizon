@@ -32,7 +32,7 @@ namespace Utilities
             var scope = engine.CreateScope();
             var ops = engine.Operations;
             var p = engine.GetSearchPaths();
-            p.Add("..\\..\\..\\PythonScripting\\");
+            p.Add( "C:\\Users\\steve\\Source\\Repos\\Horizon\\PythonScripting\\");
             engine.SetSearchPaths(p);
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
@@ -41,11 +41,11 @@ namespace Utilities
         #endregion
 
         #region Methods
-        public override Matrix<double> this[double t, Matrix<double> y]
+        public override Matrix<double> this[double t, Matrix<double> y, IntegratorParameters param]
         {
             get
             {
-                dynamic prop = _pythonInstance.PythonAccessor(t, y);
+                dynamic prop = _pythonInstance.PythonAccessor(t, y, param);
                 
                 return (Matrix<double>)prop;
             }

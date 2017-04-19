@@ -4,12 +4,25 @@ using Utilities;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace UtilitiesUnitTest
 {
     [TestClass]
     public class UtilitiesTests
     {
+        [TestMethod]
+        public void QuaternionMultiply()
+        {
+            Quat q = new Quat(.5, .707, .707, .707);
+            Quat p = new Quat(.8, new Vector(new List<double>(new double[] { .1, .1, .1 })));
+            Quat result = q * p;
+            Quat expected = new Quat(0.1879, 0.6156, 0.6156, 0.6156);
+            Assert.AreEqual(expected._eta, result._eta, .0001);
+            Assert.AreEqual(expected._eps[1], result._eps[1]);
+            Assert.AreEqual(expected._eps[2], result._eps[2]);
+            Assert.AreEqual(expected._eps[3], result._eps[3]);
+        }
         [TestMethod]
         public void IntegratorTest()
         {

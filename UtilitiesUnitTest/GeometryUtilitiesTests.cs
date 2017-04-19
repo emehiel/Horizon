@@ -14,8 +14,8 @@ namespace Utilities.Tests
         [TestMethod()]
         public void hasLOSTest()
         {
-            Vector sat = new Vector(new double[] { 7378, 0, 0 });
-            Vector ground = new Vector(new double[] { -33.47, -70.65, 0 });
+            Vector sat = new Vector(new List<double>(new double[] { 7378, 0, 0 }));
+            Vector ground = new Vector(new List<double>(new double[] { -33.47, -70.65, 0 }));
             ground = GeometryUtilities.LLA2ECI(ground, 2457709);
 
             bool vector = GeometryUtilities.hasLOS(sat, ground);

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Linq;
 
 namespace Utilities
 {
@@ -29,7 +30,7 @@ namespace Utilities
         /// <summary>
         /// The vector is an array 
         /// </summary>
-        private double[] _elements;
+        private List<double> _elements;
 
         #endregion
 
@@ -41,12 +42,12 @@ namespace Utilities
         public Vector(int n)
         {
             Length = n;
-            _elements = new double[n];
+            _elements = new List<double>(new double[n]);
         }
 
-        public Vector(double[] elements)
+        public Vector(List<double> elements)
         {
-            Length = elements.Length;
+            Length = elements.Count;
             _elements = elements;
         }
         public Vector(string VectorString)
@@ -57,13 +58,13 @@ namespace Utilities
             double[] dElem;
             dElem = Array.ConvertAll(elements, new Converter<string, double>(Double.Parse));
             Length = dElem.Length;
-            _elements = dElem;
+            _elements = new List<double>(dElem);
         }
 
         public Vector(SerializationInfo info, StreamingContext context)
          {
              Length = info.GetInt32("Length");
-             _elements = (double[])info.GetValue("_elements", typeof(double[]));
+             _elements = (List<double>)info.GetValue("_elements", typeof(List<double>));
          }
          
         #endregion
@@ -142,7 +143,7 @@ namespace Utilities
 
             if (a.Length != 3 && b.Length != 3)
                 throw new ArgumentException("Arguments of the cross product must to be 3x1 vectors.");
-            double[] temp = new double[3];
+            List<double> temp = new List<double>(3);
             temp[0] = a[2] * b[3] - a[3] * b[2];
             temp[1] = -a[1] * b[3] + a[3] * b[1];
             temp[2] = a[1] * b[2] - a[2] * b[1];
@@ -502,7 +503,7 @@ namespace Utilities
             return new Matrix<double>(v.ToString());
         }
 
-        public static implicit operator Vector(double[] c)
+        public static implicit operator Vector(List<double> c)
         {
             return new Vector(c);
         }

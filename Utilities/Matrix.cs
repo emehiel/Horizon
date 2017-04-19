@@ -1040,6 +1040,7 @@ namespace Utilities
 
         }
 
+
         public static implicit operator Matrix<T>(T c)
         {
             return new Matrix<T>(1, 1, c);

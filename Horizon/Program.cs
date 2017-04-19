@@ -86,7 +86,7 @@ namespace Horizon
 
             // Mehiel's way
             string stateDataFilePath = @"C:\HorizonLog\" + string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}", DateTime.Now);
-            //SystemSchedule.WriteSchedule(program.schedules[0], stateDataFilePath);
+            SystemSchedule.WriteSchedule(program.schedules[0], stateDataFilePath);
 
             var csv = new StringBuilder();
             csv.Clear();
@@ -95,7 +95,7 @@ namespace Horizon
                 File.WriteAllText(@"..\..\..\" + asset.Name + "_dynamicStateData.csv", asset.AssetDynamicState.ToString());
             }
 
-            Console.ReadKey();
+            //Console.ReadKey();
             return 0;
         }
         public void InitInput(string[] args)

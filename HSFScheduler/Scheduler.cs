@@ -125,7 +125,7 @@ namespace HSFScheduler
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
             int i = 1;
-            List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
+            List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>(100000);
             List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
             {
@@ -146,7 +146,7 @@ namespace HSFScheduler
                         system.Assets[0].AssetDynamicState.PositionECI(currentTime);
                         system.Assets[0].AssetDynamicState.hasNotPropagated = false;
                     }
-                    systemSchedules.Add(emptySchedule);
+                    else { systemSchedules.Add(emptySchedule); }
                 }
 
                 // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
@@ -155,7 +155,9 @@ namespace HSFScheduler
 
                 foreach (var oldSystemSchedule in systemSchedules)
                 {
-                    potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
+                    StateHistory tempstatehist = new StateHistory(oldSystemSchedule.AllStates);
+                    SystemSchedule tempsyssched = new SystemSchedule(tempstatehist);
+                    potentialSystemSchedules.Add(tempsyssched);
                     foreach (var newAccessStack in scheduleCombos)
                     {
                         k++;

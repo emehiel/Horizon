@@ -100,7 +100,12 @@ namespace HSFSystem
         {
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            dependencies.Add("MeasurementsFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<Matrix<double>>>(STATESUB_MeasurementsFrom_IMUSUB));
+            dependencies.Add("ACCxFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_ACCxMeasurementsFrom_IMUSUB));
+            dependencies.Add("ACCyFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_ACCyMeasurementsFrom_IMUSUB));
+            dependencies.Add("ACCzFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_ACCzMeasurementsFrom_IMUSUB));
+            dependencies.Add("GYRxFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_GYRxMeasurementsFrom_IMUSUB));
+            dependencies.Add("GYRyFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_GYRyMeasurementsFrom_IMUSUB));
+            dependencies.Add("GYRzFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_GYRzMeasurementsFrom_IMUSUB));
             MEASURE_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "measurements");
             addKey(MEASURE_KEY);
         }
@@ -114,6 +119,7 @@ namespace HSFSystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Universe environment)
         {
+            double ts = proposedEvent.GetTaskStart(Asset);
             IsEvaluated = true;
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
@@ -128,6 +134,12 @@ namespace HSFSystem
                 if (!newProf.Empty())
                     proposedEvent.State.SetProfile(MEASURE_KEY, newProf);
             }
+            var state = Asset.AssetDynamicState.DynamicStateECI(proposedEvent.GetEventStart(Asset));
+            Matrix<double> gyr = Gyroscope(state[new MatrixIndex(7, 9)]);
+            Matrix<double> acc = Accelerometer(new Vector(3));
+            Matrix<double> measure = new Matrix<double>(6, 1);
+            measure = Matrix<double>.Vertcat(acc, gyr);
+            _newState.AddValue(MEASURE_KEY, new HSFProfile<Matrix<double>>(ts, measure));
             return true;
         }
         #endregion
@@ -181,28 +193,83 @@ namespace HSFSystem
         {
             double u1 = 1.0 - rand.NextDouble(); //uniform(0,1] random doubles
             double u2 = 1.0 - rand.NextDouble();
-            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
-                         Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
-            double randNormal =
-                         mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
+            //double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+            //             Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+            //double randNormal =
+            //             mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
+            double randNormal = stdDev * u1;
             return randNormal;
         }
         #endregion
         #region Dependencies
-        public HSFProfile<Matrix<double>> STATESUB_MeasurementsFrom_IMUSUB(Event currentEvent)
+        public HSFProfile<double> STATESUB_ACCxMeasurementsFrom_IMUSUB(Event currentEvent)
         {
-            HSFProfile<Matrix<double>> prof1 = new HSFProfile<Matrix<double>>();
-            //currentEvent.State;
-            Vector gyr = Gyroscope(new Vector(3));
-            Vector acc = Accelerometer(new Vector(3));
-            Matrix<double> measurement = new Matrix<double>(6,1); //TODO add vecotr profile type
-            measurement[1,1] = acc[1];
-            measurement[2,1] = acc[2];
-            measurement[3,1] = acc[3];
-            measurement[4,1] = gyr[1];
-            measurement[5,1] = gyr[2];
-            measurement[6,1] = gyr[3];
-            prof1[currentEvent.GetTaskEnd(Asset)] = measurement;
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            Vector accel = new Vector(3);
+            try
+            {
+                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.accel"));
+            }
+            catch (KeyNotFoundException)
+            {
+                Console.WriteLine("Key Not Found X");
+            }
+            Vector acc = Accelerometer(accel);
+            prof1[currentEvent.GetEventEnd(Asset)] = acc[1];
+            return prof1;
+        }
+        public HSFProfile<double> STATESUB_ACCyMeasurementsFrom_IMUSUB(Event currentEvent)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            Vector accel = new Vector(3);
+            try
+            {
+                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.accel"));
+            }
+            catch (KeyNotFoundException)
+            {
+                Console.WriteLine("Key Not Found Y");
+            }
+            prof1[currentEvent.GetEventEnd(Asset)] = accel[2];
+            return prof1;
+        }
+        public HSFProfile<double> STATESUB_ACCzMeasurementsFrom_IMUSUB(Event currentEvent)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            Vector accel = new Vector(3);
+            try
+            {
+                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.accel"));
+            }
+            catch (KeyNotFoundException)
+            {
+                Console.WriteLine("Key Not Found Z");
+            }
+            prof1[currentEvent.GetEventEnd(Asset)] = accel[3];
+            return prof1;
+        }
+        public HSFProfile<double> STATESUB_GYRxMeasurementsFrom_IMUSUB(Event currentEvent)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            var state = Asset.AssetDynamicState.DynamicStateECI(currentEvent.GetEventStart(Asset));
+            Vector gyr = Gyroscope(state[new MatrixIndex(7, 9)]);
+            prof1[currentEvent.GetEventEnd(Asset)] = gyr[1];
+            return prof1;
+        }
+        public HSFProfile<double> STATESUB_GYRyMeasurementsFrom_IMUSUB(Event currentEvent)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            var state = Asset.AssetDynamicState.DynamicStateECI(currentEvent.GetEventStart(Asset));
+            Vector gyr = Gyroscope(state[new MatrixIndex(7, 9)]);
+            prof1[currentEvent.GetEventEnd(Asset)] = gyr[2];
+            return prof1;
+        }
+        public HSFProfile<double> STATESUB_GYRzMeasurementsFrom_IMUSUB(Event currentEvent)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            var state = Asset.AssetDynamicState.DynamicStateECI(currentEvent.GetEventStart(Asset));
+            Vector gyr = Gyroscope(state[new MatrixIndex(7,9)]);
+            prof1[currentEvent.GetEventEnd(Asset)] = gyr[3];
             return prof1;
         }
         #endregion

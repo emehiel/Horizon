@@ -31,9 +31,11 @@ from IronPython.Compiler import CallTarget0
 
 class Recovery(Subsystem):
     def __init__(self, node, asset):
-        self.drougueDeployed = False
-        self.mainDeployed = False
         self.Asset = asset
+        self.DROGUE_DEPLOYED = StateVarKey[System.Boolean](asset.Name + "." + "drogue");
+        self.MAIN_DEPLOYED = StateVarKey[System.Boolean](asset.Name + "." + "main");
+        self.Asset.AssetDynamicState.IntegratorParameters.Add(self.DROGUE_DEPLOYED, False)
+        self.Asset.AssetDynamicState.IntegratorParameters.Add(self.MAIN_DEPLOYED, False)
         pass
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
@@ -43,24 +45,24 @@ class Recovery(Subsystem):
     def CanPerform(self, event, universe):
         #print self._task
         ts = event.GetEventStart(self.Asset)
-        position = self.Asset.AssetDynamicState
-        pos = position.PositionECI(ts)
-        vel = position.VelocityECI(ts)
-        #print state[1]
+        state = self.Asset.AssetDynamicState
+        pos = state.PositionECI(ts)
+        vel = state.VelocityECI(ts)
+
         if (self._task.Type == TaskType.RECOVERY):
             drogueTask = (self._task.Target.Name == "deployDrogue")
             aboveAlt = (pos[1] > 6379)
             velLow = vel[1] < 0
-            #print self._task, drogueTask, aboveAlt, velLow, self.drougueDeployed, pos[1], vel[1]
-            if drogueTask and aboveAlt and velLow and not self.drougueDeployed:
+            mainDeployed = self.Asset.AssetDynamicState.IntegratorParameters.GetValue(self.MAIN_DEPLOYED)
+            drogueDeployed = self.Asset.AssetDynamicState.IntegratorParameters.GetValue(self.DROGUE_DEPLOYED)
+            if drogueTask and aboveAlt and velLow and not drogueDeployed:
                 print "Drogue Parachute Deployed"
-                self.drougueDeployed = True
+                self.Asset.AssetDynamicState.IntegratorParameters.Add(self.DROGUE_DEPLOYED, True)
                 return True
-            if self._task.Target.Name == "deployMain" and self.drougueDeployed and pos[1] < 6379 and not self.mainDeployed:
+            if self._task.Target.Name == "deployMain" and drogueDeployed and pos[1] < 6379.638 and not mainDeployed:
                 print "Main Parachute Deployed"
-                self.mainDeployed = True
+                self.Asset.AssetDynamicState.IntegratorParameters.Add(self.MAIN_DEPLOYED, True)
                 return True
-
             return False
         return True
         

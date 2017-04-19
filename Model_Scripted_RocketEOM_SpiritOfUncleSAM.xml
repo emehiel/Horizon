@@ -5,15 +5,13 @@
 			ICs="[6378.638; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0]">
 			<EOMS
 				EOMSType="scripted"
-				src="..\..\..\PythonScripting\eomRocket.py"
+				src="C:\Users\steve\Source\Repos\Horizon\PythonScripting\eomRocket.py"
 				className="eomRocket"
 				Ground="6378.638"
 				ReferenceLength=".2214"
 				ReferenceArea=".0385">
 				
-				<Aerodynamics	
-					AeroCoeffPath="C:\Users\steve\Source\Repos\Horizon\Aerodynamics.py"
-				></Aerodynamics>
+
 				<MassProp
 					Ixx="14.548"
 					Iyy="14.548"
@@ -26,7 +24,7 @@
 					BurnTime="4.2"
 				></Propulsion>
 				<Atmosphere
-					Type="Standard"
+					Type="RealTime"
 					Date="03-28-2017"
 					Latitude="35.347"
 					Longitude="-117.808" 	
@@ -41,7 +39,7 @@
 			Type="IMU"
 			subsystemName= "imu">
 			<Gyro
-				gyroRateNoiseDensity= "0.03"
+				gyroRateNoiseDensity= "0.1"
 				gyroNaturalFrequency= "30"
 				gyroDampingRatio= "0.707"
 				gyroScaleFactor= "14.375"
@@ -67,19 +65,25 @@
 		<SUBSYSTEM
 		Type= "scripted"
 		subsystemName= "stateestimator"
-			src= "..\..\..\PythonScripting\StateEstimation.py"
+			src= "C:\Users\steve\Source\Repos\Horizon\PythonScripting\StateEstimation.py"
 			className="StateEstimation">
+			<DEPENDENCY subsystemName="IMU" fcnName="ACCxFromIMU.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="ACCyFromIMU.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="ACCzFromIMU.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="GYRxFromIMU.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="GYRyFromIMU.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="GYRzFromIMU.asset1"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 		Type= "scripted"
 		subsystemName= "GPS"
-			src= "..\..\..\PythonScripting\GPS.py"
+			src= "C:\Users\steve\Source\Repos\Horizon\PythonScripting\GPS.py"
 			className= "GPS">
 		</SUBSYSTEM>
 		<SUBSYSTEM
 		Type= "scripted"
 		subsystemName= "Recovery"
-			src= "..\..\..\PythonScripting\Recovery.py"
+			src= "C:\Users\steve\Source\Repos\Horizon\PythonScripting\Recovery.py"
 			className= "Recovery">
 		</SUBSYSTEM>
 	</ASSET>

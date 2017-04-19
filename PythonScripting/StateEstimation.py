@@ -32,10 +32,10 @@ from IronPython.Compiler import CallTarget0
 
 class StateEstimation(Subsystem):
     def __init__(self, node, asset):
-        self.dt = 1/100
-        #depFunc1 = Func[Event,  Utilities.HSFProfile[Utilities.Matrix[System.Double]]](self.ADCSSub_State_STATESUB)
-        #self.SubsystemDependencyFunctions.Add("StateFromStateEst"+"."+Asset.Name, depFunc1)
-        #dependencies.Add("StateFromStateEst"+"."+Asset.Name, Func[Event, HSFProfile[Matrix[System.Double]]](ADCSSub_State_STATESUB))
+        self.asset = asset
+        self.qk = Quat()
+        self.STATE_KEY = StateVarKey[Quat]("asset1.estimatedState")
+        self.addKey(self.STATE_KEY)
         pass
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
@@ -48,37 +48,31 @@ class StateEstimation(Subsystem):
     def CanPerform(self, event, universe):
         # Quaternion Integration
         # ref: Strapdown Inertial Navigation Technology 2nd ed, Titterton + Weston, p319
-        #dependicies = self.GetDependencyCollector();
-        #return dependicies
-        for depend in self.DependentSubsystems:
-            print depend
+        qk1 = Quat()
 
-        return self.DependencyCollector(event)
+
+        measurements = Vector(6)
+        measurements = self.DependencyCollector(event)
+        wx = measurements[4]
+        wy = measurements[5]
+        wz = measurements[6]
+        
         sigma = Vector(3)
-        #sigma[1] = wx * self.dt
-        #sigma[2] = wy * self.dt
-        #sigma[3] = wz * self.dt
+        sigma[1] = wx * SchedParameters.SimStepSeconds
+        sigma[2] = wy * SchedParameters.SimStepSeconds
+        sigma[3] = wz * SchedParameters.SimStepSeconds
 
+        Ac = math.cos(Vector.Norm(sigma)/2);
+        As = math.sin(Vector.Norm(sigma)/2)/Vector.Norm(sigma);
 
-        SIGMA = Matrix[System.Double](4)
-        SIGMA[1,1] = 0
-        SIGMA[1,2] = -sigma[1]
-        SIGMA[1,3] = -sigma[2]
-        SIGMA[1,4] = -sigma[3]
-        SIGMA[2,1] =  sigma[1]
-        SIGMA[2,2] = 0
-        SIGMA[2,3] =  sigma[3]
-        SIGMA[2,4] = -sigma[2]
-        SIGMA[3,1] =  sigma[2]
-        SIGMA[3,2] = -sigma[3]
-        SIGMA[3,3] = 0
-        SIGMA[3,4] =  sigma[1]
-        SIGMA[4,1] =  sigma[3]
-        SIGMA[4,2] =  sigma[2]
-        SIGMA[4,3] = -sigma[1]
-        SIGMA[4,4] = 0
+        rk = Quat(Ac, As*sigma)
+        #print rk.ToString();
+        
+        self.qk = self.qk  * rk
+        ts = event.GetTaskStart(self.asset)
+        self._newState.AddValue(self.STATE_KEY, HSFProfile[Quat](ts, self.qk))
 
-        #qk1 = math.exp(SIGMA/2)*qk
+        #qk1 = Matrix.exp(SIGMA/2)*qk
 
 
         return True
@@ -92,4 +86,15 @@ class StateEstimation(Subsystem):
         return True
         #return super(StateEstimation, self).CanExtend(event, universe, extendTo)
     def DependencyCollector(self, currentEvent):
-        return super(StateEstimation, self).DependencyCollector(currentEvent)
+            if (self.SubsystemDependencyFunctions.Count == 0):
+                Exception
+            #HSFProfile<double> outProf = new HSFProfile<double>();
+            i = 1
+            outProf = Vector(6)
+            for dep in self.SubsystemDependencyFunctions:
+                if not dep.Key == "DepCollector":
+                    outProf[i] = dep.Value.DynamicInvoke(currentEvent).LastValue()
+                    i = i+1
+            return outProf
+                    
+            

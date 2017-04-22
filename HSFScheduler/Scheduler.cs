@@ -146,7 +146,7 @@ namespace HSFScheduler
                         system.Assets[0].AssetDynamicState.PositionECI(currentTime);
                         system.Assets[0].AssetDynamicState.hasNotPropagated = false;
                     }
-                    else { systemSchedules.Add(emptySchedule); }
+                    systemSchedules.Add(emptySchedule);
                 }
 
                 // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks

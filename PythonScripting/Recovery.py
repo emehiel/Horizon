@@ -51,7 +51,7 @@ class Recovery(Subsystem):
 
         if (self._task.Type == TaskType.RECOVERY):
             drogueTask = (self._task.Target.Name == "deployDrogue")
-            aboveAlt = (pos[1] > 6379)
+            aboveAlt = (pos[1] > 6379.638)
             velLow = vel[1] < 0
             mainDeployed = self.Asset.AssetDynamicState.IntegratorParameters.GetValue(self.MAIN_DEPLOYED)
             drogueDeployed = self.Asset.AssetDynamicState.IntegratorParameters.GetValue(self.DROGUE_DEPLOYED)

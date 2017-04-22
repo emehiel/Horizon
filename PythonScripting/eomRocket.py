@@ -77,12 +77,13 @@ class eomRocket(Utilities.EOMS):
         self.DROGUE_DEPLOYED = StateVarKey[System.Boolean]("asset1.drogue");
         self.MAIN_DEPLOYED = StateVarKey[System.Boolean]("asset1.main");
         self.ACCELERATION = StateVarKey[Vector]("asset1.accel");
+        self.GYROSCOPE = StateVarKey[Vector]("asset1.gyro");
     def PythonAccessor(self, t, y, param):
         # X -> Through the nose
-        # p= roll, q = pitch, r = yaw
+        # p = roll, q = pitch, r = yaw
         # pitch about y, yaw about z, roll about x
 
-        _mu = 398600
+        _mu = 3.986e5
         r3 = System.Math.Pow(Matrix[System.Double].Norm(y[MatrixIndex(1, 3), 1]), 3)
         mur3 = -_mu / r3
         if y[1,1] < self.groundlevel:
@@ -92,9 +93,11 @@ class eomRocket(Utilities.EOMS):
         else:
             mass = self.FinalMass
         thrust = self.ThrustCalculation(t, mass)
-        mach = math.sqrt(math.pow(y[4,1],2) + math.pow(y[5,1],2) + math.pow(y[6,1],2))/340 #TODO: Calculate spdofsnd
+        alt = y[1,1] - self.groundlevel
+        vel = self.GetRelativeVelocity(alt, y)
+        mach = Vector.Norm(vel)/340 #TODO: Calculate spdofsnd
         aero = self.aero.CurrentAero(mach)
-        self.Cx = aero[0]
+        self.Cx = aero[0]+.05
         self.Cy = aero[1]
         self.Cz = aero[2]
         self.Cm = aero[3]
@@ -116,16 +119,18 @@ class eomRocket(Utilities.EOMS):
             self.Cm = 0.0
             self.Cl = 0.0
             self.cn = 0.0
-        alt = (y[1,1] - self.groundlevel) * 1000
-        vel = self.GetRelativeVelocity(alt, y)
+
         forces = self.ForceCalculation(alt,vel, mass)
         moments = self.MomentCalculations(alt, vel)
-        p = y[7,1]
-        q = y[8,1]
-        r = y[9,1]  
-        dy = Matrix[System.Double](9, 1)
+        psi = y[7,1]
+        theta = y[8,1]
+        phi = y[9,1]
+        p = y[10,1]
+        q = y[11,1]
+        r = y[12,1]  
+        dy = Matrix[System.Double](12, 1)
         #Set the velocity equal to 0 once on the ground
-        if y[1,1] < self.groundlevel:
+        if y[1,1] <= self.groundlevel:
             #The position of the rocket is constant once on the ground
             vx = 0.0    
             vy = 0.0
@@ -136,59 +141,79 @@ class eomRocket(Utilities.EOMS):
             pdot = 0.0
             qdot = 0.0
             rdot = 0.0
+            psidot = 0.0
+            thetadot = 0.0
+            phidot = 0.0
         else:
             #The position of the rocket is simply the velocity integrated
-            vx = (vel[1]*self.dcm.Transpose(self.dcm))/1000
-            vy = (vel[2]*self.dcm.Transpose(self.dcm))/1000
-            vz = (vel[3]*self.dcm.Transpose(self.dcm))/1000
+            #velInertial = vel #* Matrix[System.Double].Transpose(self.dcm)
+            
+            #vx = velInertial[1]
+            #vy = velInertial[2]
+            #vz = velInertial[3]
+            vx = y[4,1]
+            vy = y[5,1] 
+            vz = y[6,1]
             #The velocity of the rocket. Uses the orbital motion eqns for gravity
-            ax = (mur3 * y[1,1]) + thrust - math.copysign(forces[0], y[4,1])
-            ay = (mur3 * y[2,1]) - math.copysign(forces[1], y[5,1]) #TODO: Make sign correct
-            az = (mur3 * y[3,1]) - math.copysign(forces[2], y[6,1])
+            acc = Vector(3)
+            acc[1] = ((-mass*9.81*math.sin(theta)) + (thrust - math.copysign(forces[0], y[4,1])))/mass
+            acc[2] = ((mass*9.81*math.cos(theta)*math.sin(phi)) - (math.copysign(forces[1], y[5,1])))/mass #TODO: Make sign correct
+            acc[3] = ((mass*9.81*math.cos(theta)*math.cos(phi)) - (math.copysign(forces[2], y[6,1])))/mass
+            accInertial = acc  * Matrix[System.Double].Transpose(self.dcm)
+            ax = accInertial[1]
+            ay = accInertial[2]
+            az = accInertial[3]
             pdot = ((moments[0]) - (self.Izz - self.Iyy)*q*r)/self.Ixx
-            qdot = ((moments[1] + forces[1]*mass*1.5*self.areaRef) - (self.Ixx - self.Izz)*p*r)/self.Iyy
-            rdot = ((moments[2] + forces[2]*mass*1.5*self.areaRef) - (self.Iyy - self.Ixx)*p*q)/self.Izz
-        #print moments, forces
+            qdot = ((moments[1] + forces[1]*1.5*self.areaRef) - (self.Ixx - self.Izz)*p*r)/self.Iyy
+            rdot = ((moments[2] + forces[2]*1.5*self.areaRef) - (self.Iyy - self.Ixx)*p*q)/self.Izz
+            psidot = (q*math.sin(phi) + r*math.cos(phi))/math.cos(theta)
+            thetadot = q*math.cos(phi) - r*math.sin(phi)
+            phidot = p + psidot*math.sin(theta)
+        #print moments, forces[1]*1.5*self.areaRef, forces[2]*1.5*self.areaRef
+        #print self.dcm
         accel = Vector(3)
+        gyro = Vector(3)
         accel[1] = ax;
         accel[2] = ay;
         accel[3] = az;
+        gyro[1] = pdot;
+        gyro[2] = qdot;
+        gyro[3] = rdot;
         param.Add(self.ACCELERATION, accel)
+        param.Add(self.GYROSCOPE, gyro)
         dy[1,1] = vx
         dy[2,1] = vy
         dy[3,1] = vz
         dy[4,1] = ax
         dy[5,1] = ay
         dy[6,1] = az
-        dy[7,1] = pdot
-        dy[8,1] = qdot
-        dy[9,1] = rdot
+        dy[7,1] = psidot
+        dy[8,1] = thetadot
+        dy[9,1] = phidot
+        dy[10,1] = pdot
+        dy[11,1] = qdot
+        dy[12,1] = rdot
         
         return dy 
     def ForceCalculation(self, alt, vel, mass):
         dens = self.atmos.density(alt)
         #print mass, vel[1]
-        Fx = (0.5 * dens * math.pow(vel[1],2) * (self.Cx+.1) * self.areaRef)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
-        Fy = (0.5 * dens * math.pow(vel[2],2) * (self.Cy+.01) * self.areaRef)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
-        Fz = (0.5 * dens * math.pow(vel[3],2) * (self.Cz+.01) * self.areaRef)/mass/1000 # kg/m/s^2*m^2/kg = m/s^2/1000 -> [km/s^2]
+        Fx = (0.5 * dens * math.pow(vel[1],2) * (self.Cx) * self.areaRef) # kg/m/s^2*m^2/ = [N]
+        Fy = (0.5 * dens * math.pow(vel[2],2) * (self.Cy) * self.areaRef) # kg/m/s^2*m^2/ = [N]
+        Fz = (0.5 * dens * math.pow(vel[3],2) * (self.Cz) * self.areaRef) # kg/m/s^2*m^2/ = [N]
         return [Fx, Fy, Fz]
     def MomentCalculations(self, alt, vel):
         #area = math.pow(.1106,2) * math.pi #Reference area is the cross sectional area
-        dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[1],2)
-        Mx = self.Cl*dynamicPressure*self.areaRef
-        
+        dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[1],2) # kg/m^3 * m^2/s^2 = [N/m^2]
+        Mx = self.Cl*dynamicPressure*self.areaRef                          # N/m^2 * m^2 = [N]  
+        area = self.lengthRef * .1106;
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[2],2)
-        #area = .2302*4.5
         My = self.Cm*dynamicPressure*self.areaRef
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[3],2)
         Mz = self.Cn*dynamicPressure*self.areaRef
-        #print self.Cn
-        #print vel[1], dynamicPressure, self.atmos.density(alt), alt
-        #print Mz
+
         return [Mx, My, Mz]
     def ThrustCalculation(self, t, mass):
-        # Return the average thrust in Newtons for the entire burn time
-        # Not accurate but will give the approximate solution 
         for datapoint in self.thrustData:
             if datapoint[0] == -1:
                 if self.printOnce:
@@ -198,7 +223,8 @@ class eomRocket(Utilities.EOMS):
             if datapoint[0] > t:
                 thrust = datapoint[1]
                 break
-        return thrust/mass/1000 # kg*m/s^2/kg = m/s^2/100 -> [km/s^2]
+        #print thrust
+        return thrust # kg*m/s^2/kg = [m/s^2]
         
     def GetRelativeVelocity(self, alt, y):
         # Rename variables for later
@@ -208,41 +234,60 @@ class eomRocket(Utilities.EOMS):
         q = y[8,1]
         r = y[9,1]
         vel = Vector(3)
-        vel[1] = y[4,1]*1000
-        vel[2] = y[5,1]*1000
-        vel[3] = y[6,1]*1000
-        C = self.CreateRotationMatrix(p, q, r)
-        self.dcm= C.Transpose(C)
+        vel[1] = y[4,1]
+        vel[2] = y[5,1]
+        vel[3] = y[6,1]
+        self.dcm = self.CreateRotationMatrix(p, q, r)
+        #self.dcm= Matrix[System.Double].Transpose(C)
         vel = self.dcm*vel
-        vel[1] = vel[1] + u
-        vel[2] = vel[2] + v
+        vel[2] = vel[2] + u
+        vel[3] = vel[3] + v
 
+        
         return vel
 
-    def CreateRotationMatrix(self, p, q, r):
-        Cx = Matrix[System.Double](3)
-        Cy = Matrix[System.Double](3)
-        Cz = Matrix[System.Double](3)
+    def CreateRotationMatrix(self, psi, theta, phi):
+        #Cx = Matrix[System.Double](3)
+        #Cy = Matrix[System.Double](3)
+        #Cz = Matrix[System.Double](3)
         C = Matrix[System.Double](3)
+
+        cp = math.cos(psi)
+        cq = math.cos(theta)
+        cr = math.cos(phi)
+
+        sp = math.sin(psi)
+        sq = math.sin(theta)
+        sr = math.sin(phi)
         
-        Cx[1,1] = 1
-        Cx[2,2] = math.cos(math.radians(p))
-        Cx[2,3] = -math.sin(math.radians(p))
-        Cx[3,2] = math.sin(math.radians(p))
-        Cx[3,3] = math.cos(math.radians(p))
+        C[1,1] = cp*cq
+        C[2,1] = cp*sq*sr -sp*cr
+        C[3,1] = cp*sq*cr+sp*sr
+        C[1,2] = sp*cq
+        C[2,2] = cp*cr-sp*sq*sr
+        C[3,2] = sp*sq*cr-cp*sr
+        C[1,3] = -sq
+        C[2,3] = cq*sr
+        C[3,3] = cq*cr
 
-        Cy[2,2] = 1
-        Cy[1,1] = math.cos(math.radians(q))
-        Cy[3,1] = -math.sin(math.radians(q))
-        Cy[1,3] = math.sin(math.radians(q))
-        Cy[3,3] = math.cos(math.radians(q))
+        #Cx[1,1] = 1
+        #Cx[2,2] = math.cos(p)
+        #Cx[2,3] = -math.sin(p)
+        #Cx[3,2] = math.sin(p)
+        #Cx[3,3] = math.cos(p)
 
-        Cz[3,3] = 1
-        Cz[1,1] = math.cos(math.radians(r))
-        Cz[1,2] = -math.sin(math.radians(r))
-        Cz[2,1] = math.sin(math.radians(r))
-        Cz[2,2] = math.cos(math.radians(r))
-        return Cz*Cy*Cx
+        #Cy[2,2] = 1
+        #Cy[1,1] = math.cos(q)
+        #Cy[3,1] = -math.sin(q)
+        #Cy[1,3] = math.sin(q)
+        #Cy[3,3] = math.cos(q)
+
+        #Cz[3,3] = 1
+        #Cz[1,1] = math.cos(r)
+        #Cz[1,2] = -math.sin(r)
+        #Cz[2,1] = math.sin(r)
+        #Cz[2,2] = math.cos(r)
+        return C
 def LinearInterpolate(x, v, xq):
     if len(x) != len(v):
         Exception

@@ -1,6 +1,6 @@
 class Aerodynamics:
     def __init__(self):
-        self.mach = [0.021740, 0.022890, 0.024669, 0.027382, 0.031474, 
+        self.mach = [0.000000, 0.022890, 0.024669, 0.027382, 0.031474, 
 				0.035671, 0.039945, 0.044194, 0.048507, 0.052909, 
 				0.057429, 0.062053, 0.066737, 0.071511, 0.076391, 
 				0.081352, 0.086379, 0.091495, 0.096704, 0.102020, 
@@ -511,7 +511,7 @@ class Aerodynamics:
 				-0.000468, -0.000262, -0.000427, 0.000375, -0.000130, 
 				-0.000342, -0.000031, 0.000439, -0.000145, 0.000112, 
 				-0.000163, 0.000414]
-        self.Cn = self.Cm
+        self.Cm = self.Cn
         self.Cz = self.Cy
     def CurrentAero(self, mach):
         Cx = LinearInterpolate(self.mach, self.Cx, mach)
@@ -524,8 +524,12 @@ class Aerodynamics:
 def LinearInterpolate(x, v, xq):
     if len(x) != len(v):
         Exception
+    below = 0
+    above = max(x)
     for index in range(len(x)):
         if xq < x[index]:
+            if index == 0: #Clip at lowest value
+                return v[0]
             below = x[index-1]
             above = x[index]
             break

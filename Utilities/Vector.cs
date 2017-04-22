@@ -80,7 +80,7 @@ namespace Utilities
             string s = "[";
 
                 foreach (double element in _elements)
-                    s += element.ToString() + ";" + " ";
+                    s += element.ToString() + "," + " ";
 
 
             s = s.Substring(0, s.Length - 2);

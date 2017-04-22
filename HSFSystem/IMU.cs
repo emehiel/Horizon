@@ -135,10 +135,21 @@ namespace HSFSystem
                     proposedEvent.State.SetProfile(MEASURE_KEY, newProf);
             }
             var state = Asset.AssetDynamicState.DynamicStateECI(proposedEvent.GetEventStart(Asset));
-            Matrix<double> gyr = Gyroscope(state[new MatrixIndex(7, 9)]);
+            Vector gyro = new Vector(3);
+            Vector accel = new Vector(3);
+            try
+            {
+                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.gyro"));
+                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.accel"));
+            }
+            catch (KeyNotFoundException)
+            {
+                Console.WriteLine("Key Not Found x");
+            }
+            Matrix<double> gyr = Gyroscope(gyro);
             Matrix<double> acc = Accelerometer(new Vector(3));
             Matrix<double> measure = new Matrix<double>(6, 1);
-            measure = Matrix<double>.Vertcat(acc, gyr);
+            measure = Matrix<double>.Horzcat(acc, gyr);
             _newState.AddValue(MEASURE_KEY, new HSFProfile<Matrix<double>>(ts, measure));
             return true;
         }
@@ -152,9 +163,9 @@ namespace HSFSystem
 
             Vector reading = new Vector(3);
 
-            reading[1] = (truth[1] + noiseX);
-            reading[2] = (truth[2] + noiseY);
-            reading[3] = (truth[3] + noiseZ);
+            reading[1] = (truth[1]);// + noiseX);
+            reading[2] = (truth[2]);// + noiseY);
+            reading[3] = (truth[3]);// + noiseZ);
             /* Check for Saturation of sensor */
             int i = 1;
             foreach( double val in reading)
@@ -251,24 +262,48 @@ namespace HSFSystem
         public HSFProfile<double> STATESUB_GYRxMeasurementsFrom_IMUSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
-            var state = Asset.AssetDynamicState.DynamicStateECI(currentEvent.GetEventStart(Asset));
-            Vector gyr = Gyroscope(state[new MatrixIndex(7, 9)]);
+            Vector gyro = new Vector(3);
+            try
+            {
+                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.gyro"));
+            }
+            catch (KeyNotFoundException)
+            {
+                Console.WriteLine("Key Not Found x");
+            }
+            Vector gyr = Gyroscope(gyro);
             prof1[currentEvent.GetEventEnd(Asset)] = gyr[1];
             return prof1;
         }
         public HSFProfile<double> STATESUB_GYRyMeasurementsFrom_IMUSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
-            var state = Asset.AssetDynamicState.DynamicStateECI(currentEvent.GetEventStart(Asset));
-            Vector gyr = Gyroscope(state[new MatrixIndex(7, 9)]);
+            Vector gyro = new Vector(3);
+            try
+            {
+                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.gyro"));
+            }
+            catch (KeyNotFoundException)
+            {
+                Console.WriteLine("Key Not Found x");
+            }
+            Vector gyr = Gyroscope(gyro);
             prof1[currentEvent.GetEventEnd(Asset)] = gyr[2];
             return prof1;
         }
         public HSFProfile<double> STATESUB_GYRzMeasurementsFrom_IMUSUB(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
-            var state = Asset.AssetDynamicState.DynamicStateECI(currentEvent.GetEventStart(Asset));
-            Vector gyr = Gyroscope(state[new MatrixIndex(7,9)]);
+            Vector gyro = new Vector(3);
+            try
+            {
+                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.gyro"));
+            }
+            catch (KeyNotFoundException)
+            {
+                Console.WriteLine("Key Not Found z");
+            }
+            Vector gyr = Gyroscope(gyro);
             prof1[currentEvent.GetEventEnd(Asset)] = gyr[3];
             return prof1;
         }

@@ -62,16 +62,22 @@ class StateEstimation(Subsystem):
         sigma[2] = wy * SchedParameters.SimStepSeconds
         sigma[3] = wz * SchedParameters.SimStepSeconds
 
+        #print sigma
         Ac = math.cos(Vector.Norm(sigma)/2);
-        As = math.sin(Vector.Norm(sigma)/2)/Vector.Norm(sigma);
+        if not Vector.Norm(sigma) == 0:
+            As = math.sin(Vector.Norm(sigma)/2)/Vector.Norm(sigma);
+        else:
+            As = 0
 
         rk = Quat(Ac, As*sigma)
+        #print Ac, As, rk
         #print rk.ToString();
         
         self.qk = self.qk  * rk
         ts = event.GetTaskStart(self.asset)
         self._newState.AddValue(self.STATE_KEY, HSFProfile[Quat](ts, self.qk))
 
+        #print self.qk
         #qk1 = Matrix.exp(SIGMA/2)*qk
 
 

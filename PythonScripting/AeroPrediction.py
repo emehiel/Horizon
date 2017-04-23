@@ -1,5 +1,16 @@
+import sys
+import clr
+import System.Collections.Generic
+import System
+
+clr.AddReference('System.Core')
+clr.AddReference('IronPython')
+clr.AddReference('System.Xml')
+clr.AddReferenceByName('Utilities')
 
 import math
+import Utilities
+from Utilities import *
 
 class AeroPrediction:
     def __init__(self):
@@ -13,6 +24,62 @@ class AeroPrediction:
         pass
 
 
+    def SkinFrictionDrag(self, spdOfSound, kinematicViscosity, vel):
+        
+        velocity = Vector.Norm(vel) * 3.28084
+
+        length = self.l * 39.3701 # Convert to inches
+        dia = self.dia * 39.3701 # Convert to inches
+        Sb = length*dia
+
+        mach = velocity/spdOfSnd
+
+        compressRe = spdOfSnd * mach * length / 12 / kinematicViscosity * (1 \
+            + 0.028300 * math.pow(mach, 1) \
+            - 0.043000 * math.pow(mach, 2) \
+            + 0.210700 * math.pow(mach, 3) \
+            - 0.038290 * math.pow(mach, 4) \
+            + 0.002709 * math.pow(mach, 5))
+        incompressCF =  0.037036 * math.pow(compressRe, -0.155079)
+        compressCF = incompressCF * ( 1 \
+            + 0.007980 * math.pow(mach, 1) \
+            - 0.181300 * math.pow(mach, 2) \
+            + 0.063200 * math.pow(mach, 3) \
+            - 0.009330 * math.pow(mach, 4) \
+            + 0.000549 * math.pow(mach, 5))
+        incompressCFrough = 1 / math.pow(1.89 + 1.62 * math.log10(length/K), 2.5)
+        compressCFrough = incompressCFrough / (1 + 0.2044*math.pow(mach, 2))
+
+        Cf = max(compressCF, compressCFrough)
+
+        Cdf = Cf * (1 + 60/math.pow(length/ dia, 3) + 0.0025 *(length/dia)) * 4 * Sb/ math.pi / math.pow(dia, 2)
+
+        return Cdf
+
+    def CalcSpdOfSnd(alt):
+        height = alt * 3.28084 # Convert to ft because that is what emperical model uses
+        if height < 37000:
+            spdOfSnd = -0.004*height + 1116.45
+        elif heigh < 64000:
+            spdOfSnd = 968.08
+        else:
+            spdOfSnd = 0.0007*height + 924.99
+        return spdOfSnd
+
+    def CalcKinematicViscosity(alt):
+        height = alt * 3.28084 # Convert to ft because that is what emperical model uses
+        if height < 15000:
+            a = 0.00002503
+            b = 0.0
+        elif height < 30000:
+            a = 0.00002760
+            b = -0.03417
+        else:
+            a = 0.00004664
+            b = -0.6882
+
+        kinematicViscosity = 0.000157*math.exp(a*height + b)
+        return kinematicViscosity
 
     def NormalForceFinBodyInteraction(self, mach, alpha):
         K = 1.1

@@ -209,7 +209,8 @@ namespace HSFUniverse
             Dictionary<double, double> h = new Dictionary<double, double>();
             Dictionary<double, double> t = new Dictionary<double, double>();
 
-            Environment.SetEnvironmentVariable("GRIB_API_DIR_ROOT", Directory.GetCurrentDirectory() + @"\..\..\..\packages\Grib.Api.0.7.1", EnvironmentVariableTarget.Process);
+            // FIXME: Make coimputer agnostic
+            Environment.SetEnvironmentVariable("GRIB_API_DIR_ROOT",  @"C:\Users\steve\Source\Repos\Horizon\packages\Grib.Api.0.7.1", EnvironmentVariableTarget.Process);
             if (string.IsNullOrEmpty(_filePath))
             {
                 throw new System.IO.FileNotFoundException("Filename not defined");

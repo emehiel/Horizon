@@ -37,6 +37,16 @@ namespace UtilitiesUnitTest
         }
         [TestCategory("Matrix")]
         [TestMethod]
+        public void MatrixInverse()
+        {
+            Matrix<double> A = new Matrix<double>(new double[,] { { 1, 0, 1 }, { 1, 2, 0 }, { 1, 5, 1 } });
+            Matrix<double> result = Matrix<double>.Inverse(A);
+
+            Matrix<double> expected = new Matrix<double>(new double[,] { { .4, 1, -.4 }, { -.2, 0, .2 }, { .6, -1, .4 } });
+
+            Assert.AreEqual(expected, result);
+        }
+        [TestMethod]
         public void MatrixVertCatTest()
         {
             // Create Test Matricies.
@@ -197,6 +207,7 @@ namespace UtilitiesUnitTest
             Assert.AreEqual(7, c3.Helper.helperInt);
             Assert.AreNotEqual(c1.Num, c3.Num);
         }
+
     }
     [Serializable]
     public class TestCopyClass

@@ -250,7 +250,7 @@ namespace Utilities
             {
                 foreach (T element in row)
                     s += element.ToString() + "," + " ";
-                s = s.Substring(0, s.Length - 2) + "; ";
+                s = s.Substring(0, s.Length - 2) + "; \n";
             }
 
             s = s.Substring(0, s.Length - 2);
@@ -761,11 +761,95 @@ namespace Utilities
             else
                 throw new ArgumentException("Element indicies out of Matrix<T> bounds");
         }
+
+
         #endregion
 
         #region Statics
 
-       
+
+        public static Matrix<double> Inverse(Matrix<double> A)
+        {
+            int n = A.NumCols;
+            if (!A.IsSquare())
+                throw new ArgumentException("The matrix must be square to invert.");
+            Matrix<double> I = (Matrix<double>)Convert.ChangeType(Eye(A.NumCols), typeof(Matrix<double>));
+            Matrix<double> B = Matrix<double>.Horzcat(A, I);
+
+            Matrix<double> temp = new Matrix<double>(B.NumCols);
+
+            for (int k = 1; k <= B.NumRows; k++)
+            {
+                //Find the kth pivot:
+                int row_max = 1;
+                double maxval = 0;
+                for (int ii = k; ii <= B.NumRows; ii++)
+                {
+                    if (Math.Abs(B[ii, k]) > maxval)
+                    {
+                        maxval = Math.Abs(B[ii, k]);
+                        row_max = ii;
+                    }
+                }
+
+                //if (B[i_max, k] == 0)
+                    //throw new ArgumentException("Matrix is singular.");
+
+                temp = B.GetRow(k);
+                B.SetRow(k, B.GetRow(row_max));
+                B.SetRow(row_max, temp);
+
+
+
+                // Do for all rows below pivot:
+                for (int i = k+1 ; i <= B.NumRows; i++)
+                {
+                    double f = B[i, k] / B[k, k];
+                    //double g = B[i - 1, k] / B[k, k];
+                    //Do for all remaining elements in current row:
+                    for (int j = k+1; j <= B.NumCols; j++)
+                    {
+                        B[i, j] = B[i, j] - B[k, j] * f;
+                        //B[i-1,j] = B[i-1,j] - B[k, j] * g;
+
+                    }
+                    //Fill lower triangular matrix with zeros:
+                    B[i, k] = 0;
+                }
+                if (B[k, k] < 0) //Make the row the will next be calulated have a positive value for a leading 1
+                {
+                    B.SetRow(k, B.GetRow(k) * -1);
+                }
+
+            }
+
+            for (int row = 1; row < B.NumRows; row++)
+            {
+                // Divide by a constant to get 1 in first column
+                double Bk = B[row, row];
+                for (int col = row; col <= B.NumCols; col++)
+                {
+                    B[row, col] = B[row, col] / Bk;
+                }
+            }
+
+
+            for (int m = B.NumRows; m > 1; m--)
+            {
+                for(int r = m; r>1; r--) 
+                {
+                    B.SetRow(r-1, (B[r - 1, m] * B.GetRow(m)) - B.GetRow(r-1)); // Zero out all values above matrix's main diagonal
+
+                }
+                if (B[m-1, m-1] < 0) //Make the row the will next be calulated have a positive value for a leading 1
+                {
+                    B.SetRow(m-1, B.GetRow(m-1) * -1);
+                }
+
+            }
+            return B[new MatrixIndex(1, n), new MatrixIndex(n+1, B.NumCols)];
+        }
+
 
         // TODO:  SHould these get/set functions be static?
         public static Matrix<T> GetColumn(Matrix<T> A, int column)

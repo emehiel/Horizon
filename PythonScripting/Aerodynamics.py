@@ -511,8 +511,8 @@ class Aerodynamics:
 				-0.000468, -0.000262, -0.000427, 0.000375, -0.000130, 
 				-0.000342, -0.000031, 0.000439, -0.000145, 0.000112, 
 				-0.000163, 0.000414]
-        self.Cm = self.Cn
-        self.Cz = self.Cy
+        #self.Cm = self.Cn
+        #self.Cz = self.Cy
     def CurrentAero(self, mach):
         Cx = LinearInterpolate(self.mach, self.Cx, mach)
         Cy = LinearInterpolate(self.mach, self.Cy, mach)

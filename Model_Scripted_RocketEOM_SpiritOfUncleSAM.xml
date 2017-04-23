@@ -24,7 +24,7 @@
 					BurnTime="6.2"
 				></Propulsion>
 				<Atmosphere
-					Type="RealTime"
+					Type="Standard"
 					Date="03-28-2017"
 					Latitude="35.347"
 					Longitude="-117.808" 	

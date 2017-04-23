@@ -50,7 +50,7 @@ class eomRocket(Utilities.EOMS):
         self.Thrust = float(scriptedNode["Propulsion"].Attributes["Thrust"].Value)
         self.BurnTime = float(scriptedNode["Propulsion"].Attributes["BurnTime"].Value)
         self.thrustData = []
-        text_file = open("C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
+        text_file = open("C:\Users\steve\BitTorrent Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
         for line in text_file:
             lines = [float(elt.strip()) for elt in line.split('\t')]
             self.thrustData.append(lines)
@@ -83,7 +83,7 @@ class eomRocket(Utilities.EOMS):
         # p = roll, q = pitch, r = yaw
         # pitch about y, yaw about z, roll about x
 
-        _mu = 3.986e5
+        _mu = 3.986e14
         r3 = System.Math.Pow(Matrix[System.Double].Norm(y[MatrixIndex(1, 3), 1]), 3)
         mur3 = -_mu / r3
         if y[1,1] < self.groundlevel:
@@ -95,9 +95,14 @@ class eomRocket(Utilities.EOMS):
         thrust = self.ThrustCalculation(t, mass)
         alt = y[1,1] - self.groundlevel
         vel = self.GetRelativeVelocity(alt, y)
-        mach = Vector.Norm(vel)/340 #TODO: Calculate spdofsnd
+        velB = self.GetBodyVelocity(y, vel)
+        mach = Vector.Norm(vel)/343 #TODO: Calculate spdofsnd
+        G = Vector(3)
+        G[1] = -9.81
+        G = self.dcm*G
         aero = self.aero.CurrentAero(mach)
-        self.Cx = aero[0]+.05
+       # print mach
+        self.Cx = aero[0]
         self.Cy = aero[1]
         self.Cz = aero[2]
         self.Cm = aero[3]
@@ -120,8 +125,8 @@ class eomRocket(Utilities.EOMS):
             self.Cl = 0.0
             self.cn = 0.0
 
-        forces = self.ForceCalculation(alt,vel, mass)
-        moments = self.MomentCalculations(alt, vel)
+        forces = self.ForceCalculation(alt,velB, mass)
+        moments = self.MomentCalculations(alt, velB)
         psi = y[7,1]
         theta = y[8,1]
         phi = y[9,1]
@@ -146,20 +151,20 @@ class eomRocket(Utilities.EOMS):
             phidot = 0.0
         else:
             #The position of the rocket is simply the velocity integrated
-            #velInertial = vel #* Matrix[System.Double].Transpose(self.dcm)
+            velInertial = vel #* Matrix[System.Double].Transpose(self.dcm)
             
-            #vx = velInertial[1]
-            #vy = velInertial[2]
-            #vz = velInertial[3]
-            vx = y[4,1]
-            vy = y[5,1] 
-            vz = y[6,1]
+            vx = velInertial[1]
+            vy = velInertial[2]
+            vz = velInertial[3]
+            #vx = y[4,1]
+            #vy = y[5,1] 
+            #vz = y[6,1]
             #The velocity of the rocket. Uses the orbital motion eqns for gravity
             acc = Vector(3)
-            acc[1] = ((-mass*9.81*math.sin(theta)) + (thrust - math.copysign(forces[0], y[4,1])))/mass
-            acc[2] = ((mass*9.81*math.cos(theta)*math.sin(phi)) - (math.copysign(forces[1], y[5,1])))/mass #TODO: Make sign correct
-            acc[3] = ((mass*9.81*math.cos(theta)*math.cos(phi)) - (math.copysign(forces[2], y[6,1])))/mass
-            accInertial = acc  * Matrix[System.Double].Transpose(self.dcm)
+            acc[1] = (G[1]*mass + (thrust - math.copysign(forces[0], y[4,1])))/mass
+            acc[2] = (G[2]*mass - (math.copysign(forces[1], y[5,1])))/mass #TODO: Make sign correct
+            acc[3] = (G[3]*mass - (math.copysign(forces[2], y[6,1])))/mass
+            accInertial = acc * (self.dcm) # Use Body to Inertial DCM
             ax = accInertial[1]
             ay = accInertial[2]
             az = accInertial[3]
@@ -196,6 +201,7 @@ class eomRocket(Utilities.EOMS):
         
         return dy 
     def ForceCalculation(self, alt, vel, mass):
+        # Currently assume 0 alpha for everything
         dens = self.atmos.density(alt)
         #print mass, vel[1]
         Fx = (0.5 * dens * math.pow(vel[1],2) * (self.Cx) * self.areaRef) # kg/m/s^2*m^2/ = [N]
@@ -203,10 +209,11 @@ class eomRocket(Utilities.EOMS):
         Fz = (0.5 * dens * math.pow(vel[3],2) * (self.Cz) * self.areaRef) # kg/m/s^2*m^2/ = [N]
         return [Fx, Fy, Fz]
     def MomentCalculations(self, alt, vel):
+        # Currently assume 0 alpha for everything
         #area = math.pow(.1106,2) * math.pi #Reference area is the cross sectional area
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[1],2) # kg/m^3 * m^2/s^2 = [N/m^2]
         Mx = self.Cl*dynamicPressure*self.areaRef                          # N/m^2 * m^2 = [N]  
-        area = self.lengthRef * .1106;
+        #area = self.lengthRef * .1106;
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[2],2)
         My = self.Cm*dynamicPressure*self.areaRef
         dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[3],2)
@@ -230,36 +237,70 @@ class eomRocket(Utilities.EOMS):
         # Rename variables for later
         u = self.atmos.uVelocity(alt);
         v = self.atmos.vVelocity(alt);
-        p = y[7,1]
-        q = y[8,1]
-        r = y[9,1]
+
         vel = Vector(3)
         vel[1] = y[4,1]
         vel[2] = y[5,1]
         vel[3] = y[6,1]
-        self.dcm = self.CreateRotationMatrix(p, q, r)
-        #self.dcm= Matrix[System.Double].Transpose(C)
-        vel = self.dcm*vel
+
         vel[2] = vel[2] + u
         vel[3] = vel[3] + v
 
         
         return vel
 
-    def CreateRotationMatrix(self, psi, theta, phi):
-        #Cx = Matrix[System.Double](3)
-        #Cy = Matrix[System.Double](3)
-        #Cz = Matrix[System.Double](3)
-        C = Matrix[System.Double](3)
+    def GetBodyVelocity(self, y, vel):
+        
+        psi = y[7,1]
+        theta = y[8,1]
+        phi = y[9,1]
 
+        self.dcm = self.CreateRotationMatrix(psi, theta, phi) 
+
+        return self.dcm*vel # Use the inertial to body dcm to get velcity in body frame
+
+    def CreateRotationMatrix(self, psi, tht, phi):
+        # Returns the Body to Inertial dcm using a 3-2-1 Euler sequence
+        # psi = rotation about z (1)
+        # tht = rotation about y (2)
+        # phi = rotation about x (3)
+
+        # Pre-do all of the trig 
         cp = math.cos(psi)
-        cq = math.cos(theta)
+        cq = math.cos(tht)
         cr = math.cos(phi)
 
         sp = math.sin(psi)
-        sq = math.sin(theta)
+        sq = math.sin(tht)
         sr = math.sin(phi)
+
+
+
+        C1 = Matrix[System.Double](3)
+        C2 = Matrix[System.Double](3)
+        C3 = Matrix[System.Double](3)
+        C1[1,1] = cp
+        C1[1,2] = sp
+        C1[2,1] = -sp
+        C1[2,2] = cp
+        C1[3,3] = 1
+
+        C2[2,2] = 1
+        C2[1,1] = cq
+        C2[3,1] = sq
+        C2[1,3] = -sq
+        C2[3,3] = cq
+
+        C3[1,1] = 1
+        C3[2,2] = cr
+        C3[2,3] = sr
+        C3[3,2] = -sr
+        C3[3,3] = cr
+
+        return Matrix[System.Double].Transpose(C3*C2* C1)
         
+        '''
+        C = Matrix[System.Double](3)   
         C[1,1] = cp*cq
         C[2,1] = cp*sq*sr -sp*cr
         C[3,1] = cp*sq*cr+sp*sr
@@ -269,25 +310,9 @@ class eomRocket(Utilities.EOMS):
         C[1,3] = -sq
         C[2,3] = cq*sr
         C[3,3] = cq*cr
-
-        #Cx[1,1] = 1
-        #Cx[2,2] = math.cos(p)
-        #Cx[2,3] = -math.sin(p)
-        #Cx[3,2] = math.sin(p)
-        #Cx[3,3] = math.cos(p)
-
-        #Cy[2,2] = 1
-        #Cy[1,1] = math.cos(q)
-        #Cy[3,1] = -math.sin(q)
-        #Cy[1,3] = math.sin(q)
-        #Cy[3,3] = math.cos(q)
-
-        #Cz[3,3] = 1
-        #Cz[1,1] = math.cos(r)
-        #Cz[1,2] = -math.sin(r)
-        #Cz[2,1] = math.sin(r)
-        #Cz[2,2] = math.cos(r)
-        return C
+        
+        return Matrix[System.Double].Transpose(C)
+        '''
 def LinearInterpolate(x, v, xq):
     if len(x) != len(v):
         Exception

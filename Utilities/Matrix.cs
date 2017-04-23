@@ -250,7 +250,7 @@ namespace Utilities
             {
                 foreach (T element in row)
                     s += element.ToString() + "," + " ";
-                s = s.Substring(0, s.Length - 2) + "; \n";
+                s = s.Substring(0, s.Length - 2) + "; ";
             }
 
             s = s.Substring(0, s.Length - 2);
@@ -597,14 +597,54 @@ namespace Utilities
             return !(A == B);
         }
 
+        //TODO: Figure out computer precision (?) issues
+        public static Matrix<double> exp(Matrix<double> A)
+        {
+
+            double y = Math.Log(Matrix<double>.Norm(A, "inf"), 2);
+            int e = (int)y+1;
+            //double f = frexp(y, out e);
+            int s = Math.Max(0, e + 1);
+            A = A / Math.Pow(2, s); // Doesn't match matlab
+
+            //Matrix<double> X = (Matrix<double>)A.Clone();
+            Matrix<double> X = A;
+            double c = 0.5;
+            Matrix<double> E = Matrix<double>.Eye(A.NumRows) + c * A;
+            Matrix<double> D = Matrix<double>.Eye(A.NumRows) - c * A;
+            int q = 6;
+            bool p = true;
+            for (int k = 2; k <= q; k++)
+            {
+                c = c * (q - k + 1) / (k * (2 * q - k + 1));
+                X = A * X;
+                Matrix<double> cX = c * X;
+                E = E + cX;
+                if (p)
+                   D = D + cX;
+                else
+                    D = D - cX;
+                p = !p;
+            }
+            E = Matrix<double>.Inverse(D)*E;
+            for (int k = 0; k < s; k++)
+            {
+                E = E*E;
+            }
+
+            return E;
+
+            throw new NotImplementedException();
+        }
+        
         #endregion
 
-        #region Dynamics
+            #region Dynamics
 
-        /// <summary>
-        /// Converts a Matrix<T> to an array of T type numbers
-        /// </summary>
-        /// <returns></returns>
+            /// <summary>
+            /// Converts a Matrix<T> to an array of T type numbers
+            /// </summary>
+            /// <returns></returns>
         public T[,] ToArray()
         {
             T[,] T_Array = new T[NumRows, NumCols];
@@ -1091,6 +1131,48 @@ namespace Utilities
             else
                 throw new NotImplementedException("Matrix<T>.Norm(Matrix<T> A)");
         }
+        public static T Norm(Matrix<T> A, string type)
+        {
+            // TODO:  Handle the case when c is complex
+            if (type == "inf")
+            {
+                Matrix<T> temp = (Matrix<T>)Convert.ChangeType(new Matrix<T>(A.NumRows), typeof(Matrix<T>));
+
+                temp = CumSum(Abs(A), 1);
+
+                return Max(temp)[1]; 
+            }
+            else
+                throw new NotImplementedException("Matrix<T>.Norm(Matrix<T> A, " + type + ")");
+        }
+
+        public static Matrix<T> CumSum(Matrix<T> A, int Dim)
+        {
+            Matrix<T> C = new Matrix<T>(A.NumRows, 1);
+
+            if (Dim == 1)
+            {
+                for (int r = 1; r <= A.NumRows; r++)
+                {
+                    for (int c = 1; c <= A.NumCols; c++)
+                    {
+                        C[r] += (dynamic)A[r, c];
+                    }
+                }
+                return C;
+            }
+            else if (Dim == 2)
+            {
+                C = Matrix<T>.CumSum(Matrix<T>.Transpose(A), 1);
+                C = Matrix<T>.Transpose(C);
+                return C;
+            }
+
+            else
+                throw new NotImplementedException("Matrix<T>.Cumprod(Matrix<T> A, int Dim - Cumprod not implimented for Dim >= 3");
+
+        }
+
 
         public static Matrix<T> Cumprod(Matrix<T> A)
         {

@@ -307,6 +307,7 @@ namespace Utilities
 
             return d;
         }
+
         /// <summary>
         /// Returns the Matrix product of a Complex and a Matrix (elementwise)
         /// </summary>

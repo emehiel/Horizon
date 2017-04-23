@@ -36,6 +36,20 @@ namespace UtilitiesUnitTest
             //Console.ReadLine(); //FIXME: Why is this here?
         }
         [TestCategory("Matrix")]
+
+        [TestMethod]
+        public void MatrixExponent()
+        {
+            // Using matrix described here to test http://blogs.mathworks.com/cleve/2012/07/23/a-balancing-act-for-the-matrix-exponential/
+            double a = 2 * Math.Pow(10, 10);
+            double b = 4 * Math.Pow(10, 8) / 6;
+            double c = 200 / 3;
+            double d = 3;
+            double e = 1 * Math.Pow(10, -8);
+            Matrix<double> A = new Matrix<double>(new double[,] { { 0, e, 0 }, { -(a + b), -d, a }, { c, 0, -c } });
+
+            Matrix<double> Aexp = Matrix<double>.exp(A);
+        }
         [TestMethod]
         public void MatrixInverse()
         {

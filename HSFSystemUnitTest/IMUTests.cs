@@ -23,8 +23,10 @@ namespace HSFSystem.Tests
         public void OneTimeInit()
         {
             program = new Program();
-            string[] inputArg = { "-m", @"C:\Users\steve\Source\Repos\Horizon\Model_Scripted_RocketEOM_SpiritOfUncleSAM.xml", "-s", @"C:\Users\steve\Source\Repos\Horizon\SimulationInput_RocketScripted.xml" };
+            string[] inputArg = { "-m", @"C:\Users\steve\Source\Repos\Horizon\Model_Scripted_RocketEOM_SpiritOfUncleSAM.xml", "-s", @"C:\Users\steve\Source\Repos\Horizon\SimulationInput_RocketScripted.xml", "-t", @"C:\Users\steve\Source\Repos\Horizon\rocketTargets.xml" };
+            
             program.InitInput(inputArg);
+            program.LoadTargets();
             program.LoadSubsystems();
             //program.LoadDependencies();
         }
@@ -50,9 +52,9 @@ namespace HSFSystem.Tests
             Vector output = testIMU.Gyroscope(input);
             Assert.Multiple(() =>
             {
-                Assert.That(() => output[0], Is.EqualTo(expected[0]));
                 Assert.That(() => output[1], Is.EqualTo(expected[1]));
-                Assert.That(() => output[2], Is.InRange(expected[2] - 1, expected[2] + 1));
+                Assert.That(() => output[2], Is.EqualTo(expected[2]));
+                Assert.That(() => output[3], Is.InRange(expected[3] - 1, expected[3] + 1));
             });
         }
         [Test()]
@@ -75,7 +77,7 @@ namespace HSFSystem.Tests
             }
             Assert.Multiple(() =>
             {
-                for (int ii = 0; ii < 1000; ii++)
+                for (int ii = 1; ii < 1001; ii++)
                 {
                     Assert.That(() => output[ii], Is.All.InRange(-1.0, 1.0));
                 }

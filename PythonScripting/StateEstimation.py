@@ -34,15 +34,27 @@ class StateEstimation(Subsystem):
     def __init__(self, node, asset):
         self.asset = asset
         self.state = Vector(18)
-        self.state[13] = 1240
+        self.state[13] = .4
         self.state[14] = 27875
         self.state[15] = 27875
         self.state[16] = 99999999
         self.state[17] = 27875
         self.state[18] = 27875
-        self.qk = Quat()
+        self.Pk = Matrix[System.Double](18,18,1000)
         self.STATE_KEY = StateVarKey[Quat]("asset1.estimatedState")
         self.addKey(self.STATE_KEY)
+
+        #FIXME: make better
+        self.thrustData = []
+        text_file = open("C:\Users\steve\BitTorrent Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
+        for line in text_file:
+            lines = [float(elt.strip()) for elt in line.split('\t')]
+            self.thrustData.append(lines)
+        text_file.close()
+
+        self.InitMass = 21.462
+        self.FinalMass = 18.734
+
         pass
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
@@ -78,42 +90,36 @@ class StateEstimation(Subsystem):
         ballisticCoeffMY = self.state[17]
         ballisticCoeffMZ = self.state[18]
 
-        #self.stateDerivative = Vector(15)
+        #Other redefinitions 
+        Pk_Previous = self.Pk
 
-        #self.stateDerivative[1] = self.state[1]
-        #self.stateDerivative[2] = self.state[2]
-        #self.stateDerivative[3] = self.state[3]
-        #self.stateDerivative[4] = -g*math.cos(tht) - T/m - Qp/ballisticCoeffX
-        #self.stateDerivative[5] = g*math.sin(tht)*math.sin(phi) - Qp/ballisticCoeffY
-        #self.stateDerivative[6] = g*math.sin(tht)*math.cos(phi) - Qp/ballisticCoeffZ
-        #self.stateDerivative[7] = 0
-        
-        
-        
-        
-        rho = 0.0034*math.exp(-xd/22000)
+        # Generate the F matrix
+        rho = 1.225*math.exp(-xd/8640)
         F = Matrix[System.Double](18)
         F[1,4] = 1
         F[2,5] = 1
         F[3,6] = 1
-        F[1,4] = -rho*g*math.pow(xd,2)/44000/ballisticCoeffX
-        F[1,5] = -rho*g*math.pow(xd,2)/44000/ballisticCoeffY
-        F[1,6] = -rho*g*math.pow(xd,2)/44000/ballisticCoeffZ
+        F[4,1] = -rho*g*math.pow(xd,2)/16840/ballisticCoeffX
+        F[5,1] = -rho*g*math.pow(xd,2)/16840/ballisticCoeffY
+        F[6,1] = -rho*g*math.pow(xd,2)/16840/ballisticCoeffZ
         F[4,4] = rho * g * xd / ballisticCoeffX
         F[4,5] = rho * g * xd / ballisticCoeffY
         F[4,6] = rho * g * xd / ballisticCoeffZ
-        F[10,10] = -rho*g*math.pow(xd,2)/44000/ballisticCoeffMX
-        F[11,11] = -rho*g*math.pow(xd,2)/44000/ballisticCoeffMY
-        F[12,12] = -rho*g*math.pow(xd,2)/44000/ballisticCoeffMZ
-        F[4,10] = rho * g * xd / ballisticCoeffMX
-        F[5,11] = rho * g * xd / ballisticCoeffMY
-        F[6,12] = rho * g * xd / ballisticCoeffMZ
+        #F[10,10] = -rho*g*math.pow(xd,2)/16840/ballisticCoeffMX
+        #F[11,11] = -rho*g*math.pow(xd,2)/16840/ballisticCoeffMY
+        #F[12,12] = -rho*g*math.pow(xd,2)/16840/ballisticCoeffMZ
+        #F[4,10] = rho * g * xd / ballisticCoeffMX
+        #F[5,11] = rho * g * xd / ballisticCoeffMY
+        #F[6,12] = rho * g * xd / ballisticCoeffMZ
+        '''
         F[13,13] = 1
         F[14,14] = 1
         F[15,15] = 1
         F[16,16] = 1
         F[17,17] = 1
         F[18,18] = 1
+        '''
+        '''
         F[4,7] = g*math.sin(psi)*math.cos(tht)
         F[4,8] = g*math.sin(tht)*math.cos(psi)
         F[5,7] = g*(math.cos(phi)*math.cos(psi) + math.sin(phi)*math.sin(psi)*math.sin(tht))
@@ -127,23 +133,30 @@ class StateEstimation(Subsystem):
         F[8,9] = -r*math.cos(phi) - q*math.sin(phi)
         F[9,8] = r*math.cos(phi) + q*math.sin(phi) + (math.pow(math.sin(tht),2)*(r*math.cos(phi) + q*math.sin(phi)))/math.pow(math.cos(tht),2)
         F[9,9] = (math.sin(tht)*(q*math.cos(phi) - r*math.sin(phi)))/math.cos(tht)
-
+        '''
         
         I = Matrix[System.Double].Eye(18);
 
-        Psi = Matrix[System.Double](18)
-        Psi = I + F*SchedParameters.SimStepSeconds
+        Phi = Matrix[System.Double](18)
+        Phi = I + F*SchedParameters.SimStepSeconds
 
         Q = Matrix[System.Double](18)
         
         # FIXME: Just pulled out of thin air
-        Q[13,13] = math.pow(300,2)
-        Q[14,14] = math.pow(300,2)
-        Q[15,15] = math.pow(300,2)
-        Q[16,16] = math.pow(300,2)
-        Q[17,17] = math.pow(300,2)
-        Q[18,18] = math.pow(300,2)
         
+        Q[13,13] = math.pow(100,2)
+        Q[14,14] = math.pow(100,2)
+        Q[15,15] = math.pow(100,2)
+        Q[16,16] = math.pow(100,2)
+        Q[17,17] = math.pow(100,2)
+        Q[18,18] = math.pow(100,2)
+        
+        #Q = Q * math.pow(300,2)
+        #FIXME: Figure out if this necessary
+
+        #Q = DiscreteQ( Q, SchedParameters.SimStepSeconds, F)
+        #print Q
+
         H = Matrix[System.Double](18)
 
         H[4,4] = SchedParameters.SimStepSeconds # The acceleration is measured, a = v*t
@@ -153,42 +166,51 @@ class StateEstimation(Subsystem):
         H[10,10] = 1
         H[11,11] = 1
         H[12,12] = 1
-        R = 0.03
+        
+        
+        R =Matrix[System.Double].Eye(18)
+        R[4,4] = 0.1 * 0.1
+        R[5,5] = 0.1 * 0.1
+        R[6,6] = 0.1 * 0.1
 
-        M = Psi*Pk_Previous*Matrix[System.Double].Transpose(Psi) + Q 
-        K = M*Matrix[System.Double].Transpose(H)
-        qk1 = Quat()
-        measurements = Vector(6)
+        R[10,10] = 0.03*0.03
+        R[11,11] = 0.03*0.03
+        R[12,12] = 0.03*0.03
+        #print R
+        M = Phi*Pk_Previous*Matrix[System.Double].Transpose(Phi) + Q 
+        #HMHTR = (H*M*Matrix[System.Double].Transpose(H)+R);
+        K = M*Matrix[System.Double].Transpose(H)*Matrix[System.Double].Inverse((H*M*Matrix[System.Double].Transpose(H)+R));
+
+
+        self.Pk = (Matrix[System.Double].Eye(18) - K*H)*M
+
+        G = Matrix[System.Double](18)
+        u = Vector(18)
+        
+        measure = Vector(18)
         measurements = self.DependencyCollector(event)
-        wx = measurements[4]
-        wy = measurements[5]
-        wz = measurements[6]
-        
-        sigma = Vector(3)
-        sigma[1] = wx * SchedParameters.SimStepSeconds
-        sigma[2] = wy * SchedParameters.SimStepSeconds
-        sigma[3] = wz * SchedParameters.SimStepSeconds
+        measure[4] = measurements[1];
+        measure[5] = measurements[2];
+        measure[6] = measurements[3];
+        measure[10] = measurements[4];
+        measure[11] = measurements[5];
+        measure[12] = measurements[6];
 
-        #print sigma
-        Ac = math.cos(Vector.Norm(sigma)/2);
-        if not Vector.Norm(sigma) == 0:
-            As = math.sin(Vector.Norm(sigma)/2)/Vector.Norm(sigma);
-        else:
-            As = 0
-
-        rk = Quat(Ac, As*sigma)
-        #print Ac, As, rk
-        #print rk.ToString();
-        
-        self.qk = self.qk  * rk
+        #stated = Phi*self.state + G*u + K*(measure -  H*Phi*self.state -  H*G*u)
         ts = event.GetTaskStart(self.asset)
-        self._newState.AddValue(self.STATE_KEY, HSFProfile[Quat](ts, self.qk))
+        y = self.Propogate(self.state, .001, ts) #Fixme: Make not self, pass things in
 
-        #print self.qk
-        #qk1 = Matrix.exp(SIGMA/2)*qk
+        self.state = y + K*measure;
+        #print K
+        #self.state = self.state + (stated * SchedParameters.SimStepSeconds); #1st order integration 
+        ts = event.GetTaskStart(self.asset)
+        self._newState.AddValue(self.STATE_KEY, HSFProfile[Matrix[System.Double]](ts, self.state))
+        #print self.state, stated
 
 
         return True
+
+    
     def ADCSSub_State_STATESUB(self, event):
         prof1 = HSFProfile[System.Double]()
         prof1[event.GetEventStart(self.Asset)] = 30
@@ -209,5 +231,69 @@ class StateEstimation(Subsystem):
                     outProf[i] = dep.Value.DynamicInvoke(currentEvent).LastValue()
                     i = i+1
             return outProf
-                    
+    def Propogate(self, y, ts, t):
+        #Rename angles to aid in readbility
+        psi = y[7]
+        tht = y[8]
+        phi = y[9]
+        p = y[10]
+        q = y[11]
+        r = y[12]
+
+        for datapoint in self.thrustData:
+            if datapoint[0] == -1:
+                mass = self.FinalMass
+                thrust = 0.0
+            if datapoint[0] > t:
+                mass = self.InitMass - (self.InitMass - self.FinalMass)*(t/7)
+                thrust = datapoint[1]
+                break
+        A = 0.0385
             
+
+        #Estimate the gravity vector position
+        g = 9.81
+        G = Vector(3)
+        #G[1] = -g*math.cos(psi)*math.cos(tht)
+        #G[2] = g*(math.cos(phi)*math.sin(psi) - math.cos(psi)*math.sin(phi)*math.sin(tht))
+        #G[3] = -g*(math.sin(phi)*math.sin(psi) + math.cos(phi)*math.cos(psi)*math.sin(tht))
+        G[1] = -9.81
+
+        Qp = 1.225*math.exp(-y[1]/8420)*math.pow(y[4],2)/2 #Estimate dynamic pressure
+        
+        dy = Vector(18)
+        dy[1] = y[4]
+        #dy[2] = y[5]
+        #dy[3] = y[6]
+        dy[4] = G[1] + (thrust/mass) - Qp*A/mass/y[13]
+        #dy[5] = G[2] - Qp/y[14]
+        #dy[6] = G[3] - Qp/y[15]
+        '''
+        dy[7] = (q*math.sin(phi) + r*math.cos(phi))/math.cos(tht)
+        dy[8] = q*math.cos(phi) - r*math.sin(phi)
+        dy[9] = p + dy[7]*math.sin(tht)
+        '''           
+        #dy[10] = ((moments[0]) - (self.Izz - self.Iyy)*q*r)/self.Ixx
+        #dy[11] = ((moments[1] + forces[1]*1.5*self.areaRef) - (self.Ixx - self.Izz)*p*r)/self.Iyy
+        #dy[12] = ((moments[2] + forces[2]*1.5*self.areaRef) - (self.Iyy - self.Ixx)*p*q)/self.Izz
+        step = 0
+        while(step<SchedParameters.SimStepSeconds):
+            y = y + dy*step
+            step = step + ts
+
+        return y
+
+            
+            
+def DiscreteQ( Q, Ts, a):
+        # Adapted from Matlabs kalmd()
+
+        Nx = a.NumRows
+        M = Matrix[System.Double].Vertcat(Matrix[System.Double].Horzcat(-a, Q), Matrix[System.Double].Horzcat(Matrix[System.Double](Nx), Matrix[System.Double].Transpose(a)))
+        phi = Matrix[System.Double].exp(M*Ts);
+        phi12 = phi[MatrixIndex(1,Nx),MatrixIndex(Nx+1,2*Nx)]
+        phi22 = phi[MatrixIndex(Nx+1,2*Nx), MatrixIndex(Nx+1,2*Nx)]
+        Qd = Matrix[System.Double].Transpose(phi22)*phi12
+        Qd = (Qd+Matrix[System.Double].Transpose(Qd))/2; # Make sure Qd is symmetric
+        return Qd
+

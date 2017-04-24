@@ -95,7 +95,7 @@ namespace Horizon
                 File.WriteAllText(@"..\..\..\" + asset.Name + "_dynamicStateData.csv", asset.AssetDynamicState.ToString());
             }
 
-            Console.ReadKey();
+            //Console.ReadKey();
             return 0;
         }
         public void InitInput(string[] args)

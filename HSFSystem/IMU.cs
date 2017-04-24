@@ -184,9 +184,9 @@ namespace HSFSystem
 
             Vector reading = new Vector(3);
 
-            reading[1] = truth[1] + noiseX;
-            reading[2] = truth[2] + noiseY;
-            reading[3] = truth[3] + noiseZ;
+            reading[1] = truth[1]; //+ noiseX;
+            reading[2] = truth[2];// + noiseY;
+            reading[3] = truth[3]; //+ noiseZ;
 
             /* Check for Saturation of sensor */
             int i = 1;

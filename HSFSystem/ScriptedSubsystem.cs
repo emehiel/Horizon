@@ -61,8 +61,9 @@ namespace HSFSubsystem
             GetSubNameFromXmlNode(scriptedSubXmlNode);
             string pythonFilePath ="", className = "";
             XmlParser.ParseScriptedSrc(scriptedSubXmlNode, ref pythonFilePath, ref className);
-
-            var engine = Python.CreateEngine();
+            Dictionary<string, object> options = new Dictionary<string, object>();
+            options["Debug"] = true;
+            var engine = Python.CreateEngine(options);
             var scope = engine.CreateScope();
             var ops = engine.Operations;
             engine.ExecuteFile(pythonFilePath, scope);

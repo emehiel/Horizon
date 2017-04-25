@@ -106,6 +106,7 @@ namespace HSFSystem
             dependencies.Add("GYRxFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_GYRxMeasurementsFrom_IMUSUB));
             dependencies.Add("GYRyFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_GYRyMeasurementsFrom_IMUSUB));
             dependencies.Add("GYRzFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_GYRzMeasurementsFrom_IMUSUB));
+            dependencies.Add("BaroFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_BaroMeasurementsFrom_IMUSUB));
             MEASURE_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "measurements");
             addKey(MEASURE_KEY);
         }
@@ -163,9 +164,9 @@ namespace HSFSystem
 
             Vector reading = new Vector(3);
 
-            reading[1] = (truth[1]);// + noiseX);
-            reading[2] = (truth[2]);// + noiseY);
-            reading[3] = (truth[3]);// + noiseZ);
+            reading[1] = (truth[1] + noiseX);
+            reading[2] = (truth[2] + noiseY);
+            reading[3] = (truth[3] + noiseZ);
             /* Check for Saturation of sensor */
             int i = 1;
             foreach( double val in reading)
@@ -184,9 +185,9 @@ namespace HSFSystem
 
             Vector reading = new Vector(3);
 
-            reading[1] = truth[1]; //+ noiseX;
-            reading[2] = truth[2];// + noiseY;
-            reading[3] = truth[3]; //+ noiseZ;
+            reading[1] = truth[1] + noiseX;
+            reading[2] = truth[2] + noiseY;
+            reading[3] = truth[3] + noiseZ;
 
             /* Check for Saturation of sensor */
             int i = 1;
@@ -226,7 +227,7 @@ namespace HSFSystem
                 Console.WriteLine("Key Not Found X");
             }
             Vector acc = Accelerometer(accel);
-            prof1[currentEvent.GetEventEnd(Asset)] = acc[1];
+            prof1[currentEvent.GetEventStart(Asset)] = acc[1];
             return prof1;
         }
         public HSFProfile<double> STATESUB_ACCyMeasurementsFrom_IMUSUB(Event currentEvent)
@@ -241,7 +242,7 @@ namespace HSFSystem
             {
                 Console.WriteLine("Key Not Found Y");
             }
-            prof1[currentEvent.GetEventEnd(Asset)] = accel[2];
+            prof1[currentEvent.GetEventStart(Asset)] = accel[2];
             return prof1;
         }
         public HSFProfile<double> STATESUB_ACCzMeasurementsFrom_IMUSUB(Event currentEvent)
@@ -256,7 +257,7 @@ namespace HSFSystem
             {
                 Console.WriteLine("Key Not Found Z");
             }
-            prof1[currentEvent.GetEventEnd(Asset)] = accel[3];
+            prof1[currentEvent.GetEventStart(Asset)] = accel[3];
             return prof1;
         }
         public HSFProfile<double> STATESUB_GYRxMeasurementsFrom_IMUSUB(Event currentEvent)
@@ -272,7 +273,7 @@ namespace HSFSystem
                 Console.WriteLine("Key Not Found x");
             }
             Vector gyr = Gyroscope(gyro);
-            prof1[currentEvent.GetEventEnd(Asset)] = gyr[1];
+            prof1[currentEvent.GetEventStart(Asset)] = gyr[1];
             return prof1;
         }
         public HSFProfile<double> STATESUB_GYRyMeasurementsFrom_IMUSUB(Event currentEvent)
@@ -304,7 +305,16 @@ namespace HSFSystem
                 Console.WriteLine("Key Not Found z");
             }
             Vector gyr = Gyroscope(gyro);
-            prof1[currentEvent.GetEventEnd(Asset)] = gyr[3];
+            prof1[currentEvent.GetEventStart(Asset)] = gyr[3];
+            return prof1;
+        }
+        public HSFProfile<double> STATESUB_BaroMeasurementsFrom_IMUSUB(Event currentEvent)
+        {
+            HSFProfile<double> prof1 = new HSFProfile<double>();
+            double ts = currentEvent.GetEventStart(Asset);
+            Vector pos = Asset.AssetDynamicState.PositionECI(ts);
+            double noise = GaussianWhiteNoise(0, 12); // Sensor absolute accuracy +-1.5 mbar, ~8m = 1mbar at sea level
+            prof1[ts] = pos[1]- 6378633;
             return prof1;
         }
         #endregion

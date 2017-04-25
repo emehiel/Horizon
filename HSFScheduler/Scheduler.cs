@@ -139,14 +139,14 @@ namespace HSFScheduler
                 {
                     log.Info("Cropping " + systemSchedules.Count + " Schedules.");
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
-                    /* Hacky way to propogate only once per schedule */
+                    // Fixme: Hacky way to propogate only once per schedule */
                     if (!canPregenAccess)
                     {
                         system.Assets[0].AssetDynamicState.hasNotPropagated = true;
                         system.Assets[0].AssetDynamicState.PositionECI(currentTime);
                         system.Assets[0].AssetDynamicState.hasNotPropagated = false;
                     }
-                    systemSchedules.Add(emptySchedule);
+                    else { systemSchedules.Add(emptySchedule); }
                 }
 
                 // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks

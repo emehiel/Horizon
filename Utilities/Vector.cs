@@ -516,11 +516,19 @@ namespace Utilities
             else
                 throw new NotImplementedException("explicit operator T(Matrix m) - Conversion from N by M Matrix to double not possible when N, M > 1");
         }
-        public static explicit operator Vector(Matrix<double> v)
+        public static explicit operator Vector(Matrix<double> m)
         {
-            if (v.NumCols == 1 || v.NumRows == 1)
+            if (m.NumCols == 1 || m.NumRows == 1)
             {
-                return new Vector(v.ToString());
+
+                Vector v = new Vector(Math.Max(m.NumCols, m.NumRows));
+                int index = 1;
+                foreach (double elem in m)
+                {
+                    v[index] = elem;
+                    index++;
+                }
+                return v;
             }
             else
                 throw new NotImplementedException();

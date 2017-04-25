@@ -50,7 +50,7 @@ class eomRocket(Utilities.EOMS):
         self.Thrust = float(scriptedNode["Propulsion"].Attributes["Thrust"].Value)
         self.BurnTime = float(scriptedNode["Propulsion"].Attributes["BurnTime"].Value)
         self.thrustData = []
-        text_file = open("C:\Users\steve\BitTorrent Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
+        text_file = open("C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
         for line in text_file:
             lines = [float(elt.strip()) for elt in line.split('\t')]
             self.thrustData.append(lines)
@@ -169,8 +169,8 @@ class eomRocket(Utilities.EOMS):
             ay = accInertial[2]
             az = accInertial[3]
             pdot = ((moments[0]) - (self.Izz - self.Iyy)*q*r)/self.Ixx
-            qdot = ((moments[1] + forces[1]*1.5*self.areaRef) - (self.Ixx - self.Izz)*p*r)/self.Iyy
-            rdot = ((moments[2] + forces[2]*1.5*self.areaRef) - (self.Iyy - self.Ixx)*p*q)/self.Izz
+            qdot = ((moments[1] + forces[1]*1.5*0.1524) - (self.Ixx - self.Izz)*p*r)/self.Iyy #Fixme: Don't hardcode diameter
+            rdot = ((moments[2] + forces[2]*1.5*0.1524) - (self.Iyy - self.Ixx)*p*q)/self.Izz
             psidot = (q*math.sin(phi) + r*math.cos(phi))/math.cos(theta)
             thetadot = q*math.cos(phi) - r*math.sin(phi)
             phidot = p + psidot*math.sin(theta)

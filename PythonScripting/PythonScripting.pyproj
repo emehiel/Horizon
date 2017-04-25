@@ -30,6 +30,9 @@
     <Compile Include="AeroPrediction.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Controller.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="eomRocket.py" />
     <Compile Include="GPS.py" />
     <Compile Include="Recovery.py" />

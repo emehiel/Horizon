@@ -24,7 +24,7 @@
 					BurnTime="6.2"
 				></Propulsion>
 				<Atmosphere
-					Type="Standard"
+					Type="RealTime"
 					Date="03-28-2017"
 					Latitude="35.347"
 					Longitude="-117.808" 	
@@ -56,8 +56,8 @@
 				accNonLinearity= "0.5"
 				accCrossAxis= "1"
 				accScaleFactor= "0.0078"
-				accMax= "4"
-				accMin= "-4"
+				accMax= "157"
+				accMin= "-157"
 				accOutputRate= "1000"
 				accBias= "0.080"
 			></Accelerometer>
@@ -73,6 +73,7 @@
 			<DEPENDENCY subsystemName="IMU" fcnName="GYRxFromIMU.asset1"></DEPENDENCY>
 			<DEPENDENCY subsystemName="IMU" fcnName="GYRyFromIMU.asset1"></DEPENDENCY>
 			<DEPENDENCY subsystemName="IMU" fcnName="GYRzFromIMU.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="BaroFromIMU.asset1"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 		Type= "scripted"
@@ -85,6 +86,13 @@
 		subsystemName= "Recovery"
 			src= "C:\Users\steve\Source\Repos\Horizon\PythonScripting\Recovery.py"
 			className= "Recovery">
+		</SUBSYSTEM>
+		<SUBSYSTEM
+		Type="scripted"
+		subsystemName="controller"
+			src="C:\Users\steve\Source\Repos\Horizon\PythonScripting\Controller.py"
+			className="Controller">
+			<DEPENDENCY subsystemName="stateestimator" fcnName="StateFromStateEst"></DEPENDENCY>
 		</SUBSYSTEM>
 	</ASSET>
 </MODEL>

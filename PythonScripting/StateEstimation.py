@@ -315,9 +315,9 @@ class StateEstimation(Subsystem):
         dy[3] = y[6]
         
         #Sum the forces/mass to get the accelerations
-        dy[4] = G[1] + (thrust/mass) - Qp*A/mass/y[13]
-        dy[5] = G[2] - Qp/y[14]
-        dy[6] = G[3] - Qp/y[15]
+        dy[4] = G[1] + (thrust/mass) - Qp*A/mass*y[13]
+        dy[5] = G[2] - Qp*A/mass*y[14]
+        dy[6] = G[3] - Qp*A/mass*y[15]
         
         # Use body angles to get the euler rates
         dy[7] = (q*math.sin(phi) + r*math.cos(phi))/math.cos(tht)
@@ -325,11 +325,11 @@ class StateEstimation(Subsystem):
         dy[9] = p + dy[7]*math.sin(tht)
         
         # Use ang momentum eqns to calculate body rates        
-        dy[10] = (Qp*A/mass/y[16] - (Izz - Iyy)*q*r)/Ixx
+        dy[10] = (Qp*A/mass*y[16] - (Izz - Iyy)*q*r)/Ixx
         Qp = 0.5*rho*math.pow(y[5],2) 
-        dy[11] = ((Qp*A/mass/y[17] + Qp*A/mass/y[14]*1.5*D) - (Ixx - Izz)*p*r)/Iyy
+        dy[11] = ((Qp*A/mass*y[17] + Qp*A/mass*y[14]*1.5*D) - (Ixx - Izz)*p*r)/Iyy
         Qp = 0.5*rho*math.pow(y[6],2) 
-        dy[12] = ((Qp*A/mass/y[18] + Qp*A/mass/y[15]*1.5*D) - (Iyy - Ixx)*p*q)/Izz
+        dy[12] = ((Qp*A/mass*y[18] + Qp*A/mass*y[15]*1.5*D) - (Iyy - Ixx)*p*q)/Izz
 
         # Propagate forward to the next time step
         step = 0

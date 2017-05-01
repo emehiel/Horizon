@@ -35,11 +35,11 @@ class StateEstimation(Subsystem):
         self.asset = asset
         self.state = Vector(18)
         self.state[13] = .4
-        self.state[14] = 27875
-        self.state[15] = 27875
-        self.state[16] = 99999999
-        self.state[17] = 27875
-        self.state[18] = 27875
+        self.state[14] = .1
+        self.state[15] = .1
+        self.state[16] = .01
+        self.state[17] = .02
+        self.state[18] = .02
         self.Pk = Matrix[System.Double](18)
         #self.Pk[1,1] = 1
         #self.Pk[4,4] = 100
@@ -133,53 +133,61 @@ class StateEstimation(Subsystem):
         Cx = state[13]
         Cy = state[14]
         Cz = state[15]
-        ballisticCoeffMX = state[16]
-        ballisticCoeffMY = state[17]
-        ballisticCoeffMZ = state[18]
+        Cl = state[16]
+        Cm = state[17]
+        Cn = state[18]
         
-
+        # Define "constants" Fixme: Load in via xml
+        mass = 20
+        area = 0.0385
+        Ixx = 0.167
+        Iyy = 14.548
+        Izz = 14.548
+        dia = .2214
         # Generate the F matrix
         rho = 1.225*math.exp(-xd/8640)
         F = Matrix[System.Double](18)
         F[1,4] = 1
         F[2,5] = 1
         F[3,6] = 1
-        F[4,1] = -rho*math.pow(xd,2)/16840*Cx/20*.0385
-        F[5,1] = -rho*math.pow(xd,2)/16840*Cy/20*.0385
-        F[6,1] = -rho*math.pow(xd,2)/16840*Cz/20*.0385
-        F[4,4] = rho * xd * Cx/20*.0385
-        F[4,5] = rho * xd * Cy/20*.0385
-        F[4,6] = rho * xd * Cz/20*.0385
-        F[10,10] = -rho*math.pow(xd,2)/16840*ballisticCoeffMX/20*.0385
-        F[11,11] = -rho*math.pow(xd,2)/16840*ballisticCoeffMY/20*.0385
-        F[12,12] = -rho*math.pow(xd,2)/16840*ballisticCoeffMZ/20*.0385
-        F[4,10] = rho * g * xd * ballisticCoeffMX/20*.0385
-        F[5,11] = rho * g * xd * ballisticCoeffMY/20*.0385
-        F[6,12] = rho * g * xd * ballisticCoeffMZ/20*.0385
-        '''
-        F[13,13] = 1
-        F[14,14] = 1
-        F[15,15] = 1
-        F[16,16] = 1
-        F[17,17] = 1
-        F[18,18] = 1
-        '''
-        
-        F[4,7] = g*math.sin(psi)*math.cos(tht)
-        F[4,8] = g*math.sin(tht)*math.cos(psi)
-        F[5,7] = g*(math.cos(phi)*math.cos(psi) + math.sin(phi)*math.sin(psi)*math.sin(tht))
-        F[5,8] = -g*math.cos(psi)*math.cos(tht)*math.sin(phi)
-        F[5,9] = -g*(math.sin(phi)*math.sin(psi) + math.cos(phi)*math.cos(psi)*math.sin(tht))
-        F[6,7] = -g*(math.cos(psi)*math.sin(phi) - math.cos(phi)*math.sin(psi)*math.sin(tht))
-        F[6,8] = -g*math.cos(phi)*math.cos(psi)*math.cos(tht)
-        F[6,9] = -g*(math.cos(phi)*math.sin(psi) - math.cos(psi)*math.sin(phi)*math.sin(tht))
-        F[7,8] = (math.sin(tht)*(r*math.cos(phi) + q*math.sin(phi)))/math.pow(math.cos(tht),2)
+        F[4,1] = -rho*math.pow(xd,2)/16840*Cx/mass*area
+        F[5,1] = -rho*math.pow(yd,2)/16840*Cy/mass*area
+        F[6,1] = -rho*math.pow(zd,2)/16840*Cz/mass*area
+        F[4,4] = rho * xd * Cx/mass*area
+        F[5,5] = rho * yd * Cy/mass*area
+        F[6,6] = rho * zd * Cz/mass*area
+        F[10,10] = -rho*math.pow(xd,2)/16840*Cl/mass*area
+        F[11,11] = -rho*math.pow(xd,2)/16840*Cm/mass*area
+        F[12,12] = -rho*math.pow(xd,2)/16840*Cn/mass*area
+        F[7,8] = math.sin(tht)*(r*math.cos(phi)+q*math.sin(phi))/math.pow(math.cos(tht),2)
         F[7,9] = (q*math.cos(phi) - r*math.sin(phi))/math.cos(tht)
-        F[8,9] = -r*math.cos(phi) - q*math.sin(phi)
-        F[9,8] = r*math.cos(phi) + q*math.sin(phi) + (math.pow(math.sin(tht),2)*(r*math.cos(phi) + q*math.sin(phi)))/math.pow(math.cos(tht),2)
-        F[9,9] = (math.sin(tht)*(q*math.cos(phi) - r*math.sin(phi)))/math.cos(tht)
-        
-        
+        F[8,9] = r*math.cos(phi)-q*math.sin(phi)
+        F[9,8] = r*math.cos(phi)+q*math.sin(phi) + (math.pow(math.sin(tht),2)*(r*math.cos(phi)+q*math.sin(phi)))/math.pow(math.cos(tht), 2)
+        F[9,9] = (math.sin(tht)*(r*math.cos(phi)-q*math.sin(phi)))/math.cos(tht)
+        F[7,11] = math.sin(phi)/math.cos(tht)
+        F[7,12] = math.cos(phi)/math.cos(tht)
+        F[8,11] = math.cos(phi)
+        F[8,12] = math.sin(phi)
+        F[9,10] = 1
+        F[9,11] = math.sin(phi)*math.sin(tht)/math.cos(tht)
+        F[9,12] = math.cos(phi)*math.sin(tht)/math.cos(tht)
+        F[10,1] = rho*math.pow(xd,2)/16840*Cx/mass*area/Ixx
+        F[11,1] = rho*math.pow(yd,2)/16840*Cy/mass*area/Iyy
+        F[12,1] = rho*math.pow(zd,2)/16840*Cz/mass*area/Izz
+        F[10,4] = rho*math.pow(xd,2)*Cl/mass*area/Ixx
+        F[11,4] = rho*math.pow(yd,2)*Cm/mass*area/Iyy
+        F[12,4] = rho*math.pow(zd,2)*Cn/mass*area/Izz
+        F[10,11] = -(r*(Izz-Iyy))/Ixx
+        F[10,12] = -(q*(Izz-Iyy))/Ixx
+        F[11,10] = -(r*(Ixx-Izz))/Iyy
+        F[11,12] = -(p*(Ixx-Izz))/Iyy
+        F[12,10] = -(q*(Iyy-Ixx))/Izz
+        F[12,11] = -(p*(Iyy-Ixx))/Izz
+        F[11,14] = 0.75*rho*math.pow(yd,2)*area*dia/mass
+        F[12,15] = 0.75*rho*math.pow(zd,2)*area*dia/mass
+        F[10,16] = rho*math.pow(xd,2)*area/Ixx/mass
+        F[11,17] = rho*math.pow(yd,2)*area/Iyy/mass
+        F[12,18] = rho*math.pow(zd,2)*area/Izz/mass
         I = Matrix[System.Double].Eye(18);
 
         Phi = Matrix[System.Double](18)
@@ -189,23 +197,23 @@ class StateEstimation(Subsystem):
         
         # FIXME: Just pulled out of thin air
         Q[1,1] = 0.2
-        Q[2,2] = 0.2
-        Q[3,3] = 0.2
-        Q[4,4] = 0.1
-        Q[5,5] = 0.1
-        Q[6,6] = 0.1
-        Q[7,7] = 1
-        Q[8,8] = 1
-        Q[9,9] = 1
+        Q[2,2] = 1.2
+        Q[3,3] = 1.2
+        Q[4,4] = 10
+        Q[5,5] = 10
+        Q[6,6] = 10
+        Q[7,7] = .1
+        Q[8,8] = .1
+        Q[9,9] = .1
         Q[10,10] = 1
         Q[11,11] = 1
         Q[12,12] = 1
-        Q[13,13] = math.pow(.1,2)
-        Q[14,14] = math.pow(.1,2)
-        Q[15,15] = math.pow(.1,2)
-        Q[16,16] = math.pow(.5,2)
-        Q[17,17] = math.pow(.5,2)
-        Q[18,18] = math.pow(.5,2)
+        Q[13,13] = math.pow(.05,2)
+        Q[14,14] = math.pow(.05,2)
+        Q[15,15] = math.pow(.05,2)
+        Q[16,16] = math.pow(.1,2)
+        Q[17,17] = math.pow(.1,2)
+        Q[18,18] = math.pow(.1,2)
         
         #Q = Q * math.pow(300,2)
         #FIXME: Figure out if this necessary
@@ -224,11 +232,12 @@ class StateEstimation(Subsystem):
         H[12,12] = 1
         
         
-        R =Matrix[System.Double].Eye(18)*.01
+        R =Matrix[System.Double].Eye(18)*.0001
+        #R =Matrix[System.Double](18)
         R[1,1] = 10
-        R[4,4] = 0.01 * 0.01
-        R[5,5] = 0.01 * 0.01
-        R[6,6] = 0.01 * 0.01
+        R[4,4] = 0.1 * 0.1
+        R[5,5] = 0.1 * 0.1
+        R[6,6] = 0.1 * 0.1
 
         R[10,10] = 0.03*0.03
         R[11,11] = 0.03*0.03
@@ -292,8 +301,8 @@ class StateEstimation(Subsystem):
                 thrust = datapoint[1]
                 break
         A = 0.0385
-        D = 0.1524
-        Ixx = .167
+        D = 0.2214
+        Ixx = 0.167
         Iyy = 14.548
         Izz = 14.548  
 
@@ -315,22 +324,22 @@ class StateEstimation(Subsystem):
         dy[3] = y[6]
         
         #Sum the forces/mass to get the accelerations
-        dy[4] = G[1] + (thrust/mass) - Qp*A/mass/y[13]
-        dy[5] = G[2] - Qp/y[14]
-        dy[6] = G[3] - Qp/y[15]
-        
+        dy[4] = G[1] + (thrust/mass) - Qp*A/mass*y[13]
+        dy[5] = G[2] - Qp*A/mass*y[14]
+        dy[6] = G[3] - Qp*A/mass*y[15]
         # Use body angles to get the euler rates
         dy[7] = (q*math.sin(phi) + r*math.cos(phi))/math.cos(tht)
         dy[8] = q*math.cos(phi) - r*math.sin(phi)
         dy[9] = p + dy[7]*math.sin(tht)
         
         # Use ang momentum eqns to calculate body rates        
-        dy[10] = (Qp*A/mass/y[16] - (Izz - Iyy)*q*r)/Ixx
-        Qp = 0.5*rho*math.pow(y[5],2) 
-        dy[11] = ((Qp*A/mass/y[17] + Qp*A/mass/y[14]*1.5*D) - (Ixx - Izz)*p*r)/Iyy
-        Qp = 0.5*rho*math.pow(y[6],2) 
-        dy[12] = ((Qp*A/mass/y[18] + Qp*A/mass/y[15]*1.5*D) - (Iyy - Ixx)*p*q)/Izz
-
+        dy[10] = (Qp*A/mass*y[16] - (Izz - Iyy)*q*r)/Ixx
+        dy[11] = ((Qp*A/mass*y[17] + Qp*A/mass*y[14]*1.5*D) - (Ixx - Izz)*p*r)/Iyy
+        dy[12] = ((Qp*A/mass*y[18] + Qp*A/mass*y[15]*1.5*D) - (Iyy - Ixx)*p*q)/Izz
+        #Qp = 0.5*rho*math.pow(y[5],2) 
+        
+        #Qp = 0.5*rho*math.pow(y[6],2) 
+        
         # Propagate forward to the next time step
         step = 0
         dt = ts

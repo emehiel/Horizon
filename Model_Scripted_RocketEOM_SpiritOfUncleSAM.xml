@@ -13,9 +13,9 @@
 				
 
 				<MassProp
-					Ixx="14.548"
+					Izz="14.548"
 					Iyy="14.548"
-					Izz="0.167"
+					Ixx="0.167"
 					InitMass="21.462"
 					FinalMass="18.734"
 				></MassProp>

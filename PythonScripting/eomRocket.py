@@ -151,7 +151,7 @@ class eomRocket(Utilities.EOMS):
             phidot = 0.0
         else:
             #The position of the rocket is simply the velocity integrated
-            velInertial = vel #* Matrix[System.Double].Transpose(self.dcm)
+            velInertial = vel * Matrix[System.Double].Transpose(self.dcm)
             
             vx = velInertial[1]
             vy = velInertial[2]
@@ -169,8 +169,8 @@ class eomRocket(Utilities.EOMS):
             ay = accInertial[2]
             az = accInertial[3]
             pdot = ((moments[0]) - (self.Izz - self.Iyy)*q*r)/self.Ixx
-            qdot = ((moments[1] + forces[1]*1.5*0.1524) - (self.Ixx - self.Izz)*p*r)/self.Iyy #Fixme: Don't hardcode diameter
-            rdot = ((moments[2] + forces[2]*1.5*0.1524) - (self.Iyy - self.Ixx)*p*q)/self.Izz
+            qdot = ((moments[1] + forces[1]*1.5*self.lengthRef) - (self.Ixx - self.Izz)*p*r)/self.Iyy 
+            rdot = ((moments[2] + forces[2]*1.5*self.lengthRef) - (self.Iyy - self.Ixx)*p*q)/self.Izz
             psidot = (q*math.sin(phi) + r*math.cos(phi))/math.cos(theta)
             thetadot = q*math.cos(phi) - r*math.sin(phi)
             phidot = p + psidot*math.sin(theta)

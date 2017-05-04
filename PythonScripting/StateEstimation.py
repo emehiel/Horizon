@@ -37,7 +37,7 @@ class StateEstimation(Subsystem):
         self.state[13] = .4
         self.state[14] = .1
         self.state[15] = .1
-        self.state[16] = .01
+        self.state[16] = 0
         self.state[17] = .02
         self.state[18] = .02
         self.Pk = Matrix[System.Double](18)
@@ -111,9 +111,9 @@ class StateEstimation(Subsystem):
             state[13] = .4
             state[14] = .1
             state[15] = .1
-            state[16] = 0.05
-            state[17] = 0.05
-            state[18] = 0.05
+            state[16] = 0
+            state[17] = 0.02
+            state[18] = 0.02
         g = 9.81
         #Qp = 0.5 * 0.0034 * math.exp(-self.state[1]/22000)
 
@@ -145,7 +145,7 @@ class StateEstimation(Subsystem):
         Izz = 14.548
         dia = .2214
         # Generate the F matrix
-        rho = 1.225*math.exp(-xd/8640)
+        rho = 1.225*math.exp(-x/8640)
         F = Matrix[System.Double](18)
         F[1,4] = 1
         F[2,5] = 1
@@ -156,14 +156,11 @@ class StateEstimation(Subsystem):
         F[4,4] = rho * xd * Cx/mass*area
         F[5,5] = rho * yd * Cy/mass*area
         F[6,6] = rho * zd * Cz/mass*area
-        F[10,10] = -rho*math.pow(xd,2)/16840*Cl/mass*area
-        F[11,11] = -rho*math.pow(xd,2)/16840*Cm/mass*area
-        F[12,12] = -rho*math.pow(xd,2)/16840*Cn/mass*area
         F[7,8] = math.sin(tht)*(r*math.cos(phi)+q*math.sin(phi))/math.pow(math.cos(tht),2)
         F[7,9] = (q*math.cos(phi) - r*math.sin(phi))/math.cos(tht)
         F[8,9] = r*math.cos(phi)-q*math.sin(phi)
         F[9,8] = r*math.cos(phi)+q*math.sin(phi) + (math.pow(math.sin(tht),2)*(r*math.cos(phi)+q*math.sin(phi)))/math.pow(math.cos(tht), 2)
-        F[9,9] = (math.sin(tht)*(r*math.cos(phi)-q*math.sin(phi)))/math.cos(tht)
+        F[9,9] = (math.sin(tht)*(q*math.cos(phi)-r*math.sin(phi)))/math.cos(tht)
         F[7,11] = math.sin(phi)/math.cos(tht)
         F[7,12] = math.cos(phi)/math.cos(tht)
         F[8,11] = math.cos(phi)
@@ -171,12 +168,12 @@ class StateEstimation(Subsystem):
         F[9,10] = 1
         F[9,11] = math.sin(phi)*math.sin(tht)/math.cos(tht)
         F[9,12] = math.cos(phi)*math.sin(tht)/math.cos(tht)
-        F[10,1] = rho*math.pow(xd,2)/16840*Cx/mass*area/Ixx
-        F[11,1] = rho*math.pow(yd,2)/16840*Cy/mass*area/Iyy
-        F[12,1] = rho*math.pow(zd,2)/16840*Cz/mass*area/Izz
+        F[10,1] = -rho*math.pow(xd,2)/16840*Cl/mass*area/Ixx
+        F[11,1] = -rho*math.pow(yd,2)/16840*Cm/mass*area/Iyy
+        F[12,1] = -rho*math.pow(zd,2)/16840*Cn/mass*area/Izz
         F[10,4] = rho*math.pow(xd,2)*Cl/mass*area/Ixx
-        F[11,4] = rho*math.pow(yd,2)*Cm/mass*area/Iyy
-        F[12,4] = rho*math.pow(zd,2)*Cn/mass*area/Izz
+        F[11,5] = rho*math.pow(yd,2)*Cm/mass*area/Iyy
+        F[12,6] = rho*math.pow(zd,2)*Cn/mass*area/Izz
         F[10,11] = -(r*(Izz-Iyy))/Ixx
         F[10,12] = -(q*(Izz-Iyy))/Ixx
         F[11,10] = -(r*(Ixx-Izz))/Iyy
@@ -192,22 +189,24 @@ class StateEstimation(Subsystem):
 
         Phi = Matrix[System.Double](18)
         Phi = I + F*SchedParameters.SimStepSeconds
-
+        #Phi = F
         Q = Matrix[System.Double](18)
         
         # FIXME: Just pulled out of thin air
+        
         Q[1,1] = 0.2
         Q[2,2] = 1.2
         Q[3,3] = 1.2
-        Q[4,4] = 10
-        Q[5,5] = 10
-        Q[6,6] = 10
+        Q[4,4] = .10
+        Q[5,5] = .10
+        Q[6,6] = .10
         Q[7,7] = .1
         Q[8,8] = .1
         Q[9,9] = .1
-        Q[10,10] = 1
-        Q[11,11] = 1
-        Q[12,12] = 1
+        Q[10,10] = .3
+        Q[11,11] = .3
+        Q[12,12] = .3
+        
         Q[13,13] = math.pow(.05,2)
         Q[14,14] = math.pow(.05,2)
         Q[15,15] = math.pow(.05,2)
@@ -239,9 +238,9 @@ class StateEstimation(Subsystem):
         R[5,5] = 0.1 * 0.1
         R[6,6] = 0.1 * 0.1
 
-        R[10,10] = 0.03*0.03
-        R[11,11] = 0.03*0.03
-        R[12,12] = 0.03*0.03
+        #R[10,10] = 10 #0.3*0.3
+        #R[11,11] = 10 #0.3*0.3
+        #R[12,12] = 10 #0.3*0.3
         #print R
         M = Phi*Pk_Previous*Matrix[System.Double].Transpose(Phi) + Q 
         #HMHTR = (H*M*Matrix[System.Double].Transpose(H)+R);
@@ -258,19 +257,19 @@ class StateEstimation(Subsystem):
         
         measure = Vector(18)
         measurements = self.DependencyCollector(event)
-        measure[4] = measurements[1];
-        measure[5] = measurements[2];
-        measure[6] = measurements[3];
-        measure[10] = measurements[4];
-        measure[11] = measurements[5];
-        measure[12] = measurements[6];
-        measure[1] = measurements[7];
+        measure[4] = measurements[1]
+        measure[5] = measurements[2]
+        measure[6] = measurements[3]
+        measure[10] = measurements[4]
+        measure[11] = measurements[5]
+        measure[12] = measurements[6]
+        measure[1] = measurements[7]
 
         #stated = Phi*self.state + G*u + K*(measure -  H*Phi*self.state -  H*G*u)
         
         y = self.Propagate(state, .001, ts) #Fixme: Make not self, pass things in
         #y = y + dy * SchedParameters.SimStepSeconds
-        res = measure-H*y;
+        res = measure-H*y
         #print res
         eststate = y + K*(res)
         #print eststate
@@ -306,6 +305,8 @@ class StateEstimation(Subsystem):
         Iyy = 14.548
         Izz = 14.548  
 
+        dcm = CreateRotationMatrix(psi, tht, phi)
+
         #Estimate the gravity vector position
         g = 9.81
         G = Vector(3)
@@ -324,25 +325,35 @@ class StateEstimation(Subsystem):
         dy[3] = y[6]
         
         #Sum the forces/mass to get the accelerations
-        dy[4] = G[1] + (thrust/mass) - Qp*A/mass*y[13]
-        dy[5] = G[2] - Qp*A/mass*y[14]
-        dy[6] = G[3] - Qp*A/mass*y[15]
+        a = Vector(3)
+        a[1] = (G[1] + (thrust/mass) - Qp*A/mass*y[13])
+        a[2] = (G[2] - Qp*A/mass*y[14])
+        a[3] = (G[3] - Qp*A/mass*y[15])
+        a *=dcm
+        dy[4] = a[1]
+        dy[5] = a[2]
+        dy[6] = a[3]
         # Use body angles to get the euler rates
         dy[7] = (q*math.sin(phi) + r*math.cos(phi))/math.cos(tht)
         dy[8] = q*math.cos(phi) - r*math.sin(phi)
         dy[9] = p + dy[7]*math.sin(tht)
-        
+
+        m = Vector(3)
         # Use ang momentum eqns to calculate body rates        
-        dy[10] = (Qp*A/mass*y[16] - (Izz - Iyy)*q*r)/Ixx
-        dy[11] = ((Qp*A/mass*y[17] + Qp*A/mass*y[14]*1.5*D) - (Ixx - Izz)*p*r)/Iyy
-        dy[12] = ((Qp*A/mass*y[18] + Qp*A/mass*y[15]*1.5*D) - (Iyy - Ixx)*p*q)/Izz
-        #Qp = 0.5*rho*math.pow(y[5],2) 
-        
-        #Qp = 0.5*rho*math.pow(y[6],2) 
-        
+        m[1] = ((Qp*A/mass*y[16] - (Izz - Iyy)*q*r)/Ixx)
+        Qp = 0.5*rho*math.pow(y[5],2) 
+        m[2] = (((Qp*A/mass*y[17] + Qp*A/mass*y[14]*1.5*D) - (Ixx - Izz)*p*r)/Iyy)
+        Qp = 0.5*rho*math.pow(y[6],2) 
+        m[3] = (((Qp*A/mass*y[18] + Qp*A/mass*y[15]*1.5*D) - (Iyy - Ixx)*p*q)/Izz)
+
+        m *= dcm
+        dy[10] = m[1]
+        dy[11] = m[2]
+        dy[12] = m[3]
         # Propagate forward to the next time step
         step = 0
         dt = ts
+        #dt = .02
         while(step<SchedParameters.SimStepSeconds):
             y = y + dy*dt
             step = step + ts
@@ -359,4 +370,43 @@ def DiscreteQ( Q, Ts, a):
         Qd = Matrix[System.Double].Transpose(phi22)*phi12
         Qd = (Qd+Matrix[System.Double].Transpose(Qd))/2; # Make sure Qd is symmetric
         return Qd
+def CreateRotationMatrix(psi, tht, phi):
+    # Returns the Body to Inertial dcm using a 3-2-1 Euler sequence
+    # psi = rotation about z (1)
+    # tht = rotation about y (2)
+    # phi = rotation about x (3)
+
+    # Pre-do all of the trig 
+    cp = math.cos(psi)
+    cq = math.cos(tht)
+    cr = math.cos(phi)
+
+    sp = math.sin(psi)
+    sq = math.sin(tht)
+    sr = math.sin(phi)
+
+
+
+    C1 = Matrix[System.Double](3)
+    C2 = Matrix[System.Double](3)
+    C3 = Matrix[System.Double](3)
+    C1[1,1] = cp
+    C1[1,2] = sp
+    C1[2,1] = -sp
+    C1[2,2] = cp
+    C1[3,3] = 1
+
+    C2[2,2] = 1
+    C2[1,1] = cq
+    C2[3,1] = sq
+    C2[1,3] = -sq
+    C2[3,3] = cq
+
+    C3[1,1] = 1
+    C3[2,2] = cr
+    C3[2,3] = sr
+    C3[3,2] = -sr
+    C3[3,3] = cr
+
+    return Matrix[System.Double].Transpose(C3*C2*C1)
 

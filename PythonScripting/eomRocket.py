@@ -11,7 +11,7 @@ clr.AddReferenceByName('HSFUniverse')
 clr.AddReferenceByName('Horizon')
 clr.AddReferenceByName('MissionElements')
 clr.AddReferenceByName('UserModel')
-import Horizon
+#import Horizon
 import Utilities
 import HSFUniverse
 import math
@@ -22,7 +22,7 @@ import Aerodynamics
 
 from UserModel import XmlParser
 from MissionElements import Asset
-from Horizon import Program
+#from Horizon import Program
 from Utilities import *
 from HSFUniverse import *
 from System.Collections.Generic import Dictionary
@@ -34,7 +34,7 @@ class eomRocket(Utilities.EOMS):
     
     def __init__(self, scriptedNode):
         # Aerodynamics
-        self.aero = Aerodynamics.Aerodynamics();
+        self.aero = Aerodynamics.Aerodynamics()
         self.printOnce = True
         #Mass Properties
         # Assume a constant Inertia Matrix for now
@@ -70,14 +70,17 @@ class eomRocket(Utilities.EOMS):
 
         # Physical Properties
         self.groundlevel = float(scriptedNode.Attributes["Ground"].Value)
-        self.lengthRef = float(scriptedNode.Attributes["ReferenceLength"].Value);
-        self.areaRef = float(scriptedNode.Attributes["ReferenceArea"].Value);
+        self.lengthRef = float(scriptedNode.Attributes["ReferenceLength"].Value)
+        self.areaRef = float(scriptedNode.Attributes["ReferenceArea"].Value)
 
         # Intgrator Parameter Keys
-        self.DROGUE_DEPLOYED = StateVarKey[System.Boolean]("asset1.drogue");
-        self.MAIN_DEPLOYED = StateVarKey[System.Boolean]("asset1.main");
-        self.ACCELERATION = StateVarKey[Vector]("asset1.accel");
-        self.GYROSCOPE = StateVarKey[Vector]("asset1.gyro");
+        self.DROGUE_DEPLOYED = StateVarKey[System.Boolean]("asset1.drogue")
+        self.MAIN_DEPLOYED = StateVarKey[System.Boolean]("asset1.main")
+        self.ACCELERATION = StateVarKey[Vector]("asset1.accel")
+        self.GYROSCOPE = StateVarKey[Vector]("asset1.gyro")
+        self.dcx= StateVarKey[System.Double]("asset1.dcx");
+        self.dcy = StateVarKey[System.Double]("asset1.dcy")
+        self.dcz = StateVarKey[System.Double]("asset1.dcz")
     def PythonAccessor(self, t, y, param):
         # X -> Through the nose
         # p = roll, q = pitch, r = yaw
@@ -102,8 +105,8 @@ class eomRocket(Utilities.EOMS):
         G = self.dcm*G
         aero = self.aero.CurrentAero(mach)
        # print mach
-        self.Cx = aero[0]
-        self.Cy = aero[1]
+        self.Cx = aero[0] +.1
+        self.Cy = aero[1] 
         self.Cz = aero[2]
         self.Cm = aero[3]
         self.Cl = aero[4]
@@ -126,7 +129,15 @@ class eomRocket(Utilities.EOMS):
             self.cn = 0.0
 
         forces = self.ForceCalculation(alt,velB, mass)
+        self.Cx += param.GetValue(self.dcx)
+        self.Cy += param.GetValue(self.dcy)
+        self.Cz += param.GetValue(self.dcz)
+        forceControl = self.ForceCalculation(alt, velB, mass)
+        forceControl[0] -= forces[0]
+        forceControl[1] -= forces[1]
+        forceControl[2] -= forces[2]
         moments = self.MomentCalculations(alt, velB)
+        #print forceControl, moments
         psi = y[7,1]
         theta = y[8,1]
         phi = y[9,1]
@@ -168,9 +179,9 @@ class eomRocket(Utilities.EOMS):
             ax = accInertial[1]
             ay = accInertial[2]
             az = accInertial[3]
-            pdot = ((moments[0]) - (self.Izz - self.Iyy)*q*r)/self.Ixx
-            qdot = ((moments[1] + forces[1]*1.5*self.lengthRef) - (self.Ixx - self.Izz)*p*r)/self.Iyy 
-            rdot = ((moments[2] + forces[2]*1.5*self.lengthRef) - (self.Iyy - self.Ixx)*p*q)/self.Izz
+            pdot = ((moments[0] + forceControl[0]*self.lengthRef) - (self.Izz - self.Iyy)*q*r)/self.Ixx
+            qdot = ((moments[1] + (forces[1])*1.5*self.lengthRef  + forceControl[1]*1) - (self.Ixx - self.Izz)*p*r)/self.Iyy #Fixme: Find canard to CG distance
+            rdot = ((moments[2] + (forces[2])*1.5*self.lengthRef  + forceControl[2]*1) - (self.Iyy - self.Ixx)*p*q)/self.Izz
             psidot = (q*math.sin(phi) + r*math.cos(phi))/math.cos(theta)
             thetadot = q*math.cos(phi) - r*math.sin(phi)
             phidot = p + psidot*math.sin(theta)
@@ -178,12 +189,12 @@ class eomRocket(Utilities.EOMS):
         #print self.dcm
         accel = Vector(3)
         gyro = Vector(3)
-        accel[1] = ax;
-        accel[2] = ay;
-        accel[3] = az;
-        gyro[1] = pdot;
-        gyro[2] = qdot;
-        gyro[3] = rdot;
+        accel[1] = ax
+        accel[2] = ay
+        accel[3] = az
+        gyro[1] = pdot
+        gyro[2] = qdot
+        gyro[3] = rdot
         param.Add(self.ACCELERATION, accel)
         param.Add(self.GYROSCOPE, gyro)
         dy[1,1] = vx
@@ -235,8 +246,8 @@ class eomRocket(Utilities.EOMS):
         
     def GetRelativeVelocity(self, alt, y):
         # Rename variables for later
-        u = self.atmos.uVelocity(alt);
-        v = self.atmos.vVelocity(alt);
+        u = self.atmos.uVelocity(alt)
+        v = self.atmos.vVelocity(alt)
 
         vel = Vector(3)
         vel[1] = y[4,1]

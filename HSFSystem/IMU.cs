@@ -164,27 +164,24 @@ namespace HSFSystem
 
             Vector reading = new Vector(3);
 
-            reading[1] = (truth[1] + noiseX);
-            reading[2] = (truth[2] + noiseY);
-            reading[3] = (truth[3] + noiseZ);
+            reading[1] = truth[1];// + noiseX;
+            reading[2] = truth[2];// + noiseY;
+            reading[3] = truth[3];// + noiseZ;
             /* Check for Saturation of sensor */
             int i = 1;
             foreach( double val in reading)
             {
                 if (val > _gyrMax) { reading[i] = _gyrMax; }
-                if (val < _gyrMin)
-                {
-                    reading[i] = _gyrMin;
-                }
+                if (val < _gyrMin) { reading[i] = _gyrMin; }
                 i++;
             }
             return reading;
         }
         public Vector Accelerometer(Vector truth)
         {
-            double noiseX = GaussianWhiteNoise(0, _accNoiseDensity*_accOutputRate);
-            double noiseY = GaussianWhiteNoise(0, _accNoiseDensity * _accOutputRate);
-            double noiseZ = GaussianWhiteNoise(0, _accNoiseDensity * _accOutputRate);
+            double noiseX = GaussianWhiteNoise(0, _accNoiseDensity); // * _accOutputRate);
+            double noiseY = GaussianWhiteNoise(0, _accNoiseDensity); // * _accOutputRate);
+            double noiseZ = GaussianWhiteNoise(0, _accNoiseDensity); // * _accOutputRate);
 
             Vector reading = new Vector(3);
 
@@ -315,7 +312,7 @@ namespace HSFSystem
             HSFProfile<double> prof1 = new HSFProfile<double>();
             double ts = currentEvent.GetEventStart(Asset);
             Vector pos = Asset.AssetDynamicState.PositionECI(ts);
-            double noise = GaussianWhiteNoise(0, 12); // Sensor absolute accuracy +-1.5 mbar, ~8m = 1mbar at sea level
+            double noise = GaussianWhiteNoise(0, 12); // FIXME: Sensor absolute accuracy +-1.5 mbar, ~8m = 1mbar at sea level
             prof1[ts] = pos[1]- 6378633;
             return prof1;
         }

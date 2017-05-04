@@ -254,7 +254,7 @@ namespace HSFUniverse
                         if (simTime >= SimParameters.SimEndSeconds)
                             slopeInd = -1;
                         KeyValuePair<double, Vector> lowerData = _stateData.ElementAt(lowerIndex);
-                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
+                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd); 
 
                         double lowerTime = lowerData.Key;
                         Vector lowerState = lowerData.Value;
@@ -303,15 +303,18 @@ namespace HSFUniverse
             string vx = Name + "_V_x,";
             string vy = Name + "_V_y,";
             string vz = Name + "_V_z,";
+            string psi = Name + "_psi,";
+            string tht = Name + "_theta,";
+            string phi = Name + "_phi,";
             string p = Name + "_p,";
             string q = Name + "_q,";
             string r = Name + "_r,";
             // header
-            csv.AppendLine(t + rx + ry + rz + vx + vy + vz + p + q + r);
+            csv.AppendLine(t + rx + ry + rz + vx + vy + vz + psi + tht + phi + p + q + r);
 
             // data
             foreach (var d in _stateData)
-                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6] + "," + d.Value[7] + "," + d.Value[8] + "," + d.Value[9]);
+                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6] + "," + d.Value[7] + "," + d.Value[8] + "," + d.Value[9] + "," + d.Value[10] + "," + d.Value[11] + "," + d.Value[12]);
 
             return csv.ToString();
         }

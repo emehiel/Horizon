@@ -28,7 +28,10 @@ namespace Utilities
         {
             string pythonFilePath = "", className = "";
             XmlParser.ParseScriptedSrc(scriptedNode, ref pythonFilePath, ref className);
-            var engine = Python.CreateEngine();
+            Dictionary<string, object> options = new Dictionary<string, object>();
+            options["Debug"] = true;
+            var engine = Python.CreateEngine(options);
+            //var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
             var p = engine.GetSearchPaths();

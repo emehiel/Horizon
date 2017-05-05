@@ -50,7 +50,7 @@ class StateEstimation(Subsystem):
         self.addKey(self.KALMAN_KEY)
         #FIXME: make better
         self.thrustData = []
-        text_file = open("C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
+        text_file = open("C:\Users\steve\BitTorrent Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
         for line in text_file:
             lines = [float(elt.strip()) for elt in line.split('\t')]
             self.thrustData.append(lines)

@@ -50,7 +50,7 @@ class eomRocket(Utilities.EOMS):
         self.Thrust = float(scriptedNode["Propulsion"].Attributes["Thrust"].Value)
         self.BurnTime = float(scriptedNode["Propulsion"].Attributes["BurnTime"].Value)
         self.thrustData = []
-        text_file = open("C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
+        text_file = open("C:\Users\steve\Bittorrent Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
         for line in text_file:
             lines = [float(elt.strip()) for elt in line.split('\t')]
             self.thrustData.append(lines)
@@ -105,7 +105,7 @@ class eomRocket(Utilities.EOMS):
         G = self.dcm*G
         aero = self.aero.CurrentAero(mach)
        # print mach
-        self.Cx = aero[0] +.1
+        self.Cx = aero[0] +.09
         self.Cy = aero[1] 
         self.Cz = aero[2]
         self.Cm = aero[3]

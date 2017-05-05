@@ -45,7 +45,7 @@ class Controller(Subsystem):
         self.Asset.AssetDynamicState.IntegratorParameters.Add(self.DELTA_CZ, 0)
         self.A = 0.510458340443047
         self.B = -0.489541659556953
-        self.deltaDeflection = 200*.02 * Math.PI/180 # 200 deg/s * Time Step -> radians
+        self.deltaDeflection = 50*.02 * Math.PI/180 # 200 deg/s * Time Step -> radians
         self.deflectionOld = Matrix[System.Double](4,1)
         pass
     def GetDependencyDictionary(self):
@@ -62,40 +62,71 @@ class Controller(Subsystem):
         controlState = state[MatrixIndex(7,12), 1]
 
         kest = Matrix[System.Double](4,6)
+        ''' 
+        kest[1,1] = -1.0351
+        kest[2,1] = 1.1795
+        kest[3,1] = -1.0351
+        kest[4,1] = 1.1795
         
-        kest[1,1] = -1.0380
-        kest[2,1] = 1.1786
-        kest[3,1] = -1.0380
-        kest[4,1] = 1.1786
-        
-        kest[1,2] = 1.1787
-        kest[2,2] = -1.0380
-        kest[3,2] = 1.1787
-        kest[4,2] = -1.0380
+        kest[1,2] = 1.1761
+        kest[2,2] = -1.0371
+        kest[3,2] = 1.1761
+        kest[4,2] = -1.0371
 
-        kest[1,3] = 1.5130
-        kest[2,3] = 1.5118
-        kest[3,3] = 1.5130
-        kest[4,3] = 1.5118
+        kest[1,3] = 1.5098
+        kest[2,3] = 1.5149
+        kest[3,3] = 1.5098
+        kest[4,3] = 1.5149
         
-        kest[1,4] = 4.6866
-        kest[2,4] = 5.4339
-        kest[3,4] = 4.6866
-        kest[4,4] = 5.4339
         
-        kest[1,5] = -37.5448
-        kest[2,5] = -50.0040
-        kest[3,5] = -37.5448
-        kest[4,5] = -50.0040
+        kest[1,4] = 1.5310
+        kest[2,4] = -4.3951
+        kest[3,4] = 1.5310
+        kest[4,4] = -4.3951
         
-        kest[1,6] = -42.0970
-        kest[2,6] = -45.4518
-        kest[3,6] = -42.0970
-        kest[4,6] = -45.4518
+        kest[1,5] = -3.2225
+        kest[2,5] = -54.9069
+        kest[3,5] = -3.2225
+        kest[4,5] = -54.9069
         
+        kest[1,6] = -8.3853
+        kest[2,6] = -59.4790
+        kest[3,6] = -8.3853
+        kest[4,6] = -59.4790
+        '''
+        '''
+        kest[1,1] = -1.0864
+        kest[2,1] = 1.1284
+        kest[3,1] = -1.0864
+        kest[4,1] = 1.1284
+        
+        kest[1,2] = 1.1302
+        kest[2,2] = -1.0848
+        kest[3,2] = 1.1302
+        kest[4,2] = -1.0848
 
+        kest[1,3] = 4.6685
+        kest[2,3] = 4.6685
+        kest[3,3] = 4.6685
+        kest[4,3] = 4.6685
+
+        kest[1,4] = 0.6221
+        kest[2,4] = 1.1308
+        kest[3,4] = 0.6221
+        kest[4,4] = 1.1308
+        
+        kest[1,5] = 12.2138
+        kest[2,5] = 2.0852
+        kest[3,5] = 12.2138
+        kest[4,5] = 2.0852
+        
+        kest[1,6] = 7.6379
+        kest[2,6] = 7.0348
+        kest[3,6] = 7.6379
+        kest[4,6] = 7.0348
+        '''
         deflection = kest*controlState
-
+        
         cn = Vector(4)
         mach = state[4,1]/spdOfSnd
         for fin in range(4):

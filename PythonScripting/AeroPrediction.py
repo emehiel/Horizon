@@ -22,9 +22,11 @@ class AeroPrediction:
         self. Ct = 0.076
         self.l = 0.21866
         self.Aref = Math.PI/4*Math.Pow(self.dia, 2)
+        self.t = .00375
         
+          
     def SkinFrictionDrag(self, spdOfSound, kinematicViscosity, vel):
-        
+        K = 0.0004 #Surface Roughness Coefficient
         velocity = Vector.Norm(vel) * 3.28084
 
         length = self.l * 39.3701 # Convert to inches
@@ -46,7 +48,7 @@ class AeroPrediction:
             + 0.063200 * Math.Pow(mach, 3) \
             - 0.009330 * Math.Pow(mach, 4) \
             + 0.000549 * Math.Pow(mach, 5))
-        incompressCFrough = 1 / Math.Pow(1.89 + 1.62 * Math.log10(length/K), 2.5)
+        incompressCFrough = 1 / Math.Pow(1.89 + 1.62 * Math.Log10(length/K), 2.5)
         compressCFrough = incompressCFrough / (1 + 0.2044*Math.Pow(mach, 2))
 
         Cf = max(compressCF, compressCFrough)
@@ -54,6 +56,46 @@ class AeroPrediction:
         Cdf = Cf * (1 + 60/Math.Pow(length/ dia, 3) + 0.0025 *(length/dia)) * 4 * Sb/ Math.PI / Math.Pow(dia, 2)
 
         return Cdf
+    def FinFrictionDrag(self, spdOfSound, kinematicViscosity, vel):
+        K = 0.0004 #Surface Roughness Coefficient
+        velocity = Vector.Norm(vel) * 3.28084
+        mach = velocity/spdOfSnd
+        Ct = self.Ct * 39.3701
+        Cr = self.Cr * 39.3701
+        height = self.height * 39.3701
+        t = self.t * 39.3701
+        Sf = height*(Cr+Ct)
+        dia = self.dia * 39.3701
+        X = X * 39.3701
+        Xbar = X/Cr
+        compressRe = spdOfSnd * mach * Cr / 12 / kinematicViscosity * (1 \
+            + 0.028300 * Math.Pow(mach, 1) \
+            - 0.043000 * Math.Pow(mach, 2) \
+            + 0.210700 * Math.Pow(mach, 3) \
+            - 0.038290 * Math.Pow(mach, 4) \
+            + 0.002709 * Math.Pow(mach, 5))
+        incompressCF =  0.037036 * Math.Pow(compressRe, -0.155079)
+        compressCF = incompressCF * ( 1 \
+            + 0.007980 * Math.Pow(mach, 1) \
+            - 0.181300 * Math.Pow(mach, 2) \
+            + 0.063200 * Math.Pow(mach, 3) \
+            - 0.009330 * Math.Pow(mach, 4) \
+            + 0.000549 * Math.Pow(mach, 5))
+        incompressCFrough = 1 / Math.Pow(1.89 + 1.62 * Math.Log10(Cr/K), 2.5)
+        compressCFrough = incompressCFrough / (1 + 0.2044*Math.Pow(mach, 2))
+
+        Cf = max(compressCF, compressCFrough)
+
+        Re = spdOfSnd * mach * Cr / 12 / kinematicViscosity
+        finRatio = Ct/Cr
+
+        CfFin = Cf*Math.Pow(Math.Log10(Re),2.6)/(Math.Pow(finRatio,2) - 1) * \
+            Math.Pow(finRatio, 2)/Math.Pow(Math.Log10(finRatio*Re),2.6) - \
+            1 / Math.Pow(Math.Log10(Re),2.6) + \
+            .5646*(Math.Pow(finRatio, 2)/Math.Pow(Math.Log10(finRatio*Re),3.6) - \
+            1 / Math.Pow(Math.Log10(Re),3.6))
+
+        CfAll = CfFin*(1 + 60*Math.Pow(t/Cr, 4) + 0.8*(1+5*Math.Pow(Xbar, 2))*(t/Cr))*4*self.Nf*Sf/Math.PI/Math.Pow(dia, 2)
 
     def CalcSpdOfSnd(alt):
         height = alt * 3.28084 # Convert to ft because that is what emperical model uses

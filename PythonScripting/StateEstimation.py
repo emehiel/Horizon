@@ -50,7 +50,7 @@ class StateEstimation(Subsystem):
         self.addKey(self.KALMAN_KEY)
         #FIXME: make better
         self.thrustData = []
-        text_file = open("C:\Users\steve\BitTorrent Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
+        text_file = open("C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt", "r")
         for line in text_file:
             lines = [float(elt.strip()) for elt in line.split('\t')]
             self.thrustData.append(lines)
@@ -197,9 +197,9 @@ class StateEstimation(Subsystem):
         Q[1,1] = 0.2
         Q[2,2] = 1.2
         Q[3,3] = 1.2
-        Q[4,4] = .10
-        Q[5,5] = .10
-        Q[6,6] = .10
+        Q[4,4] = .1
+        Q[5,5] = .1
+        Q[6,6] = .1
         Q[7,7] = .1
         Q[8,8] = .1
         Q[9,9] = .1
@@ -207,12 +207,12 @@ class StateEstimation(Subsystem):
         Q[11,11] = .3
         Q[12,12] = .3
         
-        Q[13,13] = math.pow(.05,2)
-        Q[14,14] = math.pow(.05,2)
-        Q[15,15] = math.pow(.05,2)
-        Q[16,16] = math.pow(.1,2)
-        Q[17,17] = math.pow(.1,2)
-        Q[18,18] = math.pow(.1,2)
+        Q[13,13] = .1 #math.pow(.05,2)
+        Q[14,14] = .1 #math.pow(.05,2)
+        Q[15,15] = .1 #math.pow(.05,2)
+        Q[16,16] = .1 #math.pow(.1,2)
+        Q[17,17] = .1 #math.pow(.1,2)
+        Q[18,18] = .1 #math.pow(.1,2)
         
         #Q = Q * math.pow(300,2)
         #FIXME: Figure out if this necessary
@@ -238,9 +238,9 @@ class StateEstimation(Subsystem):
         R[5,5] = 0.1 * 0.1
         R[6,6] = 0.1 * 0.1
 
-        #R[10,10] = 10 #0.3*0.3
-        #R[11,11] = 10 #0.3*0.3
-        #R[12,12] = 10 #0.3*0.3
+        R[10,10] = 10 #0.3*0.3
+        R[11,11] = 10 #0.3*0.3
+        R[12,12] = 10 #0.3*0.3
         #print R
         M = Phi*Pk_Previous*Matrix[System.Double].Transpose(Phi) + Q 
         #HMHTR = (H*M*Matrix[System.Double].Transpose(H)+R);

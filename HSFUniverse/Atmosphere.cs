@@ -122,7 +122,8 @@ namespace HSFUniverse
         }
         public override double density(double height)
         {
-            return pressure(height) / temperature(height) / IDEAL_GAS;
+            double dens = pressure(height) / temperature(height) / IDEAL_GAS;
+            return dens;
         }
         public override double uVelocity(double height)
         {
@@ -209,7 +210,7 @@ namespace HSFUniverse
             Dictionary<double, double> h = new Dictionary<double, double>();
             Dictionary<double, double> t = new Dictionary<double, double>();
 
-            // FIXME: Make coimputer agnostic
+            // FIXME: Make computer agnostic
             Environment.SetEnvironmentVariable("GRIB_API_DIR_ROOT",  @"C:\Users\steve\Source\Repos\Horizon\packages\Grib.Api.0.7.1", EnvironmentVariableTarget.Process);
             if (string.IsNullOrEmpty(_filePath))
             {
@@ -383,7 +384,8 @@ namespace HSFUniverse
         }
         public override double density(double height)
         {
-           return pressure(height) / temperature(height) / IDEAL_GAS;
+            double dens = pressure(height) / temperature(height) / IDEAL_GAS;
+            return dens;
         }
         public override double pressure(double height)
         {

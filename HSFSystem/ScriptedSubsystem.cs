@@ -100,7 +100,7 @@ namespace HSFSubsystem
             IsEvaluated = true;
 
             // Call the can perform method that is in the python class
-            dynamic perform = _pythonInstance.CanPerform(proposedEvent, environment);
+             dynamic perform = _pythonInstance.CanPerform(proposedEvent, environment);
             return (bool)perform;
         }
 

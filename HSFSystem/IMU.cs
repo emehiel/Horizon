@@ -17,6 +17,7 @@ namespace HSFSystem
         #region Attributes
         // TODO update keys to accept vector
         protected StateVarKey<Matrix<double>> MEASURE_KEY;
+        protected StateVarKey<Matrix<double>> CX_KEY;
         protected double _accNoiseDensity = 0;
         protected double _accNaturalFrequency = 150;
         protected double _accDampingratio = 0.707;
@@ -109,6 +110,9 @@ namespace HSFSystem
             dependencies.Add("BaroFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_BaroMeasurementsFrom_IMUSUB));
             MEASURE_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "measurements");
             addKey(MEASURE_KEY);
+            CX_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "Cx");
+            addKey(CX_KEY);
+            Asset.AssetDynamicState.IntegratorParameters.Add(CX_KEY, new Matrix<double>(new double[1, 2] { { 0, 0 } }));
         }
         #endregion
         #region Overrides
@@ -147,6 +151,14 @@ namespace HSFSystem
             {
                 Console.WriteLine("Key Not Found x");
             }
+            try
+            {
+                _newState.AddValue(CX_KEY, new HSFProfile<Matrix<double>>(ts, Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Matrix<double>>("asset1.Cx"))));
+            }
+            catch
+            {
+                Console.WriteLine("Cx key not found");
+            }
             Matrix<double> gyr = Gyroscope(gyro);
             Matrix<double> acc = Accelerometer(new Vector(3));
             Matrix<double> measure = new Matrix<double>(6, 1);
@@ -164,9 +176,9 @@ namespace HSFSystem
 
             Vector reading = new Vector(3);
 
-            reading[1] = truth[1];// + noiseX;
-            reading[2] = truth[2];// + noiseY;
-            reading[3] = truth[3];// + noiseZ;
+            reading[1] = truth[1] + noiseX;
+            reading[2] = truth[2] + noiseY;
+            reading[3] = truth[3] + noiseZ;
             /* Check for Saturation of sensor */
             int i = 1;
             foreach( double val in reading)

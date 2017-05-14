@@ -18,6 +18,7 @@ import math
 import MissionElements
 import UserModel
 import Aerodynamics
+import AeroPrediction
 #import csv
 
 from UserModel import XmlParser
@@ -35,7 +36,8 @@ class eomRocket(Utilities.EOMS):
     def __init__(self, scriptedNode):
         # Aerodynamics
         self.aero = Aerodynamics.Aerodynamics()
-        self.printOnce = True
+        self.drag = AeroPrediction.AeroPrediction();
+        self.printOnce = True #FIXME:
         #Mass Properties
         # Assume a constant Inertia Matrix for now
         self.Ixx = float(scriptedNode["MassProp"].Attributes["Ixx"].Value)
@@ -65,7 +67,7 @@ class eomRocket(Utilities.EOMS):
             long = float(scriptedNode["Atmosphere"].Attributes["Longitude"].Value)
             self.atmos.SetLocation(lat, long)
         else:
-            Exception;
+            Exception
         self.atmos.CreateAtmosphere()
 
         # Physical Properties
@@ -78,10 +80,11 @@ class eomRocket(Utilities.EOMS):
         self.MAIN_DEPLOYED = StateVarKey[System.Boolean]("asset1.main")
         self.ACCELERATION = StateVarKey[Vector]("asset1.accel")
         self.GYROSCOPE = StateVarKey[Vector]("asset1.gyro")
-        self.dcx= StateVarKey[System.Double]("asset1.dcx")
+        self.dcx= StateVarKey[System.Double]("asset1.dcx");
         self.dcy = StateVarKey[System.Double]("asset1.dcy")
         self.dcz = StateVarKey[System.Double]("asset1.dcz")
-        self.pressure = StateVarKey[System.Double]("asset1.pressure")
+        self.CX_KEY = StateVarKey[Matrix[System.Double]]("asset1.cx")
+        
     def PythonAccessor(self, t, y, param):
         # X -> Through the nose
         # p = roll, q = pitch, r = yaw
@@ -105,13 +108,18 @@ class eomRocket(Utilities.EOMS):
         G[1] = -9.81
         G = self.dcm*G
         aero = self.aero.CurrentAero(mach)
-       # print mach
-        self.Cx = aero[0] 
-        self.Cy = aero[1] 
-        self.Cz = aero[2]
+
+        alpha = math.acos(vel[1]/vel[2])
+        beta = math.acos(vel[1]/vel[3])
+        deflection = Vector(4)
+        #print alpha, beta
+        self.Cx = self.drag.DragCoefficient(alt, vel);
+        self.Cy = self.drag.NormalForceCoefficient(alt, vel, alpha, deflection) 
+        self.Cz = self.drag.SideForceCoefficient(alt, vel, beta, deflection)
         self.Cm = aero[3]
         self.Cl = aero[4]
         self.Cn = aero[5]
+        print self.Cx, self.Cy, self.Cz
         if param.GetValue(self.DROGUE_DEPLOYED):
             self.Cx = 0.62
             self.areaRef = 0.4022702
@@ -130,13 +138,14 @@ class eomRocket(Utilities.EOMS):
             self.cn = 0.0
 
         forces = self.ForceCalculation(alt,velB, mass)
-        self.Cx += param.GetValue(self.dcx)
-        self.Cy += param.GetValue(self.dcy)
-        self.Cz += param.GetValue(self.dcz)
-        forceControl = self.ForceCalculation(alt, velB, mass)
-        forceControl[0] -= forces[0]
-        forceControl[1] -= forces[1]
-        forceControl[2] -= forces[2]
+        forceControl = Vector(3)
+        #self.Cl += param.GetValue(self.dcx)
+        #self.Cy += param.GetValue(self.dcy)
+        #self.Cz += param.GetValue(self.dcz)
+        #forceControl = self.ForceCalculation(alt, velB, mass)
+        #forceControl[0] -= forces[0]
+        #forceControl[1] -= forces[1]
+        #forceControl[2] -= forces[2]
         moments = self.MomentCalculations(alt, velB)
         #print forceControl, moments
         psi = y[7,1]
@@ -180,9 +189,9 @@ class eomRocket(Utilities.EOMS):
             ax = accInertial[1]
             ay = accInertial[2]
             az = accInertial[3]
-            pdot = ((moments[0] + forceControl[0]*self.lengthRef) - (self.Izz - self.Iyy)*q*r)/self.Ixx
-            qdot = ((moments[1] + (forces[1])*1.5*self.lengthRef  + forceControl[1]*1) - (self.Ixx - self.Izz)*p*r)/self.Iyy #Fixme: Find canard to CG distance
-            rdot = ((moments[2] + (forces[2])*1.5*self.lengthRef  + forceControl[2]*1) - (self.Iyy - self.Ixx)*p*q)/self.Izz
+            pdot = ((moments[0] + forceControl[1]*self.lengthRef) - (self.Izz - self.Iyy)*q*r)/self.Ixx
+            qdot = ((moments[1] + (forces[1])*1.5*self.lengthRef  + forceControl[2]*1) - (self.Ixx - self.Izz)*p*r)/self.Iyy #Fixme: Find canard to CG distance
+            rdot = ((moments[2] + (forces[2])*1.5*self.lengthRef  + forceControl[3]*1) - (self.Iyy - self.Ixx)*p*q)/self.Izz
             psidot = (q*math.sin(phi) + r*math.cos(phi))/math.cos(theta)
             thetadot = q*math.cos(phi) - r*math.sin(phi)
             phidot = p + psidot*math.sin(theta)
@@ -196,9 +205,15 @@ class eomRocket(Utilities.EOMS):
         gyro[1] = pdot
         gyro[2] = qdot
         gyro[3] = rdot
+
+        cxTemp = Matrix[System.Double](1,2)
+        cxTemp[1,1] = mach
+        cxTemp[1,2] = self.Cx
+        param.Add(self.CX_KEY, cxTemp)
         param.Add(self.ACCELERATION, accel)
         param.Add(self.GYROSCOPE, gyro)
-        param.Add(self.pressure, self.atmos.pressure(alt))
+
+
         dy[1,1] = vx
         dy[2,1] = vy
         dy[3,1] = vz

@@ -142,14 +142,16 @@ namespace HSFSystem
             var state = Asset.AssetDynamicState.DynamicStateECI(proposedEvent.GetEventStart(Asset));
             Vector gyro = new Vector(3);
             Vector accel = new Vector(3);
+            double baro = 0;
             try
             {
                 gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.gyro"));
                 accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.accel"));
+                baro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<double>("asset1.pressure"));
             }
             catch (KeyNotFoundException)
             {
-                Console.WriteLine("Key Not Found x");
+                Console.WriteLine("Key Not Found");
             }
             try
             {
@@ -160,9 +162,12 @@ namespace HSFSystem
                 Console.WriteLine("Cx key not found");
             }
             Matrix<double> gyr = Gyroscope(gyro);
-            Matrix<double> acc = Accelerometer(new Vector(3));
-            Matrix<double> measure = new Matrix<double>(6, 1);
-            measure = Matrix<double>.Horzcat(acc, gyr);
+            Matrix<double> acc = Accelerometer(accel);
+            
+            Matrix<double> measure = new Matrix<double>(1, 7);
+            measure[1,new MatrixIndex(1, 3)] = acc;
+            measure[1,new MatrixIndex(4,6)] = gyr;
+            measure[1,7] = baro;
             _newState.AddValue(MEASURE_KEY, new HSFProfile<Matrix<double>>(ts, measure));
             return true;
         }

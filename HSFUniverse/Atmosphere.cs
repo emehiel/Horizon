@@ -358,8 +358,8 @@ namespace HSFUniverse
             }
             IEnumerable<KeyValuePair<double, double>> dataBelow = data.TakeWhile(x => x.Key <= height);
             double keyBelow = dataBelow.Last().Key;
-            double keyAbove = temperatureData.ElementAt(dataBelow.Count() + 1).Key;
-            return (data[keyAbove] + data[keyBelow]) / (keyAbove - keyBelow) * (height - keyBelow);
+            double keyAbove = data.ElementAt(dataBelow.Count() + 1).Key;
+            return (data[keyAbove] - data[keyBelow]) / (keyAbove - keyBelow) * (height - keyBelow) + data[keyBelow];
         }
       
     }

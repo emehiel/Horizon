@@ -1,5 +1,5 @@
 <MODEL>
-	<ASSET assetName="Asset1">
+	<ASSET assetName="SoUSAM">
 		<DynamicState
 			DynamicStateType="DYNAMIC_ECI"
 			ICs="[6378633; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0]">
@@ -67,13 +67,13 @@
 		subsystemName= "stateestimator"
 			src= "C:\Users\steve\Source\Repos\Horizon\PythonScripting\StateEstimation.py"
 			className="StateEstimation">
-			<DEPENDENCY subsystemName="IMU" fcnName="ACCxFromIMU.asset1"></DEPENDENCY>
-			<DEPENDENCY subsystemName="IMU" fcnName="ACCyFromIMU.asset1"></DEPENDENCY>
-			<DEPENDENCY subsystemName="IMU" fcnName="ACCzFromIMU.asset1"></DEPENDENCY>
-			<DEPENDENCY subsystemName="IMU" fcnName="GYRxFromIMU.asset1"></DEPENDENCY>
-			<DEPENDENCY subsystemName="IMU" fcnName="GYRyFromIMU.asset1"></DEPENDENCY>
-			<DEPENDENCY subsystemName="IMU" fcnName="GYRzFromIMU.asset1"></DEPENDENCY>
-			<DEPENDENCY subsystemName="IMU" fcnName="BaroFromIMU.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="ACCxFromIMU"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="ACCyFromIMU"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="ACCzFromIMU"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="GYRxFromIMU"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="GYRyFromIMU"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="GYRzFromIMU"></DEPENDENCY>
+			<DEPENDENCY subsystemName="IMU" fcnName="BaroFromIMU"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 		Type= "scripted"

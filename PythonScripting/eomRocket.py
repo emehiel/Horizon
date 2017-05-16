@@ -28,12 +28,13 @@ from Utilities import *
 from HSFUniverse import *
 from System.Collections.Generic import Dictionary
 from System import Array
-from System import Xml
+from System import Xml, Math
 from IronPython.Compiler import CallTarget0
 
 class eomRocket(Utilities.EOMS):
     
     def __init__(self, scriptedNode):
+        assetName = scriptedNode.ParentNode.ParentNode.Attributes["assetName"].Value
         # Aerodynamics
         self.aero = Aerodynamics.Aerodynamics()
         self.drag = AeroPrediction.AeroPrediction();
@@ -76,15 +77,16 @@ class eomRocket(Utilities.EOMS):
         self.areaRef = float(scriptedNode.Attributes["ReferenceArea"].Value)
 
         # Intgrator Parameter Keys
-        self.DROGUE_DEPLOYED = StateVarKey[System.Boolean]("asset1.drogue")
-        self.MAIN_DEPLOYED = StateVarKey[System.Boolean]("asset1.main")
-        self.ACCELERATION = StateVarKey[Vector]("asset1.accel")
-        self.GYROSCOPE = StateVarKey[Vector]("asset1.gyro")
-        self.dcx= StateVarKey[System.Double]("asset1.dcx");
-        self.dcy = StateVarKey[System.Double]("asset1.dcy")
-        self.dcz = StateVarKey[System.Double]("asset1.dcz")
-        self.CX_KEY = StateVarKey[Matrix[System.Double]]("asset1.cx")
-        
+        self.DROGUE_DEPLOYED = StateVarKey[System.Boolean](assetName + "." + "drogue")
+        self.MAIN_DEPLOYED = StateVarKey[System.Boolean](assetName + "." + "main")
+        self.ACCELERATION = StateVarKey[Vector](assetName + "." + "accel")
+        self.GYROSCOPE = StateVarKey[Vector](assetName + "." + "gyro")
+        self.dcx= StateVarKey[System.Double](assetName + "." + "dcx");
+        self.dcy = StateVarKey[System.Double](assetName + "." + "dcy")
+        self.dcz = StateVarKey[System.Double](assetName + "." + "dcz")
+        self.CX_KEY = StateVarKey[Matrix[System.Double]](assetName + "." + "cx")
+        self.pressure = StateVarKey[System.Double](assetName + "." + "pressure")
+        self.DEFLECTION_KEY = StateVarKey[Matrix[System.Double]](assetName + "." + "deflection")
     def PythonAccessor(self, t, y, param):
         # X -> Through the nose
         # p = roll, q = pitch, r = yaw
@@ -108,18 +110,21 @@ class eomRocket(Utilities.EOMS):
         G[1] = -9.81
         G = self.dcm*G
         aero = self.aero.CurrentAero(mach)
-
-        alpha = math.acos(vel[1]/vel[2])
-        beta = math.acos(vel[1]/vel[3])
+        velInf = Vector.Norm(velB)
+        alpha = Math.Acos((velB[1]/velInf))
+        beta = Math.Acos((velB[1]/velInf))
         deflection = Vector(4)
+        #deflection = param.GetValue(self.DEFLECTION_KEY)
         #print alpha, beta
         self.Cx = self.drag.DragCoefficient(alt, vel);
-        self.Cy = self.drag.NormalForceCoefficient(alt, vel, alpha, deflection) 
-        self.Cz = self.drag.SideForceCoefficient(alt, vel, beta, deflection)
+        self.Cy = self.drag.NormalForceCoefficient(alt, vel, alpha, deflection) * alpha
+        self.Cz = self.drag.SideForceCoefficient(alt, vel, beta, deflection) * beta
+        #self.Cy = aero[2]
+        #self.Cz = aero[3]
         self.Cm = aero[3]
         self.Cl = aero[4]
         self.Cn = aero[5]
-        print self.Cx, self.Cy, self.Cz
+        #print self.Cx, self.Cy, self.Cz
         if param.GetValue(self.DROGUE_DEPLOYED):
             self.Cx = 0.62
             self.areaRef = 0.4022702
@@ -136,7 +141,12 @@ class eomRocket(Utilities.EOMS):
             self.Cm = 0.0
             self.Cl = 0.0
             self.cn = 0.0
-
+        if alt < 12: # On Launch rail
+            self.Cy = 0.0
+            self.Cz = 0.0
+            self.Cm = 0.0
+            self.Cl = 0.0
+            self.cn = 0.0
         forces = self.ForceCalculation(alt,velB, mass)
         forceControl = Vector(3)
         #self.Cl += param.GetValue(self.dcx)
@@ -192,9 +202,9 @@ class eomRocket(Utilities.EOMS):
             pdot = ((moments[0] + forceControl[1]*self.lengthRef) - (self.Izz - self.Iyy)*q*r)/self.Ixx
             qdot = ((moments[1] + (forces[1])*1.5*self.lengthRef  + forceControl[2]*1) - (self.Ixx - self.Izz)*p*r)/self.Iyy #Fixme: Find canard to CG distance
             rdot = ((moments[2] + (forces[2])*1.5*self.lengthRef  + forceControl[3]*1) - (self.Iyy - self.Ixx)*p*q)/self.Izz
-            psidot = (q*math.sin(phi) + r*math.cos(phi))/math.cos(theta)
-            thetadot = q*math.cos(phi) - r*math.sin(phi)
-            phidot = p + psidot*math.sin(theta)
+            psidot = (q*Math.Sin(phi) + r*Math.Cos(phi))/Math.Cos(theta)
+            thetadot = q*Math.Cos(phi) - r*Math.Sin(phi)
+            phidot = p + psidot*Math.Sin(theta)
         #print moments, forces[1]*1.5*self.areaRef, forces[2]*1.5*self.areaRef
         #print self.dcm
         accel = Vector(3)
@@ -202,9 +212,9 @@ class eomRocket(Utilities.EOMS):
         accel[1] = ax
         accel[2] = ay
         accel[3] = az
-        gyro[1] = pdot
-        gyro[2] = qdot
-        gyro[3] = rdot
+        gyro[1] = p
+        gyro[2] = q
+        gyro[3] = r
 
         cxTemp = Matrix[System.Double](1,2)
         cxTemp[1,1] = mach
@@ -212,7 +222,8 @@ class eomRocket(Utilities.EOMS):
         param.Add(self.CX_KEY, cxTemp)
         param.Add(self.ACCELERATION, accel)
         param.Add(self.GYROSCOPE, gyro)
-
+        press = self.atmos.pressure(alt)
+        param.Add(self.pressure, press)
 
         dy[1,1] = vx
         dy[2,1] = vy
@@ -232,19 +243,19 @@ class eomRocket(Utilities.EOMS):
         # Currently assume 0 alpha for everything
         dens = self.atmos.density(alt)
         #print mass, vel[1]
-        Fx = (0.5 * dens * math.pow(vel[1],2) * (self.Cx) * self.areaRef) # kg/m/s^2*m^2/ = [N]
-        Fy = (0.5 * dens * math.pow(vel[2],2) * (self.Cy) * self.areaRef) # kg/m/s^2*m^2/ = [N]
-        Fz = (0.5 * dens * math.pow(vel[3],2) * (self.Cz) * self.areaRef) # kg/m/s^2*m^2/ = [N]
+        Fx = (0.5 * dens * Math.Pow(vel[1],2) * (self.Cx) * self.areaRef) # kg/m/s^2*m^2/ = [N]
+        Fy = (0.5 * dens * Math.Pow(vel[2],2) * (self.Cy) * self.areaRef) # kg/m/s^2*m^2/ = [N]
+        Fz = (0.5 * dens * Math.Pow(vel[3],2) * (self.Cz) * self.areaRef) # kg/m/s^2*m^2/ = [N]
         return [Fx, Fy, Fz]
     def MomentCalculations(self, alt, vel):
         # Currently assume 0 alpha for everything
-        #area = math.pow(.1106,2) * math.pi #Reference area is the cross sectional area
-        dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[1],2) # kg/m^3 * m^2/s^2 = [N/m^2]
+        #area = Math.Pow(.1106,2) * math.pi #Reference area is the cross sectional area
+        dynamicPressure = 0.5 * self.atmos.density(alt)*Math.Pow(vel[1],2) # kg/m^3 * m^2/s^2 = [N/m^2]
         Mx = self.Cl*dynamicPressure*self.areaRef                          # N/m^2 * m^2 = [N]  
         #area = self.lengthRef * .1106;
-        dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[2],2)
+        dynamicPressure = 0.5 * self.atmos.density(alt)*Math.Pow(vel[2],2)
         My = self.Cm*dynamicPressure*self.areaRef
-        dynamicPressure = 0.5 * self.atmos.density(alt)*math.pow(vel[3],2)
+        dynamicPressure = 0.5 * self.atmos.density(alt)*Math.Pow(vel[3],2)
         Mz = self.Cn*dynamicPressure*self.areaRef
 
         return [Mx, My, Mz]
@@ -294,13 +305,13 @@ class eomRocket(Utilities.EOMS):
         # phi = rotation about x (3)
 
         # Pre-do all of the trig 
-        cp = math.cos(psi)
-        cq = math.cos(tht)
-        cr = math.cos(phi)
+        cp = Math.Cos(psi)
+        cq = Math.Cos(tht)
+        cr = Math.Cos(phi)
 
-        sp = math.sin(psi)
-        sq = math.sin(tht)
-        sr = math.sin(phi)
+        sp = Math.Sin(psi)
+        sq = Math.Sin(tht)
+        sr = Math.Sin(phi)
 
 
 

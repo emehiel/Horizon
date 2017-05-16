@@ -44,8 +44,8 @@ class StateEstimation(Subsystem):
         #self.Pk[1,1] = 1
         #self.Pk[4,4] = 100
         self.Pk[13,13] = .1
-        self.STATE_KEY = StateVarKey[Matrix[System.Double]]("asset1.estimatedState")
-        self.KALMAN_KEY = StateVarKey[Matrix[System.Double]]("asset1.Pk")
+        self.STATE_KEY = StateVarKey[Matrix[System.Double]](asset.Name + "." + "estimatedState")
+        self.KALMAN_KEY = StateVarKey[Matrix[System.Double]](asset.Name + "." + "Pk")
         self.addKey(self.STATE_KEY)
         self.addKey(self.KALMAN_KEY)
         #FIXME: make better

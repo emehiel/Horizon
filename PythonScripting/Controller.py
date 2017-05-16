@@ -46,6 +46,7 @@ class Controller(Subsystem):
         self.Asset.AssetDynamicState.IntegratorParameters.Add(self.DELTA_CY, 0)
         self.Asset.AssetDynamicState.IntegratorParameters.Add(self.DELTA_CZ, 0)
         self.Asset.AssetDynamicState.IntegratorParameters.Add(self.DELTA_CX, 0)
+        self.Asset.AssetDynamicState.IntegratorParameters.Add(self.DEFLECTION_KEY, Matrix[System.Double](4,1))
         self.A = 0.510458340443047
         self.B = -0.489541659556953
         self.deltaDeflection = 50*.02 * Math.PI/180 # 200 deg/s * Time Step -> radians TODO: Allow once per schedule

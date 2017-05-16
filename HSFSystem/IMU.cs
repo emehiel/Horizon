@@ -101,13 +101,13 @@ namespace HSFSystem
         {
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            dependencies.Add("ACCxFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_ACCxMeasurementsFrom_IMUSUB));
-            dependencies.Add("ACCyFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_ACCyMeasurementsFrom_IMUSUB));
-            dependencies.Add("ACCzFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_ACCzMeasurementsFrom_IMUSUB));
-            dependencies.Add("GYRxFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_GYRxMeasurementsFrom_IMUSUB));
-            dependencies.Add("GYRyFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_GYRyMeasurementsFrom_IMUSUB));
-            dependencies.Add("GYRzFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_GYRzMeasurementsFrom_IMUSUB));
-            dependencies.Add("BaroFromIMU" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(STATESUB_BaroMeasurementsFrom_IMUSUB));
+            dependencies.Add("ACCxFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_ACCxMeasurementsFrom_IMUSUB));
+            dependencies.Add("ACCyFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_ACCyMeasurementsFrom_IMUSUB));
+            dependencies.Add("ACCzFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_ACCzMeasurementsFrom_IMUSUB));
+            dependencies.Add("GYRxFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_GYRxMeasurementsFrom_IMUSUB));
+            dependencies.Add("GYRyFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_GYRyMeasurementsFrom_IMUSUB));
+            dependencies.Add("GYRzFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_GYRzMeasurementsFrom_IMUSUB));
+            dependencies.Add("BaroFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_BaroMeasurementsFrom_IMUSUB));
             MEASURE_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "measurements");
             addKey(MEASURE_KEY);
             CX_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "Cx");
@@ -145,9 +145,9 @@ namespace HSFSystem
             double baro = 0;
             try
             {
-                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.gyro"));
-                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.accel"));
-                baro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<double>("asset1.pressure"));
+                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "gyro"));
+                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "accel"));
+                baro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<double>(Asset.Name + "." + "pressure"));
             }
             catch (KeyNotFoundException)
             {
@@ -155,7 +155,7 @@ namespace HSFSystem
             }
             try
             {
-                _newState.AddValue(CX_KEY, new HSFProfile<Matrix<double>>(ts, Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Matrix<double>>("asset1.Cx"))));
+                _newState.AddValue(CX_KEY, new HSFProfile<Matrix<double>>(ts, Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Matrix<double>>(Asset.Name + "." + "Cx"))));
             }
             catch
             {
@@ -181,9 +181,9 @@ namespace HSFSystem
 
             Vector reading = new Vector(3);
 
-            reading[1] = truth[1] + noiseX;
-            reading[2] = truth[2] + noiseY;
-            reading[3] = truth[3] + noiseZ;
+            reading[1] = truth[1];// + noiseX;
+            reading[2] = truth[2];// + noiseY;
+            reading[3] = truth[3];// + noiseZ;
             /* Check for Saturation of sensor */
             int i = 1;
             foreach( double val in reading)
@@ -236,7 +236,7 @@ namespace HSFSystem
             Vector accel = new Vector(3);
             try
             {
-                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.accel"));
+                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "accel"));
             }
             catch (KeyNotFoundException)
             {
@@ -252,7 +252,7 @@ namespace HSFSystem
             Vector accel = new Vector(3);
             try
             {
-                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.accel"));
+                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "Accel"));
             }
             catch (KeyNotFoundException)
             {
@@ -267,7 +267,7 @@ namespace HSFSystem
             Vector accel = new Vector(3);
             try
             {
-                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.accel"));
+                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "accel"));
             }
             catch (KeyNotFoundException)
             {
@@ -282,7 +282,7 @@ namespace HSFSystem
             Vector gyro = new Vector(3);
             try
             {
-                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.gyro"));
+                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "gyro"));
             }
             catch (KeyNotFoundException)
             {
@@ -298,7 +298,7 @@ namespace HSFSystem
             Vector gyro = new Vector(3);
             try
             {
-                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.gyro"));
+                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "gyro"));
             }
             catch (KeyNotFoundException)
             {
@@ -314,7 +314,7 @@ namespace HSFSystem
             Vector gyro = new Vector(3);
             try
             {
-                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>("asset1.gyro"));
+                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "gyro"));
             }
             catch (KeyNotFoundException)
             {

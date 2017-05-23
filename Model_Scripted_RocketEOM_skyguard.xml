@@ -1,5 +1,5 @@
 <MODEL>
-	<ASSET assetName="SoUSAM">
+	<ASSET assetName="skyguard">
 		<DynamicState
 			DynamicStateType="DYNAMIC_ECI"
 			ICs="[6378633; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0]">
@@ -11,43 +11,48 @@
 				ReferenceLength=".2214"
 				ReferenceArea=".0385">
 				<MassProp
-					Izz="14.548"
-					Iyy="14.548"
-					Ixx="0.167"
-					InitMass="21.462"
-					FinalMass="18.734"
+					IxxInit="0.334"
+					IyyInit="45.451"
+					IzzInit="45.451"
+					IxxFinal="0.331"
+					IyyFinal="42.187"
+					IzzFinal="42.187"
+					InitMass="54.5"
+					FinalMass="35"
+					InitCG="2.24"
+					FinalCG="2.16"
 				></MassProp>
 				<Propulsion
-					Type="File"
-					Filename="C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt"
-					Thrust="952.0"
-					BurnTime="6.2"
+                    Type="Constant"
+					Thrust="2200"
+					BurnTime="17"
 				></Propulsion>
 				<Atmosphere
 					Type="RealTime"
 					Filename="C:\\Horizon\\041517\\gfs.t18z.pgrb2.0p50.f003.grb2"
-					Latitude="35.347"
-					Longitude="-117.808" 	
+					Latitude="32.28"
+					Longitude="-106.75" 	
 				></Atmosphere>
 				<Aerodynamics
-				Diameter="0.221"
-				BaseDiameter="0.221"
-				Length="3.28"
-				BodyLength="2.879"
-				FinHeight="0.127"
-				FinRoot="0.254"
-				FinTip="0.076"
-				FinChord="0.127"
-				FinThickness="0.003"
-				FinMaxThickLocation="0"
-				NumberFins="4"
-				SurfaceRoughness="0.0012">
+                    Diameter="0.221"
+                    BaseDiameter="0.221"
+                    Length="3.446"
+                    BodyLength="3.04"
+                    FinHeight="0.203"
+                    FinRoot="0.305"
+                    FinTip="0.102"
+                    FinChord="0.203"
+                    FinThickness="0.003"
+                    FinMaxThickLocation="0"
+                    NumberFins="4"
+                    SurfaceRoughness="0.0012">
 				</Aerodynamics>
 
 				<StateEstimation
 					
 				
 				></StateEstimation>
+                
 			</EOMS>
 		</DynamicState>
 		<SUBSYSTEM
@@ -61,18 +66,18 @@
 				gyroNonLinearity= "0.2"
 				gyroAccelSensitivity= ".1"
 				gyroCrossAxis= "2"
-				gyroMax= "2000"
-				gyroMin= "-2000"
+				gyroMax= "245"
+				gyroMin= "-286.72"
 				gyroBias= "0"
 				gyroOutputRate= "1000"
 			></Gyro>
 			<Accelerometer
-				accNoiseDensity= "1.0"
-				accNonLinearity= "0.5"
-				accCrossAxis= "1"
+				accNoiseDensity= "0.025"
+				accNonLinearity= "0"
+				accCrossAxis= "0"
 				accScaleFactor= "0.0078"
-				accMax= "157"
-				accMin= "-157"
+				accMax= "8"
+				accMin= "-8"
 				accOutputRate= "1000"
 				accBias= "0.080"
 			></Accelerometer>
@@ -82,12 +87,11 @@
 		subsystemName= "stateestimator"
 			src= "C:\Users\steve\Source\Repos\Horizon\PythonScripting\StateEstimation.py"
 			className="StateEstimation">
-		<Propulsion
-					Type="File"
-					Filename="C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt"
-					Thrust="952.0"
-					BurnTime="6.2"
-				></Propulsion>
+			<Propulsion
+                    Type="Constant"
+					Thrust="2200"
+					BurnTime="17"
+			></Propulsion>
 			<DEPENDENCY subsystemName="IMU" fcnName="ACCxFromIMU"></DEPENDENCY>
 			<DEPENDENCY subsystemName="IMU" fcnName="ACCyFromIMU"></DEPENDENCY>
 			<DEPENDENCY subsystemName="IMU" fcnName="ACCzFromIMU"></DEPENDENCY>
@@ -107,13 +111,15 @@
 		subsystemName= "Recovery"
 			src= "C:\Users\steve\Source\Repos\Horizon\PythonScripting\Recovery.py"
 			className= "Recovery">
+            <DEPENDENCY subsystemName="stateestimator" fcnName="StateFromStateEst"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 		Type="scripted"
 		subsystemName="controller"
 			src="C:\Users\steve\Source\Repos\Horizon\PythonScripting\Controller.py"
 			className="Controller"
-			GainMatrix="[0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0]">
+		GainMatrix="[0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0]"
+        GainMatrix1="[0.7101,0.649,0.318,0.7187,5.513,2.607;-0.6375,0.9196,0.4123,-0.7343,6.159,3.335;0.7101,0.649,0.318,0.7187,5.513,2.607;-0.6375,0.9196,0.4123,-0.7343,6.159,3.335]">
 			<DEPENDENCY subsystemName="stateestimator" fcnName="StateFromStateEst"></DEPENDENCY>
 		</SUBSYSTEM>
 	</ASSET>

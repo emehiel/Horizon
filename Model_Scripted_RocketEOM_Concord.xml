@@ -1,47 +1,52 @@
 <MODEL>
-	<ASSET assetName="SoUSAM">
+	<ASSET assetName="Concord">
 		<DynamicState
 			DynamicStateType="DYNAMIC_ECI"
-			ICs="[6378633; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0]">
+			ICs="[6378633; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.04; 0.0; 0.0; 0.0]">
 			<EOMS
 				EOMSType="scripted"
 				src="C:\Users\steve\Source\Repos\Horizon\PythonScripting\eomRocket.py"
 				className="eomRocket"
 				Ground="6378632"
-				ReferenceLength=".2214"
-				ReferenceArea=".0385">
+				ReferenceLength=".155"
+				ReferenceArea=".0189">
 				<MassProp
-					Izz="14.548"
-					Iyy="14.548"
-					Ixx="0.167"
-					InitMass="21.462"
-					FinalMass="18.734"
+					IzzInit="23.069"
+					IyyInit="23.069"
+					IxxInit="0.01516"
+					IzzFinal="18.869"
+					IyyFinal="18.869"
+					IxxFinal="0.04849"
+					InitMass="17.186"
+					FinalMass="14.526"
+					InitCG="2.25"
+					FinalCG="1.77"
 				></MassProp>
 				<Propulsion
 					Type="File"
-					Filename="C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt"
+					Filename="C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\Aerotech_L952.txt"
 					Thrust="952.0"
 					BurnTime="6.2"
 				></Propulsion>
 				<Atmosphere
 					Type="RealTime"
-					Filename="C:\\Horizon\\041517\\gfs.t18z.pgrb2.0p50.f003.grb2"
+					Filename="C:\\Horizon\\050716\\gfs_4_20160507_1800_003.grb2"
 					Latitude="35.347"
 					Longitude="-117.808" 	
 				></Atmosphere>
 				<Aerodynamics
-				Diameter="0.221"
-				BaseDiameter="0.221"
-				Length="3.28"
-				BodyLength="2.879"
-				FinHeight="0.127"
-				FinRoot="0.254"
-				FinTip="0.076"
-				FinChord="0.127"
-				FinThickness="0.003"
-				FinMaxThickLocation="0"
-				NumberFins="4"
-				SurfaceRoughness="0.0012">
+					Diameter="0.155"
+					BaseDiameter="0.155"
+					Length="3.62"
+					BodyLength="3.105"
+					FinHeight="0.114"
+					FinRoot="0.152"
+					FinTip="0.0762"
+					FinChord="0.114"
+					FinThickness="0.003"
+					FinMaxThickLocation="0"
+					NumberFins="4"
+					SurfaceRoughness="0.0012">
 				</Aerodynamics>
 
 				<StateEstimation
@@ -61,18 +66,18 @@
 				gyroNonLinearity= "0.2"
 				gyroAccelSensitivity= ".1"
 				gyroCrossAxis= "2"
-				gyroMax= "2000"
-				gyroMin= "-2000"
+				gyroMax= "245"
+				gyroMin= "-286.72"
 				gyroBias= "0"
 				gyroOutputRate= "1000"
 			></Gyro>
 			<Accelerometer
-				accNoiseDensity= "1.0"
-				accNonLinearity= "0.5"
-				accCrossAxis= "1"
+				accNoiseDensity= "0.025"
+				accNonLinearity= "0"
+				accCrossAxis= "0"
 				accScaleFactor= "0.0078"
-				accMax= "157"
-				accMin= "-157"
+				accMax= "8"
+				accMin= "-8"
 				accOutputRate= "1000"
 				accBias= "0.080"
 			></Accelerometer>
@@ -82,12 +87,12 @@
 		subsystemName= "stateestimator"
 			src= "C:\Users\steve\Source\Repos\Horizon\PythonScripting\StateEstimation.py"
 			className="StateEstimation">
-		<Propulsion
-					Type="File"
-					Filename="C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt"
-					Thrust="952.0"
-					BurnTime="6.2"
-				></Propulsion>
+			<Propulsion
+				Type="File"
+				Filename="C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\AeroTech_L952.txt"
+				Thrust="952.0"
+				BurnTime="6.2"
+			></Propulsion>
 			<DEPENDENCY subsystemName="IMU" fcnName="ACCxFromIMU"></DEPENDENCY>
 			<DEPENDENCY subsystemName="IMU" fcnName="ACCyFromIMU"></DEPENDENCY>
 			<DEPENDENCY subsystemName="IMU" fcnName="ACCzFromIMU"></DEPENDENCY>
@@ -107,13 +112,15 @@
 		subsystemName= "Recovery"
 			src= "C:\Users\steve\Source\Repos\Horizon\PythonScripting\Recovery.py"
 			className= "Recovery">
+            <DEPENDENCY subsystemName="stateestimator" fcnName="StateFromStateEst"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 		Type="scripted"
 		subsystemName="controller"
 			src="C:\Users\steve\Source\Repos\Horizon\PythonScripting\Controller.py"
 			className="Controller"
-			GainMatrix="[0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0]">
+		
+		GainMatrix="[0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0]">
 			<DEPENDENCY subsystemName="stateestimator" fcnName="StateFromStateEst"></DEPENDENCY>
 		</SUBSYSTEM>
 	</ASSET>

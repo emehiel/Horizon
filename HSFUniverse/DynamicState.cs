@@ -133,7 +133,7 @@ namespace HSFUniverse
         /// <returns></returns>
         public Vector VelocityECI(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(4, 6)];
+            return this[simTime][new MatrixIndex(4, 6)];
         }
 
         /// <summary>
@@ -185,7 +185,18 @@ namespace HSFUniverse
             _stateData[data[1, data.Length]] = (Vector)data[new MatrixIndex(2, data.NumRows), data.Length];
             log.Info("Done Integrating");
         }
- 
+        public void DynamicPropogateState()
+        {
+            double simTime = _stateData.Last().Key + SchedParameters.SimStepSeconds;
+            Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
+            // Update the integrator parameters using the information in the XML Node
+
+            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions, IntegratorParameters);
+
+            //for (int index = 1; index <= data.Length; index++)
+            _stateData[data[1, 1]] = (Vector)data[new MatrixIndex(2, data.NumRows), 1];
+            _stateData[data[1, data.Length]] = (Vector)data[new MatrixIndex(2, data.NumRows), data.Length];
+        }
         /// <summary>
         /// Gets and Sets the dynamic state of an asset in inertial coordinates at the given simulation time.
         /// This method overwrites any existing state data at simTime.
@@ -241,10 +252,6 @@ namespace HSFUniverse
                 }
                 else if (Type == DynamicStateType.DYNAMIC_ECI || Type == DynamicStateType.DYNAMIC_LLA)
                 {
-                    //bool hasNotPropagated = _stateData.Count() == 1;
-                    if (hasNotPropagated)
-                        PropagateState(_stateData.Keys.Last() + SchedParameters.SimStepSeconds);
-
                     Vector dynamicStateAtSimTime;
 
                     if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
@@ -254,7 +261,7 @@ namespace HSFUniverse
                         if (simTime >= SimParameters.SimEndSeconds)
                             slopeInd = -1;
                         KeyValuePair<double, Vector> lowerData = _stateData.ElementAt(lowerIndex);
-                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd); 
+                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
 
                         double lowerTime = lowerData.Key;
                         Vector lowerState = lowerData.Value;

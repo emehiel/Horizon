@@ -142,9 +142,7 @@ namespace HSFScheduler
                     // Fixme: Hacky way to propogate only once per schedule */
                     if (!canPregenAccess)
                     {
-                        system.Assets[0].AssetDynamicState.hasNotPropagated = true;
-                        system.Assets[0].AssetDynamicState.PositionECI(currentTime);
-                        system.Assets[0].AssetDynamicState.hasNotPropagated = false;
+                        system.Assets[0].AssetDynamicState.DynamicPropogateState();
                     }
                     else { systemSchedules.Add(emptySchedule); }
                 }
@@ -193,7 +191,7 @@ namespace HSFScheduler
                 
                     
                 // Print completion percentage in command window
-                Console.WriteLine("Scheduler Status: {0}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+                Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
             }
             return systemSchedules;
         }

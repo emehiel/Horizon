@@ -220,7 +220,7 @@ namespace HSFUniverse
             {
                 /* Get the data for the values we want (u and v wind velocitys and height) */ 
                 var weatherData = from m in file
-                                where (m.TypeOfLevel.Equals("isobaricInhPa")) && ((m.ShortName.Equals("u")) || (m.ShortName.Equals("v")) || (m.ShortName.Equals("gh")) || (m.ShortName.Equals("t")))
+                                where m.StepType.Equals("instant") && (m.TypeOfLevel.Equals("isobaricInhPa") || m.TypeOfLevel.Equals("unknown") || m.TypeOfLevel.Equals("surface")) && ((m.ShortName.Equals("u")) || (m.ShortName.Equals("v")) || (m.ShortName.Equals("gh")) || (m.ShortName.Equals("t")))
                                 select m;
                 foreach (GribMessage msg in weatherData)
                 { 
@@ -234,14 +234,54 @@ namespace HSFUniverse
                     /* Put the value in the corresponding dictionary by using the short name */
                     switch (msg.ShortName)
                         {
-                        case "u": u.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
-                            break;
-                        case "v": v.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
-                            break;
-                        case "t": t.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
-                            break;
-                        case "gh": h.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
-                            break;
+                        case "u":
+                            {
+                                if (Convert.ToDouble(pressureLevel) != 0)
+                                {
+                                    u.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
+                                }
+                                else
+                                {
+                                    u.Add(Convert.ToDouble(101325), msgLoc.Last().Value+5);
+                                }
+                                break;
+                            }
+                        case "v":
+                            {
+                                if (Convert.ToDouble(pressureLevel) != 0)
+                                {
+                                    v.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
+                                }
+                                else
+                                {
+                                    v.Add(Convert.ToDouble(101325), msgLoc.Last().Value+4);
+                                }
+                                break;
+                            }
+                        case "t":
+                            {
+                                if (Convert.ToDouble(pressureLevel) != 0)
+                                {
+                                    t.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
+                                }
+                                else
+                                {
+                                    t.Add(Convert.ToDouble(101325), msgLoc.Last().Value);
+                                }
+                                break;
+                            }
+                        case "gh":
+                            {
+                                if (Convert.ToDouble(pressureLevel) != 0)
+                                {
+                                    h.Add(Convert.ToDouble(pressureLevel) * 1e2, msgLoc.Last().Value);
+                                }
+                                else
+                                {
+                                    h.Add(Convert.ToDouble(101325), 0);
+                                }
+                                break;
+                            }
                         }
                 }
                 /* Convert the pressure levels into geopotential heights */
@@ -358,7 +398,7 @@ namespace HSFUniverse
             }
             IEnumerable<KeyValuePair<double, double>> dataBelow = data.TakeWhile(x => x.Key <= height);
             double keyBelow = dataBelow.Last().Key;
-            double keyAbove = data.ElementAt(dataBelow.Count() + 1).Key;
+            double keyAbove = data.ElementAt(dataBelow.Count()).Key; // 0 based index and count is 1 based, so the next point is actually the count of data below
             return (data[keyAbove] - data[keyBelow]) / (keyAbove - keyBelow) * (height - keyBelow) + data[keyBelow];
         }
       

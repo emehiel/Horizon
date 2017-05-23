@@ -2,32 +2,53 @@ import sys
 import clr
 import System.Collections.Generic
 import System
-
 clr.AddReference('System.Core')
 clr.AddReference('IronPython')
 clr.AddReference('System.Xml')
-clr.AddReference('Utilities')
+clr.AddReferenceByName('Utilities')
+clr.AddReferenceByName('HSFUniverse')
+clr.AddReferenceByName('UserModel')
+clr.AddReferenceByName('MissionElements')
+clr.AddReferenceByName('HSFSystem')
 
-#import Math
+import System.Xml
+import HSFSystem
+import HSFSubsystem
+import MissionElements
 import Utilities
+import HSFUniverse
+import UserModel
+
+from HSFSubsystem import *
+from HSFSystem import *
+from System.Xml import XmlNode
 from Utilities import *
-from System import Math
+from HSFUniverse import *
+from UserModel import *
+from MissionElements import *
+from System import Func, Delegate, Math
+from System.Collections.Generic import Dictionary
+from IronPython.Compiler import CallTarget0
 
 class AeroPrediction:
-    def __init__(self):
-        # Inputs are all in meters. Because the reference uses inches, these values are converted in the functions
-        self.dia = .221
-        self.diaBase = self.dia
-        self.len = 3.28
-        self.height = 0.127
-        self.Cr = .254
-        self. Ct = 0.076
-        self.l = 0.127
+    def __init__(self, scriptedNode):
+        # Inputs are all in meters. Because one of the references uses inches, these values are converted in the functions
+        self.dia = float(scriptedNode.Attributes["Diameter"].Value)
+        self.diaBase = float(scriptedNode.Attributes["BaseDiameter"].Value)
+        self.len = float(scriptedNode.Attributes["Length"].Value)
+        self.bodyLen = float(scriptedNode.Attributes["BodyLength"].Value)
         self.Aref = Math.PI/4*Math.Pow(self.dia, 2)
-        self.t = .003
-        self.X = 0
-        self.Nf = 4
-        self.bodyLen = 2.879
+        self.rough = float(scriptedNode.Attributes["SurfaceRoughness"].Value)
+        # Fins
+        self.height = float(scriptedNode.Attributes["FinHeight"].Value)
+        self.Cr = float(scriptedNode.Attributes["FinRoot"].Value)
+        self. Ct = float(scriptedNode.Attributes["FinTip"].Value)
+        self.l = float(scriptedNode.Attributes["FinChord"].Value)
+        
+        self.t = float(scriptedNode.Attributes["FinThickness"].Value)
+        self.X = float(scriptedNode.Attributes["FinMaxThickLocation"].Value)
+        self.Nf = float(scriptedNode.Attributes["NumberFins"].Value)
+        
     def DragCoefficient(self, alt, vel):
         Kf = 1.04
         
@@ -57,31 +78,55 @@ class AeroPrediction:
         kineViscosity = CalcKinematicViscosity(alt)
         
         mach = Vector.Norm(vel) * 3.28084/spdOfSnd
-        Cn = self.NormalForceFin(mach, alpha, deflection[1]) +\
-             self.NormalForceFin(mach, alpha, deflection[3]) +\
-             self.NormalForceFinBodyInteraction(mach, alpha)
+        Cn = 2*alpha + self.NormalForceFin(mach, alpha, deflection[1]) +\
+             self.NormalForceFin(mach, alpha, deflection[3]) #+\
+             #self.NormalForceFinBodyInteraction(mach, alpha)
         return Cn
     def SideForceCoefficient(self, alt, vel, beta, deflection):
         spdOfSnd = CalcSpdOfSnd(alt)
         kineViscosity = CalcKinematicViscosity(alt)
         
         mach = Vector.Norm(vel) * 3.28084/spdOfSnd
-        Cn = self.NormalForceFin(mach, beta, deflection[2]) +\
-             self.NormalForceFin(mach, beta, deflection[4]) +\
-             self.NormalForceFinBodyInteraction(mach, beta)
+        Cn = 2*beta + self.NormalForceFin(mach, beta, deflection[2]) +\
+             self.NormalForceFin(mach, beta, deflection[4]) #+\
+             #self.NormalForceFinBodyInteraction(mach, beta)
         return Cn
-    def BaseDrag(self, mach, Cdf):
-        Cdb =  1.02*Cdf*(1.5/Math.Pow(self.len/self.dia, 3/2) + \
-        7/Math.Pow(self.len/self.dia, 3)) / \
-        Math.PI*self.len*self.dia/self.Aref
-        # print Cdb
-        return Cdb
+    def PitchingMoment(self, alt, vel, alpha, deflection, CG):
+        spdOfSnd = CalcSpdOfSnd(alt)
+        kineViscosity = CalcKinematicViscosity(alt)
         
-        #stuff = 0.3086*mach - 0.1085 -0.02411*Math.Pow(mach,2)
-        #return 0.559*stuff / Math.Pow(mach,2)
+        mach = Vector.Norm(vel) * 3.28084/spdOfSnd
 
-        #return .12+.13*Math.Pow(mach, 2)
+        fin1 = self.NormalForceFin(mach, alpha, deflection[1])
+        fin3 = self.NormalForceFin(mach, alpha, deflection[3])
+        nose = 2 *Math.Sin(alpha)/alpha
+        body = 1.1*self.dia*self.bodyLen/self.Aref*Math.Pow(Math.Sin(alpha),2)/alpha
+        CpFin = self.getCpFin()
+        CpNose = (self.len-self.bodyLen)*2/3
+        CpBody = (self.len-self.bodyLen/2)
+        X = (self.getCpFin()*fin1 + self.getCpFin()*fin3 + 0.447*(self.len-self.bodyLen)*nose + (self.len-self.bodyLen/2)* body)/(fin1+fin3+nose+body)
 
+        return (fin1+fin3+nose+body)*alpha*(X-CG)/self.dia
+    def YawingMoment(self, alt, vel, alpha, deflection, CG):
+        spdOfSnd = CalcSpdOfSnd(alt)
+        kineViscosity = CalcKinematicViscosity(alt)
+        
+        mach = Vector.Norm(vel) * 3.28084/spdOfSnd
+
+        fin1 = self.NormalForceFin(mach, alpha, deflection[2])
+        fin3 = self.NormalForceFin(mach, alpha, deflection[4])
+        nose = 2 *Math.Sin(alpha)/alpha
+        body = 1.1*self.dia*self.bodyLen/self.Aref*Math.Pow(Math.Sin(alpha),2)/alpha
+
+        X = (self.getCpFin()*fin1 + self.getCpFin()*fin3 + 0.447*(self.len-self.bodyLen)*nose + (self.len-self.bodyLen/2)* body)/(fin1+fin3+nose+body)
+
+        return (fin1+fin3+nose+body)*alpha*(X-CG)/self.dia
+
+    def getCpFin(self):
+        #ymac = self.height/3 * (self.Cr + 2*self.Ct)/(self.Cr + self.Ct)
+        Xf = (self.Cr-self.Ct)/3*(self.Cr+2*self.Ct)/(self.Cr+self.Ct)+1/6*(self.Cr**2+self.Ct**2+self.Cr*self.Ct)/(self.Cr+self.Ct) #Assume that the bottom edge is flat
+        return self.len -self.Cr+Xf # Assume that the fin is at the bottom edge of the rocket for now
+    def BaseDrag(self, mach, Cdf):
         # Don't need to convert to inches because everything is a ratio
         Kb = 0.0274*Math.Atan(self.bodyLen/self.dia + 0.0116)
         n = 3.6542*Math.Pow(self.bodyLen/self.dia, -0.2733)
@@ -100,7 +145,7 @@ class AeroPrediction:
         return Cdb*fb
 
     def SkinFrictionDrag(self, spdOfSnd, kinematicViscosity, vel):
-        K = 0.0016 #Surface Roughness Coefficient
+        K = self.rough #Surface Roughness Coefficient
         velocity = Vector.Norm(vel) * 3.28084
 
         length = self.len * 39.3701 # Convert to inches
@@ -132,7 +177,7 @@ class AeroPrediction:
         return Cdf 
 
     def FinFrictionDrag(self, spdOfSnd, kinematicViscosity, vel):
-        K = 0.0016 #Surface Roughness Coefficient
+        K = self.rough #Surface Roughness Coefficient
         velocity = Vector.Norm(vel) * 3.28084
         mach = velocity/spdOfSnd
         Ct = self.Ct * 39.3701
@@ -190,7 +235,7 @@ class AeroPrediction:
         return Ke * 4*Sr/Math.PI/Math.Pow(dia,2)
 
     def ProtuberenceDrag(self, spdOfSnd, kinematicViscosity, vel):
-        K = 0.0016 #Surface Roughness Coefficient
+        K = self.rough #Surface Roughness Coefficient
         velocity = Vector.Norm(vel) * 3.28084
 
         length = self.len * 39.3701 # Convert to inches
@@ -238,15 +283,37 @@ class AeroPrediction:
             + (self.Cr +2*self.Ct)/3 * self.dia/2 * Math.Pow(self.height, 2) \
             + (self.Cr +3*self.Ct)/12* Math.Pow(self.height, 3)
         Cld = Cn_alpha * omega * sum / self.Aref / self.dia / vel
+        #print Cld, sum, omega, self.Aref, self.dia, vel
         return Cld
 
     def NormalForceFin(self, mach, alpha, deflection):
         gamma = 1.4
-        beta = Math.Sqrt(1-Math.Pow(mach, 2))
+        beta = Math.Sqrt(abs(1-Math.Pow(mach, 2)))
         Afin = (self.Cr+self.Ct)/2*self.height
-        if mach <= 1:
-            #Cn_alpha = 8 * Math.Pow(self.height/self.dia, 2)/ (1 + Math.Sqrt(1 + Math.Pow((2*self.l/(self.Cr+self.Ct)), 2)))
-            pass
+        Cn_alpha = 0
+        #Cn_alpha = 2 * Math.PI * Math.Pow(self.height, 2) / self.Aref / (1 + Math.Sqrt(1 + Math.Pow((beta*Math.Pow(self.height,2)/self.Cr+self.Ct), 2)))
+        
+        if mach <= 0.9:
+            Cn_alpha = 2 * Math.PI * Math.Pow(self.height, 2) / self.Aref / (1 + Math.Sqrt(1 + beta*Math.Pow((Math.Pow(self.height,2)/(Math.Atan(3*(self.Ct-self.Cr)/2)/self.height)), 2)))
+        elif mach <=1.5:
+            actualMach = mach
+            mach = 1.5
+            beta = Math.Sqrt(abs(1-Math.Pow(mach, 2)))
+            beta2 = Math.Pow(beta, 2)
+            mach4 = Math.Pow(mach, 4)
+            beta4 = Math.Pow(beta, 4)
+            mach6 = Math.Pow(mach, 6)
+            beta7 = Math.Pow(beta, 7)
+            mach8 = Math.Pow(mach, 8)
+            K1 = 2/beta
+            K2 = ((gamma+1)*mach4 - 4*beta2)/(4*beta4)
+            K3 = ((gamma+1)*mach8 + (2*Math.Pow(gamma,2) - 7*gamma -5)*mach6 + 10*(gamma+1)*mach4 + 8)/ (6*beta7)
+            Cn_alpha_super = Afin * (K1 + K2 * abs(alpha) + K3 *Math.Pow(alpha,2))
+            mach = 0.9
+            beta = Math.Sqrt(abs(1-Math.Pow(mach, 2)))
+            Cn_alpha_sub = 2 * Math.PI * Math.Pow(self.height, 2) / self.Aref / (1 + Math.Sqrt(1 + Math.Pow((beta*Math.Pow(self.height,2)/self.Cr+self.Ct), 2)))
+
+            Cn_alpha = Cn_alpha_sub + (actualMach-0.9)*(Cn_alpha_sub+Cn_alpha_super)/(0.6)
         else:
             beta2 = Math.Pow(beta, 2)
             mach4 = Math.Pow(mach, 4)
@@ -257,12 +324,20 @@ class AeroPrediction:
             K1 = 2/beta
             K2 = ((gamma+1)*mach4 - 4*beta2)/(4*beta4)
             K3 = ((gamma+1)*mach8 + (2*Math.Pow(gamma,2) - 7*gamma -5)*mach6 + 10*(gamma+1)*mach4 + 8)/ (6*beta7)
-            Cn_alpha = Afin/self.Aref * (K1 + K2 * alpha + K3 *Math.Pow(alpha,2))
-        Kt = 1 + (self.dia/2 / (self.height * self.dia/2)) #correction factor for fin body interaction
-        #Cn_alpha = Kt * Cn_alpha * Math.Pow(Math.Sin(alpha+deflection),2)
-        Cn_alpha = 2 * Math.PI * Math.Pow(self.height, 2) / self.Aref / (1 + Math.Sqrt(1 + Math.Pow((beta*Math.Pow(self.height,2)/self.Cr+self.Ct), 2)))
+            Cn_alpha = Afin * (K1 + K2 * alpha + K3 *Math.Pow(alpha,2))
+           
+        Kt = 1 + (self.dia/2 / (self.height + self.dia/2)) #correction factor for fin body interaction
+        Cn_alpha = Kt * Cn_alpha #* (alpha+deflection) #Math.Sin(alpha+deflection)**2
         return Cn_alpha
-
+    def PitchDampingMoment(self, vel, omega, alpha):
+        Afin = (self.Cr+self.Ct)/2*self.height
+        CGDist = 1.3
+        if not vel==0:
+            bodyDamping = 0.55*self.len**4*self.dia/2/self.Aref/self.dia*omega**2/vel**2
+            finDamping = 1.2*Afin/self.Aref/self.dia*Math.Pow(omega,2)/Math.Pow((vel),2)*Math.Pow(CGDist,3)
+            return finDamping+bodyDamping
+        else:
+            return 0
 def CalcSpdOfSnd(alt):
     height = alt * 3.28084 # Convert to ft because that is what emperical model uses
     if height < 37000:

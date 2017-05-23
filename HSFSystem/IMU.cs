@@ -18,6 +18,7 @@ namespace HSFSystem
         // TODO update keys to accept vector
         protected StateVarKey<Matrix<double>> MEASURE_KEY;
         protected StateVarKey<Matrix<double>> CX_KEY;
+        protected StateVarKey<double> ALPHA_KEY;
         protected double _accNoiseDensity = 0;
         protected double _accNaturalFrequency = 150;
         protected double _accDampingratio = 0.707;
@@ -112,6 +113,8 @@ namespace HSFSystem
             addKey(MEASURE_KEY);
             CX_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "Cx");
             addKey(CX_KEY);
+            ALPHA_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "alpha");
+            addKey(ALPHA_KEY);
             Asset.AssetDynamicState.IntegratorParameters.Add(CX_KEY, new Matrix<double>(new double[1, 2] { { 0, 0 } }));
         }
         #endregion
@@ -139,7 +142,6 @@ namespace HSFSystem
                 if (!newProf.Empty())
                     proposedEvent.State.SetProfile(MEASURE_KEY, newProf);
             }
-            var state = Asset.AssetDynamicState.DynamicStateECI(proposedEvent.GetEventStart(Asset));
             Vector gyro = new Vector(3);
             Vector accel = new Vector(3);
             double baro = 0;
@@ -156,6 +158,7 @@ namespace HSFSystem
             try
             {
                 _newState.AddValue(CX_KEY, new HSFProfile<Matrix<double>>(ts, Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Matrix<double>>(Asset.Name + "." + "Cx"))));
+                _newState.AddValue(ALPHA_KEY, new HSFProfile<double>(ts, Asset.AssetDynamicState.IntegratorParameters.GetValue(ALPHA_KEY)));
             }
             catch
             {
@@ -181,15 +184,21 @@ namespace HSFSystem
 
             Vector reading = new Vector(3);
 
-            reading[1] = truth[1];// + noiseX;
-            reading[2] = truth[2];// + noiseY;
-            reading[3] = truth[3];// + noiseZ;
+            reading[1] = truth[1] * 180 / Math.PI + noiseX;
+            reading[2] = truth[2] * 180 / Math.PI + noiseY;
+            reading[3] = truth[3] * 180 / Math.PI + noiseZ;
             /* Check for Saturation of sensor */
             int i = 1;
             foreach( double val in reading)
             {
-                if (val > _gyrMax) { reading[i] = _gyrMax; }
-                if (val < _gyrMin) { reading[i] = _gyrMin; }
+                if (val > _gyrMax)
+                {
+                    reading[i] = _gyrMax;
+                }
+                if (val < _gyrMin)
+                {
+                    reading[i] = _gyrMin;
+                }
                 i++;
             }
             return reading;
@@ -202,9 +211,9 @@ namespace HSFSystem
 
             Vector reading = new Vector(3);
 
-            reading[1] = truth[1] + noiseX;
-            reading[2] = truth[2] + noiseY;
-            reading[3] = truth[3] + noiseZ;
+            reading[1] = truth[1] / 9.81 + noiseX;
+            reading[2] = truth[2] / 9.81 + noiseY;
+            reading[3] = truth[3] / 9.81 + noiseZ;
 
             /* Check for Saturation of sensor */
             int i = 1;
@@ -258,7 +267,8 @@ namespace HSFSystem
             {
                 Console.WriteLine("Key Not Found Y");
             }
-            prof1[currentEvent.GetEventStart(Asset)] = accel[2];
+            Vector acc = Accelerometer(accel);
+            prof1[currentEvent.GetEventStart(Asset)] = acc[2];
             return prof1;
         }
         public HSFProfile<double> STATESUB_ACCzMeasurementsFrom_IMUSUB(Event currentEvent)
@@ -273,7 +283,8 @@ namespace HSFSystem
             {
                 Console.WriteLine("Key Not Found Z");
             }
-            prof1[currentEvent.GetEventStart(Asset)] = accel[3];
+            Vector acc = Accelerometer(accel);
+            prof1[currentEvent.GetEventStart(Asset)] = acc[3];
             return prof1;
         }
         public HSFProfile<double> STATESUB_GYRxMeasurementsFrom_IMUSUB(Event currentEvent)

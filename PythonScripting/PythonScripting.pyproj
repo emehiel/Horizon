@@ -25,7 +25,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Aerodynamics.py" />
     <Compile Include="AeroPrediction.py">
       <SubType>Code</SubType>
     </Compile>

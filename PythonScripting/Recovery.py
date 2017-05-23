@@ -43,23 +43,24 @@ class Recovery(Subsystem):
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
     def CanPerform(self, event, universe):
-        #print self._task
         ts = event.GetEventStart(self.Asset)
+        #state = self.DependencyCollector(event).LastValue()
+        #pos = state[1,MatrixIndex(1,3)]
+        #vel = state[1,MatrixIndex(4,6)]
         state = self.Asset.AssetDynamicState
         pos = state.PositionECI(ts)
         vel = state.VelocityECI(ts)
-
         if (self._task.Type == TaskType.RECOVERY):
             drogueTask = (self._task.Target.Name == "deployDrogue")
-            aboveAlt = (pos[1] > 6379.638)
+            aboveAlt = (pos[1] > 6379638)
             velLow = vel[1] < 0
             mainDeployed = self.Asset.AssetDynamicState.IntegratorParameters.GetValue(self.MAIN_DEPLOYED)
             drogueDeployed = self.Asset.AssetDynamicState.IntegratorParameters.GetValue(self.DROGUE_DEPLOYED)
             if drogueTask and aboveAlt and velLow and not drogueDeployed:
-                print "Drogue Parachute Deployed"
+                print "Drogue Parachute Deployed at ", pos[1]-6378633, "m"
                 self.Asset.AssetDynamicState.IntegratorParameters.Add(self.DROGUE_DEPLOYED, True)
                 return True
-            if self._task.Target.Name == "deployMain" and drogueDeployed and pos[1] < 6379.638 and not mainDeployed:
+            elif self._task.Target.Name == "deployMain" and drogueDeployed and pos[1] < 6378.938 and not mainDeployed:
                 print "Main Parachute Deployed"
                 self.Asset.AssetDynamicState.IntegratorParameters.Add(self.MAIN_DEPLOYED, True)
                 return True
@@ -70,4 +71,11 @@ class Recovery(Subsystem):
         return True
         #return super(Recovery, self).CanExtend(event, universe, extendTo)
     def DependencyCollector(self, currentEvent):
-        return super(Recovery, self).DependencyCollector(currentEvent)
+        if (self.SubsystemDependencyFunctions.Count == 0):
+            Exception
+            #MissingMemberException("You may not call the dependency collector in your can perform because you have not specified any dependency functions for " + Name);
+        outProf = HSFProfile[Matrix[System.Double]]()
+        for dep in self.SubsystemDependencyFunctions:
+            if not (dep.Key.Equals("DepCollector")):
+                outProf = dep.Value.DynamicInvoke(currentEvent)
+        return outProf

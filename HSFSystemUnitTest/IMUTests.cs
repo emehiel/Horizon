@@ -23,7 +23,7 @@ namespace HSFSystem.Tests
         public void OneTimeInit()
         {
             program = new Program();
-            string[] inputArg = { "-m", @"C:\Users\steve\Source\Repos\Horizon\Model_Scripted_RocketEOM_SpiritOfUncleSAM.xml", "-s", @"C:\Users\steve\Source\Repos\Horizon\SimulationInput_RocketScripted.xml", "-t", @"C:\Users\steve\Source\Repos\Horizon\rocketTargets.xml" };
+            string[] inputArg = { "-m", @"C:\Users\steve\Source\Repos\Horizon\Model_Scripted_RocketEOM_Concord.xml", "-s", @"C:\Users\steve\Source\Repos\Horizon\SimulationInput_RocketScripted.xml", "-t", @"C:\Users\steve\Source\Repos\Horizon\rocketTargets.xml" };
             
             program.InitInput(inputArg);
             program.LoadTargets();
@@ -33,7 +33,7 @@ namespace HSFSystem.Tests
         [SetUp]
         public void Init()
         {
-            XmlNode node = XmlParser.GetModelNode(@"C:\Users\steve\Source\Repos\Horizon\Model_Scripted_RocketEOM_SpiritOfUncleSAM.xml");
+            XmlNode node = XmlParser.GetModelNode(@"C:\Users\steve\Source\Repos\Horizon\Model_Scripted_RocketEOM_Concord.xml");
             testIMU = new IMU(node.FirstChild.ChildNodes[1], program.assetList[0]);
         }
         [Test()]
@@ -61,12 +61,12 @@ namespace HSFSystem.Tests
         public void GyroscopeGenerateTest()
         {
             //List<List<double[,]>> data = new List<List<double>>(new double[3,1000]);
-            List<Vector> output = Enumerable.Repeat(new Vector(new List<double>(new double[3] { 0, 0, 0 })), 1000).ToList();
+            List<Vector> output = Enumerable.Repeat(new Vector(new List<double>(new double[3] { 0, 0, 0 })), 250).ToList();
             int i = 0;
             File.Delete(@"C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\TestOutput\gyroscopeTest.csv");
             var csv = new StringBuilder();
             csv.Clear();
-            List<Vector> data = Enumerable.Repeat(new Vector(new List<double>(new double[3] { 0, 0, 0})), 1000).ToList();
+            List<Vector> data = Enumerable.Repeat(new Vector(new List<double>(new double[3] { 0, 0, 0})), 250).ToList();
             foreach (Vector dataPt in data)
             {
                 output[i] = testIMU.Gyroscope(dataPt);    
@@ -77,7 +77,7 @@ namespace HSFSystem.Tests
             }
             Assert.Multiple(() =>
             {
-                for (int ii = 1; ii < 1001; ii++)
+                for (int ii = 1; ii < 250; ii++)
                 {
                     Assert.That(() => output[ii], Is.All.InRange(-1.0, 1.0));
                 }

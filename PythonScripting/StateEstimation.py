@@ -102,9 +102,9 @@ class StateEstimation(Subsystem):
             return outProf
     def CONTROLSUB_State_STATESUB(self, event):
         ts = event.GetEventStart(self.asset)#-SchedParameters.SimStepSeconds # Fixme: Want to let the EOMS propogate to the 1st time step.
-        if not (self.asset.AssetDynamicState.IntegratorParameters.GetValue(self.DROGUE_DEPLOYED)):
+        #if not (self.asset.AssetDynamicState.IntegratorParameters.GetValue(self.DROGUE_DEPLOYED)):
         #if(False):
-        #if(True):
+        if(True):
             state = Vector(18)
             if not (ts == 0): # Use the previous time steps state, 1st time step doesn't have this so use inital conidtions
                 state = self._newState.GetLastValue(self.STATE_KEY).Value
@@ -130,9 +130,9 @@ class StateEstimation(Subsystem):
             eulerRoll= state[7]
             eulerPitch = state[8]
             eulerYaw = state[9]
-            bodyRoll = state[10]
-            bodyPitch = state[11]
-            bodyYaw = state[12]
+            bodyRollRate = state[10]
+            bodyPitchRate = state[11]
+            bodyYawRate = state[12]
             Cx = state[13]
             Cy = state[14]
             Cz = state[15]
@@ -141,9 +141,9 @@ class StateEstimation(Subsystem):
             Cn = state[18]
             
             # Define "constants" Fixme: Load in via xml
-            initMass = 54.5
-            finalMass = 35
-            burnTime = 17
+            initMass = 17.1
+            finalMass = 14.5
+            burnTime = 6.2
 
             if ts < burnTime:
                 mass = initMass - (initMass - finalMass)*(ts/burnTime)
@@ -151,11 +151,11 @@ class StateEstimation(Subsystem):
                 mass = finalMass
 
             
-            area = 0.0385
-            Ixx = 0.19
-            Iyy = 58.79
-            Izz = 58.79
-            dia = .2214
+            area = 0.0189
+            Ixx = 0.04
+            Iyy = 18.8
+            Izz = 18.8
+            dia = .155
 
             # Generate the F matrix
             rho = 1.225*Math.Exp(-x/8640)
@@ -169,36 +169,24 @@ class StateEstimation(Subsystem):
             F[4,4] = rho * xd * Cx/mass*area
             F[5,5] = rho * yd * Cy/mass*area
             F[6,6] = rho * zd * Cz/mass*area
+            
+            F[7,7] = Math.Sin(eulerPitch)*(bodyPitchRate*Math.Cos(eulerRoll)+bodyYawRate*Math.Sin(eulerRoll))/Math.Cos(eulerYaw)
+            F[7,8] = (Math.Cos(eulerPitch)*(bodyYawRate*Math.Cos(eulerRoll) + bodyPitchRate*Math.Sin(eulerRoll)))/Math.Cos(eulerYaw);
+            F[7,9] = (Math.Sin(eulerYaw)*Math.Sin(eulerPitch)*(bodyYawRate*Math.Cos(eulerRoll) + bodyPitchRate*Math.Sin(eulerRoll)))/Math.Cos(eulerYaw)**2;
+            F[8,7] = (bodyPitchRate*Math.Cos(eulerRoll) - bodyYawRate*Math.Sin(eulerRoll))/Math.Cos(eulerYaw);
+            F[8,9] = (Math.Sin(eulerYaw)*(bodyYawRate*Math.Cos(eulerRoll) + bodyPitchRate*Math.Sin(eulerRoll)))/Math.Cos(eulerYaw)**2;
+            F[9,7] = - bodyYawRate*Math.Cos(eulerRoll) - bodyPitchRate*Math.Sin(eulerRoll);
+
+            F[7,10] = 1;
+            F[7,11] = Math.Sin(eulerRoll)*Math.Sin(eulerPitch)/Math.Cos(eulerYaw);
+            F[7,12] = Math.Cos(eulerRoll)*Math.Sin(eulerPitch)/Math.Cos(eulerYaw);
+            F[8,11] = Math.Sin(eulerRoll)/Math.Cos(eulerYaw);
+            F[8,12] = Math.Cos(eulerRoll)/Math.Cos(eulerYaw);
+            F[9,11] = Math.Cos(eulerRoll);
+            F[9,12] = -Math.Sin(eulerRoll);
+
+
             '''
-                    F[7,8] = math.sin(tht)*(r*math.cos(phi)+q*math.sin(phi))/math.pow(math.cos(tht),2)
-        F[7,9] = (q*math.cos(phi) - r*math.sin(phi))/math.cos(tht)
-        F[8,9] = r*math.cos(phi)-q*math.sin(phi)
-        F[9,8] = r*math.cos(phi)+q*math.sin(phi) + (math.pow(math.sin(tht),2)*(r*math.cos(phi)+q*math.sin(phi)))/math.pow(math.cos(tht), 2)
-        F[9,9] = (math.sin(tht)*(q*math.cos(phi)-r*math.sin(phi)))/math.cos(tht)
-        F[7,11] = math.sin(phi)/math.cos(tht)
-        F[7,12] = math.cos(phi)/math.cos(tht)
-        F[8,11] = math.cos(phi)
-        F[8,12] = math.sin(phi)
-        F[9,10] = 1
-        F[9,11] = math.sin(phi)*math.sin(tht)/math.cos(tht)
-        F[9,12] = math.cos(phi)*math.sin(tht)/math.cos(tht)
-        F[10,1] = -rho*math.pow(xd,2)/16840*Cl/mass*area/Ixx
-        F[11,1] = -rho*math.pow(yd,2)/16840*Cm/mass*area/Iyy
-        F[12,1] = -rho*math.pow(zd,2)/16840*Cn/mass*area/Izz
-        F[10,4] = rho*math.pow(xd,2)*Cl/mass*area/Ixx
-        F[11,5] = rho*math.pow(yd,2)*Cm/mass*area/Iyy
-        F[12,6] = rho*math.pow(zd,2)*Cn/mass*area/Izz
-        F[10,11] = -(r*(Izz-Iyy))/Ixx
-        F[10,12] = -(q*(Izz-Iyy))/Ixx
-        F[11,10] = -(r*(Ixx-Izz))/Iyy
-        F[11,12] = -(p*(Ixx-Izz))/Iyy
-        F[12,10] = -(q*(Iyy-Ixx))/Izz
-        F[12,11] = -(p*(Iyy-Ixx))/Izz
-        F[11,14] = 0.75*rho*math.pow(yd,2)*area*dia/mass
-        F[12,15] = 0.75*rho*math.pow(zd,2)*area*dia/mass
-        F[10,16] = rho*math.pow(xd,2)*area/Ixx/mass
-        F[11,17] = rho*math.pow(yd,2)*area/Iyy/mass
-        F[12,18] = rho*math.pow(zd,2)*area/Izz/mass'''
             F[7,10] = Math.Cos(eulerRoll)*Math.Cos(eulerPitch)
             F[7,11] = Math.Cos(eulerPitch)*Math.Sin(eulerRoll)
             F[7,12] = -Math.Sin(eulerPitch);
@@ -216,18 +204,19 @@ class StateEstimation(Subsystem):
             F[9,7] = bodyRoll*(Math.Cos(eulerRoll)*Math.Sin(eulerYaw) - Math.Cos(eulerYaw)*Math.Sin(eulerPitch)*Math.Sin(eulerRoll)) + bodyPitch*(Math.Sin(eulerRoll)*Math.Sin(eulerYaw) + Math.Cos(eulerRoll)*Math.Cos(eulerYaw)*Math.Sin(eulerPitch))
             F[9,8] = bodyRoll*Math.Cos(eulerPitch)*Math.Cos(eulerRoll)*Math.Cos(eulerYaw) - bodyYaw*Math.Cos(eulerYaw)*Math.Sin(eulerPitch) + bodyPitch*Math.Cos(eulerPitch)*Math.Cos(eulerYaw)*Math.Sin(eulerRoll)
             F[9,9] = bodyRoll*(Math.Cos(eulerYaw)*Math.Sin(eulerRoll) - Math.Cos(eulerRoll)*Math.Sin(eulerPitch)*Math.Sin(eulerYaw)) - bodyPitch*(Math.Cos(eulerRoll)*Math.Cos(eulerYaw) + Math.Sin(eulerPitch)*Math.Sin(eulerRoll)*Math.Sin(eulerYaw)) - bodyYaw*Math.Cos(eulerPitch)*Math.Sin(eulerYaw)
+            '''
             F[10,1] = -rho*Math.Pow(xd,2)/16840*Cl/mass*area/Ixx
             F[11,1] = -rho*Math.Pow(yd,2)/16840*Cm/mass*area/Iyy
             F[12,1] = -rho*Math.Pow(zd,2)/16840*Cn/mass*area/Izz
             F[10,4] = rho*xd*Cl/mass*area*dia/Ixx
             F[11,5] = rho*yd*Cm/mass*area*dia/Iyy
             F[12,6] = rho*zd*Cn/mass*area*dia/Izz
-            F[10,10] = -(bodyYaw*(Izz-Iyy))/Ixx
-            F[10,11] = -(bodyPitch*(Izz-Iyy))/Ixx
-            F[11,11] = -(bodyYaw*(Ixx-Izz))/Iyy
-            F[11,12] = -(bodyRoll*(Ixx-Izz))/Iyy
-            F[12,10] = -(bodyPitch*(Iyy-Ixx))/Izz
-            F[12,12] = -(bodyRoll*(Iyy-Ixx))/Izz
+            F[10,10] = -(bodyYawRate*(Izz-Iyy))/Ixx
+            F[10,11] = -(bodyPitchRate*(Izz-Iyy))/Ixx
+            F[11,11] = -(bodyYawRate*(Ixx-Izz))/Iyy
+            F[11,12] = -(bodyRollRate*(Ixx-Izz))/Iyy
+            F[12,10] = -(bodyPitchRate*(Iyy-Ixx))/Izz
+            F[12,12] = -(bodyRollRate*(Iyy-Ixx))/Izz
             F[10,16] = rho*Math.Pow(xd,2)*area*dia/Ixx/mass
             F[11,17] = rho*Math.Pow(yd,2)*area*dia/Iyy/mass
             F[12,18] = rho*Math.Pow(zd,2)*area*dia/Izz/mass
@@ -245,12 +234,12 @@ class StateEstimation(Subsystem):
             Q[4,4] = .1
             Q[5,5] = .1
             Q[6,6] = .1
-            Q[7,7] = .1
+            Q[7,7] = .01
             Q[8,8] = .1
             Q[9,9] = .1
             Q[10,10] = .01
-            Q[11,11] = .01
-            Q[12,12] = .01
+            Q[11,11] = .1
+            Q[12,12] = .1
         
             Q[13,13] = .1 #Math.Pow(.05,2)
             Q[14,14] = .1 #Math.Pow(.05,2)
@@ -264,9 +253,9 @@ class StateEstimation(Subsystem):
 
             H = Matrix[System.Double](18)
             H[1,1] = 1
-            H[4,4] = SchedParameters.SimStepSeconds # The acceleration is measured, v = a*t
-            H[5,5] = SchedParameters.SimStepSeconds
-            H[6,6] = SchedParameters.SimStepSeconds
+            H[4,4] = 1#/SchedParameters.SimStepSeconds # The acceleration is measured, v = a*t
+            H[5,5] = 1#/SchedParameters.SimStepSeconds
+            H[6,6] = 1#/SchedParameters.SimStepSeconds
 
             H[10,10] = 1
             H[11,11] = 1
@@ -274,14 +263,14 @@ class StateEstimation(Subsystem):
         
         
             R =Matrix[System.Double].Eye(18)*.0001
-            R[1,1] = 0.1
+            R[1,1] = 12
             R[4,4] = 0.1
             R[5,5] = 0.1
             R[6,6] = 0.1
 
-            R[10,10] = 1e8
-            R[11,11] = 100
-            R[12,12] = 100
+            R[10,10] = 1e1
+            R[11,11] = 1e1
+            R[12,12] = 1e1
 
             M = Phi*Pk_Previous*Matrix[System.Double].Transpose(Phi) + Q 
             K = M*Matrix[System.Double].Transpose(H)*Matrix[System.Double].Inverse((H*M*Matrix[System.Double].Transpose(H)+R));
@@ -290,9 +279,9 @@ class StateEstimation(Subsystem):
         
             measure = Vector(18)
             measurements = self.DependencyCollector(event)
-            measure[4] = measurements[1]*9.81
-            measure[5] = measurements[2]*9.81
-            measure[6] = measurements[3]*9.81
+            measure[4] = xd + measurements[1]*9.81*SchedParameters.SimStepSeconds
+            measure[5] = yd + measurements[2]*9.81*SchedParameters.SimStepSeconds
+            measure[6] = zd + measurements[3]*9.81*SchedParameters.SimStepSeconds
             measure[10] = measurements[4]*Math.PI/180
             measure[11] = measurements[5]*Math.PI/180
             measure[12] = measurements[6]*Math.PI/180
@@ -344,19 +333,16 @@ class StateEstimation(Subsystem):
             eulerRoll = y[7]
             eulerPitch = y[8]
             eulerYaw = y[9]
-            bodyRoll = y[10]
-            bodyPitch = y[11]
-            bodyYaw = y[12]
+            bodyRollRate = y[10]
+            bodyPitchRate = y[11]
+            bodyYawRate = y[12]
             dcm = CreateRotationMatrix(eulerPitch, eulerYaw, eulerRoll)
             #Estimate the gravity vector position
             g = 9.81
             G = Vector(3)
             G[1] = -9.81
             G = Matrix[System.Double].Transpose(dcm)*G 
-            #G[1] = -g*Math.Cos(eulerPitch)*Math.Cos(eulerYaw)
-            #G[2] = g*(Math.Cos(eulerRoll)*Math.Sin(eulerPitch) - Math.Cos(eulerPitch)*Math.Sin(eulerRoll)*Math.Sin(eulerYaw))
-            #G[3] = -g*(Math.Sin(eulerRoll)*Math.Sin(eulerPitch) + Math.Cos(eulerRoll)*Math.Cos(eulerPitch)*Math.Sin(eulerYaw))
-        
+
             #Estimate dynamic pressure
             rho = 1.225*Math.Exp(-y[1]/8420)
         
@@ -380,23 +366,25 @@ class StateEstimation(Subsystem):
             dy[6] = a[3]
             # Use body angles to get the euler rates
             eulerRates = Vector(3)
-            eulerRates = dcm*y[MatrixIndex(10,12)]
+            eulerRates[2] = (bodyPitchRate*Math.Sin(eulerRoll)+bodyYawRate*Math.Cos(eulerRoll))/Math.Cos(eulerYaw)
+            eulerRates[3] = bodyPitchRate*Math.Cos(eulerRoll)-bodyYawRate*Math.Sin(eulerRoll)
+            eulerRates[1] = bodyRollRate + eulerRates[1]*Math.Sin(eulerPitch)
             dy[7] = eulerRates[1]
             dy[8] = eulerRates[2]
             dy[9] = eulerRates[3]
 
-            m = Vector(3)
+            bodyRateDot = Vector(3)
             # Use ang momentum eqns to calculate body rates  
-            Qp = 0.5*rho*Math.Pow(y[4],2)       
-            m[1] = ((Qp*A/mass*y[16]*D - (Izz - Iyy)*bodyPitch*bodyYaw)/Ixx)
-            Qp = 0.5*rho*Math.Pow(y[5],2) 
-            m[2] = (((Qp*A/mass*y[17]*D ) - (Ixx - Izz)*bodyRoll*bodyYaw)/Iyy)
-            Qp = 0.5*rho*Math.Pow(y[6],2) 
-            m[3] = (((Qp*A/mass*y[18]*D) - (Iyy - Ixx)*bodyRoll*bodyPitch)/Izz)
+            Qp = 0.5*rho*y[4]**2       
+            bodyRateDot[1] = ((Qp*A/mass*y[16]*D - (Izz - Iyy)*bodyPitchRate*bodyYawRate)/Ixx)
+            Qp = 0.5*rho*y[5]**2 
+            bodyRateDot[2] = (((Qp*A/mass*y[17]*D ) - (Ixx - Izz)*bodyRollRate*bodyYawRate)/Iyy)
+            Qp = 0.5*rho*y[6]**2 
+            bodyRateDot[3] = (((Qp*A/mass*y[18]*D) - (Iyy - Ixx)*bodyRollRate*bodyPitchRate)/Izz)
 
-            dy[10] = m[1]
-            dy[11] = m[2]
-            dy[12] = m[3]
+            dy[10] = bodyRateDot[1]
+            dy[11] = bodyRateDot[2]
+            dy[12] = bodyRateDot[3]
             # Propagate forward to the next time step
                   
             y = y + dy*dt
@@ -414,41 +402,41 @@ def DiscreteQ( Q, Ts, a):
         Qd = Matrix[System.Double].Transpose(phi22)*phi12
         Qd = (Qd+Matrix[System.Double].Transpose(Qd))/2; # Make sure Qd is symmetric
         return Qd
-def CreateRotationMatrix(eulerPitch, eulerYaw, eulerRoll):
+def CreateRotationMatrix(euler1, euler2, euler3): #Fixme: Should probably add to Utilites Class
     # Returns the Body to Inertial dcm using a 3-2-1 Euler sequence
     # eulerPitch = rotation about z (1)
     # eulerYaw = rotation about y (2)
     # eulerRoll = rotation about x (3)
 
     # Pre-do all of the trig 
-    cp = Math.Cos(eulerPitch)
-    cq = Math.Cos(eulerYaw)
-    cr = Math.Cos(eulerRoll)
+    c1 = Math.Cos(euler1)
+    c2 = Math.Cos(euler2)
+    c3 = Math.Cos(euler3)
 
-    sp = Math.Sin(eulerPitch)
-    sq = Math.Sin(eulerYaw)
-    sr = Math.Sin(eulerRoll)
+    s1 = Math.Sin(euler1)
+    s2 = Math.Sin(euler2)
+    s3 = Math.Sin(euler3)
 
     C1 = Matrix[System.Double](3)
     C2 = Matrix[System.Double](3)
     C3 = Matrix[System.Double](3)
-    C1[1,1] = cq
-    C1[1,2] = sq
-    C1[2,1] = -sq
-    C1[2,2] = cq
-    C1[3,3] = 1
+    C3[1,1] = c3
+    C3[1,2] = s3
+    C3[2,1] = -s3
+    C3[2,2] = c3
+    C3[3,3] = 1
 
     C2[2,2] = 1
-    C2[1,1] = cp
-    C2[3,1] = sp
-    C2[1,3] = -sp
-    C2[3,3] = cp
+    C2[1,1] = c2
+    C2[3,1] = s2
+    C2[1,3] = -s2
+    C2[3,3] = c2
 
-    C3[1,1] = 1
-    C3[2,2] = cr
-    C3[2,3] = sr
-    C3[3,2] = -sr
-    C3[3,3] = cr
+    C1[1,1] = 1
+    C1[2,2] = c1
+    C1[2,3] = s1
+    C1[3,2] = -s1
+    C1[3,3] = c1
 
-    return Matrix[System.Double].Transpose(C3*C2*C1)
+    return  Matrix[System.Double].Transpose(C3*C2*C1)
 

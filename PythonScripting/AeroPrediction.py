@@ -69,8 +69,20 @@ class AeroPrediction:
             skinDrag = self.SkinFrictionDrag(spdOfSnd, kineViscosity, 0.6*spdOfSnd*vel/Vector.Norm(vel))
             finDrag = self.FinFrictionDrag(spdOfSnd, kineViscosity, 0.6*spdOfSnd*vel/Vector.Norm(vel))
             baseDrag = self.BaseDrag(mach, skinDrag + Kf*finDrag)
-
-
+        Ln = (self.len-self.bodyLen)
+        machDiverge = -0.0156*(Ln/self.dia)**2 + 0.136*Ln/self.dia + 0.6817
+        if mach > machDiverge:
+            c = 50.676 *(Ln/self.bodyLen)**2 - 51.734*(Ln/self.bodyLen)+15.642
+            g = -2.2538*(Ln/self.bodyLen)**2+1.3108*Ln/self.bodyLen-1.7344
+            dCd = c*(self.len/self.dia)**g
+            a = 2.4
+            b = -1.05
+            machConverge = a*(self.len/self.dia)**b + 1.0275
+            if  mach <machConverge:
+                x = (mach-machDiverge)/(machConverge-machDiverge)
+                F = -8.3474*x**5+24.543*x**4-24.946*x**3+8.6321*x**2+1.1195*x 
+                dCd *= F 
+            return baseDrag + Cdf + dCd
         return baseDrag + Cdf
 
     def NormalForceCoefficient(self, alt, vel, alpha, deflection):
@@ -97,14 +109,14 @@ class AeroPrediction:
         
         mach = Vector.Norm(vel) * 3.28084/spdOfSnd
 
-        fin1 = self.NormalForceFin(mach, alpha, deflection[1])
-        fin3 = self.NormalForceFin(mach, alpha, deflection[3])
-        nose = 2 *Math.Sin(alpha)/alpha
+        fin1 = self.NormalForceFin(mach, alpha, deflection[1])/alpha
+        fin3 = self.NormalForceFin(mach, alpha, deflection[3])/alpha
+        nose = 2 #*Math.Sin(alpha)/alpha
         body = 1.1*self.dia*self.bodyLen/self.Aref*Math.Pow(Math.Sin(alpha),2)/alpha
         CpFin = self.getCpFin()
-        CpNose = (self.len-self.bodyLen)*2/3
+        CpNose = (self.len-self.bodyLen)*.447
         CpBody = (self.len-self.bodyLen/2)
-        X = (self.getCpFin()*fin1 + self.getCpFin()*fin3 + 0.447*(self.len-self.bodyLen)*nose + (self.len-self.bodyLen/2)* body)/(fin1+fin3+nose+body)
+        X = (self.getCpFin()*abs(fin1) + self.getCpFin()*abs(fin3) + 0.447*(self.len-self.bodyLen)*nose + (self.len-self.bodyLen/2)* abs(body))/(fin1+fin3+nose+body)
 
         return (fin1+fin3+nose+body)*alpha*(X-CG)/self.dia
     def YawingMoment(self, alt, vel, alpha, deflection, CG):
@@ -113,15 +125,31 @@ class AeroPrediction:
         
         mach = Vector.Norm(vel) * 3.28084/spdOfSnd
 
-        fin1 = self.NormalForceFin(mach, alpha, deflection[2])
-        fin3 = self.NormalForceFin(mach, alpha, deflection[4])
-        nose = 2 *Math.Sin(alpha)/alpha
+        fin1 = self.NormalForceFin(mach, alpha, deflection[2])/alpha
+        fin3 = self.NormalForceFin(mach, alpha, deflection[4])/alpha
+        nose = 2 #*Math.Sin(alpha)/alpha
         body = 1.1*self.dia*self.bodyLen/self.Aref*Math.Pow(Math.Sin(alpha),2)/alpha
 
-        X = (self.getCpFin()*fin1 + self.getCpFin()*fin3 + 0.447*(self.len-self.bodyLen)*nose + (self.len-self.bodyLen/2)* body)/(fin1+fin3+nose+body)
+        X = (self.getCpFin()*abs(fin1) + self.getCpFin()*abs(fin3) + 0.447*(self.len-self.bodyLen)*nose + (self.len-self.bodyLen/2)* abs(body))/(fin1+fin3+nose+body)
 
         return (fin1+fin3+nose+body)*alpha*(X-CG)/self.dia
+    def RollingMoment(self, vel, rollRate, alt, alpha, beta, deflection):
+        spdOfSnd = CalcSpdOfSnd(alt)
+        
+        mach = Vector.Norm(vel) * 3.28084/spdOfSnd
 
+        fin1 = self.NormalForceFin(mach, 1, 0)
+        fin3 = self.NormalForceFin(mach, 1, 0)
+
+        fin2 = self.NormalForceFin(mach, 1, 0)
+        fin4 = self.NormalForceFin(mach, 1,0)
+
+        rollForce = self.RollingForceFin(fin1, deflection[1]) + self.RollingForceFin(fin2, deflection[2]) -\
+            self.RollingForceFin(fin3, deflection[3]) - self.RollingForceFin(fin4, deflection[4]) 
+        rollDamp = self.RollDampingFin(fin1, rollRate, Vector.Norm(vel)) + self.RollDampingFin(fin2, rollRate, Vector.Norm(vel)) +\
+            self.RollDampingFin(fin3, rollRate, Vector.Norm(vel)) + self.RollDampingFin(fin4, rollRate, Vector.Norm(vel))
+
+        return rollForce - rollDamp
     def getCpFin(self):
         #ymac = self.height/3 * (self.Cr + 2*self.Ct)/(self.Cr + self.Ct)
         Xf = (self.Cr-self.Ct)/3*(self.Cr+2*self.Ct)/(self.Cr+self.Ct)+1/6*(self.Cr**2+self.Ct**2+self.Cr*self.Ct)/(self.Cr+self.Ct) #Assume that the bottom edge is flat
@@ -274,7 +302,7 @@ class AeroPrediction:
         Cn = K * Aplan/self.Aref * Math.Pow(Math.Sin(alpha), 2)
         return Cn
 
-    def RollingForceFin(self, Cn_alpha, deflection, vel):
+    def RollingForceFin(self, Cn_alpha, deflection):
         Ymac = self.height/3 * (self.Cr + 2*self.Ct)/(self.Cr + self.Ct)
         return (Ymac + self.dia/2)*Cn_alpha*deflection/self.dia
 
@@ -282,7 +310,7 @@ class AeroPrediction:
         sum = (self.Cr +1*self.Ct)/2 * Math.Pow(self.dia/2, 2) * self.height \
             + (self.Cr +2*self.Ct)/3 * self.dia/2 * Math.Pow(self.height, 2) \
             + (self.Cr +3*self.Ct)/12* Math.Pow(self.height, 3)
-        Cld = Cn_alpha * omega * sum / self.Aref / self.dia / vel
+        Cld = Cn_alpha * omega**2 * sum / self.Aref / self.dia / vel**2
         #print Cld, sum, omega, self.Aref, self.dia, vel
         return Cld
 
@@ -327,7 +355,7 @@ class AeroPrediction:
             Cn_alpha = Afin * (K1 + K2 * alpha + K3 *Math.Pow(alpha,2))
            
         Kt = 1 + (self.dia/2 / (self.height + self.dia/2)) #correction factor for fin body interaction
-        Cn_alpha = Kt * Cn_alpha #* (alpha+deflection) #Math.Sin(alpha+deflection)**2
+        Cn_alpha = Kt * Cn_alpha * (alpha+deflection) #Math.Sin(alpha+deflection)**2
         return Cn_alpha
     def PitchDampingMoment(self, vel, omega, alpha):
         Afin = (self.Cr+self.Ct)/2*self.height

@@ -154,7 +154,7 @@ class eomRocket(Utilities.EOMS):
         #bodyPitch = 1.1*self.lengthRef*3.86/self.areaRef*Math.Pow(Math.Sin(alpha),2)
         #finPitch = self.Cy*1.5*self.lengthRef
         self.Cm = self.drag.PitchingMoment(alt, velA, alpha, deflection, CG) - pitchDamping# FIXME
-        self.Cl = 0#-0.01 - 4*self.drag.RollDampingFin(1, bodyRollRate, Vector.Norm(velB)) 
+        self.Cl = 0*self.drag.RollingMoment(velA, bodyRollRate, alt, alpha, beta, deflection)
         yawDamping = self.drag.PitchDampingMoment(velA[3], bodyYawRate, beta)
         #bodyYaw = 1.1*self.lengthRef*3.86/self.areaRef*Math.Pow(Math.Sin(beta),2)
         #finYaw = self.Cz*1.5*self.lengthRef
@@ -171,9 +171,10 @@ class eomRocket(Utilities.EOMS):
             bodyRollRate = 0.0
             bodyYawRate = 0.0
             bodyPitchRate = 0.0
-            velB = y[MatrixIndex(4,6),1]
             y[5,1] = self.atmos.uVelocity(alt)
             y[6,1] = self.atmos.vVelocity(alt)
+            velB = y[MatrixIndex(4,6),1]
+            velA = velB
             self.dcm = Matrix[System.Double].Eye(3)
             dcmAero = Matrix[System.Double].Eye(3)
             G = Vector(3)
@@ -248,7 +249,7 @@ class eomRocket(Utilities.EOMS):
             bodyRates[3] = bodyYawRate
             eulerRates = Vector(3)
             #eulerRates = self.dcm*bodyRates
-            eulerRates[2] = (bodyPitchRate*Math.Sin(eulerRoll)+bodyYawRate*Math.Cos(eulerRoll))/Math.Cos(eulerYaw)
+            eulerRates[2] = (bodyPitchRate*Math.Sin(eulerRoll)+bodyYawRate*Math.Cos(eulerRoll))/Math.Cos(eulerPitch)
             eulerRates[3] = bodyPitchRate*Math.Cos(eulerRoll)-bodyYawRate*Math.Sin(eulerRoll)
             eulerRates[1] = bodyRollRate + eulerRates[1]*Math.Sin(eulerPitch)
             #eulerRates = bodyRates
@@ -265,7 +266,7 @@ class eomRocket(Utilities.EOMS):
         cxTemp[1,2] = self.Cx
         param.Add(self.CX_KEY, cxTemp)
         param.Add(self.ALPHA_KEY, alpha*180/Math.PI)
-        param.Add(self.ACCELERATION, accel)
+        param.Add(self.ACCELERATION, acc)
         param.Add(self.GYROSCOPE, gyro)
         press = self.atmos.pressure(alt)
         param.Add(self.pressure, press)

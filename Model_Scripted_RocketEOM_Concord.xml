@@ -2,7 +2,7 @@
 	<ASSET assetName="Concord">
 		<DynamicState
 			DynamicStateType="DYNAMIC_ECI"
-			ICs="[6378633; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.04; 0.0; 0.0; 0.0]">
+			ICs="[6378633; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0]">
 			<EOMS
 				EOMSType="scripted"
 				src="C:\Users\steve\Source\Repos\Horizon\PythonScripting\eomRocket.py"
@@ -59,7 +59,7 @@
 			Type="IMU"
 			subsystemName= "imu">
 			<Gyro
-				gyroRateNoiseDensity= "0.03"
+				gyroRateNoiseDensity= ".2"
 				gyroNaturalFrequency= "30"
 				gyroDampingRatio= "0.707"
 				gyroScaleFactor= "14.375"
@@ -72,7 +72,7 @@
 				gyroOutputRate= "1000"
 			></Gyro>
 			<Accelerometer
-				accNoiseDensity= "0.025"
+				accNoiseDensity= "0.25"
 				accNonLinearity= "0"
 				accCrossAxis= "0"
 				accScaleFactor= "0.0078"

@@ -41,8 +41,6 @@ class Controller(Subsystem):
 
         self.addKey(self.DEFLECTION_KEY)
         self.Asset.AssetDynamicState.IntegratorParameters.Add(self.DEFLECTION_KEY, Matrix[System.Double](4,1))
-        self.A = 0.510458340443047
-        self.B = -0.489541659556953
         self.deltaDeflection = 50*.02 * Math.PI/180 # 200 deg/s * Time Step -> radians TODO: Allow once per schedule
         self.deflectionOld = Matrix[System.Double](4,1)
         pass
@@ -56,6 +54,7 @@ class Controller(Subsystem):
         state = self.DependencyCollector(event).LastValue()
         if not (self.Asset.AssetDynamicState.IntegratorParameters.GetValue(self.DROGUE_DEPLOYED)):
         #if(True):
+        #if(False):
             state = Matrix[System.Double].Transpose(state)
             controlState = state[MatrixIndex(7,12), 1]
 

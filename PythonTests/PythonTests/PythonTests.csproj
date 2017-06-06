@@ -45,8 +45,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Hydra70Test.cs" />
-    <Compile Include="AeroPredictionTest.cs" />
+    <Compile Include="AeroPredictTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

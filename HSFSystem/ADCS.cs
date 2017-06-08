@@ -16,7 +16,7 @@ namespace HSFSubsystem
     {
         #region Attributes
         protected StateVarKey<Matrix<double>> POINTVEC_KEY;
-        protected double _timetoslew = 10;
+        protected double _slewRate = 5; //deg/sec
         #endregion Attributes
 
         #region Constructors
@@ -32,11 +32,11 @@ namespace HSFSubsystem
             DefaultSubName = "Adcs";
             Asset = asset;
             GetSubNameFromXmlNode(ADCSNode);
-            double slewTime;
-            if (ADCSNode.Attributes["timetoslew"].Value != null)
+            double slewRate;
+            if (ADCSNode.Attributes["slewRate"].Value != null)
             {
-                Double.TryParse(ADCSNode.Attributes["slewTime"].Value, out slewTime);
-                _timetoslew = slewTime;
+                Double.TryParse(ADCSNode.Attributes["slewRate"].Value, out slewRate);
+                _slewRate = slewRate;
             }
             POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
             addKey(POINTVEC_KEY);
@@ -70,19 +70,32 @@ namespace HSFSubsystem
         {
             if (base.CanPerform( proposedEvent, environment) == false)
                 return false;
-            //double timetoslew = (rand()%5)+8;
-            double timetoslew = _timetoslew;
 
             double es = proposedEvent.GetEventStart(Asset);
             double ts = proposedEvent.GetTaskStart(Asset);
-            double te = proposedEvent.GetTaskEnd(Asset);
+            double te = proposedEvent.GetTaskEnd(Asset);            
+            
+            // from Brown, Pp. 99
+            DynamicState position = Asset.AssetDynamicState;
+            Matrix<double> m_SC_pos_at_ts_ECI = position.PositionECI(ts);
+            Matrix<double> m_target_pos_at_ts_ECI = _task.Target.DynamicState.PositionECI(ts);
+            Matrix<double> m_pv = m_target_pos_at_ts_ECI - m_SC_pos_at_ts_ECI;
 
+            Matrix<double> sc_n = m_SC_pos_at_ts_ECI / Matrix<double>.Norm(m_SC_pos_at_ts_ECI);
+            Matrix<double> pv_n = m_pv / Matrix<double>.Norm(m_pv);
+
+
+            double slewAngle = Math.Acos(Matrix<double>.Dot(pv_n, -sc_n)) * 180 / Math.PI;
+                        
+            //double timetoslew = (rand()%5)+8;
+            double timetoslew = slewAngle/_slewRate;
+            
             if (es + timetoslew > ts)
             {
                 if (es + timetoslew > te)
                 {
                     // TODO: Change this to Logger
-                    Console.WriteLine("ADCS: Not enough time to slew event start: "+ es + "task end" + te);
+                    //Console.WriteLine("ADCS: Not enough time to slew event start: "+ es + "task end" + te);
                     return false;
                 }
                 else
@@ -90,11 +103,7 @@ namespace HSFSubsystem
             }
 
 
-            // from Brown, Pp. 99
-            DynamicState position = Asset.AssetDynamicState;
-            Matrix<double> m_SC_pos_at_ts_ECI = position.PositionECI(ts);
-            Matrix<double> m_target_pos_at_ts_ECI = _task.Target.DynamicState.PositionECI(ts);
-            Matrix<double> m_pv = m_target_pos_at_ts_ECI - m_SC_pos_at_ts_ECI;
+            
 
             // set state data
             _newState.SetProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));

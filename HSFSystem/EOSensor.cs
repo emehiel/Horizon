@@ -51,7 +51,7 @@ namespace HSFSubsystem
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
                 _lowQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityPixels"].Value.ToString(), typeof(double));
-            if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
+            if (EOSensorXmlNode.Attributes["lowQualityTime"] != null)
                 _lowQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityTime"].Value.ToString(), typeof(double));
             if (EOSensorXmlNode.Attributes["midQualityPixels"] != null)
                 _midQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["midQualityPixels"].Value.ToString(), typeof(double));

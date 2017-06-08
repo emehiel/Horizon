@@ -17,7 +17,8 @@
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Adcs"
-			subsystemName = "Adcs">
+			subsystemName = "Adcs"
+      slewRate = "5">
 			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
 			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
 		</SUBSYSTEM>
@@ -62,15 +63,17 @@
 			<DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR.asset1"></DEPENDENCY>
 		</SUBSYSTEM>
 		<CONSTRAINT
-			value="0.7"
+			value="0.25"
 			subsystemName = "Power"
-			type="FAIL_IF_HIGHER">
+			type="FAIL_IF_HIGHER"
+			name="con1">
 			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
 		</CONSTRAINT>
 		<CONSTRAINT
 			value="0.7"
 			subsystemName="SSDR"
-			type="FAIL_IF_HIGHER">
+			type="FAIL_IF_HIGHER"
+			name="con2">
 			<STATEVAR type = "Double" key="DataBufferFillRatio"></STATEVAR>
 		</CONSTRAINT>
 	</ASSET>
@@ -88,7 +91,8 @@
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Adcs"
-			subsystemName = "Adcs">
+			subsystemName = "Adcs"
+      slewRate = "5">
 			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
 			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
 		</SUBSYSTEM>
@@ -133,15 +137,17 @@
 			<DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR.asset2"></DEPENDENCY>
 		</SUBSYSTEM>
 		<CONSTRAINT
-			value="0.7"
+			value="0.25"
 			subsystemName = "Power"
-			type="FAIL_IF_HIGHER">
+			type="FAIL_IF_HIGHER"
+			name="con1">
 			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
 		</CONSTRAINT>
 		<CONSTRAINT
 			value="0.7"
 			subsystemName="SSDR"
-			type="FAIL_IF_HIGHER">
+			type="FAIL_IF_HIGHER"
+			name="con2">
 			<STATEVAR type = "Double" key="DataBufferFillRatio"></STATEVAR>
 		</CONSTRAINT>
 	</ASSET>

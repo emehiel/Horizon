@@ -35,7 +35,7 @@
 			src="..\..\..\ssdr.py"
 			className="ssdr">
       <IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
-      <DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor"></DEPENDENCY>
+      <DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor.asset1"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
 			Type="scripted"
@@ -63,13 +63,15 @@
     <CONSTRAINT
 			value="0.25"
 			subsystemName = "Power"
-			type="FAIL_IF_HIGHER">
+			type="FAIL_IF_HIGHER"
+      name="const1">
       <STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
     </CONSTRAINT>
     <CONSTRAINT
 			value="0.7"
 			subsystemName="SSDR"
-			type="FAIL_IF_HIGHER">
+			type="FAIL_IF_HIGHER"
+      name="const2">
       <STATEVAR type = "Double" key="DataBufferFillRatio"></STATEVAR>
     </CONSTRAINT>
   </ASSET>

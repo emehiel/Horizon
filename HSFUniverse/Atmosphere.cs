@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Grib.Api;
 using System.IO;
+using System.Runtime.InteropServices;
+using Utilities;
 
 namespace HSFUniverse
 {
@@ -57,7 +59,7 @@ namespace HSFUniverse
         public string filePath
         {
             get { return _filePath; }
-            set { _filePath = value;  }
+            set { _filePath = value; }
         }
         public double latitude
         {
@@ -68,7 +70,7 @@ namespace HSFUniverse
             get { return _longitude; }
         }
 
-        
+
         public void SetLocation(double latitude, double longitude)
         {
             /* Round to nearest 0.5 deg because that is what our data is in */
@@ -107,7 +109,7 @@ namespace HSFUniverse
             InterpretData();
             double airGasConstant = 286.9;
             densityData = new SortedList<double, double>();
-            foreach(double h in pressureData.Keys)
+            foreach (double h in pressureData.Keys)
             {
                 densityData.Add(h, pressureData[h] / temperatureData[h] / airGasConstant);
             }
@@ -156,7 +158,7 @@ namespace HSFUniverse
         {
             string directory = @"c:\Horizon\";
             System.IO.Directory.CreateDirectory(directory);
-            StringBuilder url = null; 
+            StringBuilder url = null;
             HttpWebResponse response;
             for (int i = 0; i < 3; i++) {
                 url = new StringBuilder("http://www.ftp.ncep.noaa.gov/data/nccf/com/gfs/prod/gfs.");
@@ -167,13 +169,13 @@ namespace HSFUniverse
 
                 HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(url.ToString()));
                 request.Method = "HEAD";
-                
+
                 try
                 {
                     response = (HttpWebResponse)request.GetResponse();
                     break;
                 }
-                catch (WebException e) 
+                catch (WebException e)
                 {
                     /* Catch 404 and go back 1 day in case NWS was having issues or file wasn't yet posted */
                     HttpWebResponse errorResponse = e.Response as HttpWebResponse;
@@ -188,10 +190,10 @@ namespace HSFUniverse
                     }
                 }
             }
-            
+
             WebClient webClient = new WebClient();
             webClient.DownloadFile(new Uri(url.ToString()), directory + filePath); // Maybe want to make Async. Want to see what other initial tasks need to be done.
-            
+
         }
         /// <summary>
         /// Generates the values for pressure, temperatures, and u and v wind velocities 
@@ -210,30 +212,29 @@ namespace HSFUniverse
             Dictionary<double, double> h = new Dictionary<double, double>();
             Dictionary<double, double> t = new Dictionary<double, double>();
 
-            // FIXME: Make computer agnostic
-            Environment.SetEnvironmentVariable("GRIB_API_DIR_ROOT",  @"C:\Users\steve\Source\Repos\Horizon\packages\Grib.Api.0.7.1", EnvironmentVariableTarget.Process);
+            Environment.SetEnvironmentVariable("GRIB_API_DIR_ROOT", AppDomain.CurrentDomain.BaseDirectory+"\\..\\..\\..\\packages\\Grib.Api.0.7.1", EnvironmentVariableTarget.Process);
             if (string.IsNullOrEmpty(_filePath))
             {
                 throw new System.IO.FileNotFoundException("Filename not defined");
             }
             using (GribFile file = new GribFile(_filePath))
             {
-                /* Get the data for the values we want (u and v wind velocitys and height) */ 
+                /* Get the data for the values we want (u and v wind velocitys and height) */
                 var weatherData = from m in file
-                                where m.StepType.Equals("instant") && (m.TypeOfLevel.Equals("isobaricInhPa") || m.TypeOfLevel.Equals("unknown") || m.TypeOfLevel.Equals("surface")) && ((m.ShortName.Equals("u")) || (m.ShortName.Equals("v")) || (m.ShortName.Equals("gh")) || (m.ShortName.Equals("t")))
-                                select m;
+                                  where m.StepType.Equals("instant") && (m.TypeOfLevel.Equals("isobaricInhPa") || m.TypeOfLevel.Equals("unknown") || m.TypeOfLevel.Equals("surface")) && ((m.ShortName.Equals("u")) || (m.ShortName.Equals("v")) || (m.ShortName.Equals("gh")) || (m.ShortName.Equals("t")))
+                                  select m;
                 foreach (GribMessage msg in weatherData)
-                { 
+                {
                     /* Get the GribMessage at the specific location */
                     var msgLoc = from m in msg.GeoSpatialValues
                                  where (m.Latitude.Equals(latitude)) && (m.Longitude.Equals(longitude))
                                  select m;
                     /* Get what pressure level the value is for */
-                    string pressureLevel = msg["level"].AsString(); 
+                    string pressureLevel = msg["level"].AsString();
 
                     /* Put the value in the corresponding dictionary by using the short name */
                     switch (msg.ShortName)
-                        {
+                    {
                         case "u":
                             {
                                 if (Convert.ToDouble(pressureLevel) != 0)
@@ -242,7 +243,7 @@ namespace HSFUniverse
                                 }
                                 else
                                 {
-                                    u.Add(Convert.ToDouble(101325), msgLoc.Last().Value+5);
+                                    u.Add(Convert.ToDouble(101325), msgLoc.Last().Value + 5);
                                 }
                                 break;
                             }
@@ -254,7 +255,7 @@ namespace HSFUniverse
                                 }
                                 else
                                 {
-                                    v.Add(Convert.ToDouble(101325), msgLoc.Last().Value+4);
+                                    v.Add(Convert.ToDouble(101325), msgLoc.Last().Value + 4);
                                 }
                                 break;
                             }
@@ -282,7 +283,7 @@ namespace HSFUniverse
                                 }
                                 break;
                             }
-                        }
+                    }
                 }
                 /* Convert the pressure levels into geopotential heights */
                 u = u.ToDictionary(kp => h[kp.Key], kp => kp.Value);
@@ -296,7 +297,7 @@ namespace HSFUniverse
                 vVelocityData = new SortedList<double, double>(v, Comparer<double>.Default);
                 temperatureData = new SortedList<double, double>(t, Comparer<double>.Default);
                 pressureData = new SortedList<double, double>(h, Comparer<double>.Default);
-                
+
                 Console.WriteLine("Finished Sorting");
             }
         }
@@ -343,7 +344,7 @@ namespace HSFUniverse
             /* Convert to strings and return*/
             string gfs = gfsRun.ToString("d2");
             string future = hoursInFuture.ToString("d3");
-            _gfscode =  day  + gfs + "_" + future;
+            _gfscode = day + gfs + "_" + future;
         }
         /// <summary>
         /// Updates the gfscode to use the same run number on the previous day. This is 
@@ -401,7 +402,7 @@ namespace HSFUniverse
             double keyAbove = data.ElementAt(dataBelow.Count()).Key; // 0 based index and count is 1 based, so the next point is actually the count of data below
             return (data[keyAbove] - data[keyBelow]) / (keyAbove - keyBelow) * (height - keyBelow) + data[keyBelow];
         }
-      
+
     }
 
     /// <summary>
@@ -455,4 +456,20 @@ namespace HSFUniverse
             return 0.0;
         }
     }
+
+    public class HorizontalWindModel14
+    {
+        [DllImport(@"C:\Users\steve\Desktop\HWM\hwm14.dll", CallingConvention = CallingConvention.StdCall)]
+        private static extern void hwm14([In] int iyd, [In] float sec, [In]  float alt, [In] float glat, [In] float glon, [In] float stl, [In] float f107a, [In] float f107,  [In] float ap, [Out] float w);
+        public static Vector hwm14Interface(int iyd, float sec, float alt, float glat, float glon, float stl, float[] ap)
+        {
+            //inithwm();
+            float[] w = new float[2];
+            float f107a = 100;
+            float f107 = 100;
+            hwm14( iyd,  sec, alt, glat, glon, stl, f107a, f107, 0, 0);
+            return new Vector(new List<double>(new double[]{ 0, Convert.ToDouble(w[1]) }));
+        }
+    }
+            
 }

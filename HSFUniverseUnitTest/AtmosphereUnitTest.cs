@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HSFUniverse;
 using System.Collections.Generic;
 using System.IO;
+using Utilities;
 
 namespace HSFUniverse.Tests
 {
@@ -42,15 +43,14 @@ namespace HSFUniverse.Tests
             PrivateObject obj = new PrivateObject(weatherData);
             obj.SetFieldOrProperty("_gfscode", gfscode);
             /* Download the file if it does not exist. This only needs to be done once */
-            if (!System.IO.File.Exists(Directory.GetCurrentDirectory() + @"\..\..\Data\gfs.t18z.pgrb2.0p50.f060.grb2"))
+            if (!System.IO.File.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\..\..\Data\gfs.t18z.pgrb2.0p50.f060.grb2"))
             {
-                
                 obj.Invoke("DownloadData");
             }
 
-            obj.SetFieldOrProperty("_filePath", Directory.GetCurrentDirectory() + @"\..\..\Data\gfs.t18z.pgrb2.0p50.f060.grb2");
+            obj.SetFieldOrProperty("_filePath", AppDomain.CurrentDomain.BaseDirectory + @"\..\..\Data\gfs.t18z.pgrb2.0p50.f060.grb2");
             obj.Invoke("InterpretData");
-            int expectedCount = 31;
+            int expectedCount = 32;
             //weatherData.temperature(1350);
             double pressure = ((SortedList<double, double>)obj.GetFieldOrProperty("pressureData")).Count;
             double temperature = ((SortedList<double, double>)obj.GetFieldOrProperty("temperatureData")).Count;
@@ -88,5 +88,27 @@ namespace HSFUniverse.Tests
             obj.Invoke("UsePreviousDaysRun");
             Assert.AreEqual("2017012006_025", ((string)obj.GetFieldOrProperty("_gfscode")));
         }
+    }
+
+    [TestClass]
+    public class HWMTest
+    {
+        /*
+        [TestMethod]
+        public void TestWind()
+        {
+            int day = 95000+150;
+            float ut = 12;
+            float alt = 0;
+            float glat = -45;
+            float glon = -85;
+            float stl = 6;
+            float[] ap = { 0, 80 };
+            //float ap = 80;
+            Vector wind = HorizontalWindModel14.hwm14Interface(day, ut, alt, glat, glon, stl, ap);
+            Assert.AreEqual(0.031, wind[1]);
+            Assert.AreEqual(6.271, wind[2]);
+        }
+        */
     }
 }

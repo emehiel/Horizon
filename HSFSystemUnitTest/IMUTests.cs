@@ -23,7 +23,7 @@ namespace HSFSystem.Tests
         public void OneTimeInit()
         {
             program = new Program();
-            string[] inputArg = { "-m", @"C:\Users\steve\Source\Repos\Horizon\Model_Scripted_RocketEOM_Concord.xml", "-s", @"C:\Users\steve\Source\Repos\Horizon\SimulationInput_RocketScripted.xml", "-t", @"C:\Users\steve\Source\Repos\Horizon\rocketTargets.xml" };
+            string[] inputArg = { "-m", AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\Model_Scripted_RocketEOM_Concord.xml", "-s", AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\SimulationInput_RocketScripted.xml", "-t", AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\rocketTargets.xml" };
             
             program.InitInput(inputArg);
             program.LoadTargets();
@@ -33,7 +33,7 @@ namespace HSFSystem.Tests
         [SetUp]
         public void Init()
         {
-            XmlNode node = XmlParser.GetModelNode(@"C:\Users\steve\Source\Repos\Horizon\Model_Scripted_RocketEOM_Concord.xml");
+            XmlNode node = XmlParser.GetModelNode(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\Model_Scripted_RocketEOM_Concord.xml");
             testIMU = new IMU(node.FirstChild.ChildNodes[1], program.assetList[0]);
         }
         [Test()]
@@ -46,8 +46,8 @@ namespace HSFSystem.Tests
         public void GyroscopeTest()
         {
            
-            Vector input = new Vector(new List<double> (new double[] { 2200, -2001, 3 } ));
-            Vector expected = new Vector(new List<double>(new double[3] { 2000, -2000, 3 }));
+            Vector input = new Vector(new List<double> (new double[] { 250, -290, 3*Math.PI/180 } ));
+            Vector expected = new Vector(new List<double>(new double[3] { 245, -286.72, 3 }));
 
             Vector output = testIMU.Gyroscope(input);
             Assert.Multiple(() =>
@@ -63,7 +63,7 @@ namespace HSFSystem.Tests
             //List<List<double[,]>> data = new List<List<double>>(new double[3,1000]);
             List<Vector> output = Enumerable.Repeat(new Vector(new List<double>(new double[3] { 0, 0, 0 })), 250).ToList();
             int i = 0;
-            File.Delete(@"C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\TestOutput\gyroscopeTest.csv");
+            File.Delete(AppDomain.CurrentDomain.BaseDirectory + "\\TestOutput\\gyroscopeTest.csv");
             var csv = new StringBuilder();
             csv.Clear();
             List<Vector> data = Enumerable.Repeat(new Vector(new List<double>(new double[3] { 0, 0, 0})), 250).ToList();
@@ -71,8 +71,8 @@ namespace HSFSystem.Tests
             {
                 output[i] = testIMU.Gyroscope(dataPt);    
                 string outputToWrite = string.Join(",", output[i].ToString());
-                File.AppendAllText(@"C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\TestOutput\gyroscopeTest.csv", outputToWrite);
-                File.AppendAllText(@"C:\Users\steve\Resilio Sync\Documents\MATLAB\Thesis\TestOutput\gyroscopeTest.csv", "\n");
+                File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory + "\\TestOutput\\gyroscopeTest.csv", outputToWrite);
+                File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory + "\\TestOutput\\gyroscopeTest.csv", "\n");
                 i++;
             }
             Assert.Multiple(() =>

@@ -5,8 +5,8 @@
 			ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866]">
 			<EOMS
 				EOMSType="scripted"
-				src="C:\Users\steve\Source\Repos\Horizon\eomRocket.py"
-				className="eomRocket">
+				src="..\..\..\eom.py"
+				className="eom">
 			</EOMS>
 		</DynamicState>
 		<SUBSYSTEM

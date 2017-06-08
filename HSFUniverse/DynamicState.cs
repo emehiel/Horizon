@@ -314,7 +314,7 @@ namespace HSFUniverse
 
             // data
             foreach (var d in _stateData)
-                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6] + ",");
+                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6]);
 
             return csv.ToString();
         }

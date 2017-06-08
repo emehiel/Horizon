@@ -19,7 +19,7 @@ namespace HSFSystem
         protected StateVarKey<Matrix<double>> MEASURE_KEY;
         protected StateVarKey<Matrix<double>> CX_KEY;
         protected StateVarKey<double> ALPHA_KEY;
-        protected double _accNoiseDensity = 0;
+        protected double _accNoiseDensity = 0.3;
         protected double _accNaturalFrequency = 150;
         protected double _accDampingratio = 0.707;
         protected double _accMax = Double.MaxValue;
@@ -102,20 +102,6 @@ namespace HSFSystem
         {
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            dependencies.Add("ACCxFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_ACCxMeasurementsFrom_IMUSUB));
-            dependencies.Add("ACCyFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_ACCyMeasurementsFrom_IMUSUB));
-            dependencies.Add("ACCzFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_ACCzMeasurementsFrom_IMUSUB));
-            dependencies.Add("GYRxFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_GYRxMeasurementsFrom_IMUSUB));
-            dependencies.Add("GYRyFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_GYRyMeasurementsFrom_IMUSUB));
-            dependencies.Add("GYRzFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_GYRzMeasurementsFrom_IMUSUB));
-            dependencies.Add("BaroFromIMU", new Func<Event, HSFProfile<double>>(STATESUB_BaroMeasurementsFrom_IMUSUB));
-            MEASURE_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "measurements");
-            addKey(MEASURE_KEY);
-            CX_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "Cx");
-            addKey(CX_KEY);
-            ALPHA_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "alpha");
-            addKey(ALPHA_KEY);
-            Asset.AssetDynamicState.IntegratorParameters.Add(CX_KEY, new Matrix<double>(new double[1, 2] { { 0, 0 } }));
         }
         #endregion
         #region Overrides
@@ -144,33 +130,22 @@ namespace HSFSystem
             }
             Vector gyro = new Vector(3);
             Vector accel = new Vector(3);
-            double baro = 0;
             try
             {
                 gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "gyro"));
                 accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "accel"));
-                baro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<double>(Asset.Name + "." + "pressure"));
             }
             catch (KeyNotFoundException)
             {
                 Console.WriteLine("Key Not Found");
             }
-            try
-            {
-                _newState.AddValue(CX_KEY, new HSFProfile<Matrix<double>>(ts, Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Matrix<double>>(Asset.Name + "." + "Cx"))));
-                _newState.AddValue(ALPHA_KEY, new HSFProfile<double>(ts, Asset.AssetDynamicState.IntegratorParameters.GetValue(ALPHA_KEY)));
-            }
-            catch
-            {
-                Console.WriteLine("Cx key not found");
-            }
+
             Matrix<double> gyr = Gyroscope(gyro);
             Matrix<double> acc = Accelerometer(accel);
             
-            Matrix<double> measure = new Matrix<double>(1, 7);
+            Matrix<double> measure = new Matrix<double>(1, 6);
             measure[1,new MatrixIndex(1, 3)] = acc;
             measure[1,new MatrixIndex(4,6)] = gyr;
-            measure[1,7] = baro;
             _newState.AddValue(MEASURE_KEY, new HSFProfile<Matrix<double>>(ts, measure));
             return true;
         }
@@ -239,111 +214,6 @@ namespace HSFSystem
         }
         #endregion
         #region Dependencies
-        public HSFProfile<double> STATESUB_ACCxMeasurementsFrom_IMUSUB(Event currentEvent)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            Vector accel = new Vector(3);
-            try
-            {
-                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "accel"));
-            }
-            catch (KeyNotFoundException)
-            {
-                Console.WriteLine("Key Not Found X");
-            }
-            Vector acc = Accelerometer(accel);
-            prof1[currentEvent.GetEventStart(Asset)] = acc[1];
-            return prof1;
-        }
-        public HSFProfile<double> STATESUB_ACCyMeasurementsFrom_IMUSUB(Event currentEvent)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            Vector accel = new Vector(3);
-            try
-            {
-                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "Accel"));
-            }
-            catch (KeyNotFoundException)
-            {
-                Console.WriteLine("Key Not Found Y");
-            }
-            Vector acc = Accelerometer(accel);
-            prof1[currentEvent.GetEventStart(Asset)] = acc[2];
-            return prof1;
-        }
-        public HSFProfile<double> STATESUB_ACCzMeasurementsFrom_IMUSUB(Event currentEvent)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            Vector accel = new Vector(3);
-            try
-            {
-                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "accel"));
-            }
-            catch (KeyNotFoundException)
-            {
-                Console.WriteLine("Key Not Found Z");
-            }
-            Vector acc = Accelerometer(accel);
-            prof1[currentEvent.GetEventStart(Asset)] = acc[3];
-            return prof1;
-        }
-        public HSFProfile<double> STATESUB_GYRxMeasurementsFrom_IMUSUB(Event currentEvent)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            Vector gyro = new Vector(3);
-            try
-            {
-                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "gyro"));
-            }
-            catch (KeyNotFoundException)
-            {
-                Console.WriteLine("Key Not Found x");
-            }
-            Vector gyr = Gyroscope(gyro);
-            prof1[currentEvent.GetEventStart(Asset)] = gyr[1];
-            return prof1;
-        }
-        public HSFProfile<double> STATESUB_GYRyMeasurementsFrom_IMUSUB(Event currentEvent)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            Vector gyro = new Vector(3);
-            try
-            {
-                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "gyro"));
-            }
-            catch (KeyNotFoundException)
-            {
-                Console.WriteLine("Key Not Found x");
-            }
-            Vector gyr = Gyroscope(gyro);
-            prof1[currentEvent.GetEventEnd(Asset)] = gyr[2];
-            return prof1;
-        }
-        public HSFProfile<double> STATESUB_GYRzMeasurementsFrom_IMUSUB(Event currentEvent)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            Vector gyro = new Vector(3);
-            try
-            {
-                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "gyro"));
-            }
-            catch (KeyNotFoundException)
-            {
-                Console.WriteLine("Key Not Found z");
-            }
-            Vector gyr = Gyroscope(gyro);
-            prof1[currentEvent.GetEventStart(Asset)] = gyr[3];
-            return prof1;
-        }
-        public HSFProfile<double> STATESUB_BaroMeasurementsFrom_IMUSUB(Event currentEvent)
-        {
-            HSFProfile<double> prof1 = new HSFProfile<double>();
-            double ts = currentEvent.GetEventStart(Asset);
-            Vector pos = Asset.AssetDynamicState.PositionECI(ts);
-            double noise = GaussianWhiteNoise(0, 12); // FIXME: Sensor absolute accuracy +-1.5 mbar, ~8m = 1mbar at sea level
-            prof1[ts] = pos[1]- 6378633;
-            return prof1;
-        }
         #endregion
 
     }

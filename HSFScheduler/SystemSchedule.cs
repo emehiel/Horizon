@@ -28,10 +28,10 @@ namespace HSFScheduler
         public SystemSchedule(StateHistory allStates)
         {
             AllStates = new StateHistory(allStates);
-            /*foreach (var eit in allStates.Events)
+            foreach (var eit in allStates.Events)
             {
                 AllStates.Events.Push(new Event(eit));
-            }*/
+            }
             //AllStates.Events = allStates.Events;
         }
 

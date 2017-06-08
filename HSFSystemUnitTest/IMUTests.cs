@@ -23,23 +23,17 @@ namespace HSFSystem.Tests
         public void OneTimeInit()
         {
             program = new Program();
-            string[] inputArg = { "-m", AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\Model_Scripted_RocketEOM_Concord.xml", "-s", AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\SimulationInput_RocketScripted.xml", "-t", AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\rocketTargets.xml" };
+            string[] inputArg = { "-m", AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\IMUTests.xml", "-s", AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\SimulationInput.xml", "-t", AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\v2.2-300targets.xml" };
             
             program.InitInput(inputArg);
             program.LoadTargets();
             program.LoadSubsystems();
-            //program.LoadDependencies();
         }
         [SetUp]
         public void Init()
         {
-            XmlNode node = XmlParser.GetModelNode(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\..\\Model_Scripted_RocketEOM_Concord.xml");
+            XmlNode node = XmlParser.GetModelNode(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\IMUTests.xml");
             testIMU = new IMU(node.FirstChild.ChildNodes[1], program.assetList[0]);
-        }
-        [Test()]
-        public void IMUTest()
-        {
-            throw new NotImplementedException();
         }
 
         [Test()]
@@ -60,10 +54,13 @@ namespace HSFSystem.Tests
         [Test()]
         public void GyroscopeGenerateTest()
         {
-            //List<List<double[,]>> data = new List<List<double>>(new double[3,1000]);
             List<Vector> output = Enumerable.Repeat(new Vector(new List<double>(new double[3] { 0, 0, 0 })), 250).ToList();
             int i = 0;
-            File.Delete(AppDomain.CurrentDomain.BaseDirectory + "\\TestOutput\\gyroscopeTest.csv");
+            try
+            {
+                File.Delete(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\TestOutput\\gyroscopeTest.csv");
+            }
+            catch { }
             var csv = new StringBuilder();
             csv.Clear();
             List<Vector> data = Enumerable.Repeat(new Vector(new List<double>(new double[3] { 0, 0, 0})), 250).ToList();
@@ -71,8 +68,8 @@ namespace HSFSystem.Tests
             {
                 output[i] = testIMU.Gyroscope(dataPt);    
                 string outputToWrite = string.Join(",", output[i].ToString());
-                File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory + "\\TestOutput\\gyroscopeTest.csv", outputToWrite);
-                File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory + "\\TestOutput\\gyroscopeTest.csv", "\n");
+                File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\TestOutput\\gyroscopeTest.csv", outputToWrite);
+                File.AppendAllText(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\TestOutput\\gyroscopeTest.csv", "\n");
                 i++;
             }
             Assert.Multiple(() =>
@@ -86,13 +83,16 @@ namespace HSFSystem.Tests
         [Test()]
         public void AccelerometerTest()
         {
-            throw new NotImplementedException();
-        }
+            Vector input = new Vector(new List<double>(new double[] { 90, -90, 20 }));
+            Vector expected = new Vector(new List<double>(new double[3] { 8, -8, 2 }));
 
-        [Test()]
-        public void GaussianWhiteNoiseTest()
-        {
-            throw new NotImplementedException();
+            Vector output = testIMU.Accelerometer(input);
+            Assert.Multiple(() =>
+            {
+                Assert.That(() => output[1], Is.EqualTo(expected[1]));
+                Assert.That(() => output[2], Is.EqualTo(expected[2]));
+                Assert.That(() => output[3], Is.InRange(expected[3] - 1, expected[3] + 1));
+            });
         }
     }
 }

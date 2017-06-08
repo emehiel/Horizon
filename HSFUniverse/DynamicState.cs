@@ -193,9 +193,8 @@ namespace HSFUniverse
 
             Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions, IntegratorParameters);
 
-            //for (int index = 1; index <= data.Length; index++)
-            _stateData[data[1, 1]] = (Vector)data[new MatrixIndex(2, data.NumRows), 1];
-            _stateData[data[1, data.Length]] = (Vector)data[new MatrixIndex(2, data.NumRows), data.Length];
+            for (int index = 1; index <= data.Length; index++)
+                _stateData[data[1, index]] = (Vector)data[new MatrixIndex(2, data.NumRows), index];
         }
         /// <summary>
         /// Gets and Sets the dynamic state of an asset in inertial coordinates at the given simulation time.
@@ -310,18 +309,12 @@ namespace HSFUniverse
             string vx = Name + "_V_x,";
             string vy = Name + "_V_y,";
             string vz = Name + "_V_z,";
-            string psi = Name + "_psi,";
-            string tht = Name + "_theta,";
-            string phi = Name + "_phi,";
-            string p = Name + "_p,";
-            string q = Name + "_q,";
-            string r = Name + "_r,";
             // header
-            csv.AppendLine(t + rx + ry + rz + vx + vy + vz + psi + tht + phi + p + q + r);
+            csv.AppendLine(t + rx + ry + rz + vx + vy + vz );
 
             // data
             foreach (var d in _stateData)
-                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6] + "," + d.Value[7] + "," + d.Value[8] + "," + d.Value[9] + "," + d.Value[10] + "," + d.Value[11] + "," + d.Value[12]);
+                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6] + ",");
 
             return csv.ToString();
         }

@@ -27,12 +27,12 @@ namespace HSFScheduler
 
         public SystemSchedule(StateHistory allStates)
         {
-            AllStates = new StateHistory(allStates.InitialState);
+            AllStates = new StateHistory(allStates);
             foreach (var eit in allStates.Events)
             {
                 AllStates.Events.Push(new Event(eit));
             }
-
+            //AllStates.Events = allStates.Events;
         }
 
         public SystemSchedule(SystemSchedule oldSchedule, Event emptyEvent)
@@ -59,7 +59,7 @@ namespace HSFScheduler
                         taskStarts.Add(access.Asset, access.AccessStart);
                     else
                     {
-                        Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart + " AccessEnd: " + access.AccessEnd);
+                        //Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart + " AccessEnd: " + access.AccessEnd);
                         taskStarts.Add(access.Asset, newEventStartTime);
                     }
                     tasks.Add(access.Asset, access.Task);
@@ -180,7 +180,7 @@ namespace HSFScheduler
             Dictionary<StateVarKey<int>, SortedList<double, int>> stateTimeIData = new Dictionary<StateVarKey<int>, SortedList<double, int>>();
             Dictionary<StateVarKey<int>, SortedList<double, int>> stateTimeBData = new Dictionary<StateVarKey<int>, SortedList<double, int>>(); // need 0s and 1 for matlab to read in csv
             Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>> stateTimeMData = new Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>>();
-
+            Dictionary<StateVarKey<Quat>, SortedList<double, Quat>> stateTimeQData = new Dictionary<StateVarKey<Quat>, SortedList<double, Quat>>();
             string stateTimeData = "Time,";
             string stateData = "";
             csv.Clear();
@@ -232,6 +232,16 @@ namespace HSFScheduler
                         }
                         else if (!stateTimeMData[kvpMatrixProfile.Key].ContainsKey(data.Key))
                             stateTimeMData[kvpMatrixProfile.Key].Add(data.Key, data.Value);
+                foreach (var kvpQuatProfile in sysState.Qdata)
+                    foreach (var data in kvpQuatProfile.Value.Data)
+                        if (!stateTimeQData.ContainsKey(kvpQuatProfile.Key))
+                        {
+                            var lt = new SortedList<double, Quat>();
+                            lt.Add(data.Key, data.Value);
+                            stateTimeQData.Add(kvpQuatProfile.Key, lt);
+                        }
+                        else if (!stateTimeQData[kvpQuatProfile.Key].ContainsKey(data.Key))
+                            stateTimeQData[kvpQuatProfile.Key].Add(data.Key, data.Value);
                 sysState = sysState.Previous;
             }
 
@@ -248,7 +258,8 @@ namespace HSFScheduler
 
             foreach (var list in stateTimeMData)
                 writeStateVariable(list, scheduleWritePath);
-
+            foreach (var list in stateTimeQData)
+                writeStateVariable(list, scheduleWritePath);
         }
         
         /// <summary>

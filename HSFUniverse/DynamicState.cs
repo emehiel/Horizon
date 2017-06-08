@@ -35,10 +35,11 @@ namespace HSFUniverse
         public DynamicStateType Type { get; private set; }
         public EOMS Eoms { get; private set; }
         public string Name { get; private set; }
+        public IntegratorParameters IntegratorParameters = new IntegratorParameters();
         private PropagationType _propagatorType;
         private IntegratorOptions _integratorOptions;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private SortedList<double, Matrix<double>> _stateData;
+        private SortedList<double, Vector> _stateData;
 
         #region Constructors
         public DynamicState(XmlNode dynamicStateXMLNode)
@@ -55,8 +56,8 @@ namespace HSFUniverse
                 string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value.ToString();
                 Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
             }
-            Matrix<double> ics = new Matrix<double>(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
-            _stateData = new SortedList<double, Matrix<double>>();
+            Vector ics = new Vector(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
+            _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds/SchedParameters.SimStepSeconds));
             _stateData.Add(0.0, ics);
 
             if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
@@ -88,7 +89,7 @@ namespace HSFUniverse
 
         }
 
-        public DynamicState(DynamicStateType type, EOMS eoms, Matrix<double> initialConditions)
+        public DynamicState(DynamicStateType type, EOMS eoms, Vector initialConditions)
         {
             _stateData.Add(0.0, initialConditions);
             Type = type;
@@ -98,17 +99,17 @@ namespace HSFUniverse
         #endregion
 
 
-        public Matrix<double> InitialConditions()
+        public Vector InitialConditions()
         {
-            return _stateData[0.0];
+            return _stateData.Values.Last();
         }
 
-        public void Add(double simTime, Matrix<double> dynamicState)
+        public void Add(double simTime, Vector dynamicState)
         {
             _stateData.Add(simTime, dynamicState);
         }
 
-        public Matrix<double> DynamicStateECI(double simTime) //Should we be interpolating?
+        public Vector DynamicStateECI(double simTime) //Should we be interpolating?
         {
             return this[simTime]; 
         }
@@ -119,9 +120,9 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Matrix<double> PositionECI(double simTime)
+        public Vector PositionECI(double simTime)
         {
-            return this[simTime][new MatrixIndex(1, 3), 1];
+            return this[simTime][new MatrixIndex(1, 3)];
         }
 
         /// <summary>
@@ -129,9 +130,9 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Matrix<double> VelocityECI(double simTime)
+        public Vector VelocityECI(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(4, 6), 1];
+            return this[simTime][new MatrixIndex(4, 6)];
         }
 
         /// <summary>
@@ -139,9 +140,9 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public Matrix<double> EulerAngles(double simTime)
+        public Vector EulerAngles(double simTime)
         {
-            Matrix<double> eulerAngles = GeometryUtilities.quat2euler(Quaternions(simTime));
+            Vector eulerAngles = GeometryUtilities.quat2euler(Quaternions(simTime));
             return eulerAngles;
         }
 
@@ -152,7 +153,7 @@ namespace HSFUniverse
         /// <returns></returns>
         public Matrix<double> Quaternions(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(7, 10), 1];
+            return _stateData[simTime][new MatrixIndex(7, 10)];
         }
 
         /// <summary>
@@ -162,7 +163,7 @@ namespace HSFUniverse
         /// <returns></returns>
         public Matrix<double> EulerRates(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(11, 13), 1];
+            return _stateData[simTime][new MatrixIndex(11, 13)];
         }
         #endregion
 
@@ -176,14 +177,23 @@ namespace HSFUniverse
             Matrix <double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
             // Update the integrator parameters using the information in the XML Node
 
-            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions);
+            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions, IntegratorParameters);
 
             for (int index = 1; index <= data.Length; index++)
                 _stateData[data[1, index]] = data[new MatrixIndex(2, data.NumRows), index];
-
             log.Info("Done Integrating");
         }
- 
+        public void DynamicPropogateState()
+        {
+            double simTime = _stateData.Last().Key + SchedParameters.SimStepSeconds;
+            Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
+            // Update the integrator parameters using the information in the XML Node
+
+            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions, IntegratorParameters);
+
+            for (int index = 1; index <= data.Length; index++)
+                _stateData[data[1, index]] = (Vector)data[new MatrixIndex(2, data.NumRows), index];
+        }
         /// <summary>
         /// Gets and Sets the dynamic state of an asset in inertial coordinates at the given simulation time.
         /// This method overwrites any existing state data at simTime.
@@ -192,7 +202,7 @@ namespace HSFUniverse
         /// </summary>
         /// <param name="simTime">The simulation time key</param>
         /// <returns>The inertial dynamic state date of the asset</returns>
-        private Matrix<double> this[double simTime]
+        private Vector this[double simTime]
         {
             get
             {
@@ -212,7 +222,7 @@ namespace HSFUniverse
                     if (hasNotPropagated)
                         PropagateState(SimParameters.SimEndSeconds);
 
-                    Matrix<double> dynamicStateAtSimTime;
+                    Vector dynamicStateAtSimTime;
 
                     if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
                     {
@@ -220,22 +230,47 @@ namespace HSFUniverse
                         int slopeInd = 1;
                         if (simTime >= SimParameters.SimEndSeconds)
                             slopeInd = -1;
-                        KeyValuePair<double, Matrix<double>> lowerData = _stateData.ElementAt(lowerIndex);
-                        KeyValuePair<double, Matrix<double>> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
+                        KeyValuePair<double, Vector> lowerData = _stateData.ElementAt(lowerIndex);
+                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
 
                         double lowerTime = lowerData.Key;
-                        Matrix<double> lowerState = lowerData.Value;
+                        Vector lowerState = lowerData.Value;
 
                         double upperTime = upperData.Key;
-                        Matrix<double> upperState = upperData.Value;
+                        Vector upperState = upperData.Value;
 
-                        Matrix<double> slope = (upperState - lowerState) / (upperTime - lowerTime);
+                        Vector slope = (upperState - lowerState) / (upperTime - lowerTime);
 
                         dynamicStateAtSimTime = slope * (simTime - lowerTime) + lowerState;
                     }
 
                 return dynamicStateAtSimTime;
 
+                }
+                else if (Type == DynamicStateType.DYNAMIC_ECI || Type == DynamicStateType.DYNAMIC_LLA)
+                {
+                    Vector dynamicStateAtSimTime;
+
+                    if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
+                    {
+                        int lowerIndex = _stateData.Keys.LowerBoundIndex(simTime);
+                        int slopeInd = 1;
+                        if (simTime >= SimParameters.SimEndSeconds)
+                            slopeInd = -1;
+                        KeyValuePair<double, Vector> lowerData = _stateData.ElementAt(lowerIndex);
+                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
+
+                        double lowerTime = lowerData.Key;
+                        Vector lowerState = lowerData.Value;
+
+                        double upperTime = upperData.Key;
+                        Vector upperState = upperData.Value;
+
+                        Vector slope = (upperState - lowerState) / (upperTime - lowerTime);
+
+                        dynamicStateAtSimTime = slope * (simTime - lowerTime) + lowerState;
+                    }
+                    return dynamicStateAtSimTime;
                 }
                 else
                     return null; // TODO: Throw exception?
@@ -253,7 +288,7 @@ namespace HSFUniverse
         /// <param name="targetPositionECI"></param>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public bool hasLOSTo(Matrix<double> targetPositionECI, double simTime)
+        public bool hasLOSTo(Vector targetPositionECI, double simTime)
         {
             return GeometryUtilities.hasLOS(PositionECI(simTime), targetPositionECI);
         }
@@ -273,11 +308,11 @@ namespace HSFUniverse
             string vy = Name + "_V_y,";
             string vz = Name + "_V_z,";
             // header
-            csv.AppendLine(t + rx + ry + rz + vx + vy + vz);
+            csv.AppendLine(t + rx + ry + rz + vx + vy + vz );
 
             // data
             foreach (var d in _stateData)
-                csv.AppendLine(d.Key + "," + d.Value[1, 1] + "," + d.Value[2, 1] + "," + d.Value[3, 1] + "," + d.Value[4, 1] + "," + d.Value[5, 1] + "," + d.Value[6, 1]);
+                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6]);
 
             return csv.ToString();
         }

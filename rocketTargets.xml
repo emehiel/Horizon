@@ -1,0 +1,35 @@
+<TARGETDECK>
+	<TARGET
+		TargetName = "control"
+		TaskType = "FLYALONG"
+		TargetType = "FlyingAlong"
+		MaxTimes = "1000000"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33; -107; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "deployDrogue"
+		TaskType = "RECOVERY"
+		TargetType = "Recovery"
+		MaxTimes = "1"
+		Value = "100">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33; -107; 0]">
+		</DynamicState>
+	</TARGET>
+		<TARGET
+		TargetName = "deployMain"
+		TaskType = "RECOVERY"
+		TargetType = "Recovery"
+		MaxTimes = "1"
+		Value = "100">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33; -107; 0]">
+		</DynamicState>
+	</TARGET>
+</TARGETDECK>

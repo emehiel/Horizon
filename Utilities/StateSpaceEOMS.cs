@@ -11,7 +11,7 @@ namespace Utilities
 {
     public class StateSpaceEOMS:EOMS
     {
-        public override Matrix<double> this[double t, Matrix<double> y]
+        public override Matrix<double> this[double t, Matrix<double> y, IntegratorParameters param]
         {
             get
             {

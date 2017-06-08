@@ -34,9 +34,9 @@ class ssdr(HSFSubsystem.SSDR):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_SSDRSUB)
-        dep.Add("PowerfromSSDR"+ "." + self.Asset.Name, depFunc1)
+        dep.Add("PowerfromSSDR", depFunc1)
         depFunc2 = Func[Event,  Utilities.HSFProfile[System.Double]](self.COMMSUB_DataRateProfile_SSDRSUB)
-        dep.Add("CommfromSSDR"+ "." + self.Asset.Name, depFunc2)
+        dep.Add("CommfromSSDR", depFunc2)
         depFunc3 = Func[Event,  System.Double](self.EVAL_DataRateProfile_SSDRSUB)
         dep.Add("EvalfromSSDR", depFunc3)
         return dep
@@ -46,14 +46,14 @@ class ssdr(HSFSubsystem.SSDR):
         if (self._task.Type == TaskType.IMAGING):
             ts = event.GetTaskStart(self.Asset)
             te = event.GetTaskEnd(self.Asset)
-            oldbufferratio = self._newState.getLastValue(self.Dkeys[0]).Value
+            oldbufferratio = self._newState.GetLastValue(self.Dkeys[0]).Value
             newdataratein = HSFProfile[System.Double]()
             newdataratein = self.DependencyCollector(event) / self._bufferSize
             exceeded = False
             newdataratio = HSFProfile[System.Double]()
             newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 5, 1, exceeded, 0, oldbufferratio)
             if (exceeded == False):
-                self._newState.addValue(self.DATABUFFERRATIO_KEY, newdataratio[0])
+                self._newState.AddValue(self.DATABUFFERRATIO_KEY, newdataratio[0])
                 return True
           #  Logger.Report("SSDR")
             return False
@@ -61,7 +61,7 @@ class ssdr(HSFSubsystem.SSDR):
              ts = event.GetTaskStart(self.Asset)
              event.SetTaskEnd(self.Asset, ts + 60.0)
              te = event.GetTaskEnd(self.Asset)
-             data = self._bufferSize * self._newState.getLastValue(self.Dkeys[0]).Value
+             data = self._bufferSize * self._newState.GetLastValue(self.Dkeys[0]).Value
              if( data / 2 > 50):
                 dataqueout = data/2
              else:
@@ -69,7 +69,7 @@ class ssdr(HSFSubsystem.SSDR):
              if (data - dataqueout < 0):
                  dataqueout = data
              if (dataqueout > 0):
-                 self._newState.addValue(self.DATABUFFERRATIO_KEY, KeyValuePair[System.Double, System.Double](te, (data - dataqueout) / _bufferSize))
+                 self._newState.AddValue(self.DATABUFFERRATIO_KEY, KeyValuePair[System.Double, System.Double](te, (data - dataqueout) / _bufferSize))
              return True
         return True
     def CanExtend(self, event, universe, extendTo):

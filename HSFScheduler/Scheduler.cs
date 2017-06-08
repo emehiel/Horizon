@@ -8,6 +8,7 @@ using HSFSystem;
 using UserModel;
 using MissionElements;
 using log4net;
+using System.Threading.Tasks;
 
 namespace HSFScheduler
 {
@@ -56,7 +57,7 @@ namespace HSFScheduler
         /// <param name="tasks"></param>
         /// <param name="initialStateList"></param>
         /// <returns></returns>
-        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<Task> tasks, SystemState initialStateList)
+        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<MissionElements.Task> tasks, SystemState initialStateList)
         {
             log.Info("SIMULATING... ");
             // Create empty systemSchedule with initial state set
@@ -87,8 +88,8 @@ namespace HSFScheduler
                 preGeneratedAccesses = Access.pregenerateAccessesByAsset(system, tasks, _startTime, _endTime, _stepLength);
                 //DWORD endPregenTickCount = GetTickCount();
                 //pregenTimeMs = endPregenTickCount - startPregenTickCount;
-                //writeAccessReport(access_pregen, tasks); - TODO:  Finish this code - EAM
-                log.Info("Done pregenerating accesses");
+                Access.writeAccessReport(preGeneratedAccesses); //- TODO:  Finish this code - EAM
+                log.Info("Done pregenerating accesses. There are " + preGeneratedAccesses.Count + " accesses.");
             }
             // otherwise generate an exhaustive list of possibilities for assetTaskList
             else
@@ -114,7 +115,7 @@ namespace HSFScheduler
 
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
-            int i = 1;
+            // int i = 1;
             List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
             List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
@@ -125,9 +126,9 @@ namespace HSFScheduler
                     scheduleCombos = GenerateExhaustiveSystemSchedules(preGeneratedAccesses, system, currentTime);
 
                 // Check if it's necessary to crop the systemSchedule list to a more managable number
-                if (systemSchedules.Count > _numSchedCropTo)
+                if (systemSchedules.Count > _maxNumSchedules)
                 {
-                    log.Info("Cropping Schedules...");
+                    log.Info("Cropping " + systemSchedules.Count + " Schedules.");
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
                     systemSchedules.Add(emptySchedule);
                 }
@@ -136,7 +137,8 @@ namespace HSFScheduler
                 //TODO: Parallelize this.
                 int k = 0;
 
-                foreach (var oldSystemSchedule in systemSchedules)
+                //Parallel.ForEach(systemSchedules, (oldSystemSchedule) =>
+                foreach(var oldSystemSchedule in systemSchedules)
                 {
                     potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
                     foreach (var newAccessStack in scheduleCombos)
@@ -194,10 +196,12 @@ namespace HSFScheduler
 
             // Delete the sysScheds that don't fit
             int numSched = schedulesToCrop.Count;
-            for (int i = 0; i < numSched - _maxNumSchedules; i++)
+            for (int i = 0; i < numSched - _numSchedCropTo; i++)
             {
                 schedulesToCrop.Remove(schedulesToCrop[0]);
             }
+
+            //schedulesToCrop.TrimExcess();
         }
 
         /// <summary>

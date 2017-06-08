@@ -30,8 +30,8 @@ namespace HSFSubsystem
             if (!base.CanPerform( proposedEvent, environment))
                 return false;
             DynamicState position = Asset.AssetDynamicState;
-            Matrix<double> assetPosECI = position.PositionECI(proposedEvent.GetTaskStart(Asset));
-            Matrix<double> targetPosECI = _task.Target.DynamicState.PositionECI(proposedEvent.GetTaskStart(Asset));
+            Vector assetPosECI = position.PositionECI(proposedEvent.GetTaskStart(Asset));
+            Vector targetPosECI = _task.Target.DynamicState.PositionECI(proposedEvent.GetTaskStart(Asset));
             return GeometryUtilities.hasLOS(assetPosECI, targetPosECI);
         }
 

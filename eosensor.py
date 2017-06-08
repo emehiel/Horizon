@@ -81,7 +81,8 @@ class eosensor(HSFSubsystem.EOSensor):
              self._newState.AddValue(self.EOON_KEY, KeyValuePair[System.Double, System.Boolean](te, False))
              return True     
     def CanExtend(self, event, universe, extendTo):
-        return super(eosensor, self).CanExtend(self, event, universe, extendTo)
+        print "entered"
+        return super(eosensor, self).CanExtend(event, universe, extendTo)
     def POWERSUB_PowerProfile_EOSENSORSUB(self, event):
         return super(eosensor, self).POWERSUB_PowerProfile_EOSENSORSUB(event)
     def SSDRSUB_NewDataProfile_EOSENSORSUB(self, event):

@@ -45,7 +45,7 @@ class comm(HSFSubsystem.Comm):
                 event.State.SetProfile(self.DATARATE_KEY, newProf)
         return True
     def CanExtend(self, event, universe, extendTo):
-        return super(comm, self).CanExtend(self, event, universe, extendTo)
+        return super(comm, self).CanExtend(event, universe, extendTo)
     def POWERSUB_PowerProfile_COMMSUB(self, event):
         return super(comm, self).POWERSUB_PowerProfile_COMMSUB(event)
     def DependencyCollector(self, currentEvent):

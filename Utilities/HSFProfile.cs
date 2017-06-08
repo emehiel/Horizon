@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using log4net;
-using System.Collections.Concurrent;
 
 namespace Utilities
 {
@@ -19,18 +18,14 @@ namespace Utilities
         /// <summary>
         /// A map containing time-ordered values which stores SystemState data
         /// </summary>
-        //private SortedDictionary<double, T> data = new SortedDictionary<double, T>();
-        private ConcurrentDictionary<double, T> data = new ConcurrentDictionary<double, T>();
-        /*public SortedDictionary<double, T> Data
-        {
-            get
-            { return data; }
-        }*/
-        public ConcurrentDictionary<double, T> Data
+        private SortedDictionary<double, T> data = new SortedDictionary<double, T>();
+
+        public SortedDictionary<double, T> Data
         {
             get
             { return data; }
         }
+
         /// <summary>
         /// Creates a new empty profile
         /// </summary>
@@ -45,7 +40,7 @@ namespace Utilities
         /// <param name="pointIn">The intial point in the new profile</param>
         public HSFProfile(KeyValuePair<double, T> pointIn)
         {
-            data.TryAdd(pointIn.Key, pointIn.Value);
+            data.Add(pointIn.Key, pointIn.Value);
         }
 
         /// <summary>
@@ -56,7 +51,7 @@ namespace Utilities
         /// <param name="valIn"></param>
         public HSFProfile(double timeIn, T valIn)
         {
-            data.TryAdd(timeIn, valIn);
+            data.Add(timeIn, valIn);
         }
 
         /// <summary>
@@ -70,7 +65,7 @@ namespace Utilities
             int i = 0;
             foreach (var item in timeIn)
             {
-                data.TryAdd(item, valIn[i]);
+                data.Add(item, valIn[i]);
                 i++;
             }
         }
@@ -81,7 +76,7 @@ namespace Utilities
         /// <param name="dataIn"></param>
         public HSFProfile(SortedDictionary<double, T> dataIn)
         {
-            data = new ConcurrentDictionary<double, T>(dataIn);
+            data = new SortedDictionary<double, T>(dataIn);
         }
 
         #region Indexers
@@ -96,7 +91,7 @@ namespace Utilities
             if (data.ContainsKey(key))
                 data[key] = value;
             else
-                data.TryAdd(key, value);
+                data.Add(key, value);
             }
         }
         #endregion
@@ -371,7 +366,7 @@ namespace Utilities
         public double Integrate(double startTime, double endTime, double initialValue)
         {
             if (endTime < startTime)
-                return -1.0 * Integrate(endTime, startTime, initialValue);
+                return -1.0 * Integrate(startTime, endTime, initialValue);
             if (Count() == 0 || endTime <= data.First().Key)
                 return (endTime - startTime) * initialValue;
             if (endTime == startTime)
@@ -454,7 +449,7 @@ namespace Utilities
         /// </summary>
         void RemoveDuplicates()
         {
-            data = (ConcurrentDictionary<double, T>)data.Distinct();
+            data = (SortedDictionary<double, T>)data.Distinct();
         }
         #endregion
 
@@ -469,7 +464,7 @@ namespace Utilities
         {
             try
             {
-                data.TryAdd(timeIn, valIn);
+                data.Add(timeIn, valIn);
             }
             catch (ArgumentException)
             {
@@ -486,7 +481,7 @@ namespace Utilities
         {
             try
             {
-                data.TryAdd(pointIn.Key, pointIn.Value);
+                data.Add(pointIn.Key, pointIn.Value);
             }
             catch (ArgumentException)
             {
@@ -521,7 +516,7 @@ namespace Utilities
         public static HSFProfile<T> MergeProfiles(HSFProfile<T> p1, HSFProfile<T> p2) //Morgan made this static
         {
             HSFProfile<T> p3 = new HSFProfile<T>();
-            p3.data = (ConcurrentDictionary<double, T>)(p1.data.Union(p2.data));
+            p3.data = (SortedDictionary<double, T>)(p1.data.Union(p2.data));
             p3.RemoveDuplicates();
 
             return p3;

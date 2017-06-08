@@ -8,6 +8,7 @@ using HSFSystem;
 using UserModel;
 using MissionElements;
 using log4net;
+using System.Threading.Tasks;
 
 namespace HSFScheduler
 {
@@ -56,7 +57,7 @@ namespace HSFScheduler
         /// <param name="tasks"></param>
         /// <param name="initialStateList"></param>
         /// <returns></returns>
-        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<Task> tasks, SystemState initialStateList)
+        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<MissionElements.Task> tasks, SystemState initialStateList)
         {
             log.Info("SIMULATING... ");
             // Create empty systemSchedule with initial state set
@@ -74,7 +75,7 @@ namespace HSFScheduler
                 else
                     canPregenAccess = false;
             }
-            
+
             // if accesses can be pregenerated, do it now
             Stack<Access> preGeneratedAccesses = new Stack<Access>();
             Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
@@ -87,36 +88,26 @@ namespace HSFScheduler
                 preGeneratedAccesses = Access.pregenerateAccessesByAsset(system, tasks, _startTime, _endTime, _stepLength);
                 //DWORD endPregenTickCount = GetTickCount();
                 //pregenTimeMs = endPregenTickCount - startPregenTickCount;
-                //writeAccessReport(access_pregen, tasks); - TODO:  Finish this code - EAM
-                log.Info("Done pregenerating accesses");
+                Access.writeAccessReport(preGeneratedAccesses); //- TODO:  Finish this code - EAM
+                log.Info("Done pregenerating accesses. There are " + preGeneratedAccesses.Count + " accesses.");
             }
             // otherwise generate an exhaustive list of possibilities for assetTaskList
             else
             {
                 log.Info("Generating Exhaustive Task Combinations... ");
                 Stack<Stack<Access>> exhaustive = new Stack<Stack<Access>>();
-                
+                Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
 
                 foreach (var asset in system.Assets)
                 {
-                    Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
                     foreach (var task in tasks)
                         allAccesses.Push(new Access(asset, task));
-                    //allAccesses.Push(new Access(asset, null)); //TODO DO we need this?
+                    allAccesses.Push(new Access(asset, null));
                     exhaustive.Push(allAccesses);
-                    //allAccesses.Clear();
+                    allAccesses.Clear();
                 }
 
-                //scheduleCombos = (Stack<Stack<Access>>)exhaustive.CartesianProduct();
-                IEnumerable<IEnumerable<Access>> allScheduleCombos = exhaustive.CartesianProduct();
-
-                //Stack<Stack<Access>> allOfThem = new Stack<Stack<Access>>();
-                foreach (var accessStack in allScheduleCombos)
-                {
-                    Stack<Access> someOfThem = new Stack<Access>(accessStack);
-                    scheduleCombos.Push(someOfThem);
-                }
-
+                scheduleCombos = (Stack<Stack<Access>>)exhaustive.CartesianProduct();
                 log.Info("Done generating exhaustive task combinations");
             }
 
@@ -124,8 +115,8 @@ namespace HSFScheduler
 
             // Find the next timestep for the simulation
             //DWORD startSchedTickCount = GetTickCount();
-            int i = 1;
-            List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>(100000);
+            // int i = 1;
+            List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
             List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
             {
@@ -139,23 +130,17 @@ namespace HSFScheduler
                 {
                     log.Info("Cropping " + systemSchedules.Count + " Schedules.");
                     CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
-                    // Fixme: Hacky way to propogate only once per schedule */
-                    if (!canPregenAccess)
-                    {
-                        system.Assets[0].AssetDynamicState.DynamicPropogateState();
-                    }
-                    else { systemSchedules.Add(emptySchedule); }
+                    systemSchedules.Add(emptySchedule);
                 }
 
                 // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
                 //TODO: Parallelize this.
                 int k = 0;
 
-                foreach (var oldSystemSchedule in systemSchedules)
+                //Parallel.ForEach(systemSchedules, (oldSystemSchedule) =>
+                foreach(var oldSystemSchedule in systemSchedules)
                 {
-                    StateHistory tempstatehist = new StateHistory(oldSystemSchedule.AllStates);
-                    SystemSchedule tempsyssched = new SystemSchedule(tempstatehist);
-                    potentialSystemSchedules.Add(tempsyssched);
+                    potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
                     foreach (var newAccessStack in scheduleCombos)
                     {
                         k++;
@@ -188,10 +173,8 @@ namespace HSFScheduler
                 systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedules
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
-                
-                    
                 // Print completion percentage in command window
-                Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+                Console.WriteLine("Scheduler Status: {0}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
             }
             return systemSchedules;
         }
@@ -218,7 +201,7 @@ namespace HSFScheduler
                 schedulesToCrop.Remove(schedulesToCrop[0]);
             }
 
-            schedulesToCrop.TrimExcess();
+            //schedulesToCrop.TrimExcess();
         }
 
         /// <summary>

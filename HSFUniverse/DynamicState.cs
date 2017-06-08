@@ -35,7 +35,6 @@ namespace HSFUniverse
         public DynamicStateType Type { get; private set; }
         public EOMS Eoms { get; private set; }
         public string Name { get; private set; }
-        public bool hasNotPropagated { get; set; }
         public IntegratorParameters IntegratorParameters = new IntegratorParameters();
         private PropagationType _propagatorType;
         private IntegratorOptions _integratorOptions;
@@ -180,9 +179,8 @@ namespace HSFUniverse
 
             Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions, IntegratorParameters);
 
-           //for (int index = 1; index <= data.Length; index++)
-            _stateData[data[1, 1]] = (Vector)data[new MatrixIndex(2, data.NumRows), 1];
-            _stateData[data[1, data.Length]] = (Vector)data[new MatrixIndex(2, data.NumRows), data.Length];
+            for (int index = 1; index <= data.Length; index++)
+                _stateData[data[1, index]] = data[new MatrixIndex(2, data.NumRows), index];
             log.Info("Done Integrating");
         }
         public void DynamicPropogateState()

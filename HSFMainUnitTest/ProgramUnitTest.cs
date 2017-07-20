@@ -25,6 +25,7 @@ namespace HSFMainUnitTest
             string simulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
             string targetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
             string modelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
+            //this is a test
 
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
 

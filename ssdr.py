@@ -44,9 +44,9 @@ class ssdr(HSFSubsystem.Subsystem):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_SSDRSUB)
-        dep.Add("PowerfromSSDR"+ "." + self.Asset.Name, depFunc1)
+        dep.Add("PowerfromSSDR", depFunc1)
         depFunc2 = Func[Event,  Utilities.HSFProfile[System.Double]](self.COMMSUB_DataRateProfile_SSDRSUB)
-        dep.Add("CommfromSSDR"+ "." + self.Asset.Name, depFunc2)
+        dep.Add("CommfromSSDR", depFunc2)
         depFunc3 = Func[Event,  System.Double](self.EVAL_DataRateProfile_SSDRSUB)
         dep.Add("EvalfromSSDR", depFunc3)
         return dep
@@ -73,7 +73,7 @@ class ssdr(HSFSubsystem.Subsystem):
              ts = event.GetTaskStart(self.Asset)
              event.SetTaskEnd(self.Asset, ts + 60.0)
              te = event.GetTaskEnd(self.Asset)
-             data = self._bufferSize * self._newState.getLastValue(self.Dkeys[0]).Value
+             data = self._bufferSize * self._newState.GetLastValue(self.Dkeys[0]).Value
              if( data / 2 > 50):
                  dataqueout = data/2
              else:

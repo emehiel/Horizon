@@ -231,7 +231,7 @@ namespace Utilities
         public Matrix(SerializationInfo info, StreamingContext context)
         {
             NumCols = info.GetInt32("NumCols");
-            NumRows = info.GetInt32("NumCols");
+            NumRows = info.GetInt32("NumRows");
             _elements = (List<List<T>>)info.GetValue("_elements", typeof(List<List<T>>));
         }
         #endregion
@@ -323,14 +323,14 @@ namespace Utilities
 
             T[,] temp = new T[1, 3];
             temp[0, 0] = (dynamic)a[2] * b[3] - (dynamic)a[3] * b[2];
-            temp[0, 1] = (dynamic)a[1] * b[3] - (dynamic)a[3] * b[1];
+            temp[0, 1] = -(dynamic)a[1] * b[3] + (dynamic)a[3] * b[1];
             temp[0, 2] = (dynamic)a[1] * b[2] - (dynamic)a[2] * b[1];
 
             Matrix<T> c = new Matrix<T>(temp);
             if (a.NumCols == 3)
                 return c;
             else
-                return Matrix<T>.Transpose(c);
+                return Transpose(c);
         }
 
         /// <summary>
@@ -597,14 +597,54 @@ namespace Utilities
             return !(A == B);
         }
 
+        //TODO: Figure out computer precision (?) issues
+        public static Matrix<double> exp(Matrix<double> A)
+        {
+
+            double y = Math.Log(Matrix<double>.Norm(A, "inf"), 2);
+            int e = (int)y+1;
+            //double f = frexp(y, out e);
+            int s = Math.Max(0, e + 1);
+            A = A / Math.Pow(2, s); // Doesn't match matlab
+
+            //Matrix<double> X = (Matrix<double>)A.Clone();
+            Matrix<double> X = A;
+            double c = 0.5;
+            Matrix<double> E = Matrix<double>.Eye(A.NumRows) + c * A;
+            Matrix<double> D = Matrix<double>.Eye(A.NumRows) - c * A;
+            int q = 6;
+            bool p = true;
+            for (int k = 2; k <= q; k++)
+            {
+                c = c * (q - k + 1) / (k * (2 * q - k + 1));
+                X = A * X;
+                Matrix<double> cX = c * X;
+                E = E + cX;
+                if (p)
+                   D = D + cX;
+                else
+                    D = D - cX;
+                p = !p;
+            }
+            E = Matrix<double>.Inverse(D)*E;
+            for (int k = 0; k < s; k++)
+            {
+                E = E*E;
+            }
+
+            return E;
+
+            throw new NotImplementedException();
+        }
+        
         #endregion
 
-        #region Dynamics
+            #region Dynamics
 
-        /// <summary>
-        /// Converts a Matrix<T> to an array of T type numbers
-        /// </summary>
-        /// <returns></returns>
+            /// <summary>
+            /// Converts a Matrix<T> to an array of T type numbers
+            /// </summary>
+            /// <returns></returns>
         public T[,] ToArray()
         {
             T[,] T_Array = new T[NumRows, NumCols];
@@ -761,11 +801,95 @@ namespace Utilities
             else
                 throw new ArgumentException("Element indicies out of Matrix<T> bounds");
         }
+
+
         #endregion
 
         #region Statics
 
-       
+
+        public static Matrix<double> Inverse(Matrix<double> A)
+        {
+            int n = A.NumCols;
+            if (!A.IsSquare())
+                throw new ArgumentException("The matrix must be square to invert.");
+            Matrix<double> I = (Matrix<double>)Convert.ChangeType(Eye(A.NumCols), typeof(Matrix<double>));
+            Matrix<double> B = Matrix<double>.Horzcat(A, I);
+
+            Matrix<double> temp = new Matrix<double>(B.NumCols);
+
+            for (int k = 1; k <= B.NumRows; k++)
+            {
+                //Find the kth pivot:
+                int row_max = 1;
+                double maxval = 0;
+                for (int ii = k; ii <= B.NumRows; ii++)
+                {
+                    if (Math.Abs(B[ii, k]) > maxval)
+                    {
+                        maxval = Math.Abs(B[ii, k]);
+                        row_max = ii;
+                    }
+                }
+
+                //if (B[i_max, k] == 0)
+                    //throw new ArgumentException("Matrix is singular.");
+
+                temp = B.GetRow(k);
+                B.SetRow(k, B.GetRow(row_max));
+                B.SetRow(row_max, temp);
+
+
+
+                // Do for all rows below pivot:
+                for (int i = k+1 ; i <= B.NumRows; i++)
+                {
+                    double f = B[i, k] / B[k, k];
+                    //double g = B[i - 1, k] / B[k, k];
+                    //Do for all remaining elements in current row:
+                    for (int j = k+1; j <= B.NumCols; j++)
+                    {
+                        B[i, j] = B[i, j] - B[k, j] * f;
+                        //B[i-1,j] = B[i-1,j] - B[k, j] * g;
+
+                    }
+                    //Fill lower triangular matrix with zeros:
+                    B[i, k] = 0;
+                }
+                if (B[k, k] < 0) //Make the row the will next be calulated have a positive value for a leading 1
+                {
+                    B.SetRow(k, B.GetRow(k) * -1);
+                }
+
+            }
+
+            for (int row = 1; row < B.NumRows; row++)
+            {
+                // Divide by a constant to get 1 in first column
+                double Bk = B[row, row];
+                for (int col = row; col <= B.NumCols; col++)
+                {
+                    B[row, col] = B[row, col] / Bk;
+                }
+            }
+
+
+            for (int m = B.NumRows; m > 1; m--)
+            {
+                for(int r = m; r>1; r--) 
+                {
+                    B.SetRow(r-1, (B[r - 1, m] * B.GetRow(m)) - B.GetRow(r-1)); // Zero out all values above matrix's main diagonal
+
+                }
+                if (B[m-1, m-1] < 0) //Make the row the will next be calulated have a positive value for a leading 1
+                {
+                    B.SetRow(m-1, B.GetRow(m-1) * -1);
+                }
+
+            }
+            return B[new MatrixIndex(1, n), new MatrixIndex(n+1, B.NumCols)];
+        }
+
 
         // TODO:  SHould these get/set functions be static?
         public static Matrix<T> GetColumn(Matrix<T> A, int column)
@@ -1007,6 +1131,48 @@ namespace Utilities
             else
                 throw new NotImplementedException("Matrix<T>.Norm(Matrix<T> A)");
         }
+        public static T Norm(Matrix<T> A, string type)
+        {
+            // TODO:  Handle the case when c is complex
+            if (type == "inf")
+            {
+                Matrix<T> temp = (Matrix<T>)Convert.ChangeType(new Matrix<T>(A.NumRows), typeof(Matrix<T>));
+
+                temp = CumSum(Abs(A), 1);
+
+                return Max(temp)[1]; 
+            }
+            else
+                throw new NotImplementedException("Matrix<T>.Norm(Matrix<T> A, " + type + ")");
+        }
+
+        public static Matrix<T> CumSum(Matrix<T> A, int Dim)
+        {
+            Matrix<T> C = new Matrix<T>(A.NumRows, 1);
+
+            if (Dim == 1)
+            {
+                for (int r = 1; r <= A.NumRows; r++)
+                {
+                    for (int c = 1; c <= A.NumCols; c++)
+                    {
+                        C[r] += (dynamic)A[r, c];
+                    }
+                }
+                return C;
+            }
+            else if (Dim == 2)
+            {
+                C = Matrix<T>.CumSum(Matrix<T>.Transpose(A), 1);
+                C = Matrix<T>.Transpose(C);
+                return C;
+            }
+
+            else
+                throw new NotImplementedException("Matrix<T>.Cumprod(Matrix<T> A, int Dim - Cumprod not implimented for Dim >= 3");
+
+        }
+
 
         public static Matrix<T> Cumprod(Matrix<T> A)
         {
@@ -1039,6 +1205,7 @@ namespace Utilities
                 throw new NotImplementedException("Matrix<T>.Cumprod(Matrix<T> A, int Dim - Cumprod not implimented for Dim >= 3");
 
         }
+
 
         public static implicit operator Matrix<T>(T c)
         {

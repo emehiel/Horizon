@@ -42,7 +42,7 @@ dlldata.c
 # DNX
 project.lock.json
 artifacts/
-
+*.dll
 *_i.c
 *_p.c
 *_i.h
@@ -234,3 +234,6 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+/sousam_dynamicStateData.csv
+/skyguard_dynamicStateData.csv
+/concord_dynamicStateData.csv

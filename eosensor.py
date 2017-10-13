@@ -10,7 +10,7 @@ clr.AddReferenceByName('HSFUniverse')
 clr.AddReferenceByName('UserModel')
 clr.AddReferenceByName('MissionElements')
 clr.AddReferenceByName('HSFSystem')
-
+#clr.AddReferenceByName('SystemState')
 import System.Xml
 import HSFSystem
 import HSFSubsystem
@@ -18,6 +18,7 @@ import MissionElements
 import Utilities
 import HSFUniverse
 import UserModel
+# from MissionElements import SystemState
 from HSFSystem import *
 from System.Xml import XmlNode
 from Utilities import *
@@ -65,9 +66,9 @@ class eosensor(HSFSubsystem.Subsystem):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_EOSENSORSUB)
-        dep.Add("PowerfromEOSensor"+ "." + self.Asset.Name, depFunc1)
+        dep.Add("PowerfromEOSensor", depFunc1)
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.SSDRSUB_NewDataProfile_EOSENSORSUB)
-        dep.Add("SSDRfromEOSensor"+ "." + self.Asset.Name, depFunc1)
+        dep.Add("SSDRfromEOSensor", depFunc1)
         return dep
 
     def GetDependencyCollector(self):
@@ -82,7 +83,7 @@ class eosensor(HSFSubsystem.Subsystem):
                     pixels = self._midQualityPixels
                     timetocapture = self._midQualityTime
              if (value > self._highQualityTime):
-                pixels = self._highQualityPixels;
+                pixels = self._highQualityPixels
                 timetocapture = self._highQualityTime
 
              es = event.GetEventStart(self.Asset)

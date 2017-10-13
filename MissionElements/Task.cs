@@ -88,8 +88,10 @@ namespace MissionElements
     }
     // ToDo: convert taskType to an extensable enumeration. <-- Still?.... 
 
+    // TODO Double check task type
+
     // The three types of tasks supported by Horizon
-    public enum TaskType { EMPTY, COMM, IMAGING }
+    public enum TaskType { EMPTY, COMM, IMAGING, FLYALONG, RECOVERY }
 
   
 }

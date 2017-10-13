@@ -1,0 +1,38 @@
+<MODEL>
+	<ASSET assetName="Concord">
+		<DynamicState
+			DynamicStateType="DYNAMIC_ECI"
+			ICs="[6378633; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0; 0.0]">
+            <EOMS>
+            </EOMS>
+		</DynamicState>
+
+		<SUBSYSTEM
+			Type="IMU"
+			subsystemName= "imu">
+			<Gyro
+				gyroRateNoiseDensity= ".2"
+				gyroNaturalFrequency= "30"
+				gyroDampingRatio= "0.707"
+				gyroScaleFactor= "14.375"
+				gyroNonLinearity= "0.2"
+				gyroAccelSensitivity= ".1"
+				gyroCrossAxis= "2"
+				gyroMax= "245"
+				gyroMin= "-286.72"
+				gyroBias= "0"
+				gyroOutputRate= "1000"
+			></Gyro>
+			<Accelerometer
+				accNoiseDensity= "0.25"
+				accNonLinearity= "0"
+				accCrossAxis= "0"
+				accScaleFactor= "0.0078"
+				accMax= "8"
+				accMin= "-8"
+				accOutputRate= "1000"
+				accBias= "0.080"
+			></Accelerometer>
+		</SUBSYSTEM>
+	</ASSET>
+</MODEL>

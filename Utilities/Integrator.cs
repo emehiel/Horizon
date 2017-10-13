@@ -18,18 +18,19 @@ namespace Utilities
             this.Options = new IntegratorOptions();
         }
         */
-        public static Matrix<double> RK45(EOMS dynamics, Matrix<double> timeSpan, Matrix<double> initialState, IntegratorOptions options)
+        public static Matrix<double> RK45(EOMS dynamics, Matrix<double> timeSpan, Vector initialState, IntegratorOptions options, IntegratorParameters param)
         {
-            return Integrator.RK45Helper(dynamics, timeSpan, initialState, options);
+            return Integrator.RK45Helper(dynamics, timeSpan, initialState, options, param);
         }
 
         public static Matrix<double> RK45(EOMS dynamics, Matrix<double> timeSpan, Matrix<double> initialState)
         {
             IntegratorOptions options = new IntegratorOptions();
-            return Integrator.RK45Helper(dynamics, timeSpan, initialState, options);
+            IntegratorParameters param = new IntegratorParameters();
+            return Integrator.RK45Helper(dynamics, timeSpan, initialState, options, param);
         }
 
-        private static Matrix<double> RK45Helper(EOMS dynamics, Matrix<double> timeSpanData, Matrix<double> initialState, IntegratorOptions options)
+        private static Matrix<double> RK45Helper(EOMS dynamics, Matrix<double> timeSpanData, Matrix<double> initialState, IntegratorOptions options, IntegratorParameters param)
         {
 
             // Make timeSpanData and initialState Column vectors
@@ -105,7 +106,7 @@ namespace Utilities
                 tdir = -1;
 
             // Compute an initial step size h using y'(t).
-            Matrix<double> f0 = dynamics[t0, initialState];
+            Matrix<double> f0 = dynamics[t0, initialState, param];
             
             Matrix<double> temp = Matrix<double>.Max(Matrix<double>.Abs(initialState), threshold);
 
@@ -159,7 +160,7 @@ namespace Utilities
                     hB = h * B;
 
                     for (int i = 1; i < 6; i++)
-                        f[":", i + 1] = dynamics[t + hA[1, i], y + f * hB[":", i]];
+                        f[":", i + 1] = dynamics[t + hA[1, i], y + f * hB[":", i], param];
 
                     tnew = t + hA[1, 6];
                     if (done)
@@ -169,7 +170,7 @@ namespace Utilities
 
                     ynew = y + f * hB[":", 6];
 
-                    f[":", 7] = dynamics[tnew, ynew];
+                    f[":", 7] = dynamics[tnew, ynew, param];
 
                     nfevals = nfevals + 6;
 

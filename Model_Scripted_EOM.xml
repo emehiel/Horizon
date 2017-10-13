@@ -38,13 +38,13 @@
 			subsystemName = "SSDR"
 			bufferSize = "5000">
 			<IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
-			<DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor"></DEPENDENCY>
+			<DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor.asset1"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Comm"
 			subsystemName = "Comm">
 			<IC type="Double" key="DataRate(MB/s)" value="0.0"></IC>
-			<DEPENDENCY subsystemName="SSDR" fcnName="CommfromSSDR"></DEPENDENCY>
+			<DEPENDENCY subsystemName="SSDR" fcnName="CommfromSSDR.asset1"></DEPENDENCY>
 		</SUBSYSTEM>		
 		<SUBSYSTEM
 			Type="Power"
@@ -54,10 +54,10 @@
 			penumbraSolarPower="75">
 			<IC type="Double" key="DepthofDischarge" value="0.0"></IC>
 			<IC type="Double" key="SolarPanelPowerIn" value="0.0"></IC>
-			<DEPENDENCY subsystemName="Comm" fcnName="PowerfromComm"></DEPENDENCY>
-			<DEPENDENCY subsystemName="Adcs" fcnName="PowerfromADCS"></DEPENDENCY>
-			<DEPENDENCY subsystemName="EOSensor" fcnName="PowerfromEOSensor"></DEPENDENCY>
-			<DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR"></DEPENDENCY>
+			<DEPENDENCY subsystemName="Comm" fcnName="PowerfromComm.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="Adcs" fcnName="PowerfromADCS.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="EOSensor" fcnName="PowerfromEOSensor.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR.asset1"></DEPENDENCY>
 		</SUBSYSTEM>
 		<CONSTRAINT
 			value="0.25"

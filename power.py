@@ -91,6 +91,7 @@ class power(HSFSubsystem.Subsystem):
         return True
 
     def CanExtend(self, event, universe, extendTo):
+
         ee = event.GetEventEnd(self.Asset)
         if (ee > SimParameters.SimEndSeconds):
             return False
@@ -123,7 +124,7 @@ class power(HSFSubsystem.Subsystem):
             dodProf[ee] = dodProf.LastValue()
         event.State.AddValue(self.DOD_KEY, dodProf)
         return True
-
+      
     def GetSolarPanelPower(self, shadow):
         if (str(shadow) == 'UMBRA'):
             return 0

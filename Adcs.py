@@ -42,7 +42,7 @@ class adcs(HSFSubsystem.Subsystem):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_ADCSSUB)
-        dep.Add("PowerfromADCS"+ "." + self.Asset.Name, depFunc1)
+        dep.Add("PowerfromADCS", depFunc1)
         return dep
 
     def GetDependencyCollector(self):
@@ -70,7 +70,7 @@ class adcs(HSFSubsystem.Subsystem):
         m_SC_pos_at_ts_ECI = position.PositionECI(ts)
         m_target_pos_at_ts_ECI = event.GetAssetTask(self.Asset).Target.DynamicState.PositionECI(ts)
         m_pv = m_target_pos_at_ts_ECI - m_SC_pos_at_ts_ECI
-		
+
         event.State.SetProfile(self.POINTVEC_KEY, HSFProfile[Matrix[System.Double]](ts, m_pv))
         event.SetTaskStart(self.Asset, ts)
         return True

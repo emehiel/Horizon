@@ -24,13 +24,13 @@ namespace Utilities
         /// <param name="t">the time at which to evaluate the function</param>
         /// <param name="y">the current state of the object</param>
         /// <returns>dy the matrix result</returns>
-        public abstract Matrix<double> this[double t, Matrix<double> y]
+        public abstract Matrix<double> this[double t, Matrix<double> y, IntegratorParameters param]
         {
             get;
         }
-        public virtual Matrix<double> PythonAccessor(double t, Matrix<double> y)
+        public virtual Matrix<double> PythonAccessor(double t, Matrix<double> y, IntegratorParameters param)
         {
-            return this[t, y];
+            return this[t, y, param];
         }
     }
 }

@@ -11,13 +11,13 @@
 			Type="Access"
 			subsystemName = "Access">
 		</SUBSYSTEM>
-		<SUBSYSTEM
+    <SUBSYSTEM
 			Type="Adcs"
 			subsystemName = "Adcs"
-			slewTime = "10">
-			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
-			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
-		</SUBSYSTEM>
+      slewRate = "5">
+      <IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
+      <DEPENDENCY subsystemName="Access"></DEPENDENCY>
+    </SUBSYSTEM>
 		<SUBSYSTEM
 			Type="EOSensor"
 			subsystemName = "EOSensor"

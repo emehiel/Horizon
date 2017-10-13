@@ -28,25 +28,38 @@ from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
-class comm(HSFSubsystem.Comm):
-    def __init__(self, node, asset):
-        pass
+class comm(HSFSubsystem.Subsystem):
+    def __new__(cls, node, asset):
+        instance = HSFSubsystem.Subsystem.__new__(cls)
+        instance.Asset = asset
+        instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
+
+        instance.DATARATE_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'datarate(mb/s)')
+        instance.addKey(instance.DATARATE_KEY)
+
+        return instance
+		
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_COMMSUB)
         dep.Add("PowerfromComm"+ "." + self.Asset.Name, depFunc1)
         return dep
+
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
+
     def CanPerform(self, event, universe):
         if (self._task.Type == TaskType.COMM):
             newProf = self.DependencyCollector(event)
             if (newProf.Empty() == False):
                 event.State.setProfile(self.DATARATE_KEY, newProf)
         return True
+
     def CanExtend(self, event, universe, extendTo):
-        return super(comm, self).CanExtend(self, event, universe, extendTo)
+        return super(comm, self).CanExtend(event, universe, extendTo)
+
     def POWERSUB_PowerProfile_COMMSUB(self, event):
-        return super(comm, self).POWERSUB_PowerProfile_COMMSUB(event)
+        return event.State.GetProfile(self.DATARATE_KEY) * 20
+
     def DependencyCollector(self, currentEvent):
         return super(comm, self).DependencyCollector(currentEvent)

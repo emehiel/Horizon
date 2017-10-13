@@ -28,9 +28,40 @@ from System import Func, Delegate, Math
 from System.Collections.Generic import Dictionary, KeyValuePair
 from IronPython.Compiler import CallTarget0
 
-class eosensor(HSFSubsystem.EOSensor):
-    def __init__(self, node, asset):
-        pass
+class eosensor(HSFSubsystem.Subsystem):
+    def __new__(cls, node, asset):
+        instance = HSFSubsystem.Subsystem.__new__(cls)
+        instance.Asset = asset
+        instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
+
+        instance.PIXELS_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'numpixels')
+        instance.INCIDENCE_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'incidenceangle')
+        instance.EOON_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'eosensoron')
+        instance.addKey(instance.PIXELS_KEY)
+        instance.addKey(instance.INCIDENCE_KEY)
+        instance.addKey(instance.EOON_KEY)
+
+        instance._lowQualityPixels = 5000
+        instance._lowQualityTime = 3
+        instance._midQualityPixels = 10000
+        instance._midQualityTime = 5
+        instance._highQualityPixels = 15000
+        instance._highQualityTime = 7
+        if (node.Attributes['lowQualityPixels'] != None):
+            instance._lowQualityPixels = float(node.Attributes['lowQualityPixels'].Value.ToString())
+        if (node.Attributes['lowQualityPixels'] != None):
+            instance._lowQualityTime = float(node.Attributes['lowQualityTime'].Value.ToString())
+        if (node.Attributes['midQualityPixels'] != None):
+            instance._midQualityPixels = float(node.Attributes['midQualityPixels'].Value.ToString())
+        if (node.Attributes['midQualityTime'] != None):
+            instance._midQualityTime = float(node.Attributes['midQualityTime'].Value.ToString())
+        if (node.Attributes['highQualityPixels'] != None):
+            instance._highQualityPixels = float(node.Attributes['highQualityPixels'].Value.ToString())
+        if (node.Attributes['highQualityTime'] != None):
+            instance._highQualityTime = float(node.Attributes['highQualityTime'].Value.ToString())
+
+        return instance
+
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_EOSENSORSUB)
@@ -38,8 +69,10 @@ class eosensor(HSFSubsystem.EOSensor):
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.SSDRSUB_NewDataProfile_EOSENSORSUB)
         dep.Add("SSDRfromEOSensor"+ "." + self.Asset.Name, depFunc1)
         return dep
+
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
+
     def CanPerform(self, event, universe):
          if (self._task.Type == TaskType.IMAGING):
              value = self._task.Target.Value
@@ -70,20 +103,29 @@ class eosensor(HSFSubsystem.EOSensor):
              pv_norm = m_pv / Matrix[System.Double].Norm(m_pv)
 
              incidenceang = 90 - 180 / Math.PI * Math.Acos(Matrix[System.Double].Dot(pos_norm, pv_norm))
-             self._newState.addValue(self.INCIDENCE_KEY, KeyValuePair[System.Double, System.Double](timage, incidenceang))
-             self._newState.addValue(self.INCIDENCE_KEY, KeyValuePair[System.Double, System.Double](timage + 1, 0.0))
+             self._newState.AddValue(self.INCIDENCE_KEY, KeyValuePair[System.Double, System.Double](timage, incidenceang))
+             self._newState.AddValue(self.INCIDENCE_KEY, KeyValuePair[System.Double, System.Double](timage + 1, 0.0))
 
-             self._newState.addValue(self.PIXELS_KEY, KeyValuePair[System.Double, System.Double](timage, pixels))
-             self._newState.addValue(self.PIXELS_KEY, KeyValuePair[System.Double, System.Double](timage + 1, 0.0))
+             self._newState.AddValue(self.PIXELS_KEY, KeyValuePair[System.Double, System.Double](timage, pixels))
+             self._newState.AddValue(self.PIXELS_KEY, KeyValuePair[System.Double, System.Double](timage + 1, 0.0))
 
-             self._newState.addValue(self.EOON_KEY, KeyValuePair[System.Double, System.Boolean](ts, True))
-             self._newState.addValue(self.EOON_KEY, KeyValuePair[System.Double, System.Boolean](te, False))
-             return True     
+             self._newState.AddValue(self.EOON_KEY, KeyValuePair[System.Double, System.Boolean](ts, True))
+             self._newState.AddValue(self.EOON_KEY, KeyValuePair[System.Double, System.Boolean](te, False))
+             return True
+
     def CanExtend(self, event, universe, extendTo):
-        return super(eosensor, self).CanExtend(self, event, universe, extendTo)
+        return super(eosensor, self).CanExtend(event, universe, extendTo)
+
     def POWERSUB_PowerProfile_EOSENSORSUB(self, event):
-        return super(eosensor, self).POWERSUB_PowerProfile_EOSENSORSUB(event)
+        prof1 = HSFProfile[System.Double]()
+        prof1[event.GetEventStart(self.Asset)] = 10
+        if (event.State.GetValueAtTime(self.EOON_KEY, event.GetTaskStart(self.Asset)).Value):
+            prof1[event.GetTaskStart(self.Asset)] = 60
+            prof1[event.GetTaskEnd(self.Asset)] = 10	
+        return prof1
+
     def SSDRSUB_NewDataProfile_EOSENSORSUB(self, event):
-        return super(eosensor, self).SSDRSUB_NewDataProfile_EOSENSORSUB(event)
+        return event.State.GetProfile(self.PIXELS_KEY) / 500
+
     def DependencyCollector(self, currentEvent):
         return super(eosensor, self).DependencyCollector(currentEvent)

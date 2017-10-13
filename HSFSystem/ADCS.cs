@@ -52,10 +52,11 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public ADCS(XmlNode ADCSNode, Asset asset) : base(ADCSNode, asset)
         {
-            DefaultSubName = "Adcs";
-            GetSubNameFromXmlNode(ADCSNode);
-            POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
-            addKey(POINTVEC_KEY);
+            //DefaultSubName = "Adcs";
+            //Asset = asset;
+            //GetSubNameFromXmlNode(ADCSNode);
+            //POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
+            //addKey(POINTVEC_KEY);
         }
         #endregion Constructors
 

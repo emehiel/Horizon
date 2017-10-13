@@ -48,8 +48,8 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="SSDRXmlNode"></param>
         /// <param name="asset"></param>
-        public SSDR(XmlNode SSDRXmlNode, Asset asset)
-        {
+        public SSDR(XmlNode SSDRXmlNode, Asset asset) : base(SSDRXmlNode, asset)
+        {/*
             DefaultSubName = "SSDR";
             Asset = asset;
             GetSubNameFromXmlNode(SSDRXmlNode);
@@ -57,7 +57,7 @@ namespace HSFSubsystem
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
             DATABUFFERRATIO_KEY = new StateVarKey<double>(Asset.Name + "." + "databufferfillratio");
             addKey(DATABUFFERRATIO_KEY);
-        }
+        */}
 
         /// <summary>
         /// An override of the Subsystem CanPerform method

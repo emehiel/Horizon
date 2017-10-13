@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2016 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -18,8 +19,8 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public AccessSub(XmlNode subNode, Asset asset)
         {
-            Asset = asset;
             DefaultSubName = "AccessToTarget";
+            Asset = asset;
             GetSubNameFromXmlNode(subNode);
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();

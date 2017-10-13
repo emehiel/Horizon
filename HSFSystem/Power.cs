@@ -33,7 +33,7 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="PowerNode"></param>
         /// <param name="dependencies"></param>
-        public Power(XmlNode PowerNode, Dependency dependencies, Asset asset) 
+        public Power(XmlNode PowerNode, Dependency dependencies, Asset asset)
         {
             DefaultSubName = "Power";
             Asset = asset;
@@ -57,10 +57,9 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="PowerNode"></param>
         /// <param name="asset"></param>
-        public Power(XmlNode PowerNode, Asset asset)
-        {
+        public Power(XmlNode PowerNode, Asset asset) : base(PowerNode, asset)
+        {/*
             DefaultSubName = "Power";
-            Asset = asset;
             GetSubNameFromXmlNode(PowerNode);
             DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
             POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");
@@ -72,7 +71,7 @@ namespace HSFSubsystem
                 _fullSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["fullSolarPower"].Value, typeof(double));
             if (PowerNode.Attributes["penumbraSolarPower"] != null)
                 _penumbraSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["penumbraSolarPower"].Value, typeof(double));
-        }
+        */}
         #endregion Constructors
 
         #region Methods

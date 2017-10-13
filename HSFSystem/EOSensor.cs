@@ -50,6 +50,7 @@ namespace HSFSubsystem
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
+                //Console.WriteLine("inside loop");
                 _lowQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityPixels"].Value.ToString(), typeof(double));
             if (EOSensorXmlNode.Attributes["lowQualityTime"] != null)
                 _lowQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityTime"].Value.ToString(), typeof(double));
@@ -70,8 +71,8 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="EOSensorXmlNode"></param>
         /// <param name="asset"></param>
-        public EOSensor(XmlNode EOSensorXmlNode, Asset asset)
-        {
+        public EOSensor(XmlNode EOSensorXmlNode, Asset asset) : base(EOSensorXmlNode, asset)
+        {/*
             DefaultSubName = "EOSensor";
             Asset = asset;
             GetSubNameFromXmlNode(EOSensorXmlNode);
@@ -93,7 +94,7 @@ namespace HSFSubsystem
                 _highQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityPixels"].Value.ToString(), typeof(double));
             if (EOSensorXmlNode.Attributes["highQualityTime"] != null)
                 _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
-        }
+        */}
         #endregion
 
         #region Methods

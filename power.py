@@ -28,14 +28,36 @@ from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
-class power(HSFSubsystem.Power):
-    def __init__(self, node, asset):
-        pass
+class power(HSFSubsystem.Subsystem):
+    def __new__(cls, node, asset):
+        instance = HSFSubsystem.Subsystem.__new__(cls)
+        instance.Asset = asset
+        instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
+
+        instance.DOD_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'depthofdischarge')
+        instance.POWIN_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'solarpanelpowerin')
+        instance.addKey(instance.DOD_KEY)
+        instance.addKey(instance.POWIN_KEY)
+
+        instance._batterySize = 1000000
+        instance._fullSolarPanelPower = 150
+        instance._penumbraSolarPanelPower = 75
+        if (node.Attributes['batterySize'] != None):
+            instance._batterySize = float(node.Attributes['batterySize'].Value)
+        if (node.Attributes['fullSolarPower'] != None):
+            instance._fullSolarPanelPower = float(node.Attributes['fullSolarPower'].Value)
+        if (node.Attributes['penumbraSolarPower'] != None):
+            instance._penumbraSolarPanelPower = float(node.Attributes['penumbraSolarPower'].Value)
+
+        return instance
+
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         return dep
+
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
+
     def CanPerform(self, event, universe):
         es = event.GetEventStart(self.Asset)
         te = event.GetTaskEnd(self.Asset)
@@ -47,23 +69,87 @@ class power(HSFSubsystem.Power):
             return False
 
         olddod = self._newState.GetLastValue(self.Dkeys[0]).Value
+
+        # collect power profile out
         powerOut = self.DependencyCollector(event)
         powerOut = powerOut + powerSubPowerOut
+
+        # collect power profile in
         position = self.Asset.AssetDynamicState
         powerIn = self.CalcSolarPanelPowerProfile(es, te, self._newState, position, universe)
+
+        # calculate dod rate
         dodrateofchange = HSFProfile[System.Double]()
         dodrateofchange = ((powerOut - powerIn) / self._batterySize)
+
         exceeded= False
-        freq = 5.0
-        dodProf = HSFProfile[System.Double]()
+        freq = 1.0
+        # function returns HSFProfile[System.Double]() object but python reads it as tuple with [0] element as
+        # the desired object type
         dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, exceeded, 0, olddod)
         self._newState.AddValue(self.DOD_KEY, dodProf[0])
         return True
+
     def CanExtend(self, event, universe, extendTo):
-        return super(power, self).CanExtend(event, universe, extendTo)
+
+        ee = event.GetEventEnd(self.Asset)
+        if (ee > SimParameters.SimEndSeconds):
+            return False
+
+        sun = universe.Sun
+        te = event.State.GetLastValue(self.DOD_KEY).Key
+        if (event.GetEventEnd(self.Asset) < extendTo):
+            event.SetEventEnd(self.Asset, extendTo)
+
+        # get the dod initial conditions
+        olddod = event.State.GetValueAtTime(self.DOD_KEY, te).Value
+
+        # collect power profile out
+        powerOut = self.DependencyCollector(event)
+        # collect power profile in
+        position = self.Asset.AssetDynamicState
+        powerIn = self.CalcSolarPanelPowerProfile(te, ee, event.State, position, universe)
+        # calculated dod rate
+        dodrateofchange = ((powerOut - powerIn) / self._batterySize)
+
+        exceeded_lower = False
+        exceeded_upper = False
+        freq = 1.0
+        dodProf = dodrateofchange.limitIntegrateToProf(te, ee, freq, 0.0, 1.0, exceeded_lower, exceeded_upper, 0, olddod)
+        # dodProf is a tuple where the [0] element contains the HSFProfile[System.Double]() object desired
+        dodProf = dodProf[0]
+        if (exceeded_upper):
+            return False
+        if (dodProf.LastTime() != ee and ee == SimParameters.SimEndSeconds):
+            dodProf[ee] = dodProf.LastValue()
+        event.State.AddValue(self.DOD_KEY, dodProf)
+        return True
+      
     def GetSolarPanelPower(self, shadow):
-        return super(power, self).GetSolarPanelPower(shadow)
+        if (str(shadow) == 'UMBRA'):
+            return 0
+        elif (str(shadow) == 'PENUMBRA'):
+            return self._penumbraSolarPanelPower
+        else:
+            return self._fullSolarPanelPower
+
     def CalcSolarPanelPowerProfile(self, start, end, state, position, universe):
-        return super(power, self).CalcSolarPanelPowerProfile(start, end, state, position, universe)
+        # create solar panel profile for this event
+        freq = 5
+        lastShadow = universe.Sun.castShadowOnPos(position, start)
+        solarPanelSolarProfile = Utilities.HSFProfile[System.Double](start, self.GetSolarPanelPower(lastShadow))
+
+        time = start
+        while time <= end:
+            shadow = universe.Sun.castShadowOnPos(position, time)
+            # if the shadow state changes during this step, save the power data
+            if (shadow != lastShadow):
+                solarPanelSolarProfile[time] = self.GetSolarPanelPower(shadow)
+                lastShadow = shadow
+            time += freq
+        state.AddValue(self.POWIN_KEY, solarPanelSolarProfile)
+        return solarPanelSolarProfile
+
     def DependencyCollector(self, currentEvent):
         return super(power, self).DependencyCollector(currentEvent)
+

@@ -42,13 +42,9 @@ namespace HSFSubsystem
         /// <param name="CommXmlNode"></param>
         /// <param name="asset"></param>
         public Comm(XmlNode CommXmlNode, Asset asset) : base(CommXmlNode, asset)
-        {/*
-            DefaultSubName = "Comm";
-            Asset = asset;
-            GetSubNameFromXmlNode(CommXmlNode);
-            DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "datarate(mb/s)");
-            addKey(DATARATE_KEY);
-        */}
+        {
+            
+        }
         #endregion
 
         #region Methods

@@ -58,20 +58,9 @@ namespace HSFSubsystem
         /// <param name="PowerNode"></param>
         /// <param name="asset"></param>
         public Power(XmlNode PowerNode, Asset asset) : base(PowerNode, asset)
-        {/*
-            DefaultSubName = "Power";
-            GetSubNameFromXmlNode(PowerNode);
-            DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
-            POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");
-            addKey(DOD_KEY);
-            addKey(POWIN_KEY);
-            if (PowerNode.Attributes["batterySize"] != null)
-                _batterySize = (double)Convert.ChangeType(PowerNode.Attributes["batterySize"].Value, typeof(double));
-            if (PowerNode.Attributes["fullSolarPower"] != null)
-                _fullSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["fullSolarPower"].Value, typeof(double));
-            if (PowerNode.Attributes["penumbraSolarPower"] != null)
-                _penumbraSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["penumbraSolarPower"].Value, typeof(double));
-        */}
+        {
+            
+        }
         #endregion Constructors
 
         #region Methods

@@ -42,7 +42,7 @@ class comm(HSFSubsystem.Subsystem):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_COMMSUB)
-        dep.Add("PowerfromComm", depFunc1)
+        dep.Add("PowerfromComm" + "." + self.Asset.Name, depFunc1)
         return dep
 
     def GetDependencyCollector(self):

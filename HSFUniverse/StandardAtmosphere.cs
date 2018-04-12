@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace HSFUniverse
 {
+    [Serializable]
     public class StandardAtmosphere : Atmosphere
     {
         #region Attributes
@@ -16,7 +17,7 @@ namespace HSFUniverse
 
         #region Constructors
         /// <summary>
-        /// Implementation of the 1976 standard atmosphere for geometric altitudes below 86 km
+        /// Implementation of the 1976 standard atmosphere for geometric altitudes below 86 km.
         /// </summary>
         /// <remarks>
         /// Standard atmosphere is defined in terms of geopotential altitude.
@@ -26,11 +27,15 @@ namespace HSFUniverse
         /// </remarks>
         public StandardAtmosphere()
         {
-
+            CreateAtmosphere();
         }
         #endregion
 
         #region Methods
+        /// <summary>
+        /// Creates the reference lookup table for calculating atmosphere values.
+        /// All altitude values are in meters
+        /// </summary>
         public override void CreateAtmosphere()
         {
             lookUpTable.Add(0, (new double[] { 101325, 288.15, -0.0065 }));

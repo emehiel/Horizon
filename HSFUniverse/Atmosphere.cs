@@ -12,6 +12,7 @@ namespace HSFUniverse
     // TODO: Need to rethink public vs private. 
     // TODO: Need to find alternative data source. I thought my current source was 2 months. It is only about a week. 
     // TODO: make it possible to specify a specfic filename/path easily
+    [Serializable]
     public abstract class Atmosphere
     {
         protected SortedList<double, double> uVelocityData;

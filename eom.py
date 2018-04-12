@@ -24,7 +24,7 @@ class eom(Utilities.EOMS):
 
         return instance
 
-    def PythonAccessor(self, t, y, param):
+    def PythonAccessor(self, t, y, param, environment):
         r3 = System.Math.Pow(Matrix[System.Double].Norm(y[MatrixIndex(1, 3), 1]), 3)
         mur3 = -self._mu / r3
         self._A[4, 1] = mur3

@@ -63,7 +63,7 @@ namespace HSFSubsystem
         /// <param name="proposedEvent"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public override bool CanPerform(Event proposedEvent, Universe environment)
+        public override bool CanPerform(Event proposedEvent, Domain environment)
         {
             if (base.CanPerform( proposedEvent, environment) == false)
                 return false;

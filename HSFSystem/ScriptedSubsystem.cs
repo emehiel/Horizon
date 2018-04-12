@@ -81,7 +81,7 @@ namespace HSFSubsystem
         #endregion
 
         #region Methods
-        public override bool CanPerform(Event proposedEvent,  Universe environment)
+        public override bool CanPerform(Event proposedEvent, Domain environment)
         {
             if (IsEvaluated)
                 return true;
@@ -103,7 +103,7 @@ namespace HSFSubsystem
             return (bool)perform;
         }
 
-        public override bool CanExtend(Event proposedEvent, Universe environment, double evalToTime)
+        public override bool CanExtend(Event proposedEvent, Domain environment, double evalToTime)
         {
             dynamic extend = _pythonInstance.CanExtend(proposedEvent, environment, evalToTime);
             return (bool)extend;

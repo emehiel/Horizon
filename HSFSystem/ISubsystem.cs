@@ -16,7 +16,7 @@ namespace HSFSystem
         /// <param name="proposedEvent"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        bool CanPerform(Event proposedEvent, Universe environment);
+        bool CanPerform(Event proposedEvent, Domain environment);
 
         /// <summary>
         /// Determine if the susystem's state can progress in time in an "idle" task.
@@ -25,6 +25,6 @@ namespace HSFSystem
         /// <param name="environment"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
-        bool CanExtend(Event proposedEvent, Universe environment, double evalToTime); 
+        bool CanExtend(Event proposedEvent, Domain environment, double evalToTime); 
     }
 }

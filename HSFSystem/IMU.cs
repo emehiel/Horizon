@@ -111,7 +111,7 @@ namespace HSFSystem
         /// <param name="proposedEvent"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public override bool CanPerform(Event proposedEvent, Universe environment)
+        public override bool CanPerform(Event proposedEvent, Domain environment)
         {
             double ts = proposedEvent.GetTaskStart(Asset);
             IsEvaluated = true;

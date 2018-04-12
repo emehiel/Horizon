@@ -63,7 +63,7 @@ namespace HSFSubsystem
         /// <param name="tasks"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public virtual bool CanPerform(Event proposedEvent, Universe environment)
+        public virtual bool CanPerform(Event proposedEvent, Domain environment)
         {
             foreach (var sub in DependentSubsystems)
             {
@@ -85,7 +85,7 @@ namespace HSFSubsystem
         /// <param name="environment"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
-        public virtual bool CanExtend(Event proposedEvent,  Universe environment, double evalToTime)
+        public virtual bool CanExtend(Event proposedEvent, Domain environment, double evalToTime)
         {
             if (proposedEvent.GetEventEnd(Asset) < evalToTime)
                 proposedEvent.SetEventEnd(Asset, evalToTime);

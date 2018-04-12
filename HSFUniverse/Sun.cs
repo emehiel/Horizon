@@ -16,6 +16,7 @@ namespace HSFUniverse
     /// If the Sun is created with isEarthSunVecConstant set to true, the value for the
     /// vector at a simulation time of 0 seconds will be alwyas be used.
     /// Code from "Fundamentals of Astrodynamics and Applications."
+    [Serializable]
     public class Sun
     {
         #region Attributes

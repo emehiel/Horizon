@@ -51,7 +51,7 @@ namespace HSFScheduler
         /// <param name="proposedSchedule"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        private static bool checkSub(Subsystem subsystem, SystemSchedule proposedSchedule, Universe environment)
+        private static bool checkSub(Subsystem subsystem, SystemSchedule proposedSchedule, Domain environment)
         {
             if (subsystem.IsEvaluated)
                 return true;
@@ -78,7 +78,7 @@ namespace HSFScheduler
         /// <param name="proposedSchedule"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        private static bool checkSubs(List<Subsystem> subsystems, SystemSchedule proposedSchedule, Universe environment)
+        private static bool checkSubs(List<Subsystem> subsystems, SystemSchedule proposedSchedule, Domain environment)
         {
             foreach (var sub in subsystems)
             {

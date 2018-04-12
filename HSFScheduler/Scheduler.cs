@@ -96,18 +96,26 @@ namespace HSFScheduler
             {
                 log.Info("Generating Exhaustive Task Combinations... ");
                 Stack<Stack<Access>> exhaustive = new Stack<Stack<Access>>();
-                Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
+                //Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
 
                 foreach (var asset in system.Assets)
                 {
+                    Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
                     foreach (var task in tasks)
                         allAccesses.Push(new Access(asset, task));
-                    allAccesses.Push(new Access(asset, null));
+                    //allAccesses.Push(new Access(asset, null));
                     exhaustive.Push(allAccesses);
-                    allAccesses.Clear();
+                    //allAccesses.Clear();
                 }
 
-                scheduleCombos = (Stack<Stack<Access>>)exhaustive.CartesianProduct();
+                IEnumerable<IEnumerable<Access>> allScheduleCombos = exhaustive.CartesianProduct();
+
+                foreach (var accessStack in allScheduleCombos)
+                {
+                    Stack<Access> someOfThem = new Stack<Access>(accessStack);
+                    scheduleCombos.Push(someOfThem);
+                }
+
                 log.Info("Done generating exhaustive task combinations");
             }
 
@@ -159,9 +167,10 @@ namespace HSFScheduler
                 {
 
 
-                    if (Checker.CheckSchedule(system, potentialSchedule))
+                    if (Checker.CheckSchedule(system, potentialSchedule)) {
                         systemCanPerformList.Add(potentialSchedule);
-                    numSched++;
+                        numSched++;
+                    }
                 }
                 foreach (SystemSchedule systemSchedule in systemCanPerformList)
                     systemSchedule.ScheduleValue = ScheduleEvaluator.Evaluate(systemSchedule);
@@ -173,8 +182,9 @@ namespace HSFScheduler
                 systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedules
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
+
                 // Print completion percentage in command window
-                Console.WriteLine("Scheduler Status: {0}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+                Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
             }
             return systemSchedules;
         }

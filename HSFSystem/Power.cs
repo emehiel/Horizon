@@ -58,20 +58,9 @@ namespace HSFSubsystem
         /// <param name="PowerNode"></param>
         /// <param name="asset"></param>
         public Power(XmlNode PowerNode, Asset asset) : base(PowerNode, asset)
-        {/*
-            DefaultSubName = "Power";
-            GetSubNameFromXmlNode(PowerNode);
-            DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
-            POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");
-            addKey(DOD_KEY);
-            addKey(POWIN_KEY);
-            if (PowerNode.Attributes["batterySize"] != null)
-                _batterySize = (double)Convert.ChangeType(PowerNode.Attributes["batterySize"].Value, typeof(double));
-            if (PowerNode.Attributes["fullSolarPower"] != null)
-                _fullSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["fullSolarPower"].Value, typeof(double));
-            if (PowerNode.Attributes["penumbraSolarPower"] != null)
-                _penumbraSolarPanelPower = (double)Convert.ChangeType(PowerNode.Attributes["penumbraSolarPower"].Value, typeof(double));
-        */}
+        {
+            
+        }
         #endregion Constructors
 
         #region Methods
@@ -102,16 +91,17 @@ namespace HSFSubsystem
         /// <param name="position"></param>
         /// <param name="universe"></param>
         /// <returns></returns>
-        protected HSFProfile<double> CalcSolarPanelPowerProfile(double start, double end, SystemState state, DynamicState position, Universe universe)
+        protected HSFProfile<double> CalcSolarPanelPowerProfile(double start, double end, SystemState state, DynamicState position, Domain universe)
         {
+            Sun sun = universe.GetObject<Sun>("SUN");
             // create solar panel profile for this event
             double freq = 5;
-            ShadowState lastShadow = universe.Sun.castShadowOnPos(position, start);
+            ShadowState lastShadow = sun.castShadowOnPos(position, start);
             HSFProfile<double> solarPanelPowerProfile = new HSFProfile<double>(start, GetSolarPanelPower(lastShadow));
 
             for (double time = start + freq; time <= end; time += freq)
             {
-                ShadowState shadow = universe.Sun.castShadowOnPos(position, time);
+                ShadowState shadow = sun.castShadowOnPos(position, time);
                 // if the shadow state changes during this step, save the power data
                 if (shadow != lastShadow)
                 {
@@ -131,7 +121,7 @@ namespace HSFSubsystem
         /// <param name="tasks"></param>
         /// <param name="universe"></param>
         /// <returns></returns>
-        public override bool CanPerform(Event proposedEvent, Universe universe)
+        public override bool CanPerform(Event proposedEvent, Domain universe)
         {
             //Make sure all dependent subsystems have been evaluated
             if (!base.CanPerform(proposedEvent, universe)) 
@@ -176,12 +166,12 @@ namespace HSFSubsystem
         /// <param name="universe"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
-        public override bool CanExtend(Event proposedEvent, Universe universe, double evalToTime) {
+        public override bool CanExtend(Event proposedEvent, Domain universe, double evalToTime) {
             double ee = proposedEvent.GetEventEnd(Asset);
             if (ee > SimParameters.SimEndSeconds)
                 return false;
 
-            Sun sun = universe.Sun;
+            Sun sun = universe.GetObject<Sun>("SUN");
             double te = proposedEvent.State.GetLastValue(DOD_KEY).Key;
             if (proposedEvent.GetEventEnd(Asset) < evalToTime)
                 proposedEvent.SetEventEnd(Asset, evalToTime);

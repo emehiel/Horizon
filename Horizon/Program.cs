@@ -13,6 +13,7 @@ using HSFUniverse;
 using HSFSubsystem;
 using HSFSystem;
 using log4net;
+using Utilities;
 
 namespace Horizon
 {
@@ -22,7 +23,7 @@ namespace Horizon
         string simulationInputFilePath, targetDeckFilePath, modelInputFilePath;
 
         // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
-        Universe SystemUniverse = null;
+        Domain SystemUniverse = null;
 
         //Create singleton dependency dictionary
         Dependency dependencies = Dependency.Instance;
@@ -194,11 +195,16 @@ namespace Horizon
                 if (modelChildNode.Name.Equals("ENVIRONMENT"))
                 {
                     // Create the Environment based on the XMLNode
-                    SystemUniverse = new Universe(modelChildNode);
+                    SystemUniverse = UniverseFactory.GetUniverseClass(modelChildNode);
                 }
+                else if (SystemUniverse == null)
+                    SystemUniverse = new SpaceEnvironment();
+
                 if (modelChildNode.Name.Equals("ASSET"))
                 {
                     Asset asset = new Asset(modelChildNode);
+                    asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+
                     assetList.Add(asset);
                     // Loop through all the of the ChildNodess for this Asset
                     foreach (XmlNode childNode in modelChildNode.ChildNodes)
@@ -237,8 +243,6 @@ namespace Horizon
                     ICNodes.Clear();
                 }
             }
-            if (SystemUniverse == null)
-                SystemUniverse = new Universe();
 
             foreach (KeyValuePair<string, Subsystem> sub in subsystemMap)
             {
@@ -290,7 +294,7 @@ namespace Horizon
                 foreach (var subsystem in simSystem.Subsystems)
                 {
                     if (systemSchedule.AllStates.Events.Count > 0)
-                        if (!subsystem.CanExtend(systemSchedule.AllStates.Events.Peek(), simSystem.Environment, SimParameters.SimEndSeconds))
+                        if (!subsystem.CanExtend(systemSchedule.AllStates.Events.Peek(), (Domain)simSystem.Environment, SimParameters.SimEndSeconds))
                             log.Error("Cannot Extend " + subsystem.Name + " to end of simulation");
                 }
             }

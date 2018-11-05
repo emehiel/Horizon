@@ -26,7 +26,7 @@ namespace HSFSubsystem
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
         }
 
-        public override bool CanPerform( Event proposedEvent, Universe environment) 
+        public override bool CanPerform( Event proposedEvent, Domain environment) 
         {
             if (!base.CanPerform( proposedEvent, environment))
                 return false;
@@ -36,7 +36,7 @@ namespace HSFSubsystem
             return GeometryUtilities.hasLOS(assetPosECI, targetPosECI);
         }
 
-        public override bool CanExtend(Event proposedEvent, Universe environment, double evalToTime)
+        public override bool CanExtend(Event proposedEvent, Domain environment, double evalToTime)
         {
             if (proposedEvent.GetEventEnd(Asset) < evalToTime)
                 proposedEvent.SetEventEnd(Asset, evalToTime);

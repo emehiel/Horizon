@@ -32,7 +32,6 @@ class adcs(HSFSubsystem.Subsystem):
     def __new__(cls, node, asset):
         instance = HSFSubsystem.Subsystem.__new__(cls)
         instance.Asset = asset
-        instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
 
         instance.POINTVEC_KEY = Utilities.StateVarKey[Utilities.Matrix[System.Double]](instance.Asset.Name + '.' + 'eci_pointing_vector(xyz)')
         instance.addKey(instance.POINTVEC_KEY)
@@ -42,7 +41,7 @@ class adcs(HSFSubsystem.Subsystem):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_ADCSSUB)
-        dep.Add("PowerfromADCS", depFunc1)
+        dep.Add("PowerfromADCS" + "." + self.Asset.Name, depFunc1)
         return dep
 
     def GetDependencyCollector(self):

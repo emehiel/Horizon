@@ -18,7 +18,7 @@ namespace HSFSystem
         public List<Asset> Assets { get; private set; }
         public List<Subsystem> Subsystems{get; private set;}
         public List<Constraint> Constraints{get; private set;}
-        public Universe Environment{get; private set;}
+        public Domain Environment{get; private set;}
         public int ThreadNum{get; private set;}
         #endregion
 
@@ -30,7 +30,7 @@ namespace HSFSystem
         /// <param name="subsystems"></param>
         /// <param name="constraints"></param>
         /// <param name="environment"></param>
-        public SystemClass(List<Asset> assets, List<Subsystem> subsystems, List<Constraint> constraints, Universe environment)
+        public SystemClass(List<Asset> assets, List<Subsystem> subsystems, List<Constraint> constraints, Domain environment)
         {
             Assets = assets;
             Constraints = constraints;

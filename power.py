@@ -39,9 +39,12 @@ class power(HSFSubsystem.Subsystem):
         instance.addKey(instance.DOD_KEY)
         instance.addKey(instance.POWIN_KEY)
 
+        # default values if variables not defined in xml file
         instance._batterySize = 1000000
         instance._fullSolarPanelPower = 150
         instance._penumbraSolarPanelPower = 75
+
+        # values read from the xml file		
         if (node.Attributes['batterySize'] != None):
             instance._batterySize = float(node.Attributes['batterySize'].Value)
         if (node.Attributes['fullSolarPower'] != None):

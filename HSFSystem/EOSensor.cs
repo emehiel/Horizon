@@ -72,29 +72,9 @@ namespace HSFSubsystem
         /// <param name="EOSensorXmlNode"></param>
         /// <param name="asset"></param>
         public EOSensor(XmlNode EOSensorXmlNode, Asset asset) : base(EOSensorXmlNode, asset)
-        {/*
-            DefaultSubName = "EOSensor";
-            Asset = asset;
-            GetSubNameFromXmlNode(EOSensorXmlNode);
-            PIXELS_KEY = new StateVarKey<double>(Asset.Name + "." + "numpixels");
-            INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "incidenceangle");
-            EOON_KEY = new StateVarKey<bool>(Asset.Name + "." + "eosensoron");
-            addKey(PIXELS_KEY);
-            addKey(INCIDENCE_KEY);
-            addKey(EOON_KEY);
-            if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
-                _lowQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityPixels"].Value.ToString(), typeof(double));
-            if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
-                _lowQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityTime"].Value.ToString(), typeof(double));
-            if (EOSensorXmlNode.Attributes["midQualityPixels"] != null)
-                _midQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["midQualityPixels"].Value.ToString(), typeof(double));
-            if (EOSensorXmlNode.Attributes["midQualityTime"] != null)
-                _midQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["midQualityTime"].Value.ToString(), typeof(double));
-            if (EOSensorXmlNode.Attributes["highQualityPixels"] != null)
-                _highQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityPixels"].Value.ToString(), typeof(double));
-            if (EOSensorXmlNode.Attributes["highQualityTime"] != null)
-                _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
-        */}
+        {
+            
+        }
         #endregion
 
         #region Methods
@@ -104,7 +84,7 @@ namespace HSFSubsystem
         /// <param name="proposedEvent"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        public override bool CanPerform(Event proposedEvent, Universe environment)
+        public override bool CanPerform(Event proposedEvent, Domain environment)
         {
             if (!base.CanPerform(proposedEvent, environment))
                 return false;

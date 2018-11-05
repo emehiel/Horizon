@@ -33,7 +33,7 @@ namespace HSFUniverse
         /// SortedList with time and the state data at that time stored in a double Matrix
         /// </summary>
         public DynamicStateType Type { get; private set; }
-        public EOMS Eoms { get; private set; }
+        public DynamicEOMS Eoms { get; private set; }
         public string Name { get; private set; }
         public IntegratorParameters IntegratorParameters = new IntegratorParameters();
         private PropagationType _propagatorType;
@@ -89,7 +89,7 @@ namespace HSFUniverse
 
         }
 
-        public DynamicState(DynamicStateType type, EOMS eoms, Vector initialConditions)
+        public DynamicState(DynamicStateType type, DynamicEOMS eoms, Vector initialConditions)
         {
             _stateData.Add(0.0, initialConditions);
             Type = type;
@@ -183,9 +183,13 @@ namespace HSFUniverse
                 _stateData[data[1, index]] = (Vector)data[new MatrixIndex(2, data.NumRows), index];
             log.Info("Done Integrating");
         }
-        public void DynamicPropogateState()
+
+        private void DynamicPropagateState()
         {
             double simTime = _stateData.Last().Key + SchedParameters.SimStepSeconds;
+            if (simTime > SimParameters.SimEndSeconds)
+                simTime = SimParameters.SimEndSeconds;
+
             Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
             // Update the integrator parameters using the information in the XML Node
 
@@ -249,6 +253,16 @@ namespace HSFUniverse
                 }
                 else if (Type == DynamicStateType.DYNAMIC_ECI || Type == DynamicStateType.DYNAMIC_LLA)
                 {
+                    bool hasNotPropagated = _stateData.Last().Key <= simTime;
+                    do
+                    {
+                        if (hasNotPropagated)
+                        {
+                            DynamicPropagateState();
+                            hasNotPropagated = _stateData.Last().Key < simTime;
+                        }
+                    } while (hasNotPropagated);
+
                     Vector dynamicStateAtSimTime;
 
                     if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))

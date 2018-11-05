@@ -50,7 +50,7 @@ class eosensor(HSFSubsystem.Subsystem):
         instance._highQualityTime = 7
         if (node.Attributes['lowQualityPixels'] != None):
             instance._lowQualityPixels = float(node.Attributes['lowQualityPixels'].Value.ToString())
-        if (node.Attributes['lowQualityPixels'] != None):
+        if (node.Attributes['lowQualityTime'] != None):
             instance._lowQualityTime = float(node.Attributes['lowQualityTime'].Value.ToString())
         if (node.Attributes['midQualityPixels'] != None):
             instance._midQualityPixels = float(node.Attributes['midQualityPixels'].Value.ToString())
@@ -66,9 +66,9 @@ class eosensor(HSFSubsystem.Subsystem):
     def GetDependencyDictionary(self):
         dep = Dictionary[str, Delegate]()
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.POWERSUB_PowerProfile_EOSENSORSUB)
-        dep.Add("PowerfromEOSensor", depFunc1)
+        dep.Add("PowerfromEOSensor" + "." + self.Asset.Name, depFunc1)
         depFunc1 = Func[Event,  Utilities.HSFProfile[System.Double]](self.SSDRSUB_NewDataProfile_EOSENSORSUB)
-        dep.Add("SSDRfromEOSensor", depFunc1)
+        dep.Add("SSDRfromEOSensor" + "." + self.Asset.Name, depFunc1)
         return dep
 
     def GetDependencyCollector(self):

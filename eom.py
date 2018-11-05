@@ -13,7 +13,7 @@ from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
 class eom(Utilities.EOMS):
-    def __new__(cls):
+    def __new__(cls, node):
         instance = Utilities.EOMS.__new__(cls)
 
         instance._mu = 398600.4418
@@ -24,7 +24,7 @@ class eom(Utilities.EOMS):
 
         return instance
 
-    def PythonAccessor(self, t, y):
+    def PythonAccessor(self, t, y, param, environment):
         r3 = System.Math.Pow(Matrix[System.Double].Norm(y[MatrixIndex(1, 3), 1]), 3)
         mur3 = -self._mu / r3
         self._A[4, 1] = mur3

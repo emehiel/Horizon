@@ -69,6 +69,7 @@
     <Compile Include="SchedulerUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AccessUnitTest.cs" />
+    <Compile Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HSFScheduler\HSFScheduler.csproj">

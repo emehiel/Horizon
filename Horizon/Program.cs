@@ -34,7 +34,7 @@ namespace Horizon
 
         // Maps used to set up preceeding nodes
         Dictionary<ISubsystem, XmlNode> subsystemXMLNodeMap = new Dictionary<ISubsystem, XmlNode>();
-        Dictionary<string, Subsystem> subsystemMap = new Dictionary<string, Subsystem>();
+        public Dictionary<string, Subsystem> subsystemMap;
         List<KeyValuePair<string, string>> dependencyMap = new List<KeyValuePair<string, string>>();
         List<KeyValuePair<string, string>> dependencyFcnMap = new List<KeyValuePair<string, string>>();
         // Dictionary<string, ScriptedSubsystem> scriptedSubNames = new Dictionary<string, ScriptedSubsystem>();
@@ -55,12 +55,14 @@ namespace Horizon
         static int Main(string[] args)
         {
             Program program = new Program();
+            program.subsystemMap = new Dictionary<string, Subsystem>();
             // Begin the Logger
             program.log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             program.log.Info("STARTING HSF RUN"); //Do not delete
             program.InitInput(args);
             string outputPath = program.InitOutput();
             Stack<Task> systemTasks = program.LoadTargets();
+            Stack<Task> newTasks = new Stack<Task> (systemTasks);
             program.LoadSubsystems();
             program.LoadDependencies();
             program.CreateSchedules(systemTasks);

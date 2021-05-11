@@ -91,7 +91,7 @@ namespace HSFScheduler
                 Access.writeAccessReport(preGeneratedAccesses); //- TODO:  Finish this code - EAM
                 log.Info("Done pregenerating accesses. There are " + preGeneratedAccesses.Count + " accesses.");
             }
-            // otherwise generate an exhaustive list of possibilities for assetTaskList
+            // otherwise generate an exhaustive list of possibilities for assetTaskList,
             else
             {
                 log.Info("Generating Exhaustive Task Combinations... ");
@@ -179,7 +179,7 @@ namespace HSFScheduler
                 systemCanPerformList.Reverse();
                 // Merge old and new systemSchedules
                 var oldSystemCanPerfrom = new List<SystemSchedule>(systemCanPerformList);
-                systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedules
+                systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedule doubling stuff up
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
 

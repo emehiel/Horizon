@@ -60,6 +60,10 @@ namespace HSFSubsystem
                 {
                     subDic.Add(name, new IMU(SubsystemXmlNode, dependencies, asset));
                 }
+                else if (type.Equals("subtest"))
+                {
+                    subDic.Add(name, new SubTest(SubsystemXmlNode, dependencies, asset));
+                }
                 else if (type.Equals("networked"))
                 {
                     throw new NotImplementedException("Networked Subsystem is a depreciated feature!");

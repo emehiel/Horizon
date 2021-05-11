@@ -17,6 +17,7 @@
 		</SUBSYSTEM>
 		<SUBSYSTEM
 			Type="Adcs"
+			slewRate="5"
 			subsystemName = "Adcs">
 			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
 			<DEPENDENCY subsystemName="Access"></DEPENDENCY>

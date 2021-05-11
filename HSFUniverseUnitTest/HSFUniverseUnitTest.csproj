@@ -49,6 +49,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -68,11 +69,24 @@
     <Compile Include="CloudCoverUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DynamicStateUnitTest.cs" />
+    <Compile Include="UniverseFactoryUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Horizon\Horizon.csproj">
+      <Project>{6E6D45BA-6E13-4117-839E-469A59EEF191}</Project>
+      <Name>Horizon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HSFUniverse\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
       <Name>HSFUniverse</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MissionElements\MissionElements.csproj">
+      <Project>{982DCCE0-925A-4139-9BE7-7A99542D6240}</Project>
+      <Name>MissionElements</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UserModel\UserModel.csproj">
+      <Project>{C180B6BA-D68A-4AC8-B1EB-4E38F7F42AB7}</Project>
+      <Name>UserModel</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>

@@ -72,6 +72,10 @@
     <Compile Include="UnitTest1.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Horizon\Horizon.csproj">
+      <Project>{6E6D45BA-6E13-4117-839E-469A59EEF191}</Project>
+      <Name>Horizon</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HSFScheduler\HSFScheduler.csproj">
       <Project>{241171ab-18b2-45a0-848a-62b2ef751644}</Project>
       <Name>HSFScheduler</Name>

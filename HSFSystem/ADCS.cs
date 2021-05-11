@@ -16,7 +16,8 @@ namespace HSFSubsystem
     {
         #region Attributes
         protected StateVarKey<Matrix<double>> POINTVEC_KEY;
-        protected double _slewRate = 5; //deg/sec
+         double _slewRate = 5;//deg/sec
+        //double _slewRate = 5;
         #endregion Attributes
 
         #region Constructors

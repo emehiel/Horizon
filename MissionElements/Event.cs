@@ -102,6 +102,7 @@ namespace MissionElements
         public double GetEventStart(Asset asset)
         {
             double time;
+                
             EventStarts.TryGetValue(asset, out time);
             return time;
         }

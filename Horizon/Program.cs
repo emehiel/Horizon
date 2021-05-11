@@ -20,7 +20,11 @@ namespace Horizon
     public class Program
     {
         public ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        string simulationInputFilePath, targetDeckFilePath, modelInputFilePath;
+
+        public string SimulationInputFilePath { get; set; } //wanted to make read only but not sure how to set from 
+        public string TargetDeckFilePath { get; set; }
+        public string ModelInputFilePath { get; set; }
+        
 
         // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
         Domain SystemUniverse = null;
@@ -29,23 +33,27 @@ namespace Horizon
         Dependency dependencies = Dependency.Instance;
 
         // Initialize List to hold assets and subsystem nodes
-        public List<Asset> assetList = new List<Asset>();
-        public List<Subsystem> subList = new List<Subsystem>();
+        public List<Asset> AssetList = new List<Asset>();
+        public List<Subsystem> SubList = new List<Subsystem>();
 
         // Maps used to set up preceeding nodes
         Dictionary<ISubsystem, XmlNode> subsystemXMLNodeMap = new Dictionary<ISubsystem, XmlNode>();
-        public Dictionary<string, Subsystem> subsystemMap;
-        List<KeyValuePair<string, string>> dependencyMap = new List<KeyValuePair<string, string>>();
-        List<KeyValuePair<string, string>> dependencyFcnMap = new List<KeyValuePair<string, string>>();
+        Dictionary<string, Subsystem> _subsystemMap = new Dictionary<string, Subsystem>();
+        public Dictionary<string, Subsystem> SubsystemMap = new Dictionary<string, Subsystem>();
+        List<KeyValuePair<string, string>> _dependencyMap = new List<KeyValuePair<string, string>>();
+        public List<KeyValuePair<string, string>> DependencyMap = new List<KeyValuePair<string, string>>();
+        List<KeyValuePair<string, string>> _dependencyFcnMap = new List<KeyValuePair<string, string>>();
+        public List<KeyValuePair<string, string>> DependencyFcnMap = new List<KeyValuePair<string, string>>();
         // Dictionary<string, ScriptedSubsystem> scriptedSubNames = new Dictionary<string, ScriptedSubsystem>();
 
         // Create Constraint list 
-        List<Constraint> constraintsList = new List<Constraint>();
+        List<Constraint> _constraintsList = new List<Constraint>();
+        public List<Constraint> ConstraintsList = new List<Constraint>(); //Public Version for Unit Testing
 
         //Create Lists to hold all the initial condition and dependency nodes to be parsed later
         List<XmlNode> ICNodes = new List<XmlNode>();
         List<XmlNode> DepNodes = new List<XmlNode>();
-        public SystemState initialSysState = new SystemState();
+        public SystemState InitialSysState = new SystemState();
 
         XmlNode evaluatorNode;
         Evaluator schedEvaluator;
@@ -55,7 +63,6 @@ namespace Horizon
         static int Main(string[] args)
         {
             Program program = new Program();
-            program.subsystemMap = new Dictionary<string, Subsystem>();
             // Begin the Logger
             program.log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             program.log.Info("STARTING HSF RUN"); //Do not delete
@@ -104,9 +111,9 @@ namespace Horizon
         public void InitInput(string[] args)
         {
             // Set Defaults
-            simulationInputFilePath = @"..\..\..\SimulationInput.XML";
-            targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            modelInputFilePath = @"..\..\..\DSAC_Static.xml";
+            SimulationInputFilePath = @"..\..\..\SimulationInput.XML";
+            TargetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
+            ModelInputFilePath = @"..\..\..\DSAC_Static.xml";
             bool simulationSet = false, targetSet = false, modelSet = false;
 
             // Get the input filenames
@@ -117,15 +124,15 @@ namespace Horizon
                 switch (input)
                 {
                     case "-s":
-                        simulationInputFilePath = args[i];
+                        SimulationInputFilePath = args[i];
                         simulationSet = true;
                         break;
                     case "-t":
-                        targetDeckFilePath = args[i];
+                        TargetDeckFilePath = args[i];
                         targetSet = true;
                         break;
                     case "-m":
-                        modelInputFilePath = args[i];
+                        ModelInputFilePath = args[i];
                         modelSet = true;
                         break;
                 }
@@ -170,11 +177,11 @@ namespace Horizon
         public Stack<Task> LoadTargets()
         {
             // Find the main input node from the XML input files
-            evaluatorNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
+            evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
 
             // Load the target deck into the targets list from the XML target deck input file
             Stack<Task> systemTasks = new Stack<Task>();
-            bool targetsLoaded = Task.loadTargetsIntoTaskList(XmlParser.GetTargetNode(targetDeckFilePath), systemTasks);
+            bool targetsLoaded = Task.loadTargetsIntoTaskList(XmlParser.GetTargetNode(TargetDeckFilePath), systemTasks);
             if (!targetsLoaded)
             {
                 throw new Exception("Targets were not loaded.");
@@ -187,7 +194,7 @@ namespace Horizon
         {
 
             // Find the main model node from the XML model input file
-            var modelInputXMLNode = XmlParser.GetModelNode(modelInputFilePath);
+            var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
 
 
 
@@ -207,7 +214,7 @@ namespace Horizon
                     Asset asset = new Asset(modelChildNode);
                     asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
 
-                    assetList.Add(asset);
+                    AssetList.Add(asset);
                     // Loop through all the of the ChildNodess for this Asset
                     foreach (XmlNode childNode in modelChildNode.ChildNodes)
                     {
@@ -215,7 +222,7 @@ namespace Horizon
                         if (childNode.Name.Equals("SUBSYSTEM"))
                         {  //is this how we want to do this?
                            // Check if the type of the Subsystem is scripted, networked, or other
-                            string subName = SubsystemFactory.GetSubsystem(childNode, dependencies, asset, subsystemMap);
+                            string subName = SubsystemFactory.GetSubsystem(childNode, dependencies, asset, _subsystemMap);
                             foreach (XmlNode ICorDepNode in childNode.ChildNodes)
                             {
                                 if (ICorDepNode.Name.Equals("IC"))
@@ -224,12 +231,12 @@ namespace Horizon
                                 {
                                     string depSubName = "", depFunc = "";
                                     depSubName = Subsystem.parseNameFromXmlNode(ICorDepNode, asset.Name);
-                                    dependencyMap.Add(new KeyValuePair<string, string>(subName, depSubName));
+                                    _dependencyMap.Add(new KeyValuePair<string, string>(subName, depSubName));
 
                                     if (ICorDepNode.Attributes["fcnName"] != null)
                                     {
                                         depFunc = ICorDepNode.Attributes["fcnName"].Value.ToString();
-                                        dependencyFcnMap.Add(new KeyValuePair<string, string>(subName, depFunc));
+                                        _dependencyFcnMap.Add(new KeyValuePair<string, string>(subName, depFunc));
                                     }
                                 }
                             }
@@ -237,53 +244,59 @@ namespace Horizon
                         //Create a new Constraint
                         if (childNode.Name.Equals("CONSTRAINT"))
                         {
-                            constraintsList.Add(ConstraintFactory.GetConstraint(childNode, subsystemMap, asset));
+                            _constraintsList.Add(ConstraintFactory.GetConstraint(childNode, _subsystemMap, asset));
                         }
                     }
                     if (ICNodes.Count > 0)
-                        initialSysState.Add(SystemState.setInitialSystemState(ICNodes, asset));
+                        InitialSysState.Add(SystemState.setInitialSystemState(ICNodes, asset));
                     ICNodes.Clear();
                 }
             }
 
-            foreach (KeyValuePair<string, Subsystem> sub in subsystemMap)
+            foreach (KeyValuePair<string, Subsystem> sub in _subsystemMap)
             {
                 if (!sub.Value.GetType().Equals(typeof(ScriptedSubsystem)))//let the scripted subsystems add their own dependency collector
-                    sub.Value.AddDependencyCollector();
-                subList.Add(sub.Value);
+                sub.Value.AddDependencyCollector();
+
+                SubList.Add(sub.Value);
             }
             log.Info("Subsystems and Constraints Loaded");
+            ConstraintsList = _constraintsList;
+            DependencyFcnMap = _dependencyFcnMap;
+            DependencyMap = _dependencyMap;
+            SubsystemMap = _subsystemMap;
+
         }
         public void LoadDependencies()
         {
             //Add all the dependent subsystems to the dependent subsystem list of the subsystems
-            foreach (KeyValuePair<string, string> depSubPair in dependencyMap)
+            foreach (KeyValuePair<string, string> depSubPair in _dependencyMap)
             {
                 Subsystem subToAddDep, depSub;
-                subsystemMap.TryGetValue(depSubPair.Key, out subToAddDep);
-                subsystemMap.TryGetValue(depSubPair.Value, out depSub);
+                _subsystemMap.TryGetValue(depSubPair.Key, out subToAddDep);
+                _subsystemMap.TryGetValue(depSubPair.Value, out depSub);
                 subToAddDep.DependentSubsystems.Add(depSub);
             }
 
             //give the dependency functions to all the subsytems that need them
-            foreach (KeyValuePair<string, string> depFunc in dependencyFcnMap)
+            foreach (KeyValuePair<string, string> depFunc in _dependencyFcnMap)
             {
                 Subsystem subToAddDep;
-                subsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
+                _subsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
                 subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.GetDependencyFunc(depFunc.Value));
             }
             log.Info("Dependencies Loaded");
         }
         public void CreateSchedules(Stack<Task> systemTasks)
         {
-            simSystem = new SystemClass(assetList, subList, constraintsList, SystemUniverse);
+            simSystem = new SystemClass(AssetList, SubList, _constraintsList, SystemUniverse);
 
             if (simSystem.CheckForCircularDependencies())
                 throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
 
             schedEvaluator = EvaluatorFactory.GetEvaluator(evaluatorNode, dependencies);
             Scheduler scheduler = new Scheduler(schedEvaluator);
-            schedules = scheduler.GenerateSchedules(simSystem, systemTasks, initialSysState);
+            schedules = scheduler.GenerateSchedules(simSystem, systemTasks, InitialSysState);
         }
         public double EvaluateSchedules()
         {

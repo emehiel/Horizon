@@ -33,7 +33,15 @@ namespace UtilitiesUnitTest
 
             System.IO.File.WriteAllText("integratorOut.txt", result.ToString());
 
-            //Console.ReadLine(); //FIXME: Why is this here?
+            double y_final = 3.29998029143281E-05;
+            double yDot_final = -7.94520751742942E-05;
+            double t_final = 20;
+
+            Assert.AreEqual(t_final, result[1, result.Size[2]], .0001);
+
+            Assert.AreEqual(y_final, result[2, result.Size[2]], .0001);
+
+            Assert.AreEqual(yDot_final, result[3, result.Size[2]],.0001);
         }
         [TestCategory("Matrix")]
 

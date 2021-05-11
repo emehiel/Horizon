@@ -50,7 +50,7 @@ namespace HSFUniverse
                 Name = "Generic.DynamicState";
 
             // TODO add a line to pre-propagate to simEndTime if the type is predetermined
-            // TODO catch exception if _type or initial conditions are not set from teh XML file
+            // TODO catch exception if _type or initial conditions are not set from the XML file
             if (dynamicStateXMLNode.Attributes["DynamicStateType"] != null)
             {
                 string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value.ToString();

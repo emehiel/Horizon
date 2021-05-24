@@ -229,7 +229,16 @@ namespace UtilitiesUnitTest
             Assert.AreEqual(7, c3.Helper.helperInt);
             Assert.AreNotEqual(c1.Num, c3.Num);
         }
+        [TestMethod]
+        public void CollectionExtensionsUnitTest()
+        {
 
+        }
+        [TestMethod]
+        public void UpperLowerLimitIntegrateToProfUnitTest()
+        {
+            Assert.Inconclusive();
+        }
     }
     [Serializable]
     public class TestCopyClass

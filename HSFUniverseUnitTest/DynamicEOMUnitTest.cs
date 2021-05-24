@@ -4,10 +4,10 @@ using System;
 namespace UniverseUnitTest
 {
     [TestClass]
-    public class UniverseFactoryUnitTest
+    public class DynamicEOMUnitTest
     {
         [TestMethod]
-        public void UniverseFactoryTest()
+        public void GetsUnitTest()
         {
             Assert.Inconclusive("Not Implemented");
         }

@@ -67,8 +67,14 @@
   </Choose>
   <ItemGroup>
     <Compile Include="CloudCoverUnitTest.cs" />
+    <Compile Include="SunUnitTest.cs" />
+    <Compile Include="SpaceEnvironmentUnitTest.cs" />
+    <Compile Include="OrbitalEOMsUnitTest.cs" />
+    <Compile Include="EOMFactoryUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="DynamicStateUnitTest.cs" />
+    <Compile Include="DynamicEOMUnitTest.cs" />
+    <Compile Include="WMMUnitTest.cs" />
     <Compile Include="UniverseFactoryUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>

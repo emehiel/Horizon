@@ -63,6 +63,10 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="EventUnitTest.cs" />
+    <Compile Include="AssetUnitTest.cs" />
+    <Compile Include="TaskUnitTest.cs" />
+    <Compile Include="TargetUnitTest.cs" />
     <Compile Include="SystemStateUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -27,7 +27,7 @@ namespace Horizon
         
 
         // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
-        Domain SystemUniverse = null;
+        public Domain SystemUniverse = null;
 
         //Create singleton dependency dictionary
         Dependency dependencies = Dependency.Instance;
@@ -58,7 +58,7 @@ namespace Horizon
         XmlNode evaluatorNode;
         Evaluator schedEvaluator;
         public List<SystemSchedule> schedules;
-        SystemClass simSystem;
+        SystemClass simSystem { get; set; }
 
         static int Main(string[] args)
         {

@@ -148,7 +148,7 @@ namespace HSFScheduler
                 //Parallel.ForEach(systemSchedules, (oldSystemSchedule) =>
                 foreach(var oldSystemSchedule in systemSchedules)
                 {
-                    potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
+                    //potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
                     foreach (var newAccessStack in scheduleCombos)
                     {
                         k++;

@@ -22,17 +22,7 @@
 			ICs = "[40.47; -75.65; 0]">
 		</DynamicState>
 	</TARGET>
-	<TARGET
-		TargetName = "target1.1"
-		TargetType = "LocationTarget"
-		TaskType = "EMPTY"
-		MaxTimes = "1"
-		Value = "2">
-		<DynamicState
-			DynamicStateType = "STATIC_LLA"
-			ICs = "[40.47; -75.65; 0]">
-		</DynamicState>
-	</TARGET>
+
 	<TARGET
 		TargetName = "target2"
 		TargetType = "LocationTarget"
@@ -55,5 +45,17 @@
 			ICs = "[40.47; -75.65; 0]">
 		</DynamicState>
 	</TARGET>
+	<TARGET
+		TargetName = "target4"
+		TargetType = "LocationTarget"
+		TaskType = "EMPTY"
+		MaxTimes = "1"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-40.47; 75.65; 0]">
+		</DynamicState>
+	</TARGET>
+
 
 </TARGETDECK>

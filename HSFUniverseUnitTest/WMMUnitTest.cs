@@ -4,10 +4,10 @@ using System;
 namespace UniverseUnitTest
 {
     [TestClass]
-    public class UniverseFactoryUnitTest
+    public class WMMUnitTest
     {
         [TestMethod]
-        public void UniverseFactoryTest()
+        public void WMMTest()
         {
             Assert.Inconclusive("Not Implemented");
         }

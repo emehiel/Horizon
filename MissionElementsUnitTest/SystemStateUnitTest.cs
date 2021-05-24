@@ -9,7 +9,7 @@ namespace MissionElementsUnitTest
     public class SystemStateUnitTest
     {
         [TestMethod]
-        public void TemplatedGetProfileUnitTest()
+        public void TemplatedGetProfile()
         {
             SystemState state = new SystemState();
             HSFProfile<int> intProf = new HSFProfile<int>(0, 1);
@@ -38,6 +38,26 @@ namespace MissionElementsUnitTest
             HSFProfile<Matrix<double>> newMatrixProf = state.GetProfile(matrixKey);
 
             Console.WriteLine();
+        }
+        public void GetLastValue()
+        {
+            Assert.Inconclusive();
+        }
+        public void GetValueAtTime()
+        {
+            Assert.Inconclusive();
+        }
+        public void GetFullProfile()
+        {
+            Assert.Inconclusive();
+        }
+        public void SetProfile()
+        {
+            Assert.Inconclusive();
+        }
+        public void AddValue()
+        {
+            Assert.Inconclusive();
         }
     }
 }

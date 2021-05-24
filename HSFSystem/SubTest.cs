@@ -11,8 +11,7 @@ namespace HSFSubsystem
     public class SubTest : Subsystem
     {
         #region Attributes
-        double delay = 5; // Seconds
-        double delayend = 10;
+
         Dictionary<string, double> lookup;
         #endregion
 
@@ -27,7 +26,17 @@ namespace HSFSubsystem
         public SubTest(XmlNode TestXmlNode, Dependency dependencies, Asset asset)
         {
             Asset = asset;
-            lookup = getList();
+
+            GetSubNameFromXmlNode(TestXmlNode);
+            if (this.Name == "asset1.subtest_crop")
+            {
+                lookup = getList(1);
+            }
+            else
+            {
+                lookup = getList();
+            }
+
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
         }
@@ -87,11 +96,21 @@ namespace HSFSubsystem
         static Dictionary<string, double> getList() 
         {
             Dictionary<string, double> lookup = new Dictionary<string, double>();
+            lookup.Add("target0", 0);
             lookup.Add("target1", 1);
+            lookup.Add("target1.1", 1);
             lookup.Add("target2", 2);
-            lookup.Add("target2.1", 2);
             lookup.Add("target3", 3);
-            lookup.Add("target4", 0);
+            return lookup;
+        }
+        static Dictionary<string,double> getList(double time)
+        {
+            Dictionary<string, double> lookup = new Dictionary<string, double>();
+            lookup.Add("target0", 0);
+            lookup.Add("target1", 0);
+            lookup.Add("target1.1", time);
+            lookup.Add("target2", time);
+            lookup.Add("target3", time);
             return lookup;
         }
         #endregion Methods

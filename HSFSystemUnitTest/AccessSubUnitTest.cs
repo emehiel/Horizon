@@ -1,13 +1,13 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 
-namespace UniverseUnitTest
+namespace HSFSystemUnitTest
 {
     [TestClass]
-    public class UniverseFactoryUnitTest
+    public class AccessUnitTest
     {
         [TestMethod]
-        public void UniverseFactoryTest()
+        public void getCurrentAccessesForAssetUnitTest()
         {
             Assert.Inconclusive("Not Implemented");
         }

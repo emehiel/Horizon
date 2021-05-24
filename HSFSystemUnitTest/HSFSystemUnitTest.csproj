@@ -63,6 +63,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="AccessSubUnitTest.cs" />
+    <Compile Include="ConstraintFactoryUnitTest.cs" />
+    <Compile Include="SubsystemFactoryUnitTest.cs" />
+    <Compile Include="SystemClassUnitTest.cs" />
+    <Compile Include="SubsystemUnitTest.cs" />
+    <Compile Include="SingleConstraintUnitTest.cs" />
+    <Compile Include="DependencyUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

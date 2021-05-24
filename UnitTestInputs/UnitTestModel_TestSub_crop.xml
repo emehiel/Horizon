@@ -1,4 +1,8 @@
 <MODEL>
+	<PYTHON
+		enableScripting = "true">
+	</PYTHON>
+
 	<ASSET assetName="Asset1">
 		<DynamicState
       DynamicStateType="PREDETERMINED_ECI"
@@ -9,7 +13,7 @@
 		</DynamicState>
 		<SUBSYSTEM
 			Type="SubTest"
-			subsystemName = "SubTest">
+			subsystemName = "SubTest_Crop">
 		</SUBSYSTEM>
 	</ASSET>
 </MODEL>

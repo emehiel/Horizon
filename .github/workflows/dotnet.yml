@@ -13,6 +13,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Install dependencies
+    - run: dotnet add package log4net --version 2.0.12
     - name: Restore dependencies
       run: dotnet restore
     - name: Build

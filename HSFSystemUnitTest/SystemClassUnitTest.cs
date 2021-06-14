@@ -1,17 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using System;
 
 namespace HSFSystemUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class SystemClassUnitTest
     {
-        [TestMethod]
+        [Test]
         public void CheckSubForCircularDependencies()
         {
             Assert.Inconclusive("Not implemented");
         }
-        [TestMethod]
+        [Test]
         public void CheckForCircularDependencies()
         {
             Assert.Inconclusive("Not implemented");

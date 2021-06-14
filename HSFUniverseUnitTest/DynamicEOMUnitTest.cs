@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using System;
 
 namespace UniverseUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class DynamicEOMUnitTest
     {
-        [TestMethod]
+        [Test]
         public void GetsUnitTest()
         {
             Assert.Inconclusive("Not Implemented");

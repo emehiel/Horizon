@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using HSFScheduler;
 using System.Xml;
 using System.Linq;
@@ -14,10 +14,10 @@ using Horizon;
 
 namespace HSFSchedulerUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class CheckerUnitTest
     {
-        [TestMethod]
+        [Test]
         public void CheckScheduleUnitTest()
         {
             Program programAct = new Program();
@@ -74,7 +74,7 @@ namespace HSFSchedulerUnitTest
 
 
         }
-        [TestMethod]
+        [Test]
         public void checkSubUnitTest() //Method is private, do i need to test?
         {
             {

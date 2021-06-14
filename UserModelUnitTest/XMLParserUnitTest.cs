@@ -1,27 +1,27 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace UserModelUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class XMLParserUnitTest
     {
-        [TestMethod]
+        [Test]
         public void ParseScriptedSrc()
         {
             Assert.Inconclusive();
         }
-        [TestMethod]
+        [Test]
         public void ParseSimulationInput()
         {
             Assert.Inconclusive();
         }
-        [TestMethod]
+        [Test]
         public void GetTargetNode()
         {
             Assert.Inconclusive();
         }
-        [TestMethod]
+        [Test]
         public void GetModelNode()
         {
             Assert.Inconclusive();

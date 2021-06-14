@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Utilities;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
@@ -8,10 +8,10 @@ using System.Collections.Generic;
 
 namespace UtilitiesUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class UtilitiesTests
     {
-        [TestMethod]
+        [Test]
         public void QuaternionMultiply()
         {
             Quat q = new Quat(.5, .707, .707, .707);
@@ -23,7 +23,7 @@ namespace UtilitiesUnitTest
             Assert.AreEqual(expected._eps[2], result._eps[2]);
             Assert.AreEqual(expected._eps[3], result._eps[3]);
         }
-        [TestMethod]
+        [Test]
         public void IntegratorTest()
         {
             StateSpaceEOMS dynamics = new StateSpaceEOMS();
@@ -43,9 +43,9 @@ namespace UtilitiesUnitTest
 
             Assert.AreEqual(yDot_final, result[3, result.Size[2]],.0001);
         }
-        [TestCategory("Matrix")]
 
-        [TestMethod]
+
+        [Test]
         public void MatrixExponent()
         {
             // Using matrix described here to test http://blogs.mathworks.com/cleve/2012/07/23/a-balancing-act-for-the-matrix-exponential/
@@ -58,7 +58,7 @@ namespace UtilitiesUnitTest
 
             Matrix<double> Aexp = Matrix<double>.exp(A);
         }
-        [TestMethod]
+        [Test]
         public void MatrixInverse()
         {
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 0, 1 }, { 1, 2, 0 }, { 1, 5, 1 } });
@@ -68,7 +68,7 @@ namespace UtilitiesUnitTest
 
             Assert.AreEqual(expected, result);
         }
-        [TestMethod]
+        [Test]
         public void MatrixVertCatTest()
         {
             // Create Test Matricies.
@@ -85,7 +85,7 @@ namespace UtilitiesUnitTest
             Assert.AreEqual(C, D);
         }
 
-        [TestMethod]
+        [Test]
         public void MatrixHorizCatTest()
         {
             // Create Test Matrices.
@@ -102,7 +102,7 @@ namespace UtilitiesUnitTest
             Assert.AreEqual(C, D);
         }
 
-        [TestMethod]
+        [Test]
         public void MatrixCumProdTest()
         {
             // Create Test Matrix.
@@ -117,7 +117,7 @@ namespace UtilitiesUnitTest
             //Verify Result.
             Assert.AreEqual(C, B);
         }
-        [TestMethod]
+        [Test]
         public void MatrixMultiply()
         {
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
@@ -130,7 +130,7 @@ namespace UtilitiesUnitTest
             Assert.AreEqual(D, C);
         }
 
-        [TestMethod]
+        [Test]
         public void MatrixNormTest()
         {
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 } });
@@ -140,7 +140,7 @@ namespace UtilitiesUnitTest
         }
 
 
-        [TestMethod]
+        [Test]
         public void MatrixSetColumnTest()
         {
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
@@ -149,7 +149,7 @@ namespace UtilitiesUnitTest
 
             Assert.AreEqual(B, A);
         }
-        [TestMethod]
+        [Test]
         public void MatrixSetRowTest()
         {
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
@@ -158,7 +158,7 @@ namespace UtilitiesUnitTest
 
             Assert.AreEqual(B, A);
         }
-        [TestMethod]
+        [Test]
         public void MatrixDeepCopyTest()
         {
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
@@ -169,7 +169,7 @@ namespace UtilitiesUnitTest
         }
 
 
-        [TestMethod]
+        [Test]
         public void MatrixToArrayTest()
         {
             // Create Test Matrices.
@@ -190,7 +190,7 @@ namespace UtilitiesUnitTest
                 }
             }
         }
-        [TestMethod]
+        [Test]
         public void DeepCopyTest()
         {
             TestCopyClass c1 = new TestCopyClass
@@ -229,12 +229,12 @@ namespace UtilitiesUnitTest
             Assert.AreEqual(7, c3.Helper.helperInt);
             Assert.AreNotEqual(c1.Num, c3.Num);
         }
-        [TestMethod]
+        [Test]
         public void CollectionExtensionsUnitTest()
         {
 
         }
-        [TestMethod]
+        [Test]
         public void UpperLowerLimitIntegrateToProfUnitTest()
         {
             Assert.Inconclusive();

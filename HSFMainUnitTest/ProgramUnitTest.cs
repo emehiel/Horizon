@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Horizon;
 using System.Xml;
 using HSFUniverse;
@@ -13,14 +13,14 @@ using HSFMainUnitTest;
 
 namespace HSFMainUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class ProgramUnitTest
     {
         /// <summary>
         /// Test to make sure the correct number of targets are created
         /// </summary>
-        [TestMethod]
-        public void TestLoadTargets()
+        [Test]
+        public void LoadTargetsUnitTest()
         {
             Program TestProgram = new Program();
             TestProgram.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
@@ -36,35 +36,12 @@ namespace HSFMainUnitTest
             Assert.AreEqual(expected, actual);
 
         }
-        /// <summary>
-        /// Test to verify the correct dependencies are loaded
-        /// </summary>
-        [TestMethod]
-        public void TestDependencies() //TestLoadDependencies?? Do we need to create an order for unit tests (doesnt work without LoadSubsystesm() which is bad design)
-        {
-            Program program = new Program();
-            program.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
-            program.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-            program.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
-            //string[] inputArg = { "-s", program.SimulationInputFilePath, "-t", program.TargetDeckFilePath, "-m", program.ModelInputFilePath };
-            //program.InitInput(inputArg);
-            Stack<Task> systemTasks = program.LoadTargets();
-            program.LoadSubsystems();
-            program.LoadDependencies();
-            //get subToAddDep.SubsystemDependencyFunctions is equal to accepted list else fail test
 
-
-            //get subToAddDep.DependentSubsystems is equal to accepted list else fail
-
-            Assert.Inconclusive("Not Implemented");
-
-
-        }
         /// <summary>
         /// Test to verify that the correct Constraints are created
         /// </summary>
-        [TestMethod]
-        public void TestConstraints()
+        [Test]
+        public void LoadConstraintsUnitTest()
         {
             Program program = new Program();
             program.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
@@ -73,13 +50,15 @@ namespace HSFMainUnitTest
 
             Stack<Task> systemTasks = program.LoadTargets();
             program.LoadSubsystems();
-            Assert.Inconclusive("Not Implemented");
+            Assert.AreEqual("power",program.ConstraintsList[0].Name);
+            Assert.AreEqual("ssdr", program.ConstraintsList[1].Name);
+
         }
         /// <summary>
         /// Test to make sure the correct number of schedules are generated
         /// </summary>
-        [TestMethod]
-        public void TestScheduleCount()
+        [Test]
+        public void ScheduleCountUnitTest()
         {
             string simulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
             string targetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
@@ -102,8 +81,8 @@ namespace HSFMainUnitTest
         /// <summary>
         /// Test to make sure that the maximum schedule score is generated
         /// </summary>
-        [TestMethod]
-        public void TestScheduleScore()
+        [Test]
+        public void ScheduleScoreUnitTest()
         {
             string simulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
             string targetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
@@ -127,8 +106,8 @@ namespace HSFMainUnitTest
 
         }
         //TODO: InitInput
-        [TestMethod]
-        public void TestInitInput_NonAeolus()
+        [Test]
+        public void InitInput_NonAeolus()
         {
             //if non-null files are 
             string simulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
@@ -153,8 +132,8 @@ namespace HSFMainUnitTest
             Assert.AreEqual(expected_modpath, actual_modpath);
 
         }
-        [TestMethod]
-        public void TestInitInput_Aeolus()
+        [Test]
+        public void InitInput_Aeolus()
         {
             //if non-null files are 
 
@@ -180,8 +159,8 @@ namespace HSFMainUnitTest
 
         }
         
-        [TestMethod]
-        public void TestInitOutput() // really unsure of this implementation
+        [Test]
+        public void InitOutputUnitTest() // really unsure of this implementation
         {
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-1", DateTime.Now);
             string expected = "C:\\HorizonLog\\";
@@ -193,8 +172,8 @@ namespace HSFMainUnitTest
             Assert.AreEqual(expected, actual);
 
         }
-        [TestMethod]
-        public void TestLoadSubsystem()
+        [Test]
+        public void LoadSubsystemUnitTest()
         {
             //Start Actual method call
             Program programAct = new Program();
@@ -286,8 +265,8 @@ namespace HSFMainUnitTest
             //Assert.AreEqual(programExp.SubList, programAct.SubList);
 
         }
-        [TestMethod]
-        public void LoadDependenciesTest()
+        [Test]
+        public void LoadDependenciesUnitTest()
         {
             //Start Actual method call
             Program programAct = new Program();

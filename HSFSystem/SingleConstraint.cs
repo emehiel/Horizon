@@ -41,7 +41,7 @@ namespace HSFSystem
         public override bool Accepts(SystemState state) //fix this to be a dependency function
         {
             HSFProfile<T> prof = state.GetProfile(_key);
-            
+            //TODO try catch
             switch (Type)
             {
                 case ConstraintType.FAIL_IF_HIGHER:

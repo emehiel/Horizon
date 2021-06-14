@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using System.Xml;
 using Utilities;
 using HSFUniverse;
@@ -14,17 +14,45 @@ using Horizon;
 
 namespace HSFSchedulerUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class AccessUnitTest
     {
-        [TestMethod]
+        [Test]
         public void PregenAccessUnitTest()
         {
-           
-            Assert.Inconclusive("Not Implemented");
+            //KInda Tested this already?
+            Program programAct = new Program();
+            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml";
+            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler_access.xml";
+            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub.xml";
+
+            Stack<Task> systemTasks = programAct.LoadTargets();
+            try
+            {
+                programAct.LoadSubsystems();
+            }
+            catch
+            {
+                programAct.log.Info("LoadSubsystems Failed the Unit test");
+            }
+            try
+            {
+                programAct.LoadDependencies();
+            }
+            catch
+            {
+                programAct.log.Info("LoadDepenedencies Failed the Unit test");
+            }
+
+            SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
+
+            Stack<Access> pregenAccess = Access.pregenerateAccessesByAsset(simSystem, systemTasks, 0, 1, 1);
+            
+
+
         }
 
-        [TestMethod]
+        [Test]
         public void getCurrentAccessesUnitTest()
         {
             Program programAct = new Program();
@@ -72,19 +100,18 @@ namespace HSFSchedulerUnitTest
 
 
 
-            //Assert.AreEqual(ExpTask3,Task3);
+            //Asserts failed when comparing objects so ToString compares the imporant data
             Assert.AreEqual( ExpTask3.ToString(), Task3.ToString());
             Assert.AreEqual(ExpTask2.ToString(), Task2.ToString());
             Assert.AreEqual(ExpTask1.ToString(), Task1.ToString());
             Assert.AreEqual(ExpTask0.ToString(), Task0.ToString());
 
         }
-        [TestMethod]
+        [Test]
         public void getCurrentAccessesForAssetUnitTest()
         {
             Assert.Inconclusive("Not Implemented");
         }
-
     }
 }
 

@@ -1,14 +1,14 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using MissionElements;
 using Utilities;
 
 namespace MissionElementsUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class EventUnitTest
     {
-        [TestMethod]
+        [Test]
         public void Constructor()
         {
             SystemState state = new SystemState();

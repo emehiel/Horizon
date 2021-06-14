@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using System;
 
 namespace HSFSystemUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class AccessUnitTest
     {
-        [TestMethod]
+        [Test]
         public void getCurrentAccessesForAssetUnitTest()
         {
             Assert.Inconclusive("Not Implemented");

@@ -31,6 +31,7 @@ namespace Horizon
 
         //Create singleton dependency dictionary
         Dependency dependencies = Dependency.Instance;
+        public Dependency _dependencies = Dependency.Instance;
 
         // Initialize List to hold assets and subsystem nodes
         public List<Asset> AssetList = new List<Asset>();
@@ -285,6 +286,7 @@ namespace Horizon
                 _subsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
                 subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.GetDependencyFunc(depFunc.Value));
             }
+            _dependencies = dependencies;
             log.Info("Dependencies Loaded");
         }
         public void CreateSchedules(Stack<Task> systemTasks)

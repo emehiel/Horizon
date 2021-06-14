@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using System;
 
 namespace HSFSystemUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class SubsystemUnitTest
     {
-        [TestMethod]
+        [Test]
         public void CanPerform()
         {
             Assert.Inconclusive("Not implemented");

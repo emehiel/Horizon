@@ -1,5 +1,5 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using HSFScheduler;
 using System.Xml;
 using System.Linq;
@@ -15,10 +15,10 @@ using Horizon;
 
 namespace HSFSchedulerUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class SchedulerUnitTest
     {
-        [TestMethod]
+        [Test]
         public void GenerateSchedulesUnitTest()
         {
 
@@ -77,7 +77,7 @@ namespace HSFSchedulerUnitTest
 
             // check if equal means reference
         }
-        [TestMethod]
+        [Test]
         public void cropSchedulesUnitTest()
         {
             Program programAct = new Program();
@@ -124,63 +124,22 @@ namespace HSFSchedulerUnitTest
 
 
             //TEST SCHED COUNT
-            int schedCountExp = 2;
+            int schedCountExp = 8;
             double schedCountAct = programAct.schedules.Count;
             Assert.AreEqual(schedCountExp, schedCountAct);
 
             //TEST SCHED SCORE & SORT
-            //Expect 2 schedules, [0] with score of 3 [max possible] and [1] with score of 0
-            int diffExp = 3;
+            //Expect 8 schedules, [0] with score of 3 [max possible] and [1] with score of 2
+            int diffExp = 1;
             double diffAct = programAct.schedules[0].ScheduleValue - programAct.schedules[1].ScheduleValue;
             Assert.AreEqual(diffExp, diffAct);
 
-            double emptySchedEventCount = programAct.schedules[1].AllStates.Events.Count();
+            double emptySchedEventCount = programAct.schedules[7].AllStates.Events.Count();
             Assert.AreEqual(0, emptySchedEventCount);
 
         }
-        [TestMethod]
-        public void generateExhaustiveSystemSchedulesUnitTest()
-        {
-            Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_crop.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler - Copy.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_DummySub.xml";
-            XmlNode evaluatorNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
-            Stack<Task> systemTasks = programAct.LoadTargets();
 
-            SystemState InitialSysState = new SystemState();
-
-            try
-            {
-                programAct.LoadSubsystems();
-            }
-            catch
-            {
-                programAct.log.Info("LoadSubsystems Failed the Unit test");
-            }
-            try
-            {
-                programAct.LoadDependencies();
-            }
-            catch
-            {
-                programAct.log.Info("LoadDepenedencies Failed the Unit test");
-            }
-
-            
-            //Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evaluatorNode, programAct.dependencies);
-            //Scheduler scheduler = new Scheduler(schedEvaluator);
-
-            //SystemSchedule emptySchedule = new SystemSchedule(initialStateList);
-            //List<SystemSchedule> systemSchedules = new List<SystemSchedule>();
-            //systemSchedules.Add(emptySchedule);
-            //Stack<Access> preGeneratedAccesses = new Stack<Access>();
-            //Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
-
-            //preGeneratedAccesses = Access.pregenerateAccessesByAsset(system, tasks, _startTime, _endTime, _stepLength);
-            //scheduleCombos = GenerateExhaustiveSystemSchedules(preGeneratedAccesses, system, currentTime);
-        }
-        [TestMethod]
+        [Test]
         public void generateSchedulesUnitTest_NoPregen()
         {
             //Tests the same generate Schedules (main scheduler loop) but if access cannot be pre-generated
@@ -221,28 +180,25 @@ namespace HSFSchedulerUnitTest
             Assert.AreEqual(diffExp, diffAct);
 
             //TEST EVENTS SCHEDULED
-            //Task target0 =  programAct.schedules[0].AllStates.Events.Peek().Tasks[programAct.AssetList[0]];
-            //Task highestValTargetExp = systemTasks[0];
 
-            //Assert.AreEqual(highestValTargetExp, highestValTargetAct);
             Task target3 = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
             Task target2 = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
             Task target11 = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
             Task target0 = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
-            //var vals = programAct.AssetList;
+
             Task task3 = systemTasks.Pop();
             Task task2 = systemTasks.Pop();
             Task task11 = systemTasks.Pop();
             Task task1 = systemTasks.Pop();
             Task task0 = systemTasks.Pop();
 
-            Assert.AreSame(target0, task0);
-            Assert.AreNotEqual(target11, task11);
+            Assert.AreEqual(target0, task0);
+            Assert.AreEqual(target11, task11);
             Assert.AreEqual(target2, task2);
             Assert.AreEqual(target3, task3);
 
         }
-        [TestMethod]
+        [Test]
         public void cropSchedulesUnitTest_NoPregen()
         {
             Program programAct = new Program();
@@ -289,22 +245,50 @@ namespace HSFSchedulerUnitTest
 
 
             //TEST SCHED COUNT
-            int schedCountExp = 2;
+            int schedCountExp = 8;
             double schedCountAct = programAct.schedules.Count;
             Assert.AreEqual(schedCountExp, schedCountAct);
 
             //TEST SCHED SCORE & SORT
             //Expect 2 schedules, [0] with score of 3 [max possible] and [1] with score of 0
-            int diffExp = 3;
+            int diffExp = 1;
             double diffAct = programAct.schedules[0].ScheduleValue - programAct.schedules[1].ScheduleValue;
             Assert.AreEqual(diffExp, diffAct);
 
-            double emptySchedEventCount = programAct.schedules[1].AllStates.Events.Count();
+            double emptySchedEventCount = programAct.schedules[7].AllStates.Events.Count();
             Assert.AreEqual(0, emptySchedEventCount);
         }
-        [TestMethod]
+        [Test]
         public void EvaluatorFactoryUnitTest()
         {
+            Program programAct = new Program();
+            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler.xml";
+            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
+            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml";
+
+
+            Stack<Task> systemTasks = programAct.LoadTargets();
+            try
+            {
+                programAct.LoadSubsystems();
+            }
+            catch
+            {
+                programAct.log.Info("LoadSubsystems Failed the Unit test");
+            }
+            try
+            {
+                programAct.LoadDependencies();
+            }
+            catch
+            {
+                programAct.log.Info("LoadDepenedencies Failed the Unit test");
+            }
+
+            XmlNode evaluatorNode = null;
+            Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evaluatorNode, programAct._dependencies);
+            double ExpDepCount = 9;
+            string ActDepCount = schedEvaluator.ToString();
             Assert.Inconclusive("Not Implemented");
         }
     }
@@ -312,7 +296,7 @@ namespace HSFSchedulerUnitTest
 
 
 
-//JUNK
+// From Prev Students
 
 //    // Get the input filenames
 //    //string simulationInputFilePath = args[1];

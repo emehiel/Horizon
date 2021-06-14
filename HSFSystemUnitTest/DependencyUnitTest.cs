@@ -1,29 +1,30 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using System;
 
 namespace HSFSystemUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class DepenedencyUnitTest
     {
-        [TestMethod]
+        [Test]
         public void DependencyConstructorUnitTest()
         {
+
             Assert.Inconclusive("Not implemented");
         }
 
-        [TestMethod]
+        [Test]
         public void AddUnitTest()
         {
             Assert.Inconclusive("Not implemented");
         }
 
-        [TestMethod]
+        [Test]
         public void AppendUnitTest()
         {
             Assert.Inconclusive("Not implemented");
         }
-        [TestMethod]
+        [Test]
         public void GetDependencyUnitTest()
         {
             Assert.Inconclusive("Not implemented");

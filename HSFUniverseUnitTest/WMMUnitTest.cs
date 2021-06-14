@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using System;
 
 namespace UniverseUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class WMMUnitTest
     {
-        [TestMethod]
+        [Test]
         public void WMMTest()
         {
             Assert.Inconclusive("Not Implemented");

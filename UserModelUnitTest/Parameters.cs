@@ -1,12 +1,12 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace UserModelUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class Parameters
     {
-        [TestMethod]
+        [Test]
         public void LoadSchedParameters()
         {
             Assert.Inconclusive();

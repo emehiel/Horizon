@@ -1,6 +1,6 @@
 ﻿using System;
 using Horizon;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using System.Xml;
 using System.Linq;
@@ -13,10 +13,10 @@ using HSFUniverse;
 
 namespace UniverseUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class SpaceEnvironmentUnitTest
     {
-        [TestMethod]
+        [Test]
         public void CreateUniverseUnitTest()
         {
             Program programAct = new Program();
@@ -42,7 +42,7 @@ namespace UniverseUnitTest
 
 
         }
-        [TestMethod]
+        [Test]
 
         public void GetObjectUnitTest()
         {

@@ -1,12 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 using System;
 
 namespace UniverseUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class UniverseFactoryUnitTest
     {
-        [TestMethod]
+        [Test]
         public void UniverseFactoryTest()
         {
             Assert.Inconclusive("Not Implemented");

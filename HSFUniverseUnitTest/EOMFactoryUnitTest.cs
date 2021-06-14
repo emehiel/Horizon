@@ -1,6 +1,6 @@
 ﻿using System;
 using Horizon;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using System.Xml;
 using System.Linq;
@@ -13,10 +13,10 @@ using HSFUniverse;
 
 namespace UniverseUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class EOMFactoryUnitTest
     {
-        [TestMethod]
+        [Test]
         public void GetEomClass()
         {
 

@@ -5,19 +5,22 @@ using System.Collections.Generic;
 using System.Xml;
 using UserModel;
 using HSFSystem;
+using System.IO;
+using System;
 
 namespace HSFSystemUnitTest
 {
     [TestFixture]
     public class ConstraintFactoryUnitTest
     {
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
         [Test]
         public void GetConstraintUnitTest()
         {
-            string ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_Constraint.xml";
+            string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint.xml");
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             XmlNode modelChildNode = modelInputXMLNode.FirstChild;
-            string SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
+            string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.XML");
             var evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
             Asset asset = new Asset(modelChildNode);
             Dictionary<string, Subsystem> _subsystemMap = new Dictionary<string, Subsystem>();
@@ -44,7 +47,7 @@ namespace HSFSystemUnitTest
         public void GetConstraintNullSubUnitTest()
         {
 // an exception should be thrown because the subsystemmap contains no subs,  if an exception is caught, the test passes
-            string ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_Constraint_NullSub.xml";
+            string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint_NullSub.xml");
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             XmlNode modelChildNode = modelInputXMLNode.FirstChild;
 

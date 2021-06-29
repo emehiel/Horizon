@@ -11,19 +11,21 @@ using Utilities;
 using MissionElements;
 using HSFUniverse;
 using Horizon;
+using System.IO;
 
 namespace HSFSchedulerUnitTest
 {
     [TestFixture]
     public class CheckerUnitTest
     {
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
         [Test]
         public void CheckScheduleUnitTest()
         {
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub_crop.xml";
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub_crop.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
             try
@@ -79,9 +81,9 @@ namespace HSFSchedulerUnitTest
         {
             {
                 Program programAct = new Program();
-                programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml";
-                programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler.xml";
-                programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub_crop.xml";
+                programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+                programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+                programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub_crop.xml");
 
                 Stack<Task> systemTasks = programAct.LoadTargets();
                 try

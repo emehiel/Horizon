@@ -21,8 +21,8 @@ namespace UniverseUnitTest
         {
             Program programAct = new Program();
             programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler - Copy.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_DummySub - Copy.xml";
+            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler.xml";
+            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub.xml";
 
             Domain SystemUniverse = new SpaceEnvironment();
             var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);

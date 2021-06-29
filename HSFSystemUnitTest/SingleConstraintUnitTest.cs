@@ -6,17 +6,19 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 using UserModel;
+using System.IO;
 
 namespace HSFSystemUnitTest
 {
     [TestFixture]
     public class SingleConstraintUnitTest
     {
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
         [Test]
         public void ConstructorUnitTest()
         {
-            string ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_Constraint.xml";
-            string SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
+            string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint.xml");
+            string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.XML");
 
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             var evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
@@ -47,8 +49,8 @@ namespace HSFSystemUnitTest
         [Test]
         public void ConstructorNullUnitTest()
         {
-            string ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_Constraint.xml";
-            string SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
+            string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint.xml");
+            string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.XML");
 
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             var evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
@@ -80,8 +82,8 @@ namespace HSFSystemUnitTest
         [Test]
         public void AcceptsUnitTest()
         {
-            string ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_Constraint.xml";
-            string SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
+            string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint.xml");
+            string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.XML");
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             var evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
             XmlNode modelChildNode = modelInputXMLNode.FirstChild;

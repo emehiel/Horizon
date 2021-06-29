@@ -11,20 +11,22 @@ using UserModel;
 using HSFSystem;
 using HSFSubsystem;
 using Horizon;
+using System.IO;
 
 namespace HSFSchedulerUnitTest
 {
     [TestFixture]
     public class AccessUnitTest
     {
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
         [Test]
         public void PregenAccessUnitTest()
         {
             //KInda Tested this already?
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler_access.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub.xml";
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler_access.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
             try
@@ -56,9 +58,9 @@ namespace HSFSchedulerUnitTest
         public void getCurrentAccessesUnitTest()
         {
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler_access.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub.xml";
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler_access.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
             try

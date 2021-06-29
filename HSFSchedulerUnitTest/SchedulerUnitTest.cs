@@ -11,21 +11,23 @@ using Utilities;
 using MissionElements;
 using HSFUniverse;
 using Horizon;
-
+using System.IO;
 
 namespace HSFSchedulerUnitTest
 {
     [TestFixture]
     public class SchedulerUnitTest
     {
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+
         [Test]
         public void GenerateSchedulesUnitTest()
         {
 
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub.xml";
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
             try
@@ -48,7 +50,7 @@ namespace HSFSchedulerUnitTest
             programAct.CreateSchedules(systemTasks);
             programAct.EvaluateSchedules();
             //TEST SCHED COUNT
-            int schedCountExp = 24;
+            double schedCountExp = 24;
             double schedCountAct = programAct.schedules.Count;
             Assert.AreEqual(schedCountExp, schedCountAct);
 
@@ -81,9 +83,9 @@ namespace HSFSchedulerUnitTest
         public void cropSchedulesUnitTest()
         {
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub_crop.xml";
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub_crop.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
             try
@@ -144,9 +146,9 @@ namespace HSFSchedulerUnitTest
         {
             //Tests the same generate Schedules (main scheduler loop) but if access cannot be pre-generated
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub_DynamicECI.xml";
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub_DynamicECI.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
             try
@@ -202,9 +204,9 @@ namespace HSFSchedulerUnitTest
         public void cropSchedulesUnitTest_NoPregen()
         {
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_TestSub_crop_DynamicECI.xml";
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub_crop_DynamicECI.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
             try
@@ -262,9 +264,9 @@ namespace HSFSchedulerUnitTest
         public void EvaluatorFactoryUnitTest()
         {
             Program programAct = new Program();
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml";
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
 
 
             Stack<Task> systemTasks = programAct.LoadTargets();
@@ -303,9 +305,9 @@ namespace HSFSchedulerUnitTest
 //    //string targetDeckFilePath = args[2];
 //    //string modelInputFileName = args[3];
 //    //string outputPath = args[4];
-//    var simulationInputFilePath = @"..\..\..\SimulationInput.XML"; // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML";
-//    var targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-//    var modelInputFilePath = @"..\..\..\Model_Static.xml";
+//    var simulationInputFilePath = Path.Combine(baselocation, @"SimulationInput.XML"); // @"C:\Users\admin\Documents\Visual Studio 2015\Projects\Horizon-Simulation-Framework\Horizon_v2_3\io\SimulationInput.XML");
+//    var targetDeckFilePath = Path.Combine(baselocation, @"v2.2-300targets.xml");
+//    var modelInputFilePath = Path.Combine(baselocation, @"Model_Static.xml");
 //    // Initialize critical section for dependencies ??Morgan Doesn't know what this does
 //    // InitializeCriticalSection(&horizon::sub::dep::NodeDependencies::cs);
 
@@ -425,7 +427,7 @@ namespace HSFSchedulerUnitTest
 //                            ICNodes.Add(ICorDepNode);
 //                        if (ICorDepNode.Name.Equals("DEPENDENCY"))
 //                        {
-//                            string depSubName = "", depFunc = "";
+//                            string depSubName = "", depFunc = "");
 //                            if (ICorDepNode.Attributes["subsystemName"] != null)
 //                                depSubName = ICorDepNode.Attributes["subsystemName"].Value.ToString();
 //                            else

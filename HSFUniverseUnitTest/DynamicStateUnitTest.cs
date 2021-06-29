@@ -10,19 +10,21 @@ using System.Collections.Generic;
 using Utilities;
 using MissionElements;
 using HSFUniverse;
+using System.IO;
 
 namespace UniverseUnitTest
 {
     [TestFixture]
     public class DynamicStateUnitTest
     {
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
         [Test]
-        public void ConstructDynamicState()
+        public void ConstructDynamicState() //TODO:whats going on here jack
         {
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler - Copy.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_DummySub - Copy.xml";
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
             Domain SystemUniverse = new SpaceEnvironment();
             var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);

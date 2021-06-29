@@ -10,12 +10,16 @@ using HSFSystem;
 using HSFScheduler;
 using UserModel;
 using HSFMainUnitTest;
+using System.IO;
 
 namespace HSFMainUnitTest
 {
     [TestFixture]
     public class ProgramUnitTest
     {
+        // this string is for finding the path of the highest folder for Horizon on whatever is running the tests
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+
         /// <summary>
         /// Test to make sure the correct number of targets are created
         /// </summary>
@@ -23,9 +27,9 @@ namespace HSFMainUnitTest
         public void LoadTargetsUnitTest()
         {
             Program TestProgram = new Program();
-            TestProgram.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
-            TestProgram.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-            TestProgram.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
+            TestProgram.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            TestProgram.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            TestProgram.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
 
             
             Stack<Task> systemTasks = TestProgram.LoadTargets();
@@ -44,9 +48,9 @@ namespace HSFMainUnitTest
         public void LoadConstraintsUnitTest()
         {
             Program program = new Program();
-            program.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
-            program.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-            program.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
+            program.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            program.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            program.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
 
             Stack<Task> systemTasks = program.LoadTargets();
             program.LoadSubsystems();
@@ -60,9 +64,9 @@ namespace HSFMainUnitTest
         [Test]
         public void ScheduleCountUnitTest()
         {
-            string simulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
-            string targetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-            string modelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
+            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
             //this is a test - declan comit
 
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
@@ -84,9 +88,9 @@ namespace HSFMainUnitTest
         [Test]
         public void ScheduleScoreUnitTest()
         {
-            string simulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
-            string targetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-            string modelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
+            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
             //this is a test - declan comit
 
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
@@ -110,9 +114,9 @@ namespace HSFMainUnitTest
         public void InitInput_NonAeolus()
         {
             //if non-null files are 
-            string simulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
-            string targetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-            string modelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
+            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
 
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
 
@@ -137,7 +141,7 @@ namespace HSFMainUnitTest
         {
             //if non-null files are 
 
-            string simulationInputFilePath = @"..\..\..\SimulationInput.XML";
+            string simulationInputFilePath = @"..\..\..\SimulationInput.xml";
             string targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
             string modelInputFilePath = @"..\..\..\DSAC_Static.xml";
 
@@ -175,13 +179,14 @@ namespace HSFMainUnitTest
         [Test]
         public void LoadSubsystemUnitTest()
         {
-            //Start Actual method call
-            Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_Simple.xml";
 
-            var evaluatorNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
+
+            Program programAct = new Program();
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Simple.xml");
+            //programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Simple.xml");
+
             programAct.LoadTargets();
             programAct.LoadSubsystems();
             var subsystemMapAct = programAct.SubsystemMap;
@@ -212,9 +217,9 @@ namespace HSFMainUnitTest
             // Start Expected Output construction
             // Now Construct without For loop in LoadSub()
             //Program programExp = new Program();
-            //programExp.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.XML";
-            //programExp.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-            //programExp.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_Simple.xml";
+            //programExp.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            //programExp.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            //programExp.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Simple.xml");
 
             //var modelInputXMLNode = XmlParser.GetModelNode(programExp.ModelInputFilePath);
             //Dependency dependencies = Dependency.Instance;
@@ -270,9 +275,9 @@ namespace HSFMainUnitTest
         {
             //Start Actual method call
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
 
             //var evaluatorNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
             programAct.LoadTargets();
@@ -287,9 +292,9 @@ namespace HSFMainUnitTest
         //public void CreateSchedulesTest()
         //{
         //    Program programAct = new Program();
-        //    programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.xml";
-        //    programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets.xml";
-        //    programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel.xml";
+        //    programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+        //    programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+        //    programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
 
         //    Stack<Task> systemTasks = programAct.LoadTargets();
         //    programAct.LoadSubsystems();

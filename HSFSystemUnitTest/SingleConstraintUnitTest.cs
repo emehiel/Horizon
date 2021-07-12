@@ -82,15 +82,16 @@ namespace HSFSystemUnitTest
         [Test]
         public void AcceptsUnitTest()
         {
-            string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint.xml");
+            string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ManyConstraints.xml");
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.XML");
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             var evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
             XmlNode modelChildNode = modelInputXMLNode.FirstChild;
+            List<XmlNode> ICNodes = new List<XmlNode>();
             Asset asset = new Asset(modelChildNode);
             Dictionary<string, Subsystem> _subsystemMap = new Dictionary<string, Subsystem>();
             List<Constraint> _constraintsList = new List<Constraint>();
-            XmlNode ConstraintNode = null;
+            List<XmlNode> ConstraintNode = new List<XmlNode>();
             SystemState InitialSysState = new SystemState();
 
             foreach (XmlNode modelChild2Node in modelChildNode.ChildNodes)
@@ -98,20 +99,47 @@ namespace HSFSystemUnitTest
                 if (modelChild2Node.Name.Equals("SUBSYSTEM"))
                 {
                     string subName = SubsystemFactory.GetSubsystem(modelChild2Node, null, asset, _subsystemMap);
+                    foreach (XmlNode modelChild3Node in modelChild2Node.ChildNodes)
+                    {
+                        ICNodes.Add(modelChild3Node);
+                    }
                 }
                 if (modelChild2Node.Name.Equals("CONSTRAINT"))
                 {
                     _constraintsList.Add(ConstraintFactory.GetConstraint(modelChild2Node, _subsystemMap, asset));
-                    ConstraintNode = modelChild2Node;
+                    ConstraintNode.Add(modelChild2Node);
                 }
             }
-            SingleConstraint<double> con1 = new SingleConstraint<double>(ConstraintNode, _subsystemMap["asset1.power"]);
-            SystemState nothing = new SystemState();
-            SystemState stillnothing = new SystemState(nothing);
-            bool t = con1.Accepts(stillnothing);
-            Assert.IsTrue(t);
+            SingleConstraint<double> HigherA = new SingleConstraint<double>(ConstraintNode[0], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> HigherB = new SingleConstraint<double>(ConstraintNode[1], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> EqualA = new SingleConstraint<double>(ConstraintNode[2], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> EqualB = new SingleConstraint<double>(ConstraintNode[3], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> NotEqualA = new SingleConstraint<double>(ConstraintNode[4], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> NotEqualB = new SingleConstraint<double>(ConstraintNode[5], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> HigherEqA = new SingleConstraint<double>(ConstraintNode[6], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> HigherEqB = new SingleConstraint<double>(ConstraintNode[7], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> LowerEqA = new SingleConstraint<double>(ConstraintNode[8], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> LowerEqB = new SingleConstraint<double>(ConstraintNode[9], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> LowerA = new SingleConstraint<double>(ConstraintNode[10], _subsystemMap["asset1.power"]);
+            SingleConstraint<double> LowerB = new SingleConstraint<double>(ConstraintNode[11], _subsystemMap["asset1.power"]);
 
-            //Assert.Inconclusive("Not implemented");
+
+            InitialSysState.Add(SystemState.setInitialSystemState(ICNodes,asset));
+
+            
+            Assert.IsTrue(HigherA.Accepts(InitialSysState));
+            Assert.IsFalse(HigherB.Accepts(InitialSysState));
+            Assert.IsTrue(EqualA.Accepts(InitialSysState));
+            Assert.IsFalse(EqualB.Accepts(InitialSysState));
+            Assert.IsTrue(NotEqualA.Accepts(InitialSysState));
+            Assert.IsFalse(NotEqualB.Accepts(InitialSysState));
+            Assert.IsTrue(HigherEqA.Accepts(InitialSysState));
+            Assert.IsFalse(HigherEqB.Accepts(InitialSysState)); //bugs? passes with equal vals but should fail
+            Assert.IsTrue(LowerEqA.Accepts(InitialSysState));
+            Assert.IsFalse(LowerEqB.Accepts(InitialSysState)); //bugs? passes with equal vals but should fail
+            Assert.IsTrue(LowerA.Accepts(InitialSysState));
+            Assert.IsFalse(LowerB.Accepts(InitialSysState));
+
         }
     }
 }

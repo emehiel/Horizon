@@ -86,7 +86,7 @@ namespace HSFMainUnitTest
         /// Test to make sure that the maximum schedule score is generated
         /// </summary>
         [Test]
-        public void ScheduleScoreUnitTest()
+        public void ScheduleScoreUnitTest() //how did this break??????
         {
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");

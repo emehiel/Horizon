@@ -80,9 +80,21 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Horizon\Horizon.csproj">
+      <Project>{6E6D45BA-6E13-4117-839E-469A59EEF191}</Project>
+      <Name>Horizon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFScheduler\HSFScheduler.csproj">
+      <Project>{241171AB-18B2-45A0-848A-62B2EF751644}</Project>
+      <Name>HSFScheduler</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HSFSystem\HSFSystem.csproj">
       <Project>{72FA2884-1D92-4088-9FAC-60564F9971F8}</Project>
       <Name>HSFSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFUniverse\HSFUniverse.csproj">
+      <Project>{23695C61-1557-4BB3-AC04-98DB5701872A}</Project>
+      <Name>HSFUniverse</Name>
     </ProjectReference>
     <ProjectReference Include="..\MissionElements\MissionElements.csproj">
       <Project>{982DCCE0-925A-4139-9BE7-7A99542D6240}</Project>

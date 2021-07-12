@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using HSFSystem;
+using NUnit.Framework;
 using System;
 
 namespace HSFSystemUnitTest
@@ -10,12 +11,17 @@ namespace HSFSystemUnitTest
         public void DependencyConstructorUnitTest()
         {
 
+            Dependency D1 = Dependency.Instance;
+            //Assert.AreEqual() not sure how to test this
             Assert.Inconclusive("Not implemented");
         }
 
         [Test]
         public void AddUnitTest()
         {
+
+
+
             Assert.Inconclusive("Not implemented");
         }
 

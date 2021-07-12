@@ -576,7 +576,7 @@ namespace MissionElements
         public static SystemState setInitialSystemState(List<XmlNode> ICNodes, Asset asset)
         {
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
-            //int n = modelInputXMLNode.ChildNode("ASSET");
+
             SystemState state = new SystemState();
             foreach (XmlNode ICNode in ICNodes)
             {

@@ -14,6 +14,9 @@ namespace HSFSystemUnitTest
     public class ConstraintFactoryUnitTest
     {
         string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+        /// <summary>
+        /// 
+        /// </summary>
         [Test]
         public void GetConstraintUnitTest()
         {
@@ -43,10 +46,14 @@ namespace HSFSystemUnitTest
 
 
         }
+        /// <summary>
+        /// an exception should be thrown because the subsystemMap contains no subs,  
+        /// if the exception is thrown, the test passes
+        /// </summary>
         [Test]
         public void GetConstraintNullSubUnitTest()
         {
-// an exception should be thrown because the subsystemmap contains no subs,  if an exception is caught, the test passes
+
             string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint_NullSub.xml");
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             XmlNode modelChildNode = modelInputXMLNode.FirstChild;

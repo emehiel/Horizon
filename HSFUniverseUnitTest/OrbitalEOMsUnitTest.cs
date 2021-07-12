@@ -38,7 +38,8 @@ namespace UniverseUnitTest
             {
                 programAct.log.Info("AssetDynamicState.Eoms.SetEnvironment(SystemUniverse) Failed the Unit test");
             }
-            Assert.Inconclusive();
+            OrbitalEOMS orb = new OrbitalEOMS();
+
 
 
         }

@@ -261,7 +261,7 @@ namespace HSFSchedulerUnitTest
             Assert.AreEqual(0, emptySchedEventCount);
         }
         [Test]
-        public void EvaluatorFactoryUnitTest()
+        public void EvaluatorFactoryUnitTest() //why is this here? not a method in scheduler
         {
             Program programAct = new Program();
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
@@ -292,6 +292,60 @@ namespace HSFSchedulerUnitTest
             double ExpDepCount = 9;
             string ActDepCount = schedEvaluator.ToString();
             Assert.Inconclusive("Not Implemented");
+        }
+        [Test]
+        public void PreGenGenerateExhaustiveSystemSchedulesUnitTest()
+        {
+            Program programAct = new Program();
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler_access.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
+            Stack<Task> systemTasks = new Stack<Task>();
+            try
+            {
+                systemTasks = programAct.LoadTargets();
+            }
+            catch
+            {
+                programAct.log.Info("LoadTargets Failed the Unit test");
+            }
+
+            try
+            {
+                programAct.LoadSubsystems();
+            }
+            catch
+            {
+                programAct.log.Info("LoadSubsystems Failed the Unit test");
+            }
+            try
+            {
+                programAct.LoadDependencies();
+            }
+            catch
+            {
+                programAct.log.Info("LoadDepenedencies Failed the Unit test");
+            }
+            SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
+            Stack<Access> preGeneratedAccesses = Access.pregenerateAccessesByAsset(simSystem, systemTasks, 0, 1, 1);
+            Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
+            scheduleCombos = Scheduler.GenerateExhaustiveSystemSchedules(preGeneratedAccesses, simSystem, 0);
+
+            
+            string actAccess1 = scheduleCombos.Pop().Pop().ToString();
+            string actAccess2 = scheduleCombos.Pop().Pop().ToString();
+            string actAccess3 = scheduleCombos.Pop().Pop().ToString();
+            string actAccess4 = scheduleCombos.Pop().Pop().ToString();
+
+            string expAccess1 = "asset1_to_target3";
+            string expAccess2 = "asset1_to_target2";
+            string expAccess3 = "asset1_to_target1";
+            string expAccess4 = "asset1_to_target0";
+
+            Assert.AreEqual(expAccess1, actAccess1);
+            Assert.AreEqual(expAccess2, actAccess2);
+            Assert.AreEqual(expAccess3, actAccess3);
+            Assert.AreEqual(expAccess4, actAccess4);
         }
     }
 }

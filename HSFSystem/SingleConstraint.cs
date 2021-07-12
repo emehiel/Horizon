@@ -45,13 +45,13 @@ namespace HSFSystem
             switch (Type)
             {
                 case ConstraintType.FAIL_IF_HIGHER:
-                    return ((dynamic)prof.Max() < _value);
-                case ConstraintType.FAIL_IF_HIGHER_OR_EQUAL:
                     return ((dynamic)prof.Max() <= _value);
+                case ConstraintType.FAIL_IF_HIGHER_OR_EQUAL:
+                    return ((dynamic)prof.Max() < _value);
                 case ConstraintType.FAIL_IF_LOWER:
-                    return ((dynamic)prof.Max() > _value);
-                case ConstraintType.FAIL_IF_LOWER_OR_EQUAL:
                     return ((dynamic)prof.Max() >= _value);
+                case ConstraintType.FAIL_IF_LOWER_OR_EQUAL:
+                    return ((dynamic)prof.Max() > _value);
                 case ConstraintType.FAIL_IF_EQUAL:
                     return ((dynamic)prof.Max() != _value);
                 case ConstraintType.FAIL_IF_NOT_EQUAL:

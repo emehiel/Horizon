@@ -136,7 +136,7 @@ namespace HSFMainUnitTest
             Assert.AreEqual(expected_modpath, actual_modpath);
 
         }
-       
+       [Test]
         public void InitInput_Aeolus()
         {
             //if non-null files are 
@@ -163,7 +163,7 @@ namespace HSFMainUnitTest
 
         }
         
-        [Test]
+ 
         public void InitOutputUnitTest() // really unsure of this implementation
         {
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-1", DateTime.Now);

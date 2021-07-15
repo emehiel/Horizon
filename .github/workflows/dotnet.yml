@@ -19,8 +19,8 @@ jobs:
       run: nuget restore
     - name: Build
       run: dotnet build
-    #- name: Main Program Test
-      #run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFMainUnitTest\bin\Debug\HSFMainUnitTest.dll
+    - name: Main Program Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFMainUnitTest\bin\Debug\HSFMainUnitTest.dll
     - name: Scheduler Test
       run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFSchedulerUnitTest\bin\Debug\HSFSchedulerUnitTest.dll
     - name: System Test

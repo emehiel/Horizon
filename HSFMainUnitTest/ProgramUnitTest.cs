@@ -136,7 +136,7 @@ namespace HSFMainUnitTest
             Assert.AreEqual(expected_modpath, actual_modpath);
 
         }
-        [Test]
+       
         public void InitInput_Aeolus()
         {
             //if non-null files are 

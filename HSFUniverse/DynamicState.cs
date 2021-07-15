@@ -330,6 +330,10 @@ namespace HSFUniverse
 
             return csv.ToString();
         }
+        public IntegratorOptions getIntegratorOptions()
+        {
+            return _integratorOptions;
+        }
     }
     
     // Dynamic states type supported by HSF

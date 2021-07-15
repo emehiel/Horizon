@@ -23,7 +23,7 @@ namespace HSFSchedulerUnitTest
         [Test]
         public void GenerateSchedulesUnitTest()
         {
-
+            
             Program programAct = new Program();
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler.xml");
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
@@ -47,24 +47,33 @@ namespace HSFSchedulerUnitTest
                 programAct.log.Info("LoadDepenedencies Failed the Unit test");
             }
 
-            programAct.CreateSchedules(systemTasks);
-            programAct.EvaluateSchedules();
+            SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
+
+            XmlNode evalNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
+
+            Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evalNode, programAct._dependencies);
+            Scheduler scheduler = new Scheduler(schedEvaluator);
+            // keeping simEndTime from other tests. 
+            List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, programAct.InitialSysState);
+            schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
+            schedules.Reverse();
+
             //TEST SCHED COUNT
             double schedCountExp = 24;
-            double schedCountAct = programAct.schedules.Count;
+            double schedCountAct = schedules.Count;
             Assert.AreEqual(schedCountExp, schedCountAct);
 
             //TEST SCHED SCORE & SORT
             //Expect 24 schedules, [0] with score of 5 and [1-4] with score of 4
             int diffExp = 1;
-            double diffAct = programAct.schedules[0].ScheduleValue - programAct.schedules[1].ScheduleValue;
+            double diffAct = schedules[0].ScheduleValue - schedules[1].ScheduleValue;
             Assert.AreEqual(diffExp, diffAct);
 
             //Assert.AreEqual(highestValTargetExp, highestValTargetAct);
-            Task target3  = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
-            Task target2  = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
-            Task target11 = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
-            Task target0  = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target3  = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target2  = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target11 = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target0  = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
             //var vals = programAct.AssetList;
             Task task3  = systemTasks.Pop();
             Task task2  = systemTasks.Pop();
@@ -260,45 +269,13 @@ namespace HSFSchedulerUnitTest
             double emptySchedEventCount = programAct.schedules[7].AllStates.Events.Count();
             Assert.AreEqual(0, emptySchedEventCount);
         }
-        [Test]
-        public void EvaluatorFactoryUnitTest() //why is this here? not a method in scheduler
-        {
-            Program programAct = new Program();
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-
-
-            Stack<Task> systemTasks = programAct.LoadTargets();
-            try
-            {
-                programAct.LoadSubsystems();
-            }
-            catch
-            {
-                programAct.log.Info("LoadSubsystems Failed the Unit test");
-            }
-            try
-            {
-                programAct.LoadDependencies();
-            }
-            catch
-            {
-                programAct.log.Info("LoadDepenedencies Failed the Unit test");
-            }
-
-            XmlNode evaluatorNode = null;
-            Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evaluatorNode, programAct._dependencies);
-            double ExpDepCount = 9;
-            string ActDepCount = schedEvaluator.ToString();
-            Assert.Inconclusive("Not Implemented");
-        }
+        
         [Test]
         public void PreGenGenerateExhaustiveSystemSchedulesUnitTest()
         {
             Program programAct = new Program();
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler_access.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
             Stack<Task> systemTasks = new Stack<Task>();
             try
@@ -334,18 +311,13 @@ namespace HSFSchedulerUnitTest
             
             string actAccess1 = scheduleCombos.Pop().Pop().ToString();
             string actAccess2 = scheduleCombos.Pop().Pop().ToString();
-            string actAccess3 = scheduleCombos.Pop().Pop().ToString();
-            string actAccess4 = scheduleCombos.Pop().Pop().ToString();
+
 
             string expAccess1 = "asset1_to_target3";
             string expAccess2 = "asset1_to_target2";
-            string expAccess3 = "asset1_to_target1";
-            string expAccess4 = "asset1_to_target0";
 
             Assert.AreEqual(expAccess1, actAccess1);
             Assert.AreEqual(expAccess2, actAccess2);
-            Assert.AreEqual(expAccess3, actAccess3);
-            Assert.AreEqual(expAccess4, actAccess4);
         }
     }
 }

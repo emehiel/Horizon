@@ -24,7 +24,7 @@ namespace HSFSchedulerUnitTest
         {
             Program programAct = new Program();
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler_access.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
@@ -57,7 +57,7 @@ namespace HSFSchedulerUnitTest
         {
             Program programAct = new Program();
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler_access.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
@@ -119,7 +119,7 @@ namespace HSFSchedulerUnitTest
         {
             Program programAct = new Program();
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler_access.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
             Stack<Task> systemTasks = programAct.LoadTargets();
@@ -157,20 +157,15 @@ namespace HSFSchedulerUnitTest
 
             Access ExpTask3 = AccessAct.Pop();
             Access ExpTask2 = AccessAct.Pop();
-            Access ExpTask1 = AccessAct.Pop();
-            Access ExpTask0 = AccessAct.Pop();
-
-
 
             //Asserts failed when comparing objects so ToString compares the imporant data
             Assert.AreEqual(ExpTask3.ToString(), Task3.ToString());
             Assert.AreEqual(ExpTask2.ToString(), Task2.ToString());
-            Assert.AreEqual(ExpTask1.ToString(), Task1.ToString());
-            Assert.AreEqual(ExpTask0.ToString(), Task0.ToString());
-
         }
     }
 }
+
+
 /*
            XmlDocument scenarioDoc = new XmlDocument();
            scenarioDoc.Load("..\\..\\SimulationInput.xml");

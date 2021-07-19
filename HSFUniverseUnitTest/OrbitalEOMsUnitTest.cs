@@ -1,53 +1,38 @@
 ﻿using System;
 using Horizon;
 using NUnit.Framework;
-
 using System.Xml;
 using System.Linq;
 using UserModel;
 using System.Collections.Generic;
-
 using Utilities;
 using MissionElements;
 using HSFUniverse;
+using System.IO;
 
 namespace UniverseUnitTest
 {
     [TestFixture]
     public class OrbitalEOMsUnitTest
     {
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+
         [Test]
         public void OrbitalConstructorUnitTest()
         {
-            Program programAct = new Program();
-            programAct.SimulationInputFilePath = @"..\..\..\UnitTestInputs\UnitTestSimulationInput.xml";
-            programAct.TargetDeckFilePath = @"..\..\..\UnitTestInputs\UnitTestTargets_Scheduler - Copy.xml";
-            programAct.ModelInputFilePath = @"..\..\..\UnitTestInputs\UnitTestModel_DummySub - Copy.xml";
-
-            Domain SystemUniverse = new SpaceEnvironment();
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
-            var simInputXMLNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
-
-            Asset asset = new Asset(modelInputXMLNode.FirstChild);
-            programAct.AssetList.Add(asset);
-            try
-            {
-                asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
-            }
-            catch
-            {
-                programAct.log.Info("AssetDynamicState.Eoms.SetEnvironment(SystemUniverse) Failed the Unit test");
-            }
             OrbitalEOMS orb = new OrbitalEOMS();
+            Matrix<double> _A = new Matrix<double>(6);
+            _A[1, 4] = 1.0;
+            _A[2, 5] = 1.0;
+            _A[3, 6] = 1.0;
 
-
-
+            Assert.AreEqual(_A, orb.getA_UnitTestOnly());
         }
         [Test]
 
         public void MatrixUnitTest()
         {
-            Assert.Inconclusive();
+            //Matrix<double> actOutput = 
         }
     }
 }

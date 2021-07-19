@@ -59,7 +59,7 @@ namespace Horizon
         XmlNode evaluatorNode;
         Evaluator schedEvaluator;
         public List<SystemSchedule> schedules;
-        SystemClass simSystem { get; set; }
+        public SystemClass simSystem { get; set; }
 
         static int Main(string[] args)
         {
@@ -70,7 +70,6 @@ namespace Horizon
             program.InitInput(args);
             string outputPath = program.InitOutput();
             Stack<Task> systemTasks = program.LoadTargets();
-            Stack<Task> newTasks = new Stack<Task> (systemTasks);
             program.LoadSubsystems();
             program.LoadDependencies();
             program.CreateSchedules(systemTasks);

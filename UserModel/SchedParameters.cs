@@ -46,6 +46,10 @@ namespace UserModel
             else
                 return false;
         }
+        public static void changeInitStatus(bool input)
+        {
+            _isInitialized = input;
+        }
 
     }
 }

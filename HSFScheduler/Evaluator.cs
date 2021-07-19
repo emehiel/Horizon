@@ -9,7 +9,7 @@ namespace HSFScheduler
     public abstract class Evaluator
     {
         /// <summary>
-        /// Anstract class that analyzes the given schedule and assigns a value to it.
+        /// Abstract class that analyzes the given schedule and assigns a value to it.
         /// </summary>
         /// <param name="schedule"></param>
         /// <returns></returns>

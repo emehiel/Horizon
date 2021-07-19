@@ -47,14 +47,17 @@ namespace HSFSchedulerUnitTest
                 programAct.log.Info("LoadDepenedencies Failed the Unit test");
             }
 
-            SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
-
+            //something with the nunit test suite was leaving sim and sched parameters unchanged between tests and causing these tests to fail.
+            SimParameters.changeInitStatus(false);
+            SchedParameters.changeInitStatus(false);
             XmlNode evalNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
 
             Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evalNode, programAct._dependencies);
+           
+            programAct.simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
             Scheduler scheduler = new Scheduler(schedEvaluator);
-            // keeping simEndTime from other tests. 
-            List<SystemSchedule> schedules = scheduler.GenerateSchedules(simSystem, systemTasks, programAct.InitialSysState);
+            
+            List<SystemSchedule> schedules = scheduler.GenerateSchedules(programAct.simSystem, systemTasks, programAct.InitialSysState);
             schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
             schedules.Reverse();
 
@@ -180,7 +183,7 @@ namespace HSFSchedulerUnitTest
             programAct.CreateSchedules(systemTasks);
             programAct.EvaluateSchedules();
             //TEST SCHED COUNT
-            int schedCountExp = 24;
+            double schedCountExp = 24;
             double schedCountAct = programAct.schedules.Count;
             Assert.AreEqual(schedCountExp, schedCountAct);
 

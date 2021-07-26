@@ -174,8 +174,8 @@ namespace HSFMainUnitTest
             Program program = new Program();
             string actual = program.InitOutput();
             Assert.AreEqual(expected, actual);
-
         }
+
         [Test]
         public void LoadSubsystemUnitTest()
         {

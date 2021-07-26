@@ -16,7 +16,6 @@ namespace UserModel
         public static int MaxNumScheds { get; private set; }
         public static int NumSchedCropTo { get; private set; }
 
-        private static bool _isInitialized = false;
         #endregion
 
         /// <summary>
@@ -26,10 +25,8 @@ namespace UserModel
         /// <returns></returns>
         public static bool LoadSchedParameters(XmlNode schedulerXMLNode)
         {
-            if (!_isInitialized)
+            try
             {
-                _isInitialized = true;
-
                 Console.WriteLine("Loading scheduler parameters... ");
 
                 SimStepSeconds = Convert.ToDouble(schedulerXMLNode.Attributes["simStepSeconds"].Value);
@@ -39,17 +36,15 @@ namespace UserModel
                 Console.WriteLine("  Maximum number of schedules: {0}", MaxNumScheds);
 
                 NumSchedCropTo = Convert.ToInt32(schedulerXMLNode.Attributes["numSchedCropTo"].Value);
-                Console.WriteLine("  Number of schedules to crop to: {0}", NumSchedCropTo);
 
+                Console.WriteLine("  Number of schedules to crop to: {0}", NumSchedCropTo);
                 return true;
             }
-            else
+            catch
+            {
+                Console.WriteLine("Failed to load SchedParameters.");
                 return false;
+            }
         }
-        public static void changeInitStatus(bool input)
-        {
-            _isInitialized = input;
-        }
-
     }
 }

@@ -16,12 +16,11 @@ namespace UserModel
         public static double SimStartSeconds { get; private set; }
 
         public static double SimEndSeconds { get; private set; }
-
+        
         public static string ScenarioName { get; private set; }
         
         public static string OutputDirector { get; private set; }
 
-        private static bool _isInitialized = false;
         #endregion
 
         /// <summary>
@@ -32,16 +31,14 @@ namespace UserModel
         /// <returns></returns>
         public static bool LoadSimParameters(XmlNode simulationXMLNode, string scenarioName)
         {
-            if (!_isInitialized)
+            try
             {
-                _isInitialized = true;
-
                 ScenarioName = scenarioName;
-                Console.WriteLine( "Loading simulation parameters... " );
+                Console.WriteLine("Loading simulation parameters... ");
 
                 SimStartJD = Convert.ToDouble(simulationXMLNode.Attributes["SimStartJD"].Value);
 
-                Console.WriteLine("\tSimulation Start Julian Date: {0}",SimStartJD);
+                Console.WriteLine("\tSimulation Start Julian Date: {0}", SimStartJD);
 
                 if (simulationXMLNode.Attributes["SimStartSeconds"] != null)
                     SimStartSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimStartSeconds"].Value);
@@ -52,16 +49,17 @@ namespace UserModel
                 SimEndSeconds = Convert.ToDouble(simulationXMLNode.Attributes["SimEndSeconds"].Value);
                 Console.WriteLine("\tEnd Epoch: {0} seconds", SimEndSeconds);
 
-                //OutputDirector = simulationXMLNode.Attributes["OutputDirectory"].Value;
-
                 return true;
             }
-            else
+            catch
+            {
                 return false;
+            }
+                //OutputDirector = simulationXMLNode.Attributes["OutputDirectory"].Value;
         }
-        public static void changeInitStatus(bool input)
-        {
-            _isInitialized = input;
-        }
+        //public static void changeInitStatus(bool input)
+        //{
+        //    _isInitialized = input;
+        //}
     }
 }

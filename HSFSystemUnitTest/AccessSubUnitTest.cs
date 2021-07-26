@@ -25,7 +25,7 @@ namespace HSFSystemUnitTest
             Program programAct = new Program();
 
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTarget_access.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
             var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
 

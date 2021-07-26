@@ -232,7 +232,7 @@ namespace UtilitiesUnitTest
         [Test]
         public void CollectionExtensionsUnitTest()
         {
-
+            Assert.Inconclusive();
         }
         [Test]
         public void UpperLowerLimitIntegrateToProfUnitTest()

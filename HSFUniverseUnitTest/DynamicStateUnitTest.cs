@@ -161,6 +161,12 @@ namespace UniverseUnitTest
             DynamicStateType DST = new DynamicStateType();
             DST = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), "PREDETERMINED_ECI");
 
+            // need this block to construct dynamic state because schedparameters
+            // and simparameters default to 0 causing div by 0 error
+            Program programAct = new Program();
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            var simulationInputNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
+            
 
             List<double> ICList = new List<double>();
             ICList.Add(3000.0);
@@ -177,7 +183,7 @@ namespace UniverseUnitTest
             DynamicState dynamicState = new DynamicState(DST, expectedorb, expIC);
             string actual = dynamicState.ToString();
 
-            string expected = "Asset1.DynamicState_time,Asset1.DynamicState_R_x,Asset1.DynamicState_R_y,Asset1.DynamicState_R_z,Asset1.DynamicState_V_x,Asset1.DynamicState_V_y,Asset1.DynamicState_V_z,\r\n0,3000,4100,3400,0,6.02088,4.215866\r\n";
+            string expected = "_time,_R_x,_R_y,_R_z,_V_x,_V_y,_V_z,\r\n0,3000,4100,3400,0,6.02088,4.215866\r\n";
 
             Assert.AreEqual(expected, actual);
 

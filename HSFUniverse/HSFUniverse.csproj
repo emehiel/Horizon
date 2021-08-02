@@ -93,7 +93,6 @@
     <Compile Include="ScriptedUniverse.cs" />
     <Compile Include="SpaceEnvironment.cs" />
     <Compile Include="StandardAtmosphere.cs" />
-    <Compile Include="StandardModels.cs" />
     <Compile Include="Sun.cs" />
     <Compile Include="UniverseFactory.cs" />
     <Compile Include="WMM.cs" />

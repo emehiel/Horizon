@@ -13,6 +13,7 @@ namespace HSFSubsystem
         #region Attributes
 
         Dictionary<string, double> lookup;
+        
         #endregion
 
         #region Constructors
@@ -26,6 +27,8 @@ namespace HSFSubsystem
         public SubTest(XmlNode TestXmlNode, Dependency dependencies, Asset asset)
         {
             Asset = asset;
+            DependentSubsystems = new List<Subsystem>();
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
 
             GetSubNameFromXmlNode(TestXmlNode);
             if (this.Name == "asset1.subtest_crop")
@@ -36,9 +39,9 @@ namespace HSFSubsystem
             {
                 lookup = getList();
             }
+            //dependencies.Add("subTestDep" + "." + Asset.Name, new Func<Event, double>(depFunc));
 
-            DependentSubsystems = new List<Subsystem>();
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+
         }
 
         /// <summary>
@@ -113,6 +116,12 @@ namespace HSFSubsystem
             lookup.Add("target3", time);
             return lookup;
         }
+
+        public double depFunc(Event currentEvent)
+        {
+            return currentEvent.EventEnds[Asset]; //no reason for this, just need to return something
+        }
+
         #endregion Methods
     }
 }

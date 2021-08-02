@@ -168,7 +168,7 @@ namespace HSFScheduler
         /// </summary>
         /// <param name="schedule"></param>
         /// <param name="scheduleWritePath"></param>
-        public static void WriteSchedule(SystemSchedule schedule, String scheduleWritePath)
+        public static void WriteSchedule(SystemSchedule schedule, String scheduleWritePath) //TODO: Unit Test.
         {
             var csv = new StringBuilder();
             Dictionary<StateVarKey<double>, SortedList<double, double>> stateTimeDData = new Dictionary<StateVarKey<double>, SortedList<double, double>>();

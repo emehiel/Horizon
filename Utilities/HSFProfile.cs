@@ -366,7 +366,7 @@ namespace Utilities
         public double Integrate(double startTime, double endTime, double initialValue)
         {
             if (endTime < startTime)
-                return -1.0 * Integrate(startTime, endTime, initialValue);
+                return -1.0 * Integrate(endTime, startTime, initialValue);
             if (Count() == 0 || endTime <= data.First().Key)
                 return (endTime - startTime) * initialValue;
             if (endTime == startTime)

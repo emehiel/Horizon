@@ -63,6 +63,7 @@ namespace HSFSystemUnitTest
             catch
             {
                 programAct.log.Info("LoadSubsystems Failed the Unit test");
+                Assert.Fail("LoadSubsystems Failed the Unit test");
             }
             Dictionary<Asset, Task> eventDic = new Dictionary<Asset, Task>();
             eventDic.Add(programAct.AssetList[0], systemTasks.Pop());

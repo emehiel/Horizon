@@ -73,8 +73,6 @@ namespace HSFSchedulerUnitTest
             Assert.IsTrue(check2);
             Assert.IsFalse(check3);
 
-
-
         }
         [Test]
         public void checkSubUnitTest() //Method is private, do i need to test?

@@ -1,6 +1,7 @@
 <MODEL>
-	<ENVIRONMENT 	UniverseType = "Scripted"
-	src = "..\..\..\PythonSubs\universe.py">
+	<ENVIRONMENT 	UniverseType = "scripted"
+	src = "PythonSubs\environment.py"
+	className = "environment">
 	</ENVIRONMENT>
 	<PYTHON
 		enableScripting = "true">

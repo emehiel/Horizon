@@ -72,10 +72,15 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="HSFProfileUnitTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UtilitiesTests.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MissionElements\MissionElements.csproj">
+      <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
+      <Name>MissionElements</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>
       <Name>Utilities</Name>

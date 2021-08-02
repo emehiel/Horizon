@@ -6,6 +6,8 @@ using IronPython.Hosting;
 using HSFSystem;
 using System.Xml;
 using UserModel;
+using System.IO;
+using System;
 
 namespace HSFScheduler
 {
@@ -30,6 +32,13 @@ namespace HSFScheduler
         {
             string pythonFilePath = "", className = "";
             XmlParser.ParseScriptedSrc(scriptedNode, ref pythonFilePath, ref className);
+
+            if (!pythonFilePath.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
+            {
+                string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+                pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
+            }
+
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;

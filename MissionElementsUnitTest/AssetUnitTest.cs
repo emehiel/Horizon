@@ -11,7 +11,7 @@ namespace MissionElementsUnitTest
         [Test]
         public void ConstructorUnitTest()
         {
-            SystemState state = new SystemState();
+            MissionElements.SystemState state = new MissionElements.SystemState();
             HSFProfile<int> intProf = new HSFProfile<int>(0, 1);
             intProf.Add(1, 2);
             intProf.Add(2, -1);

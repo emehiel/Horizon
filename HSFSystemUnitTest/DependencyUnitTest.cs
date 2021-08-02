@@ -20,6 +20,7 @@ namespace HSFSystemUnitTest
             try
             {
                 Dependency D1 = Dependency.Instance;
+                Assert.IsInstanceOf(typeof(Dependency), D1);
             }
             catch
             {
@@ -39,6 +40,11 @@ namespace HSFSystemUnitTest
             {
                 Assert.Fail();
             }
+
+            Dependency D2 = Dependency.Instance;
+            Dependency D3 = Dependency.Instance;
+
+            Assert.AreSame(D2, D3);
         }
         /// <summary>
         /// First tests Dependency.Add with a function

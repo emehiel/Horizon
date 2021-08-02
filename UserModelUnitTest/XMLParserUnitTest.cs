@@ -23,7 +23,13 @@ namespace UserModelUnitTest
         [Test]
         public void ParseScriptedSrc()
         {
-            Assert.Inconclusive();
+            string inputPath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ScriptUnivFact.xml");
+            XmlNode inputNode = XmlParser.GetModelNode(inputPath);
+            string pythonFilePath = "";
+            string className = "";
+            XmlParser.ParseScriptedSrc(inputNode.FirstChild,ref pythonFilePath, ref className);
+            Assert.AreEqual(pythonFilePath, "PythonSubs\\environment.py");
+            Assert.AreEqual(className, "environment");
         }
         [Test]
         public void ParseSimulationInput1()

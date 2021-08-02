@@ -72,8 +72,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AccessUnitTest.cs" />
     <Compile Include="CheckerUnitTest.cs" />
+    <Compile Include="ScriptedEvaluatorUnitTest.cs" />
     <Compile Include="SystemScheduleUnitTest.cs" />
     <Compile Include="TargetValEvalUnitTest.cs" />
+    <Compile Include="StateHistoryUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Horizon\Horizon.csproj">

@@ -12,20 +12,20 @@ namespace UniverseUnitTest
     {
         string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
         /// <summary>
-        /// 
+        /// Tests both UniverseFactory GetUniverseClass for Scripted universe and ScriptedUniverse constructor
         /// </summary>
         [Test]
         public void UniverseFactoryScriptedTest()
         {
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ScriptUnivFact.xml");
             XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
-            Domain universeAct = UniverseFactory.GetUniverseClass(modelInput);
+            Domain universeAct = UniverseFactory.GetUniverseClass(modelInput.FirstChild);
 
             Assert.IsInstanceOf(typeof(ScriptedUniverse), universeAct);
 
         }
         /// <summary>
-        /// 
+        /// Tests Space Environment construction by checking that objectType == SpaceEnvironment
         /// </summary>
         [Test]
         public void UniverseFactorySpaceEnvironmentTest()

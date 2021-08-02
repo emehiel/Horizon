@@ -91,6 +91,8 @@ namespace MissionElements
                 AddValue(data.Key, data.Value);
             foreach (var data in moreState.Mdata)
                 AddValue(data.Key, data.Value);
+            foreach (var data in moreState.Qdata)
+                AddValue(data.Key, data.Value);
         }
 
         public override string ToString()
@@ -572,6 +574,49 @@ namespace MissionElements
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
         }
+
+        public void SetProfile(StateVarKey<Quat> key, HSFProfile<Quat> profIn)
+        {
+            HSFProfile<Quat> valueOut;
+            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Qdata.Add(key, profIn);
+            else
+            { // Otherwise, erase whatever is there, and insert a new one.
+                Qdata.Remove(key);
+                Qdata.Add(key, profIn);
+            }
+        }
+
+        /// <summary>
+        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
+        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
+        /// <param name="pairIn"></param>
+        public void AddValue(StateVarKey<Quat> key, KeyValuePair<double, Quat> pairIn)
+        {
+            HSFProfile<Quat> valueIn = new HSFProfile<Quat>(pairIn);
+            HSFProfile<Quat> valueOut = new HSFProfile<Quat>();
+            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Qdata.Add(key, valueIn);
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
+        }
+
+        /// <summary>
+        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
+        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
+        /// <param name="pairIn"></param>
+        public void AddValue(StateVarKey<Quat> key, HSFProfile<Quat> profIn)
+        {
+            HSFProfile<Quat> valueOut;
+            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Qdata.Add(key, profIn);
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(profIn);
+        }
+
+
         //maybe add this functionality to subsystem? but then we would need to pass the state to the constructor
         public static SystemState setInitialSystemState(List<XmlNode> ICNodes, Asset asset)
         {

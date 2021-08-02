@@ -98,7 +98,7 @@ namespace Utilities
         {
             return ToString() == obj.ToString();
         }
-
+        
         /// <summary>
         /// Gets the hash code of a Matrix based on the ToString() method
         /// </summary>
@@ -373,7 +373,7 @@ namespace Utilities
                 return false;
             else
             {
-                for (int i = 1; i <= A.Length; i++)
+                for (int i = 1; i <= A.Length-1; i++)
                     if (A[i] != B[i])
                         return false;
             }
@@ -390,7 +390,25 @@ namespace Utilities
         {
             return !(A == B);
         }
-
+        public static bool AreEqual(Vector A, Vector B,double percentOff)
+        {
+            double avg = 1;
+            double acceptable;
+            int i;
+            if (A.Length != B.Length)
+                return false;
+            else
+            {
+                for (i = 1; i <= A.Length-1; i++)
+                    avg = (A[i] + B[i]) / 2;
+                acceptable = percentOff * avg;
+                if (Math.Abs(A[i] - B[i]) > acceptable)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
         #endregion
 
         #region Dynamics

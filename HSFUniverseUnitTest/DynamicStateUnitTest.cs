@@ -18,31 +18,13 @@ namespace UniverseUnitTest
     public class DynamicStateUnitTest
     {
         string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+        Program programAct;
+        DynamicState dynamic;
+        Asset asset;
         [Test]
         public void ConstructDynamicState() //TODO:whats going on here jack
         {
-            Program programAct = new Program();
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_DynState.xml");
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
-            var simulationInputNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
-
-            Domain SystemUniverse = new SpaceEnvironment();
-
-            Asset asset = new Asset(modelInputXMLNode.FirstChild);
-            programAct.AssetList.Add(asset);
-
-            try
-            {
-                asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
-            }
-            catch
-            {
-                programAct.log.Info("AssetDynamicState.Eoms.SetEnvironment(SystemUniverse) Failed the Unit test");
-            }
-            DynamicState dynamic = new DynamicState(modelInputXMLNode.FirstChild.FirstChild);
-            //DynamicEOMS expected = EOMFactory.GetEomClass(modelInputXMLNode.FirstChild.FirstChild);
-           // OrbitalEOMS expectedorb = new OrbitalEOMS();
+            helperConst("UnitTestInputs\\UnitTestModel_DynState.xml");
 
             string actual = dynamic.ToString();
             string expected = "Asset1.DynamicState_time,Asset1.DynamicState_R_x,Asset1.DynamicState_R_y,Asset1.DynamicState_R_z,Asset1.DynamicState_V_x,Asset1.DynamicState_V_y,Asset1.DynamicState_V_z,\r\n0,3000,4100,3400,0,6.02088,4.215866\r\n";
@@ -70,27 +52,9 @@ namespace UniverseUnitTest
         [Test]
         public void ConstructDynamicState_StaticEOM() //TODO:whats going on here jack
         {
-            Program programAct = new Program();
 
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_DynStateStatic.xml");
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-
-            Domain SystemUniverse = new SpaceEnvironment();
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
-            var simulationInputNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
-
-            Asset asset = new Asset(modelInputXMLNode.FirstChild); //constructing asset requires parseSimulationInput
-            programAct.AssetList.Add(asset);
-
-            try
-            {
-                asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
-            }
-            catch
-            {
-                programAct.log.Info("AssetDynamicState.Eoms.SetEnvironment(SystemUniverse) Failed the Unit test");
-            }
-            DynamicState dynamic = new DynamicState(modelInputXMLNode.FirstChild.FirstChild);
+            helperConst("UnitTestInputs\\UnitTestModel_DynStateStatic.xml");
+            
             DynamicEOMS expected = null;
             Assert.AreEqual(expected, dynamic.Eoms);
 
@@ -119,28 +83,8 @@ namespace UniverseUnitTest
         [Test]
         public void ConstructDynamicState_Integrators()
         {
-            Program programAct = new Program();
-
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Integrator.xml");
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-
-            Domain SystemUniverse = new SpaceEnvironment();
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
-            var simulationInputNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
-
-            Asset asset = new Asset(modelInputXMLNode.FirstChild); //constructing asset requires parseSimulationInput
-            programAct.AssetList.Add(asset);
-
-            try
-            {
-                asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
-            }
-            catch
-            {
-                programAct.log.Info("AssetDynamicState.Eoms.SetEnvironment(SystemUniverse) Failed the Unit test");
-            }
-
-            DynamicState dynamic = new DynamicState(modelInputXMLNode.FirstChild.FirstChild);
+            helperConst("UnitTestInputs\\UnitTestModel_Integrator.xml");
+            
             IntegratorOptions actIntOptions = dynamic.getIntegratorOptions();
 
             IntegratorOptions expIntOptions = new IntegratorOptions();
@@ -192,27 +136,8 @@ namespace UniverseUnitTest
         [Test]
         public void PosVelECI()
         {
-            Program programAct = new Program();
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_DynState.xml");
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
-            var simulationInputNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
-
-            Domain SystemUniverse = new SpaceEnvironment();
-
-            Asset asset = new Asset(modelInputXMLNode.FirstChild);
-            programAct.AssetList.Add(asset);
-
-            try
-            {
-                asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
-            }
-            catch
-            {
-                programAct.log.Info("AssetDynamicState.Eoms.SetEnvironment(SystemUniverse) Failed the Unit test");
-            }
-            DynamicState dynamic = new DynamicState(modelInputXMLNode.FirstChild.FirstChild);
-
+            helperConst("UnitTestInputs\\UnitTestModel_DynState.xml");
+            
             List<double> ICposList = new List<double>();
             ICposList.Add(3000.0);
             ICposList.Add(4100.0);
@@ -232,6 +157,46 @@ namespace UniverseUnitTest
 
             Assert.AreEqual(expvelIC, actvelIC);
         }
+        /// <summary>
+        /// Tests the PropagateState(double simTime) function, accessed thru DynamicStateECI, checked with vals from Matlab ode45 propagation, tol = .0001
+        /// </summary>
+        [Test]
+        public void VectorTest()
+        {
+            helperConst("UnitTestInputs\\UnitTestModel_DynState.xml");
+            Vector v0 = dynamic.DynamicStateECI(0);
+            Vector v1 = dynamic.DynamicStateECI(1);
+            Vector v30 = dynamic.DynamicStateECI(30);
+            Vector expv0 = new Vector("3000.0;4100.0;3400.0;0.0;6.02088;4.215866");
+            Vector expv1 = new Vector("2999.997385487238;4106.017305084396;3404.212901661460;-0.005226299504;6.013732148925331;4.209939190247180");
+            Vector expv30 = new Vector("2997.715635427037;4277.459280509288;3523.855415907365;-0.150003458110018;5.811427244838430;4.042747536995044");
+            Assert.IsTrue(Vector.AreEqual(v0, expv0, .0001));
+            Assert.IsTrue(Vector.AreEqual(v1, expv1, .0001));
+            Assert.IsTrue(Vector.AreEqual(v30, expv30,.0001));
+        }
+        public void helperConst(string modelInput)
+        {
+            
+            programAct = new Program();
+            programAct.ModelInputFilePath = Path.Combine(baselocation, modelInput) ;
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
+            var simulationInputNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
 
+            Domain SystemUniverse = new SpaceEnvironment();
+
+            asset = new Asset(modelInputXMLNode.FirstChild);
+            programAct.AssetList.Add(asset);
+
+            try
+            {
+                asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+            }
+            catch
+            {
+                programAct.log.Info("AssetDynamicState.Eoms.SetEnvironment(SystemUniverse) Failed the Unit test");
+            }
+            dynamic = new DynamicState(modelInputXMLNode.FirstChild.FirstChild);
+        }
     }
 }

@@ -216,9 +216,9 @@ namespace UtilitiesUnitTest
             c2.Helper.helperInt = 12;
             Assert.AreNotEqual(c1.Helper.helperInt, c2.Helper.helperInt);
             Assert.AreEqual(12, c2.Helper.helperInt);
-            c2.Helper.helperString = "poop";
+            c2.Helper.helperString = "pingpong";
             Assert.AreNotEqual(c1.Helper.helperString, c2.Helper.helperString);
-            Assert.AreEqual("poop", c2.Helper.helperString);
+            Assert.AreEqual("pingpong", c2.Helper.helperString);
             //Test clone constructor
             TestCopyClass c3 = new TestCopyClass(c1);
             Assert.AreEqual(c1.Num, c3.Num);
@@ -238,6 +238,11 @@ namespace UtilitiesUnitTest
         public void UpperLowerLimitIntegrateToProfUnitTest()
         {
             Assert.Inconclusive();
+        }
+        [Test]
+        public void VectorTest()
+        {
+
         }
     }
     [Serializable]

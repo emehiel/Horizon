@@ -182,7 +182,7 @@ namespace HSFSchedulerUnitTest
         [Test]
         public void WriteSchedule()
         {
-            Assert.Inconclusive("Not Implemented");
+
         }
     }
 }

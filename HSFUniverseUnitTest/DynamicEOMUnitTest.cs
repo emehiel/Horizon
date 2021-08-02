@@ -1,5 +1,4 @@
-﻿using HSFUniverse;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 using System;
 
 namespace UniverseUnitTest
@@ -10,7 +9,7 @@ namespace UniverseUnitTest
         [Test]
         public void GetsUnitTest()
         {
-            //DynamicEOMS dyn = new DynamicEOMS();
+            Assert.Inconclusive("Not Implemented");
         }
     }
 }

@@ -9,7 +9,7 @@ namespace UniverseUnitTest
     public class CloudCoverUnitTest
     {
         // TODO: Figure out what this was meant for.
-        //[Test]
+        [Test]
         public void TestMethod1()
         {
             Sun mysun = new Sun();

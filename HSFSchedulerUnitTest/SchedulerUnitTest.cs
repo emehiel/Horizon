@@ -48,7 +48,8 @@ namespace HSFSchedulerUnitTest
             }
 
             //something with the nunit test suite was leaving sim and sched parameters unchanged between tests and causing these tests to fail.
-
+            SimParameters.changeInitStatus(false);
+            SchedParameters.changeInitStatus(false);
             XmlNode evalNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
 
             Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evalNode, programAct._dependencies);

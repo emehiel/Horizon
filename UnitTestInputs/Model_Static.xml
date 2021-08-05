@@ -1,0 +1,76 @@
+<MODEL>
+	<ASSET assetName="Asset1">
+		<DynamicState
+			DynamicStateType="PREDETERMINED_ECI"
+			ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866]">
+			<EOMS
+				EOMSType="orbital_EOMS">
+			</EOMS>
+		</DynamicState>
+		<SUBSYSTEM
+			Type="Access"
+			subsystemName = "Access">
+		</SUBSYSTEM>
+    <SUBSYSTEM
+			Type="Adcs"
+			subsystemName = "Adcs"
+      slewRate = "5">
+      <IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
+      <DEPENDENCY subsystemName="Access"></DEPENDENCY>
+    </SUBSYSTEM>
+		<SUBSYSTEM
+			Type="EOSensor"
+			subsystemName = "EOSensor"
+			lowQualityNumPixels="5000"
+			midQualityNumPixels="10000"
+			highQualityNumPixels="15000"
+			lowQualityCaptureTime="3"
+			midQualityCaptureTime="5"
+			highQualityCaptureTime="7">
+			<IC type="Double" key="numPixels" value="0.0"></IC>
+			<IC type="Double" key="IncidenceAngle" value="0.0"></IC>
+			<IC type="Bool" key="EOSensorOn" value="0.0"></IC>
+			<DEPENDENCY subsystemName="Adcs"></DEPENDENCY>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			Type="Ssdr"
+			subsystemName = "SSDR"
+			bufferSize = "5000">
+			<IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
+			<DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor"></DEPENDENCY>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			Type="Comm"
+			subsystemName = "Comm">
+			<IC type="Double" key="DataRate(MB/s)" value="0.0"></IC>
+			<DEPENDENCY subsystemName="SSDR" fcnName="CommfromSSDR"></DEPENDENCY>
+		</SUBSYSTEM>		
+		<SUBSYSTEM
+			Type="Power"
+			subsystemName = "Power"
+			batterySize="1000000"
+			fullSolarPower="150"
+			penumbraSolarPower="75">
+			<IC type="Double" key="DepthofDischarge" value="0.0"></IC>
+			<IC type="Double" key="SolarPanelPowerIn" value="0.0"></IC>
+			<DEPENDENCY subsystemName="Comm" fcnName="PowerfromComm"></DEPENDENCY>
+			<DEPENDENCY subsystemName="Adcs" fcnName="PowerfromADCS"></DEPENDENCY>
+			<DEPENDENCY subsystemName="EOSensor" fcnName="PowerfromEOSensor"></DEPENDENCY>
+			<DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR"></DEPENDENCY>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value="0.25"
+			subsystemName = "Power"
+			type="FAIL_IF_HIGHER"
+			name="con1">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.7"
+			subsystemName="SSDR"
+			type="FAIL_IF_HIGHER"
+			name="con2">
+			<STATEVAR type = "Double" key="DataBufferFillRatio"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+</MODEL>

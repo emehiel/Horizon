@@ -2,16 +2,12 @@
 	<SIMULATION_PARAMETERS
 		SimStartJD="2454680.0"
 		SimStartSeconds="0.0"
-		SimEndSeconds="6307.0">
+		SimEndSeconds="90">
 	</SIMULATION_PARAMETERS>
 
 	<SCHEDULER_PARAMETERS
-		maxNumSchedules="1"
-		numSchedCropTo="2"
-		simStepSeconds="30.0">
-		<SCRIPTED_EVALUATOR
-			src = "PythonSubs\testeval.py"
-			className="eval">
-		</SCRIPTED_EVALUATOR>
+		maxNumSchedules="100"
+		numSchedCropTo="25"
+		simStepSeconds="5">
 	</SCHEDULER_PARAMETERS>
 </SCENARIO>

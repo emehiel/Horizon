@@ -9,6 +9,7 @@ using MissionElements;
 using UserModel;
 using HSFUniverse;
 using System.Xml;
+using System.IO;
 
 namespace HSFSubsystem
 {
@@ -61,7 +62,11 @@ namespace HSFSubsystem
             GetSubNameFromXmlNode(scriptedSubXmlNode);
             string pythonFilePath ="", className = "";
             XmlParser.ParseScriptedSrc(scriptedSubXmlNode, ref pythonFilePath, ref className);
-            
+            if (!pythonFilePath.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
+            {
+                string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+                pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
+            }
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;

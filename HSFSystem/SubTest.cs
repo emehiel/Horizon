@@ -13,7 +13,7 @@ namespace HSFSubsystem
         #region Attributes
 
         Dictionary<string, double> lookup;
-        
+        protected StateVarKey<double> maj_Key;
         #endregion
 
         #region Constructors
@@ -39,8 +39,8 @@ namespace HSFSubsystem
             {
                 lookup = getList();
             }
-            //dependencies.Add("subTestDep" + "." + Asset.Name, new Func<Event, double>(depFunc));
-
+            maj_Key = new StateVarKey<double>(Asset.Name + "." + "majorKey");
+            addKey(maj_Key);
 
         }
 

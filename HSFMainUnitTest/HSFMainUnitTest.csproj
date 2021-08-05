@@ -91,6 +91,10 @@
       <Project>{C180B6BA-D68A-4AC8-B1EB-4E38F7F42AB7}</Project>
       <Name>UserModel</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{EDA938FC-7A34-4506-81F8-D4D940D6ED84}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

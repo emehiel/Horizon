@@ -12,6 +12,7 @@ namespace HSFSystemUnitTest
         /// constructs a dependency using Dependency.Instance 
         /// then tests that DependencyFunctions was constructed by asking GetDependencyFunc to return KeyNotFoundException
         /// If any other error is thrown, the tests fail
+        /// Dependency instance is static so D2 and D3 must refer to the same object
         /// </summary>
         [Test]
         public void DependencyConstructorUnitTest() //not sure how else to test this construcrtor
@@ -30,7 +31,7 @@ namespace HSFSystemUnitTest
             try
             {
                 Dependency D1 = Dependency.Instance;
-                Delegate elegate = D1.GetDependencyFunc(" ");
+                Delegate elegate = D1.GetDependencyFunc(" "); //since DependencyFunctions is private cannot access DependencyFunctions directly
             }
             catch (KeyNotFoundException _)
             {

@@ -174,9 +174,9 @@ namespace UniverseUnitTest
             Assert.IsTrue(Vector.AreEqual(v1, expv1, .0001));
             Assert.IsTrue(Vector.AreEqual(v30, expv30,.0001));
         }
+
         public void helperConst(string modelInput)
         {
-            
             programAct = new Program();
             programAct.ModelInputFilePath = Path.Combine(baselocation, modelInput) ;
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");

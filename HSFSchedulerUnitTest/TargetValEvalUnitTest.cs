@@ -20,7 +20,10 @@ namespace HSFSchedulerUnitTest
     public class TargetValueEval
     {
         string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
-
+        /// <summary>
+        /// Tests double Evaluate(SystemSchedule) function from Target Value Evaluator Class
+        /// should return the sum of target values from the Access Stack, 
+        /// </summary>
         [Test]
         public void EvaluateTest()
         {
@@ -63,11 +66,11 @@ namespace HSFSchedulerUnitTest
             double sum = TVE.Evaluate(sysSched); //started here, needed schedule (54) and evaluator (56)
             Assert.AreEqual(1, sum);
 
-            accesses.Pop();
+            accesses.Pop();// goes one target deeper into the deck, val=-1
             accesses.Push(new Access(asset, systemTasks.Pop()));
             SystemSchedule sysSched2 = new SystemSchedule(hist, accesses, 0);
-            double sum2 = TVE.Evaluate(sysSched2); //started here, needed schedule (54) and evaluator (56)
-            Assert.AreEqual(1, sum);
+            double sum2 = TVE.Evaluate(sysSched2); 
+            Assert.AreEqual(-1, sum2);
 
         }
     }

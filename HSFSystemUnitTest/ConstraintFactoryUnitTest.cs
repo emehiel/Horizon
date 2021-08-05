@@ -68,13 +68,43 @@ namespace HSFSystemUnitTest
                 {
                     _constraintsList.Add(ConstraintFactory.GetConstraint(modelChild2Node, _subsystemMap, asset));
                 }
-                catch
+                catch (MissingMemberException)
                 {
-                    Assert.IsTrue(true);
+                    Assert.Pass();
                 }
             }
         }
+        [Test]
+        public void GetConstraintUnsupportedSubUnitTest()
+        {
 
+            string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint_UnsupportedSub.xml");
+            var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
+            XmlNode modelChildNode = modelInputXMLNode.FirstChild;
+
+            Asset asset = new Asset(modelChildNode);
+            Dictionary<string, Subsystem> _subsystemMap = new Dictionary<string, Subsystem>();
+            List<Constraint> _constraintsList = new List<Constraint>();
+
+            foreach (XmlNode modelChild2Node in modelChildNode.ChildNodes)
+            {
+                if (modelChild2Node.Name.Equals("SUBSYSTEM"))
+                {
+                    string subName = SubsystemFactory.GetSubsystem(modelChild2Node, null, asset, _subsystemMap);
+                }
+                if (modelChild2Node.Name.Equals("CONSTRAINT"))
+                {
+                    try
+                    {
+                        _constraintsList.Add(ConstraintFactory.GetConstraint(modelChild2Node, _subsystemMap, asset));
+                    }
+                    catch (NotSupportedException)
+                    {
+                        Assert.Pass();
+                    }
+                }
+            }
+        }
 
     }
 

@@ -24,7 +24,7 @@ namespace UtilitiesUnitTest
             Assert.AreEqual(expected._eps[3], result._eps[3]);
         }
         [Test]
-        public void IntegratorTest()
+        public void IntegratorTest() // TODO check ntrp by checking vals at t=10;
         {
             StateSpaceEOMS dynamics = new StateSpaceEOMS();
             Matrix<double> tspan = new Matrix<double>(new double[1, 2] { { 0, 20 } });

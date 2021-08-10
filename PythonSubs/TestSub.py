@@ -35,7 +35,6 @@ class adcs(HSFSubsystem.Subsystem):
 
         instance.POINTVEC_KEY = Utilities.StateVarKey[Utilities.Matrix[System.Double]](instance.Asset.Name + '.' + 'eci_pointing_vector(xyz)')
         instance.addKey(instance.POINTVEC_KEY)
-
         return instance
 
     def GetDependencyDictionary(self):
@@ -55,13 +54,13 @@ class adcs(HSFSubsystem.Subsystem):
         return prof1
 
     def CanPerform(self, event, universe):
-        if(event.GetAssetTask(self.Asset).MaxTimesToPerform>5):
+        if(event.GetAssetTask(self.Asset).GetMaxTimesToPerform>5):
 		return true
 	else
 		return false
 
     def CanExtend(self, event, universe, extendTo):
-        return super(adcs, self).CanExtend(event, universe, extendTo)
+        return super(adcs, self).CanExtend(event, universe, extendTo)     
 
     def DependencyCollector(self, currentEvent):
         return super(adcs, self).DependencyCollector(currentEvent)

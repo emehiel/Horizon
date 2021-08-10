@@ -91,7 +91,6 @@ namespace HSFUniverse
 
         public DynamicState(DynamicStateType type, DynamicEOMS eoms, Vector initialConditions)
         {
-            _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds / SchedParameters.SimStepSeconds));
             _stateData.Add(0.0, initialConditions);
             Type = type;
             Eoms = eoms;

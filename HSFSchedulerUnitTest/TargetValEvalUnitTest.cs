@@ -5,11 +5,6 @@ using System.Text;
 using HSFScheduler;
 using HSFSystem;
 using NUnit.Framework;
-using System.Xml;
-using MissionElements;
-using System.IO;
-using UserModel;
-using Horizon;
 
 namespace HSFSchedulerUnitTest
 {
@@ -25,7 +20,7 @@ namespace HSFSchedulerUnitTest
         /// should return the sum of target values from the Access Stack, 
         /// </summary>
         [Test]
-        public void EvaluateTest()
+        public void TestMethod1()
         {
             Program programAct = new Program();
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");

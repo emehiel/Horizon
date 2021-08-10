@@ -132,6 +132,7 @@ namespace HSFMainUnitTest
             Program program = new Program();
             string actual = program.InitOutput();
             Assert.AreEqual(expected, actual);
+
         }
         /// <summary>
         /// Test to make sure the correct number of targets are created, and target names and values are loaded

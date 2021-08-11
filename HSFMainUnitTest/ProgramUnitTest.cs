@@ -22,7 +22,7 @@ namespace HSFMainUnitTest
         /// <summary>
         /// Test runs Main with Aeolus input arguments.  0 is returned if main runs with no runtime errors.
         /// </summary>
-        [Test]
+        //[Test]
         public void MainTest()
         {
             string simulationInputFilePath = Path.Combine(baselocation, @"SimulationInput.xml");

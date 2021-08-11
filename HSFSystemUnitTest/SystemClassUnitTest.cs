@@ -134,7 +134,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void SystemClassCtor()
         {
-            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_CircularV2.xml");
+            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Circular.xml");
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
             XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
             XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
@@ -143,9 +143,9 @@ namespace HSFSystemUnitTest
             List<Asset> assets = new List<Asset>();
             assets.Add(asset);
 
-            Subsystem access = new AccessSub(modelInput.ChildNodes[1].ChildNodes[1], asset);
-            Subsystem adcs = new AccessSub(modelInput.ChildNodes[1].ChildNodes[2], asset);
-            Subsystem eosensor = new AccessSub(modelInput.ChildNodes[1].ChildNodes[3], asset);
+            Subsystem access = new SubTest(modelInput.ChildNodes[0].ChildNodes[1], asset);
+            Subsystem adcs = new SubTest(modelInput.ChildNodes[0].ChildNodes[2], asset);
+            Subsystem eosensor = new SubTest(modelInput.ChildNodes[0].ChildNodes[3], asset);
 
             List<Subsystem> subList = new List<Subsystem>();
             subList.Add(access);

@@ -10,16 +10,20 @@ using System.Collections.Generic;
 using Utilities;
 using MissionElements;
 using HSFUniverse;
+using System.IO;
 
 namespace UniverseUnitTest
 {
     [TestFixture]
     public class EOMFactoryUnitTest
     {
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+
         [Test]
         public void GetEomClass()
         {
-
+            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
             DynamicEOMS dynamicEOMS = EOMFactory.GetEomClass(modelInput.ChildNodes[1].FirstChild);
 
             Assert.IsInstanceOf(typeof(OrbitalEOMS), dynamicEOMS);

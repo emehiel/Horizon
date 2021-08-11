@@ -149,6 +149,7 @@ namespace HSFSchedulerUnitTest
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub_crop_DynamicECI.xml");
 
             Stack<Task> systemTasks = SchedulerHelper(ref programAct);
+            programAct.CreateSchedules(systemTasks);
 
             //TEST SCHED COUNT
             int schedCountExp = 8;

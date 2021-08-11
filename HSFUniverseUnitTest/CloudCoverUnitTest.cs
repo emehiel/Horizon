@@ -12,12 +12,7 @@ namespace UniverseUnitTest
         [Test]
         public void TestMethod1()
         {
-            Sun mysun = new Sun();
-            Matrix<double> esVec = new Matrix<double>();
-
-            esVec = mysun.getEarSunVec(20.0);
-
-            esVec.GetRow(4);
+            Assert.Inconclusive("not Implemented, No References");
 
         }
     }

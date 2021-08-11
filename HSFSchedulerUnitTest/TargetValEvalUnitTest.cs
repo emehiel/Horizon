@@ -5,6 +5,11 @@ using System.Text;
 using HSFScheduler;
 using HSFSystem;
 using NUnit.Framework;
+using Horizon;
+using System.IO;
+using MissionElements;
+using UserModel;
+using System.Xml;
 
 namespace HSFSchedulerUnitTest
 {

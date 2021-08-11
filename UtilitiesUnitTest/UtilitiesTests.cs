@@ -232,6 +232,7 @@ namespace UtilitiesUnitTest
         [Test]
         public void CollectionExtensionsUnitTest()
         {
+            Assert.Inconclusive();
 
         }
         [Test]
@@ -242,7 +243,7 @@ namespace UtilitiesUnitTest
         [Test]
         public void VectorTest()
         {
-
+            Assert.Inconclusive();
         }
     }
     [Serializable]

@@ -15,6 +15,7 @@ using System.IO;
 namespace HSFMainUnitTest
 {
     [TestFixture]
+
     public class ProgramUnitTest
     {
         // this string is for finding the path of the highest folder for Horizon on whatever is running the tests
@@ -22,12 +23,12 @@ namespace HSFMainUnitTest
         /// <summary>
         /// Test runs Main with Aeolus input arguments.  0 is returned if main runs with no runtime errors.
         /// </summary>
-        //[Test]
+        [Test]
         public void MainTest()
         {
-            string simulationInputFilePath = Path.Combine(baselocation, @"SimulationInput.xml");
-            string targetDeckFilePath = Path.Combine(baselocation, @"v2.2-300targets.xml");
-            string modelInputFilePath = Path.Combine(baselocation, @"DSAC_Static.xml");
+            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\v2.2-300targets.xml");
+            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\DSAC_Static.xml");
 
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
 

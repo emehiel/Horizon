@@ -1,0 +1,3302 @@
+<TARGETDECK>
+	<TARGET
+		TargetName = "groundstation1"
+		TargetType = "FacilityTarget"
+		TaskType = "COMM"
+		MaxTimes = "10"
+		Value = "-1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-33.47; -70.65; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "groundstation2"
+		TargetType = "FacilityTarget"
+		TaskType = "COMM"
+		MaxTimes = "10"
+		Value = "-1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[18.59; -155.4; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "groundstation3"
+		TargetType = "FacilityTarget"
+		TaskType = "COMM"
+		MaxTimes = "10"
+		Value = "-1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-2.9; 40.2; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "groundstation4"
+		TargetType = "FacilityTarget"
+		TaskType = "COMM"
+		MaxTimes = "10"
+		Value = "-1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-29.15; 114.56; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget1"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[39.2945; -71.1559; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget2"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[41.1158; -67.8102; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget3"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[25.5397; -73.8852; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget4"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[41.2675; -86.2858; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget5"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[35.6472; -70.0174; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget6"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[24.9508; -68.3201; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget7"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[28.57; -73.4253; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget8"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33.9376; -71.8452; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget9"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[42.1501; -72.1374; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget10"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[42.2978; -79.1555; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget11"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[26.1523; -73.8904; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget12"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[42.4119; -83.5763; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget13"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[42.1433; -72.8791; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget14"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[32.7075; -86.3633; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget15"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[39.0056; -81.4615; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget16"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[25.8377; -86.0766; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget17"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[31.4352; -85.0574; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget18"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[41.3147; -70.5308; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget19"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[21.8966; -73.62; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget20"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[14.342; -66.0327; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget21"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[27.0044; -56.8051; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget22"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[8.68892; -69.1923; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget23"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.7749; -64.2946; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget24"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[15.6312; -71.5238; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget25"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.3103; -60.9747; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget26"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.904; -70.8981; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget27"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[11.7375; -65.8809; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget28"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[17.7953; -62.0185; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget29"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.9117; -58.1819; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget30"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[20.9263; -56.8142; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget31"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[22.1873; -65.0557; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget32"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.0937; -73.2275; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget33"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[13.5205; -73.0141; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget34"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[21.5941; -70.8498; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget35"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[21.102; -59.1857; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget36"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[11.2522; -70.9144; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget37"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[31.2857; -85.4829; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget38"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[19.8705; -85.921; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget39"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33.5853; -76.384; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget40"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[21.9997; -71.4167; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget41"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[18.9319; -68.3198; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget42"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[20.0217; -84.4019; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget43"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[27.3209; -75.6235; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget44"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[24.4658; -77.6122; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget45"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[22.0332; -86.762; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget46"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[31.6166; -80.2575; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget47"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[26.7053; -83.7564; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget48"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[25.9945; -71.1143; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget49"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33.3439; -80.7757; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget50"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[20.7168; -76.4293; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget51"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[30.144; -83.687; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget52"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[30.0746; -74.9604; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget53"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[22.6089; -81.7406; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget54"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[26.3564; -73.9184; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget55"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[29.7843; -96.3113; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget56"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[30.963; -90.0043; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget57"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[25.0108; -92.8026; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget58"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[17.6764; -81.9986; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget59"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[20.5795; -89.3717; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget60"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[34.2667; -79.787; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget61"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[19.0476; -94.3631; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget62"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[32.5163; -92.7239; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget63"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[26.7668; -95.0892; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget64"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[35.9227; -95.2786; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget65"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[17.5635; -80.6142; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget66"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[24.8536; -86.4059; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget67"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[18.1331; -87.0028; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget68"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[35.238; -95.1009; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget69"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.0927; -80.9394; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget70"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[31.4982; -85.5589; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget71"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[32.3461; -90.981; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget72"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33.3739; -87.735; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget73"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.0362; 71.8338; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget74"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[9.51933; 75.0782; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget75"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[12.7983; 68.9291; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget76"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[10.4664; 69.6395; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget77"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[11.6782; 85.841; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget78"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[12.7991; 86.1227; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget79"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.3453; 78.5042; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget80"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[8.99309; 68.1956; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget81"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[26.0543; 71.6956; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget82"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[26.8957; 74.0632; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget83"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[17.8173; 83.4239; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget84"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[17.7851; 67.3081; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget85"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[14.7544; 67.8605; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget86"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[26.0011; 70.3798; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget87"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[15.3849; 79.9823; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget88"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[10.2241; 81.6344; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget89"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.605; 79.9549; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget90"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[15.7948; 76.0185; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget91"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[14.9402; 127.353; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget92"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[9.92642; 126.897; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget93"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[18.8939; 123.886; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget94"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[7.7791; 118.572; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget95"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[17.7355; 127.232; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget96"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[7.67022; 121.657; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget97"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[11.3697; 118.015; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget98"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.5124; 129.78; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget99"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[19.6045; 128.519; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget100"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[5.62251; 122.003; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget101"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[22.5877; 123.45; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget102"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[19.5143; 122.741; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget103"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[13.7358; 115.155; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget104"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[12.7172; 117.025; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget105"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[12.9357; 120.418; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget106"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[10.127; 115.61; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget107"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[14.1702; 127.886; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget108"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[14.2154; 114.895; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget109"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-5.48156; 107.435; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget110"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-6.58584; 105.348; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget111"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-5.44671; 108.934; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget112"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-1.28603; 109.376; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget113"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-3.77795; 111.483; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget114"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[8.46759; 113.157; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget115"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-1.39585; 104.71; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget116"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-6.30367; 108.25; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget117"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[8.09762; 119.02; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget118"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[9.59497; 103.584; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget119"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-1.2226; 121.577; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget120"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-7.77762; 117.607; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget121"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-4.83871; 112.772; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget122"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-1.8256; 114.571; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget123"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[1.89792; 107.746; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget124"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-4.75577; 112.177; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget125"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[2.05686; 122.262; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget126"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[4.22432; 113.936; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget127"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.4227; 93.1352; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget128"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[10.6319; 104.075; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget129"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[15.778; 100.883; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget130"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[18.4812; 106.581; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget131"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[19.5827; 105.301; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget132"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[13.9103; 109.074; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget133"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[13.3487; 108.818; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget134"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[25.7596; 97.6833; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget135"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[6.75478; 104.975; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget136"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.7034; 94.9562; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget137"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[24.2657; 91.6108; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget138"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[21.9237; 105.881; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget139"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[7.97425; 101; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget140"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[11.2374; 100.598; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget141"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[12.7071; 109.094; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget142"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[19.5946; 103.197; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget143"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[8.73106; 103.353; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget144"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[20.4246; 108.189; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget145"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-10.8902; -175.637; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget146"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-15.4656; -175.649; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget147"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-23.3416; -177.551; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget148"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-22.2014; 170.997; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget149"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-9.26976; -178.808; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget150"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-26.4265; 178.372; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget151"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-17.202; -172.541; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget152"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-23.6415; -179.02; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget153"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-7.42639; -175.993; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget154"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-12.7461; 177.076; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget155"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-16.9906; 176.648; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget156"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-17.5782; -175.494; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget157"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-25.8076; 169.669; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget158"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-13.3606; 170.663; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget159"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-26.1514; 171.468; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget160"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-25.5711; 175.819; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget161"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-16.567; -175.372; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget162"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-25.0654; -175.933; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget163"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-13.7906; 132.054; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget164"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-7.01485; 145.757; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget165"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-4.46248; 136.382; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget166"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-6.66401; 139.457; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget167"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-1.8628; 141.957; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget168"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-2.44053; 149.855; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget169"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-9.16032; 139.355; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget170"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-6.36698; 150.661; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget171"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-14.6903; 137.029; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget172"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[4.68127; 145.022; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget173"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-11.6566; 144.327; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget174"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-12.8757; 141.783; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget175"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-7.5518; 144.962; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget176"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-11.0376; 144.331; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget177"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-5.20625; 134.563; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget178"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-8.21013; 133.56; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget179"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[4.03261; 150.982; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget180"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[3.40664; 134.422; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget181"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[11.202; -158.698; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget182"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[21.774; -154.73; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget183"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[28.1873; -161.354; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget184"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.9335; -160.581; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget185"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[14.3587; -154.048; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget186"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[17.9283; -161.084; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget187"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[19.7645; -149.902; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget188"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[30.1828; -146.737; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget189"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[13.6781; -151.785; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget190"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[27.6605; -159.512; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget191"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.4453; -154.709; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget192"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[18.0754; -164.235; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget193"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[14.3685; -148.264; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget194"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[19.1151; -148.797; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget195"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[20.1904; -150.035; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget196"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[12.9622; -161.175; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget197"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[22.3402; -154.503; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget198"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[15.0738; -165.94; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget199"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-8.96888; 58.3235; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget200"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-22.4737; -30.1829; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget201"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-40.6218; 123.094; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget202"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-38.5481; 119.85; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget203"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-9.25372; -87.6812; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget204"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-48.6925; 40.8459; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget205"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[11.8228; 29.6097; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget206"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-3.48909; 14.6662; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget207"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.5139; 133.179; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget208"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.9865; -84.6796; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget209"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.6237; -65.4933; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget210"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-55.9675; -137.083; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget211"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-51.7433; 158.339; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget212"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-21.648; 52.3987; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget213"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[3.70371; -7.39324; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget214"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[18.5335; 50.1541; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget215"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-11.0857; 16.0978; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget216"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[38.3977; 53.0321; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget217"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[26.2031; 15.7989; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget218"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[56.2379; 79.5768; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget219"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[3.76007; 8.09831; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget220"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-20.9825; 177.734; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget221"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-47.3245; -101.276; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget222"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[13.315; -141.913; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget223"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33.4563; -140.509; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget224"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-9.18565; -157.107; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget225"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-49.1012; -34.3512; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget226"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-28.0234; -18.5858; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget227"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-41.5612; -48.3062; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget228"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-26.2794; 94.8617; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget229"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-7.18978; 46.0427; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget230"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[3.25713; 97.9129; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget231"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-5.10908; 155.827; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget232"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[45.0446; 170.187; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget233"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[2.16625; -110.87; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget234"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[53.2347; -130.005; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget235"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.5251; 70.6559; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget236"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[54.9233; -146.225; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget237"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-31.1152; 9.14559; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget238"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[21.1347; 10.9239; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget239"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-25.3123; 130.01; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget240"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[20.617; -5.4528; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget241"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[23.4169; -38.3557; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget242"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-51.8409; 61.7152; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget243"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-29.4252; 86.8529; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget244"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-33.1152; 7.21889; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget245"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[20.1399; -54.8234; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget246"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[41.3271; -126.001; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget247"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-18.6645; 30.9931; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget248"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[33.6624; -85.6277; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget249"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "10">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[21.0398; -163.997; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget250"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-59.1942; 91.776; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget251"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[12.2605; -92.5973; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget252"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-13.5875; -20.7352; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget253"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[49.9189; 67.6066; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget254"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-59.8619; -50.6778; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget255"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-4.5061; 85.0824; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget256"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-9.07812; -37.9053; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget257"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-4.69004; 66.0297; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget258"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[32.4192; 73.4571; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget259"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-21.3034; -20.7701; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget260"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[34.1687; -172.952; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget261"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-3.43714; -60.8912; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget262"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-55.7085; -27.2486; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget263"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-38.8951; -82.7026; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget264"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[26.611; -109.061; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget265"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-3.18168; 115.82; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget266"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-41.6735; -25.2283; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget267"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-19.065; 139.598; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget268"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[12.8867; -39.1741; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget269"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-36.9906; 96.8812; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget270"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[28.6112; -37.1551; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget271"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-30.858; 111.065; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget272"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[50.0909; 91.8278; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget273"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-27.7126; -44.1376; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget274"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[31.86; -102.233; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget275"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-37.3606; 104.547; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget276"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "1">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-25.5002; 161.749; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget277"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "5">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-49.0664; -62.0764; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget278"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[9.14513; 61.6552; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget279"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "8">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[22.0036; -22.0878; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget280"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[5.59117; 120.06; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget281"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-8.91254; 96.7875; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget282"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[17.3331; -119.789; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget283"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[17.7141; 130.313; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget284"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[21.482; 176.354; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget285"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[16.2944; 5.19244; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget286"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "2">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[53.4209; 138.341; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget287"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-34.9278; 31.6894; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget288"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[25.1138; -124.289; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget289"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-31.6523; -108.049; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget290"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "4">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-45.6724; -33.4963; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget291"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[12.8765; 89.5341; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget292"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-5.98348; 117.21; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget293"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "9">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-4.95294; 104.387; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget294"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "7">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[19.4334; -65.3313; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget295"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "6">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[32.4343; 12.2631; 0]">
+		</DynamicState>
+	</TARGET>
+	<TARGET
+		TargetName = "imagetarget296"
+		TargetType = "LocationTarget"
+		TaskType = "IMAGING"
+		MaxTimes = "10"
+		Value = "3">
+		<DynamicState
+			DynamicStateType = "STATIC_LLA"
+			ICs = "[-17.9738; -147.618; 0]">
+		</DynamicState>
+	</TARGET>
+</TARGETDECK>

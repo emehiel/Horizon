@@ -16,6 +16,7 @@ using System.IO;
 namespace HSFSchedulerUnitTest
 {
     [TestFixture]
+
     public class SchedulerUnitTest
     {
         string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
@@ -214,8 +215,9 @@ namespace HSFSchedulerUnitTest
             catch
             {
                 programAct.log.Info("LoadDepenedencies Failed the Unit test");
-                return systemTasks;
                 Assert.Fail();
+                return systemTasks;
+                
 
             }
             return systemTasks;

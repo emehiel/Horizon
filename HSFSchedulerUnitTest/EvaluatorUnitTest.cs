@@ -17,7 +17,7 @@ namespace HSFSchedulerUnitTest
     /// Summary description for UnitTest1
     /// </summary>
     [TestFixture]
-    public class ScriptedEvaluatorUnitTest
+    public class EvaluatorUnitTest
     {
         public Evaluator eval;
 
@@ -41,6 +41,22 @@ namespace HSFSchedulerUnitTest
             XmlNode simNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
 
             ScriptedEvaluator s = new ScriptedEvaluator(simNode, dep); 
+
+            Asset asset = new Asset();
+            SystemState sysstate = new SystemState();
+            StateHistory hist = new StateHistory(sysstate);
+            SystemSchedule schedule = new SystemSchedule(sysstate);
+
+            double sumout = s.Evaluate(schedule);
+            Assert.AreEqual(2, sumout);
+        }
+        public void EvaluatorFactory() //TODO
+        {
+            string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scripted.xml");
+            Dependency dep = Dependency.Instance;
+            XmlNode simNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
+
+            ScriptedEvaluator s = new ScriptedEvaluator(simNode, dep);
 
             Asset asset = new Asset();
             SystemState sysstate = new SystemState();

@@ -41,8 +41,8 @@ namespace UserModelUnitTest
             Assert.AreEqual(30, SimParameters.SimEndSeconds);
             Assert.AreEqual(0, SimParameters.SimStartSeconds);
             Assert.AreEqual(2454680.0, SimParameters.SimStartJD);
-            Assert.AreEqual(10, SchedParameters.MaxNumScheds);
-            Assert.AreEqual(10, SchedParameters.NumSchedCropTo);
+            Assert.AreEqual(6, SchedParameters.MaxNumScheds);
+            Assert.AreEqual(5, SchedParameters.NumSchedCropTo);
             Assert.AreEqual(30, SchedParameters.SimStepSeconds);
 
         }

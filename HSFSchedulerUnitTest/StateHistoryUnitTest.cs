@@ -65,6 +65,7 @@ namespace HSFSchedulerUnitTest
             Assert.AreEqual(vent.State, newHist.GetLastState());
             // GetLastTask
             Assert.AreEqual(vent.GetAssetTask(asset), newHist.GetLastTask(asset));
+            Assert.AreEqual(null, emptyHist.GetLastTask(asset));
             // Dictionary<Asset,Task> GetLastTasks
             Dictionary<Asset, Task> taskdic = new Dictionary<Asset, Task>();
             taskdic.Add(asset, task);
@@ -79,6 +80,7 @@ namespace HSFSchedulerUnitTest
             Assert.AreEqual(1, newHist.size(asset));
             // bool isEmpty
             Assert.IsTrue(emptyHist.isEmpty());
+            Assert.IsTrue(emptyHist.isEmpty(asset));
             Assert.IsFalse(newHist.isEmpty());
             Assert.IsFalse(newHist.isEmpty(asset));
         }

@@ -39,8 +39,8 @@ namespace UserModelUnitTest
             XmlEnum.MoveNext();
             var simulationInputXMLNode = (XmlNode)XmlEnum.Current;
             bool bingo = SchedParameters.LoadSchedParameters(simulationInputXMLNode["SCHEDULER_PARAMETERS"]);
-            Assert.AreEqual(10, SchedParameters.MaxNumScheds);
-            Assert.AreEqual(10, SchedParameters.NumSchedCropTo);
+            Assert.AreEqual(6, SchedParameters.MaxNumScheds);
+            Assert.AreEqual(5, SchedParameters.NumSchedCropTo);
             Assert.AreEqual(30, SchedParameters.SimStepSeconds);
         }
     }

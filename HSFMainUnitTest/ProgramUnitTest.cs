@@ -40,7 +40,7 @@ namespace HSFMainUnitTest
         /// Runs the primary functions in main with aeolus to check the output.
         /// Primarily looks at the highest performing schedule score and number of events
         /// </summary>
-        [Test]
+        //[Test]
         public void AeolusTestRun()
         {
             Program programAct = new Program();
@@ -254,7 +254,7 @@ namespace HSFMainUnitTest
         /// <summary>
         /// Test to make sure that the maximum schedule score is generated
         /// </summary>
-        [Test]
+        //[Test]
         public void EvaluateSchedulesUnitTest()
         {
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");

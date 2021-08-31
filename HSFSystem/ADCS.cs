@@ -8,10 +8,12 @@ using System.Xml;
 using MissionElements;
 using HSFUniverse;
 using HSFSystem;
+using System.Diagnostics.CodeAnalysis;
 //using Logging;
 
 namespace HSFSubsystem
 {
+    [ExcludeFromCodeCoverage]
     public class ADCS : Subsystem
     {
         #region Attributes

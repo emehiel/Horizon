@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Grib.Api;
 using System.IO;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HSFUniverse
 {
+    [ExcludeFromCodeCoverage]
     public class RealTimeAtmosphere : Atmosphere
     {
         #region Attributes

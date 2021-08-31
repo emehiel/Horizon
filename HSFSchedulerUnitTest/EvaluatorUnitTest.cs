@@ -50,21 +50,26 @@ namespace HSFSchedulerUnitTest
             double sumout = s.Evaluate(schedule);
             Assert.AreEqual(2, sumout);
         }
-        public void EvaluatorFactory() //TODO
+        [Test]
+        public void EvaluatorFactUT() 
         {
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scripted.xml");
             Dependency dep = Dependency.Instance;
             XmlNode simNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
 
-            ScriptedEvaluator s = new ScriptedEvaluator(simNode, dep);
+            Evaluator valuator = EvaluatorFactory.GetEvaluator(simNode, dep);
 
-            Asset asset = new Asset();
-            SystemState sysstate = new SystemState();
-            StateHistory hist = new StateHistory(sysstate);
-            SystemSchedule schedule = new SystemSchedule(sysstate);
+            Assert.IsInstanceOf(typeof(ScriptedEvaluator), valuator);
 
-            double sumout = s.Evaluate(schedule);
-            Assert.AreEqual(2, sumout);
+
+            string SimulationInputFilePath2 = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            XmlNode simNode2 = XmlParser.ParseSimulationInput(SimulationInputFilePath2);
+
+            Evaluator valuator2 = EvaluatorFactory.GetEvaluator(simNode2, dep);
+
+            Assert.IsInstanceOf(typeof(TargetValueEvaluator), valuator2);
+            
+            
         }
 
     }

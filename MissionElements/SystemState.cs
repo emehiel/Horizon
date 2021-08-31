@@ -111,7 +111,7 @@ namespace MissionElements
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public KeyValuePair<double, int> GetLastValue(StateVarKey<int> key) {
+        public KeyValuePair<double, int> GetLastValue(StateVarKey<int> key) { //TODO Test
             HSFProfile<int> valueOut;
             if (Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -652,7 +652,7 @@ namespace MissionElements
                 {
                     string val = ICNode.Attributes["value"].Value;
                     bool val_ = false;
-                    if (val.Equals("True") || val.Equals("1"))
+                    if (val.ToLower().Equals("true") || val.Equals("1"))
                         val_ = true;
                     StateVarKey<bool> svk = new StateVarKey<bool>(key);
                     state.AddValue(svk, new KeyValuePair<double, bool>(SimParameters.SimStartSeconds, val_));
@@ -665,7 +665,9 @@ namespace MissionElements
                 }
                 else if (type.Equals("Quat"))
                 {
-                    // Quaternions still need an initializer from a string, like Matrices
+                    Quat val = new Quat(ICNode.Attributes["value"].Value);
+                    StateVarKey<Quat>svk = new StateVarKey<Quat>(key);
+                    state.AddValue(svk, new KeyValuePair<double, Quat>(SimParameters.SimStartSeconds, val));
                 }
             }
             return state;

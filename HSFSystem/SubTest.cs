@@ -3,17 +3,29 @@ using HSFUniverse;
 using MissionElements;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using Utilities;
 
 namespace HSFSubsystem
 {
+    [ExcludeFromCodeCoverage]
     public class SubTest : Subsystem
     {
         #region Attributes
 
         Dictionary<string, double> lookup;
         protected StateVarKey<double> maj_Key;
+        Dictionary<string, int> Ilookup;
+        protected StateVarKey<int> IKey;
+        Dictionary<string, bool> Blookup;
+        protected StateVarKey<bool> BKey;
+        Dictionary<string, Quat> Qlookup;
+        protected StateVarKey<Quat> QKey;
+        Dictionary<string, Matrix<double>> Mlookup;
+        protected StateVarKey<double> MKey;
+
+
         #endregion
 
         #region Constructors
@@ -41,7 +53,14 @@ namespace HSFSubsystem
             }
             maj_Key = new StateVarKey<double>(Asset.Name + "." + "majorKey");
             addKey(maj_Key);
-
+            IKey = new StateVarKey<int>(Asset.Name + "." + "IKey");
+            addKey(IKey);
+            BKey = new StateVarKey<bool>(Asset.Name + "." + "BKey");
+            addKey(BKey);
+            MKey = new StateVarKey<Matrix<double>>(Asset.Name + "." + "MKey");
+            addKey(MKey);
+            QKey = new StateVarKey<Quat>(Asset.Name + "." + "QKey");
+            addKey(QKey);
         }
 
         /// <summary>
@@ -60,11 +79,6 @@ namespace HSFSubsystem
         #region Methods
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
-            //if (base.CanPerform(proposedEvent, environment) == false)
-              //  return false;
-
-            
-
             double es = proposedEvent.GetEventStart(Asset);
             double ts = proposedEvent.GetTaskStart(Asset);
             double te = proposedEvent.GetTaskEnd(Asset);
@@ -81,7 +95,6 @@ namespace HSFSubsystem
             {
                 return false;
             }
-
         }
         public override bool CanExtend(Event proposedEvent, Domain environment, double evalToTime)
         {
@@ -116,7 +129,6 @@ namespace HSFSubsystem
             lookup.Add("target3", time);
             return lookup;
         }
-
         public double depFunc(Event currentEvent)
         {
             return currentEvent.EventEnds[Asset]; //no reason for this, just need to return something
@@ -124,4 +136,4 @@ namespace HSFSubsystem
 
         #endregion Methods
     }
-}
+} 

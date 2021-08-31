@@ -13,6 +13,7 @@ using HSFSubsystem;
 using Horizon;
 using System.IO;
 
+
 namespace HSFSchedulerUnitTest
 {
     [TestFixture]
@@ -133,7 +134,14 @@ namespace HSFSchedulerUnitTest
             access.Push(noAccess);
             SystemSchedule newSched4 = new SystemSchedule(expHist2, access, 0);
             Assert.That(newSched4.AllStates, Has.Property("InitialState").EqualTo(expHist2.InitialState));
-
+            try
+            {
+                WriteScheduleTest(newSched3);
+            }
+            catch
+            {
+                Assert.Inconclusive("WriteSchedule not fully run");
+            }
         }
         /// <summary>
         /// 
@@ -179,9 +187,65 @@ namespace HSFSchedulerUnitTest
         /// <summary>
         /// Tests the ability to write schedule into file stored at a desired path
         /// </summary>
-        [Test]
-        public void WriteSchedule()
+        //[Test] TODO:  this test
+        public void WriteScheduleTest(SystemSchedule schedule) //TODO test other data types, more than just initial conditions
         {
+            //string path = Path.Combine(baselocation, @"UnitTestInputs\testWrite.xml");
+
+            string path = @"testWrite";
+
+            SystemSchedule.WriteSchedule(schedule, path);
+            string file1 =Path.Combine(path, "asset1_databufferfillratio.csv");
+            string file2 = Path.Combine(path, "asset1_datarate_mb_s_.csv");
+            string file3 = Path.Combine(path, "asset1_depthofdischarge.csv");
+            string file4 = Path.Combine(path, "asset1_eci_pointing_vector_xyz_.csv");
+            string file5 = Path.Combine(path, "asset1_eosensoron.csv");
+            string file6 = Path.Combine(path, "asset1_incidenceangle.csv");
+            string file7 = Path.Combine(path, "asset1_numpixels.csv");
+            string file8 = Path.Combine(path, "asset1_solarpanelpowerin.csv");
+
+
+
+            string text1 = System.IO.File.ReadAllText(@file1);
+            string expText1 = "time,asset1_databufferfillratio\r\n0,0\r\n";
+            System.IO.File.Delete(file1);
+
+            string text2 = System.IO.File.ReadAllText(@file2);
+            string expText2 = "time,asset1_datarate_mb_s_\r\n0,0\r\n";
+            System.IO.File.Delete(file2);
+
+            string text3 = System.IO.File.ReadAllText(@file3);
+            string expText3 = "time,asset1_depthofdischarge\r\n0,0\r\n";
+            System.IO.File.Delete(file3);
+
+            string text4 = System.IO.File.ReadAllText(@file4);
+            string expText4 = "time,asset1_eci_pointing_vector_xyz_\r\n0,[0; 0; 0]\r\n";
+            System.IO.File.Delete(file4);
+
+            string text5 = System.IO.File.ReadAllText(@file5);
+            string expText5 = "time,asset1_eosensoron\r\n0,0\r\n";
+            System.IO.File.Delete(file5);
+
+            string text6 = System.IO.File.ReadAllText(@file6);
+            string expText6 = "time,asset1_incidenceangle\r\n0,0\r\n";
+            System.IO.File.Delete(file6);
+
+            string text7 = System.IO.File.ReadAllText(@file7);
+            string expText7 = "time,asset1_numpixels\r\n0,0\r\n";
+            System.IO.File.Delete(file7);
+
+            string text8 = System.IO.File.ReadAllText(@file8);
+            string expText8 = "time,asset1_solarpanelpowerin\r\n0,0\r\n";
+            System.IO.File.Delete(file8);
+
+            Assert.AreEqual(expText1, text1);
+            Assert.AreEqual(expText2, text2);
+            Assert.AreEqual(expText3, text3);
+            Assert.AreEqual(expText4, text4);
+            Assert.AreEqual(expText5, text5);
+            Assert.AreEqual(expText6, text6);
+            Assert.AreEqual(expText7, text7);
+            Assert.AreEqual(expText8, text8);
 
         }
     }

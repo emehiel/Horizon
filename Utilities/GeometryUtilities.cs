@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,7 @@ using UserModel;
 
 namespace Utilities
 {
+    [ExcludeFromCodeCoverage]
     public static class GeometryUtilities
     {
         public static bool hasLOS(Vector posECI1, Vector posECI2)

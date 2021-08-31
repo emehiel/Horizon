@@ -11,9 +11,11 @@ using HSFUniverse;
 using MissionElements;
 using UserModel;
 using HSFSystem;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
+    [ExcludeFromCodeCoverage]
     public class Power : Subsystem
     {
         #region Attributes

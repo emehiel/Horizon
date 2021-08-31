@@ -9,9 +9,11 @@ using System.Xml;
 using MissionElements;
 using Utilities;
 using HSFUniverse;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSystem
 {
+    [ExcludeFromCodeCoverage]
     public class IMU:Subsystem
     {
         #region Attributes

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Utilities
 {
@@ -675,6 +676,7 @@ namespace Utilities
         /// Returns true if all elements of the Matrix<T> are real
         /// </summary>
         /// <returns></returns>
+        // TODO:  Unreferenced
         public bool IsReal()
         {
             bool isreal = true;
@@ -693,9 +695,12 @@ namespace Utilities
         /// Returns true if all elements of the Matrix<T> are complex
         /// </summary>
         /// <returns></returns>
+        // TODO:  Unreferenced
         public bool IsComplex()
         {
             return !IsReal();
+            throw new NotImplementedException("Matrix<T>.IsComplex()");
+
         }
 
         public bool IsSquare()
@@ -891,31 +896,32 @@ namespace Utilities
         }
 
 
-        // TODO:  SHould these get/set functions be static?
-        public static Matrix<T> GetColumn(Matrix<T> A, int column)
-        {
-            return A.GetColumn(column);
-        }
+        //// TODO:  SHould these get/set functions be static?
+        //// TODO:  Unreferenced
+        //public static Matrix<T> GetColumn(Matrix<T> A, int column)
+        //{
+        //    return A.GetColumn(column);
+        //}
 
-        public static void SetColumn(Matrix<T> A, int column, Matrix<T> columnData)
-        {
-            A.SetColumn(column, columnData);
-        }
+        //public static void SetColumn(Matrix<T> A, int column, Matrix<T> columnData)
+        //{
+        //    A.SetColumn(column, columnData);
+        //}
 
-        /// <summary>
-        /// Returns a row of a Matrix<T>
-        /// </summary>
-        /// <param name="r"></param>
-        /// <returns></returns>
-        public static Matrix<T> GetRow(Matrix<T> A, int row)
-        {
-            return A.GetRow(row);
-        }
+        ///// <summary>
+        ///// Returns a row of a Matrix<T>
+        ///// </summary>
+        ///// <param name="r"></param>
+        ///// <returns></returns>
+        //public static Matrix<T> GetRow(Matrix<T> A, int row)
+        //{
+        //    return A.GetRow(row);
+        //}
 
-        public static void SetRow(Matrix<T> A, int row, Matrix<T> rowData)
-        {
-            A.SetRow(row, rowData);
-        }
+        //public static void SetRow(Matrix<T> A, int row, Matrix<T> rowData)
+        //{
+        //    A.SetRow(row, rowData);
+        //}
 
         /// <summary>
         /// Vertical Concatination of two matrices.  Neither Matrix<T> is modified.  A new Matrix<T> is returned.
@@ -1182,9 +1188,16 @@ namespace Utilities
         public static Matrix<T> Cumprod(Matrix<T> A, int Dim)
         {
             Matrix<T> C = (Matrix<T>)A.Clone();
-
+            
             if (Dim == 1)
             {
+                if (A.IsRowVector()) //Need something like this to catch the error when a row vector is call
+                {
+                    for (int c = 1; c <= A.NumCols; c++)
+                    {
+                        C[1, c] *= (dynamic)C[0, c];
+                    }
+                }
                 for (int r = 2; r <= A.NumRows; r++)
                 {
                     for (int c = 1; c <= A.NumCols; c++)
@@ -1552,6 +1565,7 @@ namespace Utilities
         }
     }
     */
+    [ExcludeFromCodeCoverage]
     public class MatrixSize
     {
         public int NumRows { get; set; }

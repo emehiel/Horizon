@@ -26,32 +26,43 @@ namespace HSFMainUnitTest
         [Test]
         public void MainTest()
         {
+            //arrange
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\v2.2-300targets.xml");
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\DSAC_Static.xml");
-
+            
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
+            int Expect_zero = 1;
+            //act
+            try
+            {
+                Expect_zero = Program.Main(inputArg);
+            }
+            //assert
+            catch(DirectoryNotFoundException e)
+            { Assert.Inconclusive(e.ToString()); }
 
-            int zero = Program.Main(inputArg);
-
-            Assert.AreEqual(0, zero);            
+            Assert.AreEqual(0, Expect_zero);            
         }
         /// <summary>
         /// Runs the primary functions in main with aeolus to check the output.
         /// Primarily looks at the highest performing schedule score and number of events
         /// </summary>
-        //[Test]
+        [Test]
         public void AeolusTestRun()
         {
+            //arrange
             Program programAct = new Program();
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Aeolus.xml");
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Aeolus.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Aeolus.xml");
+            //act
             Stack<Task> systemTasks = programAct.LoadTargets();
             programAct.LoadSubsystems();
             programAct.LoadDependencies();
             programAct.CreateSchedules(systemTasks);
             double maxSched = programAct.EvaluateSchedules();
+            //assert           
             Assert.AreEqual(175, maxSched);
             Assert.AreEqual(26, programAct.schedules.Count);
             Assert.AreEqual(10, programAct.schedules[0].AllStates.Events.Count);
@@ -64,28 +75,26 @@ namespace HSFMainUnitTest
         [Test]
         public void InitInput_NonAeolus()
         {
-            //if non-null files are 
+            //arrange
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
-
-            string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
-
-            Program program = new Program();
-            program.InitInput(inputArg);
-
-            string actual_simpath = program.SimulationInputFilePath;
             string expected_simpath = simulationInputFilePath;
-            Assert.AreEqual(expected_simpath, actual_simpath);
-
-            string actual_targpath = program.TargetDeckFilePath;
             string expected_targpath = targetDeckFilePath;
-            Assert.AreEqual(expected_targpath, actual_targpath);
-
-            string actual_modpath = program.ModelInputFilePath;
             string expected_modpath = modelInputFilePath;
-            Assert.AreEqual(expected_modpath, actual_modpath);
+            string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
+            Program program = new Program();
 
+            //act
+            program.InitInput(inputArg);
+            string actual_simpath = program.SimulationInputFilePath;
+            string actual_targpath = program.TargetDeckFilePath;
+            string actual_modpath = program.ModelInputFilePath;
+
+            //assert
+            Assert.AreEqual(expected_modpath, actual_modpath);
+            Assert.AreEqual(expected_simpath, actual_simpath);
+            Assert.AreEqual(expected_targpath, actual_targpath);
         }
         /// <summary>
         /// empty input arguments to initInput, tests that aeolus files load by default DOES THIS NEED TO EXIST?
@@ -94,26 +103,26 @@ namespace HSFMainUnitTest
         public void InitInput_Aeolus()
         {
             //if non-null files are 
-
+            //arrange
             string simulationInputFilePath = @"..\..\..\SimulationInput.xml";
             string targetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
             string modelInputFilePath = @"..\..\..\DSAC_Static.xml";
-
+            string expected_simpath = simulationInputFilePath;
+            string expected_targpath = targetDeckFilePath;
+            string expected_modpath = modelInputFilePath;
             Program program = new Program();
             string[] args = { };
+
+            //act
             program.InitInput(args);
-
             string actual_simpath = program.SimulationInputFilePath;
-            string expected_simpath = simulationInputFilePath;
-            Assert.AreEqual(expected_simpath, actual_simpath);
-
             string actual_targpath = program.TargetDeckFilePath;
-            string expected_targpath = targetDeckFilePath;
-            Assert.AreEqual(expected_targpath, actual_targpath);
-
             string actual_modpath = program.ModelInputFilePath;
-            string expected_modpath = modelInputFilePath;
+
+            //assert
             Assert.AreEqual(expected_modpath, actual_modpath);
+            Assert.AreEqual(expected_simpath, actual_simpath);
+            Assert.AreEqual(expected_targpath, actual_targpath);
 
         }
 
@@ -122,16 +131,24 @@ namespace HSFMainUnitTest
         /// <summary>
         /// Tests Output initialization files, cant figure a good way to test this on git servers
         /// </summary>
-        //[Test]
+        [Test]
         public void InitOutputUnitTest() // really unsure of this implementation
         {
+            //arrange
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-1", DateTime.Now);
             string expected = "C:\\HorizonLog\\";
             string txt = ".txt";
             expected += outputFileName + txt;
-
             Program program = new Program();
-            string actual = program.InitOutput();
+            string actual = "";
+            //act
+            try
+            {
+                actual = program.InitOutput();
+            }
+            //assert
+            catch (DirectoryNotFoundException e)
+            { Assert.Inconclusive(e.ToString()); }
             Assert.AreEqual(expected, actual);
 
         }
@@ -142,20 +159,22 @@ namespace HSFMainUnitTest
         [Test]
         public void LoadTargetsUnitTest()
         {
+            //arrange
             Program TestProgram = new Program();
             TestProgram.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             TestProgram.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
             TestProgram.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
-
+            double exp_TaskCount = 17;
+            double exp_TaskVal = 10;
             
+            //act
             Stack<Task> systemTasks = TestProgram.LoadTargets();
-
-            double actual = systemTasks.Count;
+            double act_TaskCount = systemTasks.Count;
             Task task = systemTasks.Pop();
-            double expected = 17;
-            Assert.AreEqual(expected, actual);
+            //assert
+            Assert.AreEqual(exp_TaskCount, act_TaskCount);
             Assert.AreEqual("imagetarget16", task.Target.Name);
-            Assert.AreEqual(10, task.Target.Value);
+            Assert.AreEqual(exp_TaskVal, task.Target.Value);
         }
 
         /// <summary>
@@ -164,34 +183,30 @@ namespace HSFMainUnitTest
         [Test]
         public void LoadSubsystemUnitTest()
         {
+            //arrange
             Program programAct = new Program();
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Simple.xml");
-            //programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Simple.xml");
-
+            double expAsset = 1;
+            double expConstraint = 1;
+            double expDependencies = 2;
+            double expDepFcn = 1;
+            double expSubs = 3;            
             programAct.LoadTargets();
+
+
+            //act
             programAct.LoadSubsystems();
             var subsystemMapAct = programAct.SubsystemMap;
-
-            Assert.AreEqual(programAct.AssetList[0].Name, "asset1");
             double numAsset = programAct.AssetList.Count;
             double numConstraints = programAct.ConstraintsList.Count;
             double numDependencies = programAct.DependencyMap.Count;
             double numDepFcn = programAct.DependencyFcnMap.Count;
             double numSubs = programAct.SubList.Count;
-            // End Actual method call
 
-
-            //Expected
-            double expAsset = 1;
-            double expConstraint = 1;
-            double expDependencies = 2;
-            double expDepFcn = 1;
-            double expSubs = 3;
-            
-
-            //Assert
+            //assert
+            Assert.AreEqual(programAct.AssetList[0].Name, "asset1");
             Assert.IsInstanceOf(typeof(SpaceEnvironment), programAct.SystemUniverse);
             Assert.AreEqual(expAsset, numAsset);
             Assert.AreEqual("asset1", programAct.AssetList[0].Name);
@@ -204,7 +219,7 @@ namespace HSFMainUnitTest
             Assert.AreEqual("SSDRfromEOSensor.asset1", programAct.DependencyFcnMap[0].Value);
             Assert.AreEqual(expSubs, numSubs);
             Assert.AreEqual("asset1.access", programAct.SubList[0].Name);
-            //Assert.AreEqual, programAct.InitialSysState.Ddata.Values);
+            //Assert.AreEqual, programAct.InitialSysState.Ddata.Values); //maybe test this? so many objects created in this method
         }
         /// <summary>
         /// Tests an example with more interdependences
@@ -212,16 +227,18 @@ namespace HSFMainUnitTest
         [Test]
         public void LoadDependenciesUnitTest()
         {
-            //Start Actual method call
+            //arrange
             Program programAct = new Program();
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
-
-            //var evaluatorNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
             programAct.LoadTargets();
             programAct.LoadSubsystems();
+
+            //act
             programAct.LoadDependencies();
+
+            //assert
             Assert.AreEqual(0, programAct.SubList[0].DependentSubsystems.Count);
             Assert.AreEqual(programAct.SubList[0], programAct.SubList[1].DependentSubsystems[0]);
             Assert.AreEqual(1, programAct.SubList[2].SubsystemDependencyFunctions.Count);
@@ -233,10 +250,10 @@ namespace HSFMainUnitTest
         [Test]
         public void CreateSchedulesUnitTest()
         {
+            //arrange
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
-            //this is a test - declan comit
 
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
 
@@ -245,8 +262,11 @@ namespace HSFMainUnitTest
             Stack<Task> systemTasks = program.LoadTargets();
             program.LoadSubsystems();
             program.LoadDependencies();
+
+            //act
             program.CreateSchedules(systemTasks);
 
+            //assert
             double actual = program.schedules.Count;
             double expected = 17;
             Assert.AreEqual(expected, actual);
@@ -254,29 +274,29 @@ namespace HSFMainUnitTest
         /// <summary>
         /// Test to make sure that the maximum schedule score is generated
         /// </summary>
-        //[Test]
+        [Test]
         public void EvaluateSchedulesUnitTest()
         {
+            //arrange
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
-
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
-
             Program program = new Program();
             program.InitInput(inputArg);
             Stack<Task> systemTasks = program.LoadTargets();
             program.LoadSubsystems();
             program.LoadDependencies();
             program.CreateSchedules(systemTasks);
-            double maxSched = program.EvaluateSchedules();
+            double exp_MaxSched= 20;
 
-            double actual = maxSched;
-            double expected = 20;
+            //act
+            double act_maxSched = program.EvaluateSchedules();
 
-            Assert.AreEqual(expected, actual);
-            Assert.AreEqual(maxSched, program.schedules[0].ScheduleValue);
-            Assert.IsTrue(maxSched >= program.schedules[program.schedules.Count - 1].ScheduleValue);
+            //assert
+            Assert.AreEqual(exp_MaxSched, act_maxSched);
+            Assert.AreEqual(act_maxSched, program.schedules[0].ScheduleValue);
+            Assert.IsTrue(act_maxSched >= program.schedules[program.schedules.Count - 1].ScheduleValue);
 
         }
     }

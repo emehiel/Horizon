@@ -13,6 +13,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Update NuGet
+      run: nuget restore
     - name: Build
       run: dotnet build
     - name: Main Program Test

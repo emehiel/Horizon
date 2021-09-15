@@ -9,7 +9,7 @@ using Utilities;
 
 namespace HSFSubsystem
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class SubTest : Subsystem
     {
         #region Attributes

@@ -14,7 +14,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class SSDR : Subsystem
     {
         // Default Values

@@ -8,7 +8,7 @@ using Utilities;
 
 namespace HSFUniverse
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class WMM
     {
         private double a, a2, a4, b, b2, b4, c2, c3, c4, parp;

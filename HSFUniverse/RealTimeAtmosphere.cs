@@ -10,7 +10,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace HSFUniverse
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class RealTimeAtmosphere : Atmosphere
     {
         #region Attributes

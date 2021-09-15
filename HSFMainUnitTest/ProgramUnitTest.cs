@@ -28,9 +28,9 @@ namespace HSFMainUnitTest
         {
             //arrange
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\v2.2-300targets.xml");
-            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\DSAC_Static.xml");
-            
+            string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
             int Expect_zero = 1;
             //act
@@ -44,31 +44,7 @@ namespace HSFMainUnitTest
 
             Assert.AreEqual(0, Expect_zero);            
         }
-        /// <summary>
-        /// Runs the primary functions in main with aeolus to check the output.
-        /// Primarily looks at the highest performing schedule score and number of events
-        /// </summary>
-        [Test]
-        public void AeolusTestRun()
-        {
-            //arrange
-            Program programAct = new Program();
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Aeolus.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Aeolus.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Aeolus.xml");
-            //act
-            Stack<Task> systemTasks = programAct.LoadTargets();
-            programAct.LoadSubsystems();
-            programAct.LoadDependencies();
-            programAct.CreateSchedules(systemTasks);
-            double maxSched = programAct.EvaluateSchedules();
-            //assert           
-            Assert.AreEqual(175, maxSched);
-            Assert.AreEqual(26, programAct.schedules.Count);
-            Assert.AreEqual(10, programAct.schedules[0].AllStates.Events.Count);
 
-
-        }
         /// <summary>
         /// tests that the input argument string initialization works.  Same as assigning programAct.~FilePath
         /// </summary>
@@ -129,13 +105,13 @@ namespace HSFMainUnitTest
 
 
         /// <summary>
-        /// Tests Output initialization files, cant figure a good way to test this on git servers
+        /// Tests Output initialization files, cant figure a good way to test this on git servers, or to test the version control (which works 9.15.21)
         /// </summary>
         [Test]
-        public void InitOutputUnitTest() // really unsure of this implementation
+        public void InitOutputUnitTest() 
         {
             //arrange
-            var outputFileName = string.Format("output-{0:yyyy-MM-dd}-1", DateTime.Now);
+            var outputFileName = string.Format("output-{0:yyyy-MM-dd}-", DateTime.Now);
             string expected = "C:\\HorizonLog\\";
             string txt = ".txt";
             expected += outputFileName + txt;
@@ -145,10 +121,15 @@ namespace HSFMainUnitTest
             try
             {
                 actual = program.InitOutput();
+
+                actual = actual.Remove(32);
+                actual = actual + ".txt";//removes the version, version is an issue if running ProgramMain test multiple times per day
             }
             //assert
             catch (DirectoryNotFoundException e)
             { Assert.Inconclusive(e.ToString()); }
+
+
             Assert.AreEqual(expected, actual);
 
         }

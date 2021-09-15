@@ -12,7 +12,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class EOSensor : Subsystem
     {
         #region Attributes

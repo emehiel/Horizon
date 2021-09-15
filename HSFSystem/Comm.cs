@@ -12,7 +12,7 @@ using Utilities;
 
 namespace HSFSubsystem
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class Comm : Subsystem
     {
         #region Attributes

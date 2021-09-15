@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace HSFUniverse
 {
     [Serializable]
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class StandardAtmosphere : Atmosphere
     {
         #region Attributes

@@ -12,7 +12,7 @@ namespace MissionElements.Properties {
     using System;
     using System.Diagnostics.CodeAnalysis;
 
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
 
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.

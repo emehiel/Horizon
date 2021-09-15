@@ -11,7 +11,7 @@ using UserModel;
 
 namespace Utilities
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public static class GeometryUtilities
     {
         public static bool hasLOS(Vector posECI1, Vector posECI2)

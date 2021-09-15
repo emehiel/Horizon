@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Utilities
 {
     [Serializable]
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class IntegratorParameters
     {
         public ConcurrentDictionary<StateVarKey<double>, double> Ddata;

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Utilities
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public static class CollectionExtentions
     {
         public static int UpperBoundIndex<T>(

@@ -15,7 +15,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class Power : Subsystem
     {
         #region Attributes

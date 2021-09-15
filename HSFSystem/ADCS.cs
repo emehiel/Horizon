@@ -13,7 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class ADCS : Subsystem
     {
         #region Attributes

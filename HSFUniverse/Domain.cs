@@ -14,7 +14,7 @@ using Utilities;
 namespace HSFUniverse{
 
     [Serializable]
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public abstract class Domain
     {
         protected virtual void CreateUniverse() { }

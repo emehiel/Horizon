@@ -14,7 +14,7 @@ namespace HSFUniverse
     // TODO: Need to find alternative data source. I thought my current source was 2 months. It is only about a week. 
     // TODO: make it possible to specify a specfic filename/path easily
     [Serializable]
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public abstract class Atmosphere
     {
         protected SortedList<double, double> uVelocityData;
@@ -36,7 +36,7 @@ namespace HSFUniverse
 
 
     }
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class HorizontalWindModel14
     {
         [DllImport(@"C:\Users\steve\Desktop\HWM\hwm14.dll", CallingConvention = CallingConvention.StdCall)]

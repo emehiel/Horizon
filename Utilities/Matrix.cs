@@ -1565,7 +1565,7 @@ namespace Utilities
         }
     }
     */
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class MatrixSize
     {
         public int NumRows { get; set; }

@@ -13,7 +13,7 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSystem
 {
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class IMU:Subsystem
     {
         #region Attributes

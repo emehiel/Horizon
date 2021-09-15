@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 namespace Utilities
 {
     [Serializable]
-    [ExcludeFromCodeCoverage]
+    //[ExcludeFromCodeCoverage]
     public class Complex<T> : ICloneable, ISerializable
     {
         #region Properties

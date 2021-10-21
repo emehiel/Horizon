@@ -10,7 +10,7 @@
 		numSchedCropTo="2"
 		simStepSeconds="30.0">
 		<SCRIPTED_EVALUATOR
-			src = "PythonSubs\eval.py"
+			src = "PythonSubs\testeval.py"
 			className="eval">
 		</SCRIPTED_EVALUATOR>
 	</SCHEDULER_PARAMETERS>

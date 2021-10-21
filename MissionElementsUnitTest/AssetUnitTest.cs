@@ -1,6 +1,11 @@
-﻿using System;
-using NUnit.Framework;
+﻿using HSFUniverse;
 using MissionElements;
+using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml;
+using UserModel;
 using Utilities;
 
 namespace MissionElementsUnitTest
@@ -8,41 +13,71 @@ namespace MissionElementsUnitTest
     [TestFixture]
     public class AssetUnitTest
     {
+        string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+        Asset asset;
+        Asset asset3;
+        DynamicState dynamicState;
+        bool helped = false;
         [Test]
         public void ConstructorUnitTest()
         {
-            MissionElements.SystemState state = new MissionElements.SystemState();
-            HSFProfile<int> intProf = new HSFProfile<int>(0, 1);
-            intProf.Add(1, 2);
-            intProf.Add(2, -1);
 
-            StateVarKey<int> intKey = new StateVarKey<int>("testIntVar");
-            state.SetProfile(intKey, intProf);
+            if (!helped)
+            {
+                AssetHelper();
+            }
+            Assert.AreEqual("asset1", asset.Name);
+            Assert.AreEqual(dynamicState, asset.AssetDynamicState);
 
-            HSFProfile<double> doubleProf = new HSFProfile<double>(0, 1);
-            doubleProf.Add(1, 2);
-            doubleProf.Add(2, -1);
+            Asset asset2 = new Asset();  
+            Assert.AreEqual(null, asset2.AssetDynamicState);
+            Assert.AreEqual(null, asset2.Name);
 
-            StateVarKey<double> doubleKey = new StateVarKey<double>("testDoubleVar");
-            state.SetProfile(doubleKey, doubleProf);
 
-            HSFProfile<Matrix<double>> matrixProf = new HSFProfile<Matrix<double>>(0, new Matrix<double>(1, 2, 1));
-            matrixProf.Add(1, new Matrix<double>(1, 2, 2));
-            matrixProf.Add(2, new Matrix<double>(1, 2, -1));
 
-            var matrixKey = new StateVarKey<Matrix<double>>("testMatrixVar");
-            state.SetProfile(matrixKey, matrixProf);
+            
+            Assert.AreEqual("asset1", asset.Name);
+            Assert.AreEqual(dynamicState, asset.AssetDynamicState);
 
-            HSFProfile<int> newIntProf = state.GetProfile(intKey);
-            HSFProfile<double> newDoubleProf = state.GetProfile(doubleKey);
-            HSFProfile<Matrix<double>> newMatrixProf = state.GetProfile(matrixKey);
-
-            Console.WriteLine();
         }
+        [Test]
         public void Equals()
         {
-            Assert.Inconclusive();
+            if (!helped)
+            {
+                AssetHelper();
+            }
+            Assert.IsTrue(asset.Equals(asset3));
+
         }
+        public void AssetHelper()
+        {
+            string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            var simulationInputNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
+
+            OrbitalEOMS expectedorb = new OrbitalEOMS();
+
+            List<double> ICList = new List<double>();
+            ICList.Add(3000.0);
+            ICList.Add(4100.0);
+            ICList.Add(3400.0);
+            ICList.Add(0.0);
+            ICList.Add(6.02088);
+            ICList.Add(4.215866);
+            Vector expIC = new Vector(ICList);
+
+            DynamicStateType DST = new DynamicStateType();
+            dynamicState = new DynamicState(DST, expectedorb, expIC);
+
+            asset = new Asset(dynamicState, "asset1");
+
+
+            string ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_checker.xml");
+            XmlNode ModelFile = XmlParser.GetModelNode(ModelFilePath);
+            asset3 = new Asset(ModelFile.FirstChild);
+            helped = true;
+        }
+
         
     }
 }

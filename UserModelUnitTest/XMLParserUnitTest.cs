@@ -23,13 +23,14 @@ namespace UserModelUnitTest
         [Test]
         public void ParseScriptedSrc()
         {
-            string inputPath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ScriptUnivFact.xml");
-            XmlNode inputNode = XmlParser.GetModelNode(inputPath);
             string pythonFilePath = "";
             string className = "";
-            XmlParser.ParseScriptedSrc(inputNode.FirstChild,ref pythonFilePath, ref className);
-            Assert.AreEqual(pythonFilePath, "PythonSubs\\environment.py");
-            Assert.AreEqual(className, "environment");
+            string filePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ScriptUnivFact.xml");
+            XmlNode modelNode = XmlParser.GetModelNode(filePath);
+            XmlParser.ParseScriptedSrc(modelNode.FirstChild, ref pythonFilePath, ref className);
+
+            Assert.AreEqual("PythonSubs\\environment.py", pythonFilePath);
+            Assert.AreEqual("environment", className);
         }
         [Test]
         public void ParseSimulationInput1()
@@ -40,24 +41,26 @@ namespace UserModelUnitTest
             Assert.AreEqual(30, SimParameters.SimEndSeconds);
             Assert.AreEqual(0, SimParameters.SimStartSeconds);
             Assert.AreEqual(2454680.0, SimParameters.SimStartJD);
-            Assert.AreEqual(10, SchedParameters.MaxNumScheds);
-            Assert.AreEqual(10, SchedParameters.NumSchedCropTo);
-            Assert.AreEqual(30, SchedParameters.SimStepSeconds);          
+            Assert.AreEqual(6, SchedParameters.MaxNumScheds);
+            Assert.AreEqual(5, SchedParameters.NumSchedCropTo);
+            Assert.AreEqual(30, SchedParameters.SimStepSeconds);
 
         }
         [Test]
         public void GetTargetNode()
         {
             string input = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
-            XmlNode nothing = XmlParser.GetTargetNode(input);
-
+            XmlNode targetNodes = XmlParser.GetTargetNode(input);
+            Assert.AreEqual(17, targetNodes.ChildNodes.Count);
 
 
         }
         [Test]
         public void GetModelNode()
         {
-            Assert.Inconclusive();
+            string input = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            XmlNode modelNodes = XmlParser.GetModelNode(input);
+            Assert.AreEqual(9, modelNodes.ChildNodes[1].ChildNodes.Count);
         }
     }
 }

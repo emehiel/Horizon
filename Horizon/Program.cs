@@ -24,6 +24,7 @@ namespace Horizon
         public string SimulationInputFilePath { get; set; } //wanted to make read only but not sure how to set from 
         public string TargetDeckFilePath { get; set; }
         public string ModelInputFilePath { get; set; }
+       
         
 
         // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
@@ -59,9 +60,10 @@ namespace Horizon
         XmlNode evaluatorNode;
         Evaluator schedEvaluator;
         public List<SystemSchedule> schedules;
+
         public SystemClass simSystem { get; set; }
 
-        static int Main(string[] args)
+        public static int Main(string[] args) //
         {
             Program program = new Program();
             // Begin the Logger

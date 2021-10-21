@@ -134,9 +134,9 @@ namespace HSFSystemUnitTest
             Assert.IsTrue(NotEqualA.Accepts(InitialSysState));
             Assert.IsFalse(NotEqualB.Accepts(InitialSysState));
             Assert.IsTrue(HigherEqA.Accepts(InitialSysState));
-            Assert.IsFalse(HigherEqB.Accepts(InitialSysState)); //bugs? passes with equal vals but should fail
+            Assert.IsFalse(HigherEqB.Accepts(InitialSysState)); //Fixed, used to pass with equal vals but should fail
             Assert.IsTrue(LowerEqA.Accepts(InitialSysState));
-            Assert.IsFalse(LowerEqB.Accepts(InitialSysState)); //bugs? passes with equal vals but should fail
+            Assert.IsFalse(LowerEqB.Accepts(InitialSysState)); //BugFIxed passes with equal vals but should fail
             Assert.IsTrue(LowerA.Accepts(InitialSysState));
             Assert.IsFalse(LowerB.Accepts(InitialSysState));
 

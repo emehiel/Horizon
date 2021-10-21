@@ -137,9 +137,9 @@ namespace MissionElements
 
         public void SetEventStart(Asset asset, double te)
         {
-            if (EventEnds.ContainsKey(asset))
-                EventEnds.Remove(asset);
-            EventEnds.Add(asset, te);
+            if (EventStarts.ContainsKey(asset))
+                EventStarts.Remove(asset);
+            EventStarts.Add(asset, te);
         }
 
         public void SetTaskStart(Asset asset, double te)

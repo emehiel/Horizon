@@ -32,9 +32,8 @@ namespace UserModel
         /// <returns></returns>
         public static bool LoadSimParameters(XmlNode simulationXMLNode, string scenarioName)
         {
-            if (!_isInitialized)
+            try
             {
-                _isInitialized = true;
 
                 ScenarioName = scenarioName;
                 Console.WriteLine( "Loading simulation parameters... " );
@@ -56,12 +55,12 @@ namespace UserModel
 
                 return true;
             }
-            else
+            catch
+            {
+                Console.WriteLine("Simulation Parameters not loaded");
                 return false;
-        }
-        public static void changeInitStatus(bool input)
-        {
-            _isInitialized = input;
+            }
+
         }
     }
 }

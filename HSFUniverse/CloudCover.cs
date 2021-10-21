@@ -3,11 +3,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 
 namespace HSFUniverse
 {
     // This class not currently used, needs a lot of work
+    //[ExcludeFromCodeCoverage]
     public class CloudCover{
         private const int NUM_REGIONS = 14;
         private const int NUM_DAYS = 30;

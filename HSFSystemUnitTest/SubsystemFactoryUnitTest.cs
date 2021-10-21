@@ -25,6 +25,7 @@ namespace HSFSystemUnitTest
         /// <summary>
         /// Test that the GetSubsystem takes empty dependencies, an asset, and Sub XML node
         /// and populates sub dic (aka subsystemMap in program.cs) with the subsystems
+        /// TODO: Test the exception catch for unknown type
         /// </summary>
         [Test]
         public void GetSubsystem()

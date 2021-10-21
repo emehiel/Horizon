@@ -176,8 +176,7 @@ namespace HSFScheduler
             foreach(Event eit in Events)
             {
                 if (eit.Tasks.ContainsKey(asset)) //something has been scheduled
-                    return false;
-            }
+                    return false;}
             return true;
         }
 

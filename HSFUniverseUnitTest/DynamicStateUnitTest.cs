@@ -101,7 +101,10 @@ namespace UniverseUnitTest
         }
         [Test]
         public void ConstructDynamicState_unusedConst() 
-        {
+        { 
+            string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            var simulationInputNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
+
             DynamicStateType DST = new DynamicStateType();
             DST = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), "PREDETERMINED_ECI");
 
@@ -119,9 +122,10 @@ namespace UniverseUnitTest
 
 
             DynamicState dynamicState = new DynamicState(DST, expectedorb, expIC);
+            //dynamicState.Name = "Asset1";
             string actual = dynamicState.ToString();
 
-            string expected = "Asset1.DynamicState_time,Asset1.DynamicState_R_x,Asset1.DynamicState_R_y,Asset1.DynamicState_R_z,Asset1.DynamicState_V_x,Asset1.DynamicState_V_y,Asset1.DynamicState_V_z,\r\n0,3000,4100,3400,0,6.02088,4.215866\r\n";
+            string expected = "_time,_R_x,_R_y,_R_z,_V_x,_V_y,_V_z,\r\n0,3000,4100,3400,0,6.02088,4.215866\r\n";
 
             Assert.AreEqual(expected, actual);
 
@@ -168,9 +172,9 @@ namespace UniverseUnitTest
             Assert.IsTrue(Vector.AreEqual(v1, expv1, .0001));
             Assert.IsTrue(Vector.AreEqual(v30, expv30,.0001));
         }
+
         public void helperConst(string modelInput)
         {
-            
             programAct = new Program();
             programAct.ModelInputFilePath = Path.Combine(baselocation, modelInput) ;
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");

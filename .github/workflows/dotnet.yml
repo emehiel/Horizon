@@ -28,10 +28,10 @@ jobs:
     - name: Universe Test
       run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFUniverseUnitTest\bin\Debug\UniverseUnitTest.dll
     - name: Mission Elements Test
-      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFMissionElementsUnitTest\bin\Debug\MissionElementsUnitTest.dll
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe MissionElementsUnitTest\bin\Debug\MissionElementsUnitTest.dll
     - name: User Model Test
-      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFUserModelUnitTest\bin\Debug\UserModelUnitTest.dll
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe UserModelUnitTest\bin\Debug\UserModelUnitTest.dll
     - name: Utilities Test
-      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFUtilitiesUnitTest\bin\Debug\UtilitiesTest.dll
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe UtilitiesUnitTest\bin\Debug\UtilitiesUnitTest.dll
       
 # run: dotnet test --verbosity normal

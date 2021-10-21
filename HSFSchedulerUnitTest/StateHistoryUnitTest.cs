@@ -32,7 +32,7 @@ namespace HSFSchedulerUnitTest
             Assert.AreEqual(0, state.Events.Count);
         }
         [Test]
-        public void StateHistoryCtor2()
+        public void StateHistoryCtor2and3()
         {
             eventMaker();
             SystemState initialState = new SystemState();
@@ -48,6 +48,41 @@ namespace HSFSchedulerUnitTest
             Assert.AreEqual(vent, eventHist.GetLastEvent());
             Assert.AreEqual(task, newHist.GetLastTask(asset));
             Assert.AreEqual(vent, newHist.GetLastEvent());
+        }
+        [Test]
+        public void GetsTests()
+        {
+            eventMaker();
+            SystemState initialState = new SystemState();
+            //constructor 1
+            StateHistory emptyHist = new StateHistory(initialState);
+            //constructor 2
+            StateHistory eventHist = new StateHistory(emptyHist, vent);
+            //constructor 3
+
+            StateHistory newHist = new StateHistory(eventHist);
+            // GetLastState
+            Assert.AreEqual(vent.State, newHist.GetLastState());
+            // GetLastTask
+            Assert.AreEqual(vent.GetAssetTask(asset), newHist.GetLastTask(asset));
+            Assert.AreEqual(null, emptyHist.GetLastTask(asset));
+            // Dictionary<Asset,Task> GetLastTasks
+            Dictionary<Asset, Task> taskdic = new Dictionary<Asset, Task>();
+            taskdic.Add(asset, task);
+            Dictionary<Asset, Task> newHistTaskDic = newHist.GetLastTasks();
+            Assert.AreEqual(taskdic[asset], newHistTaskDic[asset]);
+            // Event GetLastEvent
+            Assert.AreEqual(vent, newHist.GetLastEvent());
+            // int timesCompletedTask
+            Assert.AreEqual(1, newHist.timesCompletedTask(asset, task));
+            // int size()
+            Assert.AreEqual(1, newHist.size());
+            Assert.AreEqual(1, newHist.size(asset));
+            // bool isEmpty
+            Assert.IsTrue(emptyHist.isEmpty());
+            Assert.IsTrue(emptyHist.isEmpty(asset));
+            Assert.IsFalse(newHist.isEmpty());
+            Assert.IsFalse(newHist.isEmpty(asset));
         }
         public void eventMaker()
         {

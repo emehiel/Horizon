@@ -11,9 +11,11 @@ using HSFUniverse;
 using MissionElements;
 using UserModel;
 using HSFSystem;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
+    //[ExcludeFromCodeCoverage]
     public class Power : Subsystem
     {
         #region Attributes
@@ -154,7 +156,7 @@ namespace HSFSubsystem
             bool exceeded= false ;
             double freq = 1.0;
             HSFProfile<double> dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, ref exceeded, 0, olddod);
-
+            //why is exceeded not checked anywhere??
             _newState.AddValue(DOD_KEY, dodProf);
             return true;
         }
@@ -192,7 +194,7 @@ namespace HSFSubsystem
             bool exceeded_lower = false, exceeded_upper = false;
             double freq =  1.0;
             HSFProfile<double> dodProf = dodrateofchange.limitIntegrateToProf(te, ee, freq, 0.0, 1.0, ref exceeded_lower, ref exceeded_upper, 0, olddod);
-            if (exceeded_upper)
+            if (exceeded_upper)  // why is exceeded upper checked and not exceeded lower?  
                 return false;
             if(dodProf.LastTime() != ee && ee == SimParameters.SimEndSeconds)
             {

@@ -89,12 +89,13 @@ namespace Horizon
             string stateDataFilePath = @"C:\HorizonLog\Scratch";// + string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}", DateTime.Now);
             SystemSchedule.WriteSchedule(program.schedules[0], stateDataFilePath);
 
-            var csv = new StringBuilder();
-            csv.Clear();
-            foreach (var asset in program.simSystem.Assets)
-            {
-                File.WriteAllText(@"..\..\..\" + asset.Name + "_dynamicStateData.csv", asset.AssetDynamicState.ToString());
-            }
+            //  Move this to a method that always writes out data about the dynamic state of assets, the target dynamic state data, other data?
+            //var csv = new StringBuilder();
+            //csv.Clear();
+            //foreach (var asset in program.simSystem.Assets)
+            //{
+            //    File.WriteAllText(@"..\..\..\" + asset.Name + "_dynamicStateData.csv", asset.AssetDynamicState.ToString());
+            //}
 
             //Console.ReadKey();
             return 0;
@@ -117,14 +118,20 @@ namespace Horizon
                     case "-s":
                         simulationInputFilePath = args[i];
                         simulationSet = true;
+                        Console.WriteLine("Using custom simulation file: " + simulationInputFilePath);
+                        log.Info("Using custom simulation file: " + simulationInputFilePath);
                         break;
                     case "-t":
                         targetDeckFilePath = args[i];
                         targetSet = true;
+                        Console.WriteLine("Using custom target deck file: " + targetDeckFilePath);
+                        log.Info("Using custom simulation file: " + targetDeckFilePath);
                         break;
                     case "-m":
                         modelInputFilePath = args[i];
                         modelSet = true;
+                        Console.WriteLine("Using custom model file: " + modelInputFilePath);
+                        log.Info("Using custom model file: " + modelInputFilePath);
                         break;
                 }
             }

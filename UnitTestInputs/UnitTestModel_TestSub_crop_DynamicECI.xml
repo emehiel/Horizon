@@ -1,0 +1,19 @@
+<MODEL>
+	<PYTHON
+		enableScripting = "true">
+	</PYTHON>
+
+	<ASSET assetName="Asset1">
+		<DynamicState
+      DynamicStateType="DYNAMIC_ECI"
+			ICs="[ 3000.0; 4100.0; 3400.0; 0.0; 6.02088; 4.215866]">
+			<EOMS
+				EOMSType="orbital_EOMS">
+			</EOMS>
+		</DynamicState>
+		<SUBSYSTEM
+			Type="SubTest"
+			subsystemName = "SubTest_Crop">
+		</SUBSYSTEM>
+	</ASSET>
+</MODEL>

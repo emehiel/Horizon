@@ -41,17 +41,17 @@ namespace HSFSystem
         public override bool Accepts(SystemState state) //fix this to be a dependency function
         {
             HSFProfile<T> prof = state.GetProfile(_key);
-            
+            //TODO try catch
             switch (Type)
             {
                 case ConstraintType.FAIL_IF_HIGHER:
-                    return ((dynamic)prof.Max() < _value);
-                case ConstraintType.FAIL_IF_HIGHER_OR_EQUAL:
                     return ((dynamic)prof.Max() <= _value);
+                case ConstraintType.FAIL_IF_HIGHER_OR_EQUAL:
+                    return ((dynamic)prof.Max() < _value);
                 case ConstraintType.FAIL_IF_LOWER:
-                    return ((dynamic)prof.Max() > _value);
-                case ConstraintType.FAIL_IF_LOWER_OR_EQUAL:
                     return ((dynamic)prof.Max() >= _value);
+                case ConstraintType.FAIL_IF_LOWER_OR_EQUAL:
+                    return ((dynamic)prof.Max() > _value);
                 case ConstraintType.FAIL_IF_EQUAL:
                     return ((dynamic)prof.Max() != _value);
                 case ConstraintType.FAIL_IF_NOT_EQUAL:

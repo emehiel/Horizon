@@ -168,7 +168,7 @@ namespace HSFScheduler
         /// </summary>
         /// <param name="schedule"></param>
         /// <param name="scheduleWritePath"></param>
-        public static void WriteSchedule(SystemSchedule schedule, String scheduleWritePath)
+        public static void WriteSchedule(SystemSchedule schedule, String scheduleWritePath) //TODO: Unit Test.
         {
             var csv = new StringBuilder();
             Dictionary<StateVarKey<double>, SortedList<double, double>> stateTimeDData = new Dictionary<StateVarKey<double>, SortedList<double, double>>();
@@ -193,7 +193,7 @@ namespace HSFScheduler
                         else if (!stateTimeDData[kvpDoubleProfile.Key].ContainsKey(data.Key))
                             stateTimeDData[kvpDoubleProfile.Key].Add(data.Key, data.Value);
                         else
-                            Console.WriteLine("idk");
+                            Console.WriteLine("idk"); //TERRIBLE!
 
                 foreach (var kvpIntProfile in sysState.Idata)
                     foreach (var data in kvpIntProfile.Value.Data)
@@ -263,7 +263,7 @@ namespace HSFScheduler
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <param name="scheduleWritePath"></param>
-        static void writeStateVariable<T>(KeyValuePair<StateVarKey<T>, SortedList<double, T>> list, string scheduleWritePath)
+        static void writeStateVariable<T>(KeyValuePair<StateVarKey<T>, SortedList<double, T>> list, string scheduleWritePath) //TODO: Unit Test.
         {
             var csv = new StringBuilder();
             string fileName = list.Key.VarName;

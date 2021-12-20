@@ -8,9 +8,11 @@ using MissionElements;
 using System.Xml;
 using HSFSystem;
 using Utilities;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
+    //[ExcludeFromCodeCoverage]
     public class EOSensor : Subsystem
     {
         #region Attributes

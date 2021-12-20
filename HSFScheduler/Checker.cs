@@ -97,14 +97,17 @@ namespace HSFScheduler
         /// <returns></returns>
         private static bool CheckConstraints(SystemClass system, SystemSchedule proposedSchedule, Constraint constraint)
         {
-            if (!constraint.Accepts(proposedSchedule.AllStates.GetLastState()))
+            if (constraint.Accepts(proposedSchedule.AllStates.GetLastState()))
+            {
+                return true;
+            }
+            else
             {
                 // TODO: Change this to logger
                 // HSFLogger.Log(new HSFLogData(constraint, subsystem, task, value, time));
                 Console.WriteLine("Constraint Failed");
                 return false;
             }
-            return true;
         }
     }
 }

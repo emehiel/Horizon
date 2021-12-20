@@ -10,9 +10,11 @@ using MissionElements;
 using Utilities;
 using HSFSystem;
 using log4net;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
+    //[ExcludeFromCodeCoverage]
     public class SSDR : Subsystem
     {
         // Default Values

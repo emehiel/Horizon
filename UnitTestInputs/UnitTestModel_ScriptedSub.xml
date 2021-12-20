@@ -1,0 +1,18 @@
+<MODEL>
+	<ASSET assetName="Asset1">
+		<DynamicState
+      DynamicStateType="PREDETERMINED_ECI"
+			ICs="[ 3000.0; 4100.0; 3400.0; 0.0; 6.02088; 4.215866]">
+			<EOMS
+				EOMSType="orbital_EOMS">
+			</EOMS>
+		</DynamicState>
+    <SUBSYSTEM
+			Type="scripted"
+			subsystemName = "Adcs"
+      			src="PythonSubs\adcs.py"
+      			className ="adcs">
+      			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
+    </SUBSYSTEM>
+	</ASSET>
+</MODEL>

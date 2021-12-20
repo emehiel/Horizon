@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props" Condition="Exists('..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props')" />
+  <Import Project="..\packages\NUnit.3.13.2\build\NUnit.props" Condition="Exists('..\packages\NUnit.3.13.2\build\NUnit.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -16,6 +18,8 @@
     <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
     <IsCodedUITest>False</IsCodedUITest>
     <TestProjectType>UnitTest</TestProjectType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,11 +48,16 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net, Version=2.0.7.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.7\lib\net45-full\log4net.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="log4net, Version=2.0.12.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.12\lib\net45\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=3.13.2.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\NUnit.3.13.2\lib\net45\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -63,11 +72,74 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="XMLParserUnitTest.cs" />
+    <Compile Include="Parameters.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Horizon\Horizon.csproj">
+      <Project>{6e6d45ba-6e13-4117-839e-469a59eef191}</Project>
+      <Name>Horizon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFMainUnitTest\HSFMainUnitTest.csproj">
+      <Project>{20099f21-a99c-4f8a-9c10-ae3c3102f320}</Project>
+      <Name>HSFMainUnitTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFSchedulerUnitTest\HSFSchedulerUnitTest.csproj">
+      <Project>{7411839b-05d5-4651-b8ca-c0b459fcfe5b}</Project>
+      <Name>HSFSchedulerUnitTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFScheduler\HSFScheduler.csproj">
+      <Project>{241171ab-18b2-45a0-848a-62b2ef751644}</Project>
+      <Name>HSFScheduler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFSystemUnitTest\HSFSystemUnitTest.csproj">
+      <Project>{62b089db-ee40-4015-b44f-63ec60f811da}</Project>
+      <Name>HSFSystemUnitTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFSystem\HSFSystem.csproj">
+      <Project>{72fa2884-1d92-4088-9fac-60564f9971f8}</Project>
+      <Name>HSFSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFUniverseUnitTest\HSFUniverseUnitTest.csproj">
+      <Project>{596fa71b-12fa-40e5-89b6-de19547a2a0f}</Project>
+      <Name>HSFUniverseUnitTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HSFUniverse\HSFUniverse.csproj">
+      <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
+      <Name>HSFUniverse</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LoggingUnitTest\LoggingUnitTest.csproj">
+      <Project>{701c5284-237e-44d2-8ae8-6f70f02259dc}</Project>
+      <Name>LoggingUnitTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Logging\Logging.csproj">
+      <Project>{45bee7e3-100b-4b95-8e59-2ae94503c1b4}</Project>
+      <Name>Logging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MissionElementsUnitTest\MissionElementsUnitTest.csproj">
+      <Project>{29caa65f-b807-4845-b04d-aa0526a3f8fa}</Project>
+      <Name>MissionElementsUnitTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MissionElements\MissionElements.csproj">
+      <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
+      <Name>MissionElements</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UserModel\UserModel.csproj">
+      <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
+      <Name>UserModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UtilitiesUnitTest\UtilitiesUnitTest.csproj">
+      <Project>{89680083-21cd-4fe8-a477-1f6884ad2e0e}</Project>
+      <Name>UtilitiesUnitTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
+      <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>
+      <Name>Utilities</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
@@ -89,6 +161,13 @@
   </Choose>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\NUnit.3.13.2\build\NUnit.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit.3.13.2\build\NUnit.props'))" />
+    <Error Condition="!Exists('..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\NUnit3TestAdapter.4.0.0\build\net35\NUnit3TestAdapter.props'))" />
+  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

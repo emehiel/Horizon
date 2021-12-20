@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -7,6 +8,7 @@ using Utilities;
 
 namespace HSFUniverse
 {
+    //[ExcludeFromCodeCoverage]
     public class WMM
     {
         private double a, a2, a4, b, b2, b4, c2, c3, c4, parp;

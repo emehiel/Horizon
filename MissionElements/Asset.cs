@@ -15,7 +15,7 @@ namespace MissionElements
         public DynamicState AssetDynamicState{ get; private set; } //was protected, why?
         public string Name { get; private set; }
         //TODO:make isTaskable mean something
-        public bool IsTaskable{ get; private set; }//was protected, why?
+        public bool IsTaskable{ get; private set; }//was protected, why? do we need this?
         #endregion
 
         #region Constructors

@@ -50,7 +50,7 @@ namespace HSFUniverse
                 Name = "Generic.DynamicState";
 
             // TODO add a line to pre-propagate to simEndTime if the type is predetermined
-            // TODO catch exception if _type or initial conditions are not set from teh XML file
+            // TODO catch exception if _type or initial conditions are not set from the XML file
             if (dynamicStateXMLNode.Attributes["DynamicStateType"] != null)
             {
                 string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value.ToString();
@@ -91,6 +91,7 @@ namespace HSFUniverse
 
         public DynamicState(DynamicStateType type, DynamicEOMS eoms, Vector initialConditions)
         {
+            _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds / SchedParameters.SimStepSeconds));
             _stateData.Add(0.0, initialConditions);
             Type = type;
             Eoms = eoms;
@@ -329,6 +330,10 @@ namespace HSFUniverse
                 csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6]);
 
             return csv.ToString();
+        }
+        public IntegratorOptions getIntegratorOptions()
+        {
+            return _integratorOptions;
         }
     }
     

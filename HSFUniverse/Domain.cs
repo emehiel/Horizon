@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 //using System.Linq;
 //using System.Text;
 //using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Utilities;
 namespace HSFUniverse{
 
     [Serializable]
+    //[ExcludeFromCodeCoverage]
     public abstract class Domain
     {
         protected virtual void CreateUniverse() { }

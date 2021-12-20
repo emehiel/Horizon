@@ -21,7 +21,7 @@ namespace HSFUniverse
     {
         #region Attributes
         public static readonly int solar_Constant = 1366;
-        private bool _isSunVecConstant;
+        public bool _isSunVecConstant { get; }
         private Matrix<double> esVec;
         #endregion Attributes
 

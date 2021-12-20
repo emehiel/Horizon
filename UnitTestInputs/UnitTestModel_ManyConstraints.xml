@@ -1,0 +1,92 @@
+<MODEL>		
+	<ASSET assetName="Asset1">
+		<DynamicState
+     			DynamicStateType="PREDETERMINED_ECI"
+			ICs="[ 3000.0; 4100.0; 3400.0; 0.0; 6.02088; 4.215866]">
+			<EOMS
+				EOMSType="orbital_EOMS">
+			</EOMS>
+		</DynamicState>
+		<SUBSYSTEM
+			Type="Power"
+			subsystemName = "Power"
+			batterySize="1000000"
+			fullSolarPower="150"
+			penumbraSolarPower="75">
+			<IC type="Double" key="DepthofDischarge" value="0.1"></IC>
+			<IC type="Double" key="SolarPanelPowerIn" value="0.0"></IC>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value="0.7"
+			subsystemName = "Power"
+			type="FAIL_IF_HIGHER">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.0"
+			subsystemName = "Power"
+			type="FAIL_IF_HIGHER">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.0"
+			subsystemName = "Power"
+			type="FAIL_IF_EQUAL">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.1"
+			subsystemName = "Power"
+			type="FAIL_IF_EQUAL">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.1"
+			subsystemName = "Power"
+			type="FAIL_IF_NOT_EQUAL">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.7"
+			subsystemName = "Power"
+			type="FAIL_IF_NOT_EQUAL">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.2"
+			subsystemName = "Power"
+			type="FAIL_IF_HIGHER_OR_EQUAL">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.1"
+			subsystemName = "Power"
+			type="FAIL_IF_HIGHER_OR_EQUAL">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.0"
+			subsystemName = "Power"
+			type="FAIL_IF_LOWER_OR_EQUAL">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.1"
+			subsystemName = "Power"
+			type="FAIL_IF_LOWER_OR_EQUAL">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.0"
+			subsystemName = "Power"
+			type="FAIL_IF_LOWER">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value="0.2"
+			subsystemName = "Power"
+			type="FAIL_IF_LOWER">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+</MODEL>

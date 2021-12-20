@@ -15,8 +15,6 @@ namespace UserModel
         public static double SimStepSeconds { get; private set; }
         public static int MaxNumScheds { get; private set; }
         public static int NumSchedCropTo { get; private set; }
-
-        private static bool _isInitialized = false;
         #endregion
 
         /// <summary>
@@ -26,10 +24,8 @@ namespace UserModel
         /// <returns></returns>
         public static bool LoadSchedParameters(XmlNode schedulerXMLNode)
         {
-            if (!_isInitialized)
+            try
             {
-                _isInitialized = true;
-
                 Console.WriteLine("Loading scheduler parameters... ");
 
                 SimStepSeconds = Convert.ToDouble(schedulerXMLNode.Attributes["simStepSeconds"].Value);
@@ -43,9 +39,15 @@ namespace UserModel
 
                 return true;
             }
-            else
-                return false;
+            catch 
+            {
+                Console.WriteLine("Schedule Parameters Failed to Load");
+                return false; 
+            }
+
+                
         }
+
 
     }
 }

@@ -129,20 +129,20 @@ namespace Horizon
                     case "-s":
                         SimulationInputFilePath = args[i];
                         simulationSet = true;
-                        Console.WriteLine("Using custom simulation file: " + simulationInputFilePath);
-                        log.Info("Using custom simulation file: " + simulationInputFilePath);
+                        Console.WriteLine("Using custom simulation file: " + SimulationInputFilePath);
+                        log.Info("Using custom simulation file: " + SimulationInputFilePath);
                         break;
                     case "-t":
                         TargetDeckFilePath = args[i];
                         targetSet = true;
-                        Console.WriteLine("Using custom target deck file: " + targetDeckFilePath);
-                        log.Info("Using custom simulation file: " + targetDeckFilePath);
+                        Console.WriteLine("Using custom target deck file: " + TargetDeckFilePath);
+                        log.Info("Using custom simulation file: " + TargetDeckFilePath);
                         break;
                     case "-m":
                         ModelInputFilePath = args[i];
                         modelSet = true;
-                        Console.WriteLine("Using custom model file: " + modelInputFilePath);
-                        log.Info("Using custom model file: " + modelInputFilePath);
+                        Console.WriteLine("Using custom model file: " + ModelInputFilePath);
+                        log.Info("Using custom model file: " + ModelInputFilePath);
                         break;
                 }
             }

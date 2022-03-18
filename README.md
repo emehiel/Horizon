@@ -24,10 +24,10 @@ Credit: Contributer Covenant
 ## Credits
 Cory O'Connor
 
-[Dr. Eric Meheil](https://github.com/emehiel)
+[Dr. Eric Mehiel](https://github.com/emehiel)
 
 [Morgan Yost](https://github.com/moyodancer)
 
 Jack Balfour
 ## Get in touch
-Questions can be addressed to Eric Meheil at emehiel@calpoly.edu.  Please read (or at least ctrl+F) the Wiki, contribution guidelines, and User Guide before emailing.  
+Questions can be addressed to Eric Mehiel at emehiel@calpoly.edu.  Please read (or at least ctrl+F) the Wiki, contribution guidelines, and User Guide before emailing.  

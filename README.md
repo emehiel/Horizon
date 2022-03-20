@@ -14,11 +14,11 @@ Both users and developers can contribute to Horizon.  First project ideas and ex
 
 Please read the contribution guidelines and Code of Conduct if you'd like to contribute to this project.
 ## Contribution Guidelines
-If you are thinking about contributing, please read our [contribution guidelines](https://github.com/emehiel/Horizon/wiki/contribution_guidelines) for where to find issues and requested features, standards for code quality, and the recommended steps for a successful contribution.
+If you are thinking about contributing, please read our [contribution guidelines](https://github.com/emehiel/Horizon/wiki/Contribution-Guidelines) for where to find issues and requested features, standards for code quality, and the recommended steps for a successful contribution.
 ## Code of Conduct
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md) 
+[Code of Conduct for Contributers](Horizon/wiki/CODE_OF_CONDUCT.md)
 
-Credit: Contributer Covenant
+Credit: GitHub
 ## License
 [![The MIT License](https://img.shields.io/badge/License-MIT-green)](https://mit-license.org/)
 ## Credits

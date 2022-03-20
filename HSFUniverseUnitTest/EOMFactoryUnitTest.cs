@@ -22,20 +22,27 @@ namespace UniverseUnitTest
         [Test]
         public void GetEomClass()
         {
+            //arrange
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
             XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
+
+            //act
             DynamicEOMS dynamicEOMS = EOMFactory.GetEomClass(modelInput.ChildNodes[1].FirstChild);
 
+            //assert
             Assert.IsInstanceOf(typeof(OrbitalEOMS), dynamicEOMS);
         }
         [Test]
         public void GetScriptedEomClass()
         {
+            //arrange
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ScriptEOM.xml");
             XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
 
+            //act
             DynamicEOMS dynamicEOMS = EOMFactory.GetEomClass(modelInput.ChildNodes[1].FirstChild);
 
+            //assert
             Assert.IsInstanceOf(typeof(ScriptedEOMS), dynamicEOMS);
         }
     }

@@ -25,8 +25,9 @@ namespace HSFSchedulerUnitTest
         /// should return the sum of target values from the Access Stack, 
         /// </summary>
         [Test]
-        public void TestMethod1()
+        public void TargetValueEvaluator_Constructor_Evaluate() // constructor only has one use, makes no sense to split test
         {
+            //arrange
             Program programAct = new Program();
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
@@ -36,6 +37,7 @@ namespace HSFSchedulerUnitTest
             XmlNode simNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath); // only need this in order to construct asset
             XmlNode modelNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
             Asset asset = new Asset(modelNode.ChildNodes[1]);
+            //trying a fancy way to embed dependent methods
             try
             {
                 programAct.LoadSubsystems();
@@ -59,19 +61,26 @@ namespace HSFSchedulerUnitTest
             SystemState systemState = SystemState.setInitialSystemState(ICNodes, asset);
             StateHistory hist = new StateHistory(systemState);
             Stack<Access> accesses = new Stack<Access>();
-            accesses.Push(new Access(asset, systemTasks.Pop()));
 
+            accesses.Push(new Access(asset, systemTasks.Pop()));
             SystemSchedule sysSched = new SystemSchedule(hist, accesses, 0);
-            Evaluator TVE = new TargetValueEvaluator(programAct._dependencies); 
-            double sum = TVE.Evaluate(sysSched); //started here, needed schedule (54) and evaluator (56)
-            Assert.AreEqual(1, sum);
 
             accesses.Pop();// goes one target deeper into the deck, val=-1
+
             accesses.Push(new Access(asset, systemTasks.Pop()));
             SystemSchedule sysSched2 = new SystemSchedule(hist, accesses, 0);
-            double sum2 = TVE.Evaluate(sysSched2); 
-            Assert.AreEqual(-1, sum2);
 
+            //act
+            //constructor
+            Evaluator TVE = new TargetValueEvaluator(programAct._dependencies); 
+            //evaluate
+            double sum = TVE.Evaluate(sysSched);
+
+            double sum2 = TVE.Evaluate(sysSched2);
+
+            //assert
+            Assert.AreEqual(1, sum);
+            Assert.AreEqual(-1, sum2);
         }
     }
 }

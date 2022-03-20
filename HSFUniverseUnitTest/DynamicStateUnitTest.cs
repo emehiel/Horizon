@@ -24,12 +24,11 @@ namespace UniverseUnitTest
         [Test]
         public void ConstructDynamicState() //TODO:whats going on here jack
         {
+            //arrange + act (dynamic state constructor) is contained within helperConst
             helperConst("UnitTestInputs\\UnitTestModel_DynState.xml");
 
             string actual = dynamic.ToString();
             string expected = "Asset1.DynamicState_time,Asset1.DynamicState_R_x,Asset1.DynamicState_R_y,Asset1.DynamicState_R_z,Asset1.DynamicState_V_x,Asset1.DynamicState_V_y,Asset1.DynamicState_V_z,\r\n0,3000,4100,3400,0,6.02088,4.215866\r\n";
-
-            Assert.AreEqual(expected, actual);
 
             Vector actIC = dynamic.InitialConditions();
 
@@ -43,6 +42,8 @@ namespace UniverseUnitTest
 
             Vector expIC = new Vector(ICList);
 
+            //assert
+            Assert.AreEqual(expected, actual);
             Assert.AreEqual(expIC, actIC);
 
         }
@@ -52,7 +53,7 @@ namespace UniverseUnitTest
         [Test]
         public void ConstructDynamicState_StaticEOM() //TODO:whats going on here jack
         {
-
+            //arrange + act
             helperConst("UnitTestInputs\\UnitTestModel_DynStateStatic.xml");
             
             DynamicEOMS expected = null;
@@ -61,7 +62,6 @@ namespace UniverseUnitTest
             string actual = dynamic.ToString();
             string expectedstring = "Asset1.DynamicState_time,Asset1.DynamicState_R_x,Asset1.DynamicState_R_y,Asset1.DynamicState_R_z,Asset1.DynamicState_V_x,Asset1.DynamicState_V_y,Asset1.DynamicState_V_z,\r\n0,3000,4100,3400,0,6.02088,4.215866\r\n";
 
-            Assert.AreEqual(expectedstring, actual);
 
             Vector actIC = dynamic.InitialConditions();
 
@@ -75,7 +75,9 @@ namespace UniverseUnitTest
 
             Vector expIC = new Vector(ICList);
 
+            //assert
             Assert.AreEqual(expIC, actIC);
+            Assert.AreEqual(expectedstring, actual);
         }
         /// <summary>
         /// Tests the four integrator parameters which can be adjusted in the XML input files
@@ -83,9 +85,8 @@ namespace UniverseUnitTest
         [Test]
         public void ConstructDynamicState_Integrators()
         {
+            //arrange
             helperConst("UnitTestInputs\\UnitTestModel_Integrator.xml");
-            
-            IntegratorOptions actIntOptions = dynamic.getIntegratorOptions();
 
             IntegratorOptions expIntOptions = new IntegratorOptions();
             expIntOptions.h = 1;
@@ -93,6 +94,10 @@ namespace UniverseUnitTest
             expIntOptions.atol = 1;
             expIntOptions.eps = 1;
 
+            //act
+            IntegratorOptions actIntOptions = dynamic.getIntegratorOptions();
+
+            //assert
             Assert.AreEqual(expIntOptions.h, actIntOptions.h);
             Assert.AreEqual(expIntOptions.rtol, actIntOptions.rtol);
             Assert.AreEqual(expIntOptions.atol, actIntOptions.atol);
@@ -102,6 +107,7 @@ namespace UniverseUnitTest
         [Test]
         public void ConstructDynamicState_unusedConst() 
         { 
+            //arrange
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             var simulationInputNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
 
@@ -120,13 +126,13 @@ namespace UniverseUnitTest
 
             OrbitalEOMS expectedorb = new OrbitalEOMS();
 
-
-            DynamicState dynamicState = new DynamicState(DST, expectedorb, expIC);
-            //dynamicState.Name = "Asset1";
-            string actual = dynamicState.ToString();
-
             string expected = "_time,_R_x,_R_y,_R_z,_V_x,_V_y,_V_z,\r\n0,3000,4100,3400,0,6.02088,4.215866\r\n";
 
+            //act
+            DynamicState dynamicState = new DynamicState(DST, expectedorb, expIC);
+            string actual = dynamicState.ToString();
+
+            //assert
             Assert.AreEqual(expected, actual);
 
         }
@@ -134,6 +140,7 @@ namespace UniverseUnitTest
         [Test]
         public void PosVelECI()
         {
+            //arrange
             helperConst("UnitTestInputs\\UnitTestModel_DynState.xml");
             
             List<double> ICposList = new List<double>();
@@ -151,8 +158,10 @@ namespace UniverseUnitTest
             ICvelList.Add(4.215866);
             Vector expvelIC = new Vector(ICvelList);
 
+            //act
             Vector actvelIC = dynamic.VelocityECI(0);
 
+            //assert
             Assert.AreEqual(expvelIC, actvelIC);
         }
         /// <summary>
@@ -161,13 +170,19 @@ namespace UniverseUnitTest
         [Test]
         public void VectorTest()
         {
+            //arrange
             helperConst("UnitTestInputs\\UnitTestModel_DynState.xml");
-            Vector v0 = dynamic.DynamicStateECI(0);
-            Vector v1 = dynamic.DynamicStateECI(1);
-            Vector v30 = dynamic.DynamicStateECI(30);
+
             Vector expv0 = new Vector("3000.0;4100.0;3400.0;0.0;6.02088;4.215866");
             Vector expv1 = new Vector("2999.997385487238;4106.017305084396;3404.212901661460;-0.005226299504;6.013732148925331;4.209939190247180");
             Vector expv30 = new Vector("2997.715635427037;4277.459280509288;3523.855415907365;-0.150003458110018;5.811427244838430;4.042747536995044");
+
+            //act
+            Vector v0 = dynamic.DynamicStateECI(0);
+            Vector v1 = dynamic.DynamicStateECI(1);
+            Vector v30 = dynamic.DynamicStateECI(30);
+            
+            //assert
             Assert.IsTrue(Vector.AreEqual(v0, expv0, .0001));
             Assert.IsTrue(Vector.AreEqual(v1, expv1, .0001));
             Assert.IsTrue(Vector.AreEqual(v30, expv30,.0001));
@@ -175,6 +190,7 @@ namespace UniverseUnitTest
 
         public void helperConst(string modelInput)
         {
+            
             programAct = new Program();
             programAct.ModelInputFilePath = Path.Combine(baselocation, modelInput) ;
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");

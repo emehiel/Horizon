@@ -146,6 +146,7 @@ namespace MissionElementsUnitTest
         [Test]
         public void setInitialConditions()
         {
+            //arrange
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSubICs.xml");
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
             XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
@@ -160,16 +161,6 @@ namespace MissionElementsUnitTest
             ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[3]);
             ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[4]);
             Asset asset = new Asset(modelNode.FirstChild);
-            SystemState systemState = SystemState.setInitialSystemState(ICNodes, asset);
-
-            HSFProfile<Quat> newQuatProf = systemState.GetProfile(quatKey);
-            Quat quatVal = newQuatProf.FirstValue();
-            HSFProfile<bool> newboolProf = systemState.GetProfile(boolKey);
-            HSFProfile<int> newIntProf = systemState.GetProfile(intKey);
-            HSFProfile<double> newDoubleProf = systemState.GetProfile(doubleKey);
-            HSFProfile<Matrix<double>> newMatrixProf = systemState.GetProfile(matrixKey);
-
-
 
             Quat expQuat = new Quat("[1.0, 0.5, 0.5, 0.4]");
             bool expBool = true;
@@ -177,6 +168,18 @@ namespace MissionElementsUnitTest
             Matrix<double> expMat = new Matrix<double>("[1,2;3,4]");
             double expDouble = 1.0;
 
+            //act
+            SystemState systemState = SystemState.setInitialSystemState(ICNodes, asset);
+
+            //get data
+            HSFProfile<Quat> newQuatProf = systemState.GetProfile(quatKey);
+            Quat quatVal = newQuatProf.FirstValue();
+            HSFProfile<bool> newboolProf = systemState.GetProfile(boolKey);
+            HSFProfile<int> newIntProf = systemState.GetProfile(intKey);
+            HSFProfile<double> newDoubleProf = systemState.GetProfile(doubleKey);
+            HSFProfile<Matrix<double>> newMatrixProf = systemState.GetProfile(matrixKey);
+
+            //assert
             Assert.IsTrue(expQuat.Equals(newQuatProf.FirstValue()));
             Assert.AreEqual(expBool, newboolProf.FirstValue());
             Assert.AreEqual(expInt, newIntProf.FirstValue());

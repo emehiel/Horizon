@@ -20,6 +20,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void GetConstraintUnitTest()
         {
+            //arrange
             string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint.xml");
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             XmlNode modelChildNode = modelInputXMLNode.FirstChild;
@@ -37,9 +38,12 @@ namespace HSFSystemUnitTest
                 }
                 if (modelChild2Node.Name.Equals("CONSTRAINT"))
                 {
+                    //act
                     _constraintsList.Add(ConstraintFactory.GetConstraint(modelChild2Node, _subsystemMap, asset));
                 }
             }
+
+            //assert
             Assert.AreEqual(1, _constraintsList.Count);
             Assert.AreEqual("power", _constraintsList[0].Name);
             //TODO more tests for different data types? how to navigate?
@@ -53,7 +57,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void GetConstraintNullSubUnitTest()
         {
-
+            //arrange
             string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint_NullSub.xml");
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             XmlNode modelChildNode = modelInputXMLNode.FirstChild;
@@ -66,6 +70,7 @@ namespace HSFSystemUnitTest
             {
                 try
                 {
+                    //act and assert bc should throw an error to the catch
                     _constraintsList.Add(ConstraintFactory.GetConstraint(modelChild2Node, _subsystemMap, asset));
                 }
                 catch (MissingMemberException)
@@ -77,7 +82,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void GetConstraintUnsupportedSubUnitTest()
         {
-
+            //arrange
             string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint_UnsupportedSub.xml");
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             XmlNode modelChildNode = modelInputXMLNode.FirstChild;
@@ -96,6 +101,7 @@ namespace HSFSystemUnitTest
                 {
                     try
                     {
+                        //act and assert bc should throw an error to the catch
                         _constraintsList.Add(ConstraintFactory.GetConstraint(modelChild2Node, _subsystemMap, asset));
                     }
                     catch (NotSupportedException)

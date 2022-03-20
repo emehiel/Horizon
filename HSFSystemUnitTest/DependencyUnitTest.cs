@@ -20,7 +20,9 @@ namespace HSFSystemUnitTest
             //first make sure it constructs
             try
             {
+                //arrange + act
                 Dependency D1 = Dependency.Instance;
+                //assert
                 Assert.IsInstanceOf(typeof(Dependency), D1);
             }
             catch
@@ -30,11 +32,13 @@ namespace HSFSystemUnitTest
             //then make sure that DependencyFunctions is created but doesnt have any keys
             try
             {
+                //arrange + act
                 Dependency D1 = Dependency.Instance;
                 Delegate elegate = D1.GetDependencyFunc(" "); //since DependencyFunctions is private cannot access DependencyFunctions directly
-            }
+            }   //assert
             catch (KeyNotFoundException _)
             {
+                
                 Assert.Pass();
             }
             catch
@@ -42,9 +46,10 @@ namespace HSFSystemUnitTest
                 Assert.Fail();
             }
 
+            //arrange + act
             Dependency D2 = Dependency.Instance;
             Dependency D3 = Dependency.Instance;
-
+            //assert
             Assert.AreSame(D2, D3);
         }
         /// <summary>
@@ -54,21 +59,28 @@ namespace HSFSystemUnitTest
         [Test]
         public void AddUnitTest()
         {
+            //arrange
             Dependency D1 = Dependency.Instance;
             Delegate delExp = new Func<double, double>(func1);
+
+            //act
             D1.Add("depfun",delExp);
             Delegate delAct = D1.GetDependencyFunc("depfun");
-            Assert.AreEqual(delExp, delAct);
 
             Delegate delExp2 = new Func<double, double>(func2);
             D1.Add("depfun", delExp2);
             Delegate delAct2 = D1.GetDependencyFunc("depfun");
+
+            //assert
+            Assert.AreEqual(delExp, delAct);
             Assert.AreEqual(delExp2, delAct2);
+
         }
 
         [Test]
         public void AppendUnitTest()
         {
+            //arrange
             Delegate delExp1 = new Func<double, double>(func1);
             Delegate delExp2 = new Func<double, double>(func2);
 
@@ -77,11 +89,15 @@ namespace HSFSystemUnitTest
             newDependencies.Add("func2", delExp2);
 
             Dependency D1 = Dependency.Instance;
+
+            //act
             D1.Append(newDependencies);
 
             Delegate delAct1 = D1.GetDependencyFunc("func1");
-            Assert.AreEqual(delExp1, delAct1);
             Delegate delAct2 = D1.GetDependencyFunc("func2");
+
+            //assert
+            Assert.AreEqual(delExp1, delAct1);
             Assert.AreEqual(delExp2, delAct2);
 
         }

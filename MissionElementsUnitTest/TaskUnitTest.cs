@@ -19,8 +19,13 @@ namespace MissionElementsUnitTest
         [Test]
         public void ConstructorUnitTest()
         {
+            //arrange
             taskHelper();
+
+            //act
             Task task = new Task((TaskType)Enum.Parse(typeof(TaskType),"EMPTY"), targ, 10);
+
+            //assert
             Assert.AreEqual(targ, task.Target);
             Assert.AreEqual((TaskType)Enum.Parse(typeof(TaskType), "EMPTY"), task.Type);
             Assert.AreEqual(10, task.MaxTimesToPerform);
@@ -31,18 +36,25 @@ namespace MissionElementsUnitTest
         [Test]
         public void LoadTargetsIntoList()
         {
+            //arrange
             taskHelper();
             XmlNode TargetNodes = null;
             Stack<Task> tasks = new Stack<Task>();
-            Assert.IsFalse(Task.loadTargetsIntoTaskList(TargetNodes,tasks));
+
+            //act
+            bool targetsnotLoaded = Task.loadTargetsIntoTaskList(TargetNodes, tasks);
+
             string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
             TargetNodes = XmlParser.GetTargetNode(targetDeckFilePath);
-            
             bool loaded = Task.loadTargetsIntoTaskList(TargetNodes, tasks);
+
+            //assert
+            Assert.IsFalse(targetsnotLoaded);
             Assert.IsTrue(loaded);
         }
         public void taskHelper()
         {
+           
             string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             var simulationInputNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);

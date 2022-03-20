@@ -17,6 +17,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void ConstructorUnitTest()
         {
+            //arrange
             string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint.xml");
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.XML");
 
@@ -41,7 +42,10 @@ namespace HSFSystemUnitTest
                     ConstraintNode = modelChild2Node;
                 }
             }
+            //act
             SingleConstraint<double> con1 = new SingleConstraint<double>(ConstraintNode, _subsystemMap["asset1.power"]);
+
+            //assert
             Assert.AreEqual(1, _constraintsList.Count);
             Assert.AreEqual("power", _constraintsList[0].Name);
 
@@ -49,6 +53,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void ConstructorNullUnitTest()
         {
+            //arrange
             string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Constraint.xml");
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.XML");
 
@@ -73,7 +78,11 @@ namespace HSFSystemUnitTest
                     ConstraintNode = modelChild2Node;
                 }
             }
+
+            //act
             SingleConstraint<double> con1 = new SingleConstraint<double>(ConstraintNode, _subsystemMap["asset1.power"]);
+            
+            //assert
             Assert.AreEqual(1, _constraintsList.Count);
             Assert.AreEqual("power", _constraintsList[0].Name);
 
@@ -82,6 +91,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void AcceptsUnitTest()
         {
+            //arrange
             string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ManyConstraints.xml");
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.XML");
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
@@ -126,7 +136,7 @@ namespace HSFSystemUnitTest
 
             InitialSysState.Add(SystemState.setInitialSystemState(ICNodes,asset));
 
-            
+            //act + assert (testing accepts which is boolean)
             Assert.IsTrue(HigherA.Accepts(InitialSysState));
             Assert.IsFalse(HigherB.Accepts(InitialSysState));
             Assert.IsTrue(EqualA.Accepts(InitialSysState));

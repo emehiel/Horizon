@@ -17,10 +17,12 @@ namespace UniverseUnitTest
         [Test]
         public void UniverseFactoryScriptedTest()
         {
+            //arrange
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ScriptUnivFact.xml");
             XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
+            //act
             Domain universeAct = UniverseFactory.GetUniverseClass(modelInput.FirstChild);
-
+            //assert
             Assert.IsInstanceOf(typeof(ScriptedUniverse), universeAct);
 
         }
@@ -30,9 +32,12 @@ namespace UniverseUnitTest
         [Test]
         public void UniverseFactorySpaceEnvironmentTest()
         {
+            //arrange
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_SpaceEnvUnivFact.xml");
             XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
+            //act
             Domain universe = UniverseFactory.GetUniverseClass(modelInput);
+            //assert
             Assert.IsInstanceOf(typeof(SpaceEnvironment), universe);
         }
     }

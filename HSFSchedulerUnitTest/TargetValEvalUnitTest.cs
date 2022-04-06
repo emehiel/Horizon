@@ -56,13 +56,13 @@ namespace HSFSchedulerUnitTest
             ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].FirstChild);
             ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1]);
 
-            SystemState systemState = SystemState.setInitialSystemState(ICNodes, asset);
+            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
             StateHistory hist = new StateHistory(systemState);
             Stack<Access> accesses = new Stack<Access>();
             accesses.Push(new Access(asset, systemTasks.Pop()));
 
             SystemSchedule sysSched = new SystemSchedule(hist, accesses, 0);
-            Evaluator TVE = new TargetValueEvaluator(programAct._dependencies); 
+            Evaluator TVE = new TargetValueEvaluator(programAct.Dependencies); 
             double sum = TVE.Evaluate(sysSched); //started here, needed schedule (54) and evaluator (56)
             Assert.AreEqual(1, sum);
 

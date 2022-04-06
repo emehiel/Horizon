@@ -34,12 +34,12 @@ namespace HSFSchedulerUnitTest
 
             XmlNode evalNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
 
-            Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evalNode, programAct._dependencies);
+            Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evalNode, programAct.Dependencies);
            
-            programAct.simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
+            programAct.SimSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
             Scheduler scheduler = new Scheduler(schedEvaluator);
             
-            List<SystemSchedule> schedules = scheduler.GenerateSchedules(programAct.simSystem, systemTasks, programAct.InitialSysState);
+            List<SystemSchedule> schedules = scheduler.GenerateSchedules(programAct.SimSystem, systemTasks, programAct.InitialSysState);
             schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
             schedules.Reverse();
 
@@ -89,7 +89,7 @@ namespace HSFSchedulerUnitTest
             Assert.IsTrue(schedCountAct > SchedParameters.MaxNumScheds);
 
             //Crop Schedules
-            Evaluator eval = new TargetValueEvaluator(programAct._dependencies);
+            Evaluator eval = new TargetValueEvaluator(programAct.Dependencies);
             Scheduler scheduler = new Scheduler(eval);
             SystemSchedule empty = new SystemSchedule(programAct.schedules[0].AllStates);
             

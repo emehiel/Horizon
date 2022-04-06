@@ -338,7 +338,7 @@ namespace HSFUniverse
     }
     
     // Dynamic states type supported by HSF
-    public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
+    public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI, STATIC_LVLH };
 
     // Propagator types supported by HSF
     public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };

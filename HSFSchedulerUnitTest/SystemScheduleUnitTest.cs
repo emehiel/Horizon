@@ -49,7 +49,7 @@ namespace HSFSchedulerUnitTest
             ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].FirstChild);
             ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1]);
 
-            SystemState systemState = SystemState.setInitialSystemState(ICNodes, asset);
+            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
             StateHistory expHist = new StateHistory(systemState);
 
             //First Constructor test SystemSchedule(SystemState initialstates) 
@@ -98,7 +98,7 @@ namespace HSFSchedulerUnitTest
             ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].FirstChild);
             ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1]);
 
-            SystemState systemState = SystemState.setInitialSystemState(ICNodes, asset);
+            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
             StateHistory initialHist = new StateHistory(systemState);
             Dictionary<Asset, Task> tasks = new Dictionary<Asset, Task>();
             tasks.Add(asset, systemTasks.Peek());
@@ -168,7 +168,7 @@ namespace HSFSchedulerUnitTest
             ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].FirstChild);
             ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1]);
 
-            SystemState systemState = SystemState.setInitialSystemState(ICNodes, asset);
+            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
             StateHistory initialHist = new StateHistory(systemState);
 
             Stack<Access> accessList = new Stack<Access>();

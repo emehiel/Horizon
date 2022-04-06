@@ -124,7 +124,7 @@ namespace HSFSystemUnitTest
             SingleConstraint<double> LowerB = new SingleConstraint<double>(ConstraintNode[11], _subsystemMap["asset1.power"]);
 
 
-            InitialSysState.Add(SystemState.setInitialSystemState(ICNodes,asset));
+            InitialSysState.Add(SystemState.SetInitialSystemState(ICNodes,asset));
 
             
             Assert.IsTrue(HigherA.Accepts(InitialSysState));

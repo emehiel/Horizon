@@ -14,8 +14,8 @@ namespace MissionElements
     [Serializable]
     public class Task
     {
-        // the type of task being performed 
-         public TaskType Type { get; private set; }
+        // the type of task being performed (will always be converted to a lowercase string in the constructor
+         public string Type { get; private set; }
 
         // the target associated with the task 
         public Target Target { get; private set; }
@@ -30,12 +30,12 @@ namespace MissionElements
         /// <summary>
         /// Constructor that creates a new task to be performed at the given target, with the given scheduling limitations
         /// </summary>
-        /// <param name="taskType"></param>
+        /// <param name="type"></param>
         /// <param name="target"></param>
         /// <param name="maxTimesToPerform"></param>
-        public Task(TaskType taskType, Target target, int maxTimesToPerform)
+        public Task(string type, Target target, int maxTimesToPerform)
         {
-            Type = taskType;
+            Type = type.ToLower();
             Target = target;
             MaxTimesToPerform = maxTimesToPerform;
         }
@@ -53,7 +53,7 @@ namespace MissionElements
             log.Info("Loading target deck...");
             int maxTimesPerform = 1;
             bool allLoaded = true;
-            string targetType, taskType;
+            string taskType;
             foreach (XmlNode targetNode in targetDeckXMLNode.ChildNodes)
             {
                 if (targetNode.Attributes["TaskType"] != null)
@@ -62,14 +62,14 @@ namespace MissionElements
                     log.Fatal("Missing Task Type");
                     return false;
                 }
-                var taskTypeEnum = (TaskType)Enum.Parse(typeof(TaskType), taskType);
+                //var taskTypeEnum = (TaskType)Enum.Parse(typeof(TaskType), taskType);
                 if (targetNode.Attributes["MaxTimes"] != null)
                 {
                     Int32.TryParse(targetNode.Attributes["MaxTimes"].Value.ToString(), out maxTimesPerform);
-                    tasks.Push(new Task(taskTypeEnum, new Target(targetNode), maxTimesPerform));
+                    tasks.Push(new Task(taskType, new Target(targetNode), maxTimesPerform));
                 }
                 else
-                    tasks.Push(new Task(taskTypeEnum, new Target(targetNode), maxTimesPerform));
+                    tasks.Push(new Task(taskType, new Target(targetNode), maxTimesPerform));
             }
             log.Info("Number of Targets Loaded: "+ tasks.Count);
 
@@ -86,12 +86,10 @@ namespace MissionElements
         }
         #endregion
     }
-    // ToDo: convert taskType to an extensable enumeration. <-- Still?.... 
 
-    // TODO Double check task type
-
+    // This was changed to a string type instead of an enum to support custom taskTypes on 1/31/2022
     // The three types of tasks supported by Horizon
-    public enum TaskType { EMPTY, COMM, IMAGING, FLYALONG, RECOVERY }
+    //public enum TaskType { EMPTY, COMM, IMAGING, FLYALONG, RECOVERY }
 
   
 }

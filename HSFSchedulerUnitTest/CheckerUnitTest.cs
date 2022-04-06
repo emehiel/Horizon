@@ -56,7 +56,7 @@ namespace HSFSchedulerUnitTest
             XmlNode ICNode = (XmlNode)XmlEnum.Current;
             List<XmlNode> ICNodes = new List<XmlNode>();
             ICNodes.Add(ICNode);
-            initialSched2.Add(SystemState.setInitialSystemState(ICNodes, programAct.AssetList[0]));
+            initialSched2.Add(SystemState.SetInitialSystemState(ICNodes, programAct.AssetList[0]));
             SystemSchedule thirdSchedule = new SystemSchedule(initialSched2);
 
             SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);

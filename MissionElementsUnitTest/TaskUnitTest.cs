@@ -20,9 +20,9 @@ namespace MissionElementsUnitTest
         public void ConstructorUnitTest()
         {
             taskHelper();
-            Task task = new Task((TaskType)Enum.Parse(typeof(TaskType),"EMPTY"), targ, 10);
+            Task task = new Task("EMPTY", targ, 10);
             Assert.AreEqual(targ, task.Target);
-            Assert.AreEqual((TaskType)Enum.Parse(typeof(TaskType), "EMPTY"), task.Type);
+            Assert.AreEqual("EMPTY", task.Type);
             Assert.AreEqual(10, task.MaxTimesToPerform);
         }
         /// <summary>
@@ -49,7 +49,7 @@ namespace MissionElementsUnitTest
             var modelInputNode = XmlParser.GetModelNode(ModelInputFilePath);
             DynamicState dynState = new DynamicState((DynamicStateType)Enum.Parse(typeof(DynamicStateType), "STATIC_LLA"), new OrbitalEOMS(), new Utilities.Vector("[33.47; -70.65; 0]"));
             SystemState sysState = new SystemState();
-            targ = new Target("dummy", (TargetType)Enum.Parse(typeof(TargetType), "LocationTarget"), dynState, 1);
+            targ = new Target("dummy", "LocationTarget", dynState, 1);
         }
         
     }

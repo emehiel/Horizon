@@ -21,6 +21,7 @@ namespace HSFUniverse
         public SpaceEnvironment()
         {
             CreateUniverse();
+            Convert.ToDouble(34);
         }
         /*public SpaceEnvironment(Sun sun)
         {

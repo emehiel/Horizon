@@ -160,7 +160,7 @@ namespace MissionElementsUnitTest
             ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[3]);
             ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[4]);
             Asset asset = new Asset(modelNode.FirstChild);
-            SystemState systemState = SystemState.setInitialSystemState(ICNodes, asset);
+            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
 
             HSFProfile<Quat> newQuatProf = systemState.GetProfile(quatKey);
             Quat quatVal = newQuatProf.FirstValue();

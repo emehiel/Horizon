@@ -26,16 +26,19 @@ namespace HSFSchedulerUnitTest
         [Test]
         public void ScriptedEvaluatorCtor()
         {
+            //arrange
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scripted.xml");
             Dependency dep = Dependency.Instance;
             XmlNode simNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
-
+            //act / assert
             ScriptedEvaluator s = new ScriptedEvaluator(simNode, dep);
+            //only fails if runtime error since no public acessors
 
         }
         [Test]
-        public void ScriptEvaluate() //TODO
+        public void ScriptEvaluate()
         {
+            //arrange
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scripted.xml");
             Dependency dep = Dependency.Instance;
             XmlNode simNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
@@ -47,26 +50,29 @@ namespace HSFSchedulerUnitTest
             StateHistory hist = new StateHistory(sysstate);
             SystemSchedule schedule = new SystemSchedule(sysstate);
 
+            //act
             double sumout = s.Evaluate(schedule);
+
+            //assert
             Assert.AreEqual(2, sumout);
         }
         [Test]
         public void EvaluatorFactUT() 
         {
+            //arrange
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scripted.xml");
             Dependency dep = Dependency.Instance;
             XmlNode simNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
-
-            Evaluator valuator = EvaluatorFactory.GetEvaluator(simNode, dep);
-
-            Assert.IsInstanceOf(typeof(ScriptedEvaluator), valuator);
-
-
             string SimulationInputFilePath2 = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             XmlNode simNode2 = XmlParser.ParseSimulationInput(SimulationInputFilePath2);
 
-            Evaluator valuator2 = EvaluatorFactory.GetEvaluator(simNode2, dep);
 
+            //act
+            Evaluator valuator = EvaluatorFactory.GetEvaluator(simNode, dep);
+            Evaluator valuator2 = EvaluatorFactory.GetEvaluator(simNode2, dep);
+            
+            //assert
+            Assert.IsInstanceOf(typeof(ScriptedEvaluator), valuator);
             Assert.IsInstanceOf(typeof(TargetValueEvaluator), valuator2);
             
             

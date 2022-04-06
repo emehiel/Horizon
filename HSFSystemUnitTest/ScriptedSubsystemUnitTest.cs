@@ -31,16 +31,19 @@ namespace HSFSystemUnitTest
         [Test]
         public void ScriptedSubsystemCtor()
         {
+            //arrange
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ScriptedSub.xml");
             Dependency dep = Dependency.Instance;
             XmlNode modelNode = XmlParser.GetModelNode(modelInputFilePath);
             eventMaker(true);
             //int f = vent.GetAssetTask(asset).MaxTimesToPerform;
+            //act + assert (only fails for a runtime error)
             ScriptedSubsystem s = new ScriptedSubsystem(modelNode.FirstChild.ChildNodes[1], dep, asset);
         }
         [Test]
         public void ScriptCanPerform() 
         {
+            //arrange
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ScriptedSub.xml");
             Dependency dep = Dependency.Instance;
             XmlNode modelNode = XmlParser.GetModelNode(modelInputFilePath);
@@ -48,7 +51,11 @@ namespace HSFSystemUnitTest
 
             ScriptedSubsystem s = new ScriptedSubsystem(modelNode.FirstChild.ChildNodes[1], dep, asset);
             SpaceEnvironment SE = new SpaceEnvironment();
+
+            //act
             bool canperform = s.CanPerform(vent, SE) ;
+
+            //assert
             Assert.AreEqual(false, canperform);
 
         }

@@ -30,7 +30,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void GetSubsystem()
         {
-
+            //arrange
             Program programAct = new Program();
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler.xml");
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
@@ -50,7 +50,7 @@ namespace HSFSystemUnitTest
             var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
             Dictionary<string, Subsystem> subDic = new Dictionary<string, Subsystem>();
            
-
+            //act
             foreach (XmlNode child in modelInputXMLNode.ChildNodes[1])
             {
                 if (child.Name.Equals("SUBSYSTEM"))
@@ -67,7 +67,7 @@ namespace HSFSystemUnitTest
 
 
 
-            //Assert.AreEqual(programAct.SubsystemMap, subDic);
+            //Assert
             Assert.AreEqual(expAccessSub.Name, subDic["asset1.access"].Name);
             Assert.IsInstanceOf(typeof(AccessSub), subDic["asset1.access"]);
 
@@ -85,9 +85,6 @@ namespace HSFSystemUnitTest
 
             Assert.AreEqual(expPowerSub.Name, subDic["asset1.power"].Name);
             Assert.IsInstanceOf(typeof(Power), subDic["asset1.power"]);
-
-
-            //Assert.Inconclusive("Not implemented");
         }
     }
 }

@@ -15,6 +15,10 @@ namespace HSFSystemUnitTest
     public class SystemClassUnitTest
     {
         string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+        Asset asset;
+        List<Asset> assets;
+        Dependency dep;
+        XmlNode modelInput;
         /// <summary>
         /// Tests two subs which depend on eachother for information.
         /// Expect CheckForCircularDependencies to return true: there is a circular dep
@@ -22,16 +26,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void CheckForCircularDependencies()
         {
-            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Circular.xml");
-            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
-            XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
-
-            Asset asset = new Asset(modelInput["ASSET"]);
-            List<Asset> assets = new List<Asset>();
-            assets.Add(asset);
-            Dependency dep = Dependency.Instance;
-
+            //arrange
             Subsystem sub4 = new SubTest(modelInput.ChildNodes[0].ChildNodes[4], dep, asset);
             Subsystem sub5 = new SubTest(modelInput.ChildNodes[0].ChildNodes[5], dep, asset);
 
@@ -46,8 +41,10 @@ namespace HSFSystemUnitTest
             Domain enviro = new SpaceEnvironment();
 
             SystemClass sysclass = new SystemClass(assets, subList, constraints, enviro);
-
+            //act
             bool isTrue = sysclass.CheckForCircularDependencies();
+
+            //assert
             Assert.IsTrue(isTrue);
         }
         /// <summary>
@@ -57,16 +54,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void CheckForCircularDependencies2()
         {
-            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Circular.xml");
-            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
-            XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
-
-            Asset asset = new Asset(modelInput["ASSET"]);
-            List<Asset> assets = new List<Asset>();
-            assets.Add(asset);
-            Dependency dep = Dependency.Instance;
-
+            //arrange
             Subsystem sub1 = new SubTest(modelInput.ChildNodes[0].ChildNodes[1], dep, asset);
             Subsystem sub2 = new SubTest(modelInput.ChildNodes[0].ChildNodes[2], dep, asset);
             Subsystem sub3 = new SubTest(modelInput.ChildNodes[0].ChildNodes[3], dep, asset);
@@ -96,16 +84,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void CheckForCircularDependencies_notcircular()
         {
-            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Circular.xml");
-            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
-            XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
-
-            Asset asset = new Asset(modelInput["ASSET"]);
-            List<Asset> assets = new List<Asset>();
-            assets.Add(asset);
-            Dependency dep = Dependency.Instance;
-
+            //arrange
             Subsystem sub1 = new SubTest(modelInput.ChildNodes[0].ChildNodes[1], dep, asset);
             Subsystem sub2 = new SubTest(modelInput.ChildNodes[0].ChildNodes[2], dep, asset);
             Subsystem sub3 = new SubTest(modelInput.ChildNodes[0].ChildNodes[5], dep, asset);
@@ -125,7 +104,10 @@ namespace HSFSystemUnitTest
             Domain enviro = new SpaceEnvironment();
 
             SystemClass sysclass = new SystemClass(assets, subList, constraints, enviro);
+            //act
             bool isFalse = sysclass.CheckForCircularDependencies();
+
+            //assert
             Assert.IsFalse(isFalse);
         }
         /// <summary>
@@ -134,15 +116,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void SystemClassCtor()
         {
-            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Circular.xml");
-            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
-            XmlNode modelInput = XmlParser.GetModelNode(modelInputFilePath);
-
-            Asset asset = new Asset(modelInput["ASSET"]);
-            List<Asset> assets = new List<Asset>();
-            assets.Add(asset);
-
+            //arrange
             Subsystem access = new SubTest(modelInput.ChildNodes[0].ChildNodes[1], asset);
             Subsystem adcs = new SubTest(modelInput.ChildNodes[0].ChildNodes[2], asset);
             Subsystem eosensor = new SubTest(modelInput.ChildNodes[0].ChildNodes[3], asset);
@@ -155,13 +129,28 @@ namespace HSFSystemUnitTest
             List<Constraint> constraints = new List<Constraint>();
 
             Domain enviro = new SpaceEnvironment();
-
+            //act
             SystemClass sysclass = new SystemClass(assets, subList, constraints, enviro);
+
+            //assert
             Assert.IsInstanceOf(typeof(SystemClass), sysclass);
             Assert.AreEqual(enviro, sysclass.Environment);
             Assert.AreEqual(subList, sysclass.Subsystems);
             Assert.AreEqual(constraints, sysclass.Constraints);
             Assert.AreEqual(assets, sysclass.Assets);
+        }
+        [SetUp]
+        public void systemClassHelper()
+        {
+            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Circular.xml");
+            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
+            modelInput = XmlParser.GetModelNode(modelInputFilePath);
+
+            asset = new Asset(modelInput["ASSET"]);
+            assets = new List<Asset>();
+            assets.Add(asset);
+            dep = Dependency.Instance;
         }
     }
 }

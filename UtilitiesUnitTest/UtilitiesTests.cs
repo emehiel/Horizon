@@ -26,17 +26,22 @@ namespace UtilitiesUnitTest
         [Test]
         public void IntegratorTest() // TODO check ntrp by checking vals at t=10;
         {
+
+            //arange
             StateSpaceEOMS dynamics = new StateSpaceEOMS();
             Matrix<double> tspan = new Matrix<double>(new double[1, 2] { { 0, 20 } });
             Matrix<double> y0 = new Matrix<double>(new double[2, 1] { { 1 }, { 0 } });
-            Matrix<double> result = Integrator.RK45(dynamics, tspan, y0);
-
-            System.IO.File.WriteAllText("integratorOut.txt", result.ToString());
 
             double y_final = 3.29998029143281E-05;
             double yDot_final = -7.94520751742942E-05;
             double t_final = 20;
 
+            //act
+            Matrix<double> result = Integrator.RK45(dynamics, tspan, y0);
+
+            System.IO.File.WriteAllText("integratorOut.txt", result.ToString());
+
+            //assert
             Assert.AreEqual(t_final, result[1, result.Size[2]], .0001);
 
             Assert.AreEqual(y_final, result[2, result.Size[2]], .0001);
@@ -46,9 +51,10 @@ namespace UtilitiesUnitTest
 
 
         [Test]
-        public void MatrixExponent()
+        public void MatrixExponent()//is this an edge case?
         {
             // Using matrix described here to test http://blogs.mathworks.com/cleve/2012/07/23/a-balancing-act-for-the-matrix-exponential/
+            //arrange
             double a = 2 * Math.Pow(10, 10);
             double b = 4 * Math.Pow(10, 8) / 6;
             double c = 200 / 3;
@@ -61,33 +67,37 @@ namespace UtilitiesUnitTest
         [Test]
         public void MatrixInverse()
         {
+            //arrange
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 0, 1 }, { 1, 2, 0 }, { 1, 5, 1 } });
-            Matrix<double> result = Matrix<double>.Inverse(A);
-
             Matrix<double> expected = new Matrix<double>(new double[,] { { .4, 1, -.4 }, { -.2, 0, .2 }, { .6, -1, .4 } });
 
+            //act
+            Matrix<double> result = Matrix<double>.Inverse(A);
+
+            //assert
             Assert.AreEqual(expected, result);
         }
         [Test]
         public void MatrixVertCatTest()
         {
+            //arrange
             // Create Test Matricies.
             Matrix<double> A = new Matrix<double>(2, 3, 1);
             Matrix<double> B = new Matrix<double>(2, 3, 2);
-
             // Create Correct Answer.
             Matrix<double> C = new Matrix<double>(new double[,] { { 1, 1, 1 }, { 1, 1, 1 }, { 2, 2, 2 }, { 2, 2, 2 } });
 
-            // Test Method.
+            //act
             Matrix<double> D = Matrix<double>.Vertcat(A, B);
 
-            // Verify Result.
+            //assert
             Assert.AreEqual(C, D);
         }
 
         [Test]
         public void MatrixHorizCatTest()
         {
+            //arrange
             // Create Test Matrices.
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 1, 1 }, { 1, 1, 1 } });
             Matrix<double> B = new Matrix<double>(new double[,] { { 2, 2, 2 }, { 2, 2, 2 } });
@@ -95,9 +105,11 @@ namespace UtilitiesUnitTest
             // Create correct answer.
             Matrix<double> C = new Matrix<double>(new double[,] { { 1, 1, 1, 2, 2, 2 }, { 1, 1, 1, 2, 2, 2 } });
 
+            //act
             // Test Method.
             Matrix<double> D = Matrix<double>.Horzcat(A, B);
 
+            //assert
             // Verify Result  .       
             Assert.AreEqual(C, D);
         }
@@ -105,37 +117,47 @@ namespace UtilitiesUnitTest
         [Test]
         public void MatrixCumProdTest()
         {
+            //arrange
             // Create Test Matrix.
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
 
             // Create Correct Answer.
             Matrix<double> C = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 10, 18 }, { 28, 80, 162 } });
 
+            //act
             //Test Method.
             Matrix<double> B = Matrix<double>.Cumprod(A);
 
+            //assert
             //Verify Result.
             Assert.AreEqual(C, B);
         }
         [Test]
         public void MatrixMultiply()
         {
+            //arrange
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
             Matrix<double> B = new Matrix<double>(new double[,] { { 1, 1, 3 }, { 4, 2, 6 }, { 7, 3, 9 } });
-
-            Matrix<double> C = A * B;
-
             Matrix<double> D = new Matrix<double>(new double[,] { { 30, 14, 42 }, { 66, 32, 96 }, { 102, 50, 150 } });
 
+            //act
+            Matrix<double> C = A * B;
+
+            //assert
             Assert.AreEqual(D, C);
         }
 
         [Test]
         public void MatrixNormTest()
         {
+            //arrange
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 } });
-            double normActual = Matrix<double>.Norm(A);
             double normExpected = 3.7417;
+
+            //act
+            double normActual = Matrix<double>.Norm(A);
+
+            //assert
             Assert.AreEqual(normExpected, normActual, 0.0001);
         }
 
@@ -143,28 +165,39 @@ namespace UtilitiesUnitTest
         [Test]
         public void MatrixSetColumnTest()
         {
+            //arrange
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
-            A.SetColumn(2, new Matrix<double>(new double[,] { { 1 }, { 2 }, { 3 } }));
             Matrix<double> B = new Matrix<double>(new double[,] { { 1, 1, 3 }, { 4, 2, 6 }, { 7, 3, 9 } });
 
+            //act
+            A.SetColumn(2, new Matrix<double>(new double[,] { { 1 }, { 2 }, { 3 } }));
+
+            //assert
             Assert.AreEqual(B, A);
         }
         [Test]
         public void MatrixSetRowTest()
         {
+            //arrange
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
-            A.SetRow(2, new Matrix<double>(new double[,] { { 1, 2, 3 } }));
             Matrix<double> B = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 1, 2, 3 }, { 7, 8, 9 } });
 
+            //act
+            A.SetRow(2, new Matrix<double>(new double[,] { { 1, 2, 3 } }));
+
+            //assert
             Assert.AreEqual(B, A);
         }
         [Test]
         public void MatrixDeepCopyTest()
         {
+            //arrange
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
 
+            //act
             Matrix<double> B = DeepCopy.Copy(A);
 
+            //assert
             Assert.AreEqual(B, A);
         }
 
@@ -172,16 +205,17 @@ namespace UtilitiesUnitTest
         [Test]
         public void MatrixToArrayTest()
         {
+            //arrange
             // Create Test Matrices.
             Matrix<double> A = new Matrix<double>(new double[,] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } });
 
             // Create correct answer.
             double[,] B = new double[3, 3] { { 1, 2, 3 }, { 4, 5, 6 }, { 7, 8, 9 } };
 
-            // Test Method.
+            //act
             double[,] C = A.ToArray();
 
-            // Verify Result.
+            //assert
             for (int i = 0; i < 3; i++)
             {
                 for (int j = 0; j < 3; j++)
@@ -193,6 +227,7 @@ namespace UtilitiesUnitTest
         [Test]
         public void DeepCopyTest()
         {
+            //arrange
             TestCopyClass c1 = new TestCopyClass
             {
                 Num = 1,
@@ -314,8 +349,10 @@ namespace UtilitiesUnitTest
         [Test]
         public void Matrix_indexOutOfRange()
         {
+            //arrange
             Matrix<double> expmin1 = new Matrix<double>(new double[1, 2] { { 0, 0 } });
 
+            //act + assert
             try
             {expmin1[-1, 1] = 1;}
             catch(IndexOutOfRangeException)
@@ -362,6 +399,7 @@ namespace UtilitiesUnitTest
         [Test]
         public void Matrix_Cross()
         {
+            //arrange
             var elements_Exception = new double[2, 2] { { 2, 0 }, { 0, 1 } };
             var elementsB = new double[1, 3] { { 2, 0, 1 } };
             var elementsC = new double[3, 1] { { 2 }, { 2 }, { 2 } };
@@ -409,19 +447,17 @@ namespace UtilitiesUnitTest
             var elementsC = new double[3, 1] { { 2 }, { 2 }, { 2 } };
             Matrix<double> matC = new Matrix<double>(elementsC);
 
-
-
             var elements3 = new double[2, 2] { { 2, 0 }, {4, 0 } };
             Matrix<double> expectedAnsA = new Matrix<double>(elements3);
             var elements4 = new double[1, 2] { { 2,2 } };
             Matrix<double> expectedAnsB = new Matrix<double>(elements4);
-
 
             //Act
             Matrix<double> actualAnsA = Matrix<double>.Cumprod(matA);
             Matrix<double> actualAnsB = Matrix<double>.Cumprod(matB);
             try { Matrix<double> _ = Matrix<double>.Cumprod(matC); }
             catch (NotImplementedException) 
+
             //Assert
             { Assert.Pass(); }
             Assert.AreEqual(expectedAnsA, actualAnsA);

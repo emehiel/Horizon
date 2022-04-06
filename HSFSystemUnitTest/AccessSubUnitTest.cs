@@ -22,6 +22,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void AccessSubConstructor()
         {
+            //arrange
             Program programAct = new Program();
 
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
@@ -39,8 +40,10 @@ namespace HSFSystemUnitTest
                 programAct.log.Info("LoadSubsystems Failed the Unit test");
             }
 
+            //act
             AccessSub A1 = new AccessSub(modelInputXMLNode.ChildNodes[1].ChildNodes[1],programAct.AssetList[0]);
 
+            //assert
             Assert.AreSame(programAct.AssetList[0], A1.Asset);
             Assert.AreEqual("asset1.access", A1.Name);
 
@@ -48,6 +51,7 @@ namespace HSFSystemUnitTest
         [Test]
         public void AccessCanPerform()
         {
+            //arrange
             Program programAct = new Program();
 
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
@@ -67,16 +71,16 @@ namespace HSFSystemUnitTest
             }
             Dictionary<Asset, Task> eventDic = new Dictionary<Asset, Task>();
             eventDic.Add(programAct.AssetList[0], systemTasks.Pop());
-            
-            //SystemState initialState = new SystemState();
-            //initialState.Add(SystemState.setInitialSystemState(modelInputXMLNode.));
             Event thing1 = new Event(eventDic, programAct.InitialSysState);
-            Assert.IsTrue(programAct.SubList[0].CanPerform(thing1,programAct.SystemUniverse)); // should this have access?
+
+
+            //act + assert
+            Assert.IsTrue(programAct.SubList[0].CanPerform(thing1,programAct.SystemUniverse));
 
             eventDic.Remove(programAct.AssetList[0]);
             eventDic.Add(programAct.AssetList[0], systemTasks.Pop());
 
-            Event thing2 = new Event(eventDic, programAct.InitialSysState);
+            Event thing2 = new Event(eventDic, programAct.InitialSysState);// should this have access?
             Assert.IsFalse(programAct.SubList[0].CanPerform(thing2, programAct.SystemUniverse)); // should this have access?
 
 

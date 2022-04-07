@@ -221,8 +221,10 @@ namespace Horizon
                 if (modelChildNode.Name.Equals("ASSET"))
                 {
                     Asset asset = new Asset(modelChildNode);
-                    asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
-
+                    if (asset.AssetDynamicState.Eoms != null)
+                    {
+                        asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+                    }
                     AssetList.Add(asset);
                     // Loop through all the of the ChildNodess for this Asset
                     foreach (XmlNode childNode in modelChildNode.ChildNodes)

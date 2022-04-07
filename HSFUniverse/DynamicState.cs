@@ -60,7 +60,7 @@ namespace HSFUniverse
             _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds/SchedParameters.SimStepSeconds));
             _stateData.Add(0.0, ics);
 
-            if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
+            if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI || Type == DynamicStateType.STATIC_LVLH || Type == DynamicStateType.NULL_STATE))
             {
                 Eoms = EOMFactory.GetEomClass(dynamicStateXMLNode);
                 
@@ -219,7 +219,7 @@ namespace HSFUniverse
                     return GeometryUtilities.LLA2ECI(InitialConditions(), JD);
                 }
 
-                else if (Type == DynamicStateType.STATIC_ECI)
+                else if (Type == DynamicStateType.STATIC_ECI || Type == DynamicStateType.STATIC_LVLH || Type == DynamicStateType.NULL_STATE)
                     return InitialConditions();
                 else if (Type == DynamicStateType.PREDETERMINED_ECI || Type == DynamicStateType.PREDETERMINED_LLA)
                 {
@@ -338,7 +338,7 @@ namespace HSFUniverse
     }
     
     // Dynamic states type supported by HSF
-    public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
+    public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI, STATIC_LVLH, NULL_STATE };
 
     // Propagator types supported by HSF
     public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };

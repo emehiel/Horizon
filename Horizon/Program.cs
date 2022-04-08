@@ -205,6 +205,7 @@ namespace Horizon
             {
                 switch (modelNode.Name.ToLower())
                 {
+
                     case ("environment"):
                         SystemUniverse = UniverseFactory.GetUniverseClass(modelNode);
                         break;

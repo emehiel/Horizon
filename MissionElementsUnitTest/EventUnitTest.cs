@@ -22,9 +22,13 @@ namespace MissionElementsUnitTest
         [Test]
         public void Constructor()
         {
-            helper();
+            //arrange in helper
+
+            //act
             vent = new Event(taskdic, sysState);
             Event copyVent = new Event(vent);
+
+            //assert
             Assert.AreEqual(taskdic, vent.Tasks);
             Assert.AreEqual(sysState, vent.State);
             Assert.AreEqual(new Dictionary<Asset, double>(), vent.EventStarts);
@@ -46,12 +50,13 @@ namespace MissionElementsUnitTest
         [Test]
         public void Accessors()
         {
-            helper();
+            //arrange
             vent = new Event(taskdic, sysState);
-            
-            Assert.AreSame(task, vent.GetAssetTask(asset));
             Dictionary<Asset, double> six = new Dictionary<Asset, double>();
             six.Add(asset, 6);
+
+            //act + assert (yes, bad form)
+            Assert.AreSame(task, vent.GetAssetTask(asset));
 
             // TASKSTART
             Assert.AreEqual(0, vent.GetTaskStart(asset));
@@ -81,6 +86,7 @@ namespace MissionElementsUnitTest
             vent.SetEventEnd(six);
             Assert.AreEqual(6, vent.GetEventEnd(asset));
         }
+        [SetUp]
         public void helper()
         {
                 string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_ScriptedSub.xml");
@@ -89,13 +95,13 @@ namespace MissionElementsUnitTest
                 var modelInputNode = XmlParser.GetModelNode(ModelInputFilePath);
                 DynamicState dynState = new DynamicState((DynamicStateType)Enum.Parse(typeof(DynamicStateType), "STATIC_LLA"), new OrbitalEOMS(), new Utilities.Vector("[33.47; -70.65; 0]"));
                 sysState = new SystemState();
-                Target targ = new Target("dummy", (TargetType)Enum.Parse(typeof(TargetType), "LocationTarget"), dynState, 1);
+                Target targ = new Target("dummy", "LocationTarget", dynState, 1);
 
                 bool perform = true;
                 if (perform)
-                { task = new Task((TaskType)Enum.Parse(typeof(TaskType), "IMAGING"), targ, 10); }
+                { task = new Task("IMAGING", targ, 10); }
                 else
-                { task = new Task((TaskType)Enum.Parse(typeof(TaskType), "IMAGING"), targ, 2); }
+                { task = new Task("IMAGING", targ, 2); }
 
                 taskdic = new Dictionary<Asset, Task>();
                 asset = new Asset(modelInputNode.FirstChild);

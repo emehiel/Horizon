@@ -21,47 +21,37 @@ namespace Horizon
     {
         public ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public string SimulationInputFilePath { get; set; } //wanted to make read only but not sure how to set from 
+        public string SimulationInputFilePath { get; set; }
         public string TargetDeckFilePath { get; set; }
         public string ModelInputFilePath { get; set; }
-       
-        
 
         // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
-        public Domain SystemUniverse = null;
+        public Domain SystemUniverse { get; set; }
 
         //Create singleton dependency dictionary
-        Dependency dependencies = Dependency.Instance;
-        public Dependency _dependencies = Dependency.Instance;
+        public Dependency Dependencies { get; } = Dependency.Instance;
 
         // Initialize List to hold assets and subsystem nodes
-        public List<Asset> AssetList = new List<Asset>();
-        public List<Subsystem> SubList = new List<Subsystem>();
+        public List<Asset> AssetList { get; set; } = new List<Asset>();
+        public List<Subsystem> SubList { get; set; } = new List<Subsystem>();
 
         // Maps used to set up preceeding nodes
-        Dictionary<ISubsystem, XmlNode> subsystemXMLNodeMap = new Dictionary<ISubsystem, XmlNode>();
-        Dictionary<string, Subsystem> _subsystemMap = new Dictionary<string, Subsystem>();
-        public Dictionary<string, Subsystem> SubsystemMap = new Dictionary<string, Subsystem>();
-        List<KeyValuePair<string, string>> _dependencyMap = new List<KeyValuePair<string, string>>();
-        public List<KeyValuePair<string, string>> DependencyMap = new List<KeyValuePair<string, string>>();
-        List<KeyValuePair<string, string>> _dependencyFcnMap = new List<KeyValuePair<string, string>>();
-        public List<KeyValuePair<string, string>> DependencyFcnMap = new List<KeyValuePair<string, string>>();
-        // Dictionary<string, ScriptedSubsystem> scriptedSubNames = new Dictionary<string, ScriptedSubsystem>();
-
+        public Dictionary<ISubsystem, XmlNode> SubsystemXMLNodeMap { get; set; } = new Dictionary<ISubsystem, XmlNode>();
+        public Dictionary<string, Subsystem> SubsystemMap { get; set; } = new Dictionary<string, Subsystem>();
+        public List<KeyValuePair<string, string>> DependencyList { get; set; } = new List<KeyValuePair<string, string>>();
+        public List<KeyValuePair<string, string>> DependencyFcnList { get; set; } = new List<KeyValuePair<string, string>>();
+        
         // Create Constraint list 
-        List<Constraint> _constraintsList = new List<Constraint>();
-        public List<Constraint> ConstraintsList = new List<Constraint>(); //Public Version for Unit Testing
+        public List<Constraint> ConstraintsList { get; set; } = new List<Constraint>();
 
-        //Create Lists to hold all the initial condition and dependency nodes to be parsed later
-        List<XmlNode> ICNodes = new List<XmlNode>();
-        List<XmlNode> DepNodes = new List<XmlNode>();
-        public SystemState InitialSysState = new SystemState();
+        //Create Lists to hold all the dependency nodes to be parsed later
+        List<XmlNode> _depNodes = new List<XmlNode>();
+        public SystemState InitialSysState { get; set; } = new SystemState();
 
-        XmlNode evaluatorNode;
-        Evaluator schedEvaluator;
-        public List<SystemSchedule> schedules;
-
-        public SystemClass simSystem { get; set; }
+        XmlNode _evaluatorNode;
+        Evaluator _schedEvaluator;
+        public List<SystemSchedule> Schedules { get; set; }
+        public SystemClass SimSystem { get; set; }
 
         public static int Main(string[] args) //
         {
@@ -71,9 +61,11 @@ namespace Horizon
             program.log.Info("STARTING HSF RUN"); //Do not delete
             program.InitInput(args);
             string outputPath = program.InitOutput();
+            program.LoadScenario();
             Stack<Task> systemTasks = program.LoadTargets();
             program.LoadSubsystems();
             program.LoadDependencies();
+            program.LoadEvaluator();
             program.CreateSchedules(systemTasks);
             double maxSched = program.EvaluateSchedules();
 
@@ -81,9 +73,9 @@ namespace Horizon
             //Morgan's Way
             using (StreamWriter sw = File.CreateText(outputPath))
             {
-                foreach (SystemSchedule sched in program.schedules)
+                foreach (SystemSchedule sched in program.Schedules)
                 {
-                    sw.WriteLine("Schedule Number: " + i + "Schedule Value: " + program.schedules[i].ScheduleValue);
+                    sw.WriteLine("Schedule Number: " + i + "Schedule Value: " + program.Schedules[i].ScheduleValue);
                     foreach (var eit in sched.AllStates.Events)
                     {
                         if (i < 5)//just compare the first 5 schedules for now
@@ -98,7 +90,7 @@ namespace Horizon
 
             // Mehiel's way
             string stateDataFilePath = @"C:\HorizonLog\Scratch";// + string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}", DateTime.Now);
-            SystemSchedule.WriteSchedule(program.schedules[0], stateDataFilePath);
+            SystemSchedule.WriteSchedule(program.Schedules[0], stateDataFilePath);
 
             //  Move this to a method that always writes out data about the dynamic state of assets, the target dynamic state data, other data?
             //var csv = new StringBuilder();
@@ -183,11 +175,14 @@ namespace Horizon
             outputPath += outputFileName + txt;
             return outputPath;
         }
-        public Stack<Task> LoadTargets()
+
+        public void LoadScenario()
         {
             // Find the main input node from the XML input files
-            evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
-
+            _evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
+        }
+        public Stack<Task> LoadTargets()
+        {
             // Load the target deck into the targets list from the XML target deck input file
             Stack<Task> systemTasks = new Stack<Task>();
             bool targetsLoaded = Task.loadTargetsIntoTaskList(XmlParser.GetTargetNode(TargetDeckFilePath), systemTasks);
@@ -205,131 +200,123 @@ namespace Horizon
             // Find the main model node from the XML model input file
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
 
-
-
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
-            foreach (XmlNode modelChildNode in modelInputXMLNode.ChildNodes)
+            foreach (XmlNode modelNode in modelInputXMLNode.ChildNodes)
             {
-                if (modelChildNode.Name.Equals("ENVIRONMENT"))
+                switch (modelNode.Name.ToLower())
                 {
-                    // Create the Environment based on the XMLNode
-                    SystemUniverse = UniverseFactory.GetUniverseClass(modelChildNode);
-                }
-                else if (SystemUniverse == null)
-                    SystemUniverse = new SpaceEnvironment();
 
-                if (modelChildNode.Name.Equals("ASSET"))
-                {
-                    Asset asset = new Asset(modelChildNode);
-                    if (asset.AssetDynamicState.Eoms != null)
-                    {
+                    case ("environment"):
+                        SystemUniverse = UniverseFactory.GetUniverseClass(modelNode);
+                        break;
+                    case ("python"):
+                        throw new NotImplementedException();
+                        break;
+                    case ("asset"):
+                        Asset asset = new Asset(modelNode);
                         asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
-                    }
-                    AssetList.Add(asset);
-                    // Loop through all the of the ChildNodess for this Asset
-                    foreach (XmlNode childNode in modelChildNode.ChildNodes)
-                    {
-                        // Get the current Subsystem XML Node, and create it using the SubsystemFactory
-                        if (childNode.Name.Equals("SUBSYSTEM"))
-                        {  //is this how we want to do this?
-                           // Check if the type of the Subsystem is scripted, networked, or other
-                            string subName = SubsystemFactory.GetSubsystem(childNode, dependencies, asset, _subsystemMap);
-                            foreach (XmlNode ICorDepNode in childNode.ChildNodes)
-                            {
-                                if (ICorDepNode.Name.Equals("IC"))
-                                    ICNodes.Add(ICorDepNode);
-                                if (ICorDepNode.Name.Equals("DEPENDENCY"))
-                                {
-                                    string depSubName = "", depFunc = "";
-                                    depSubName = Subsystem.parseNameFromXmlNode(ICorDepNode, asset.Name);
-                                    _dependencyMap.Add(new KeyValuePair<string, string>(subName, depSubName));
 
-                                    if (ICorDepNode.Attributes["fcnName"] != null)
+                        AssetList.Add(asset);
+                        // Loop through all the of the ChildNodess for this Asset
+                        foreach (XmlNode assetNode in modelNode.ChildNodes)
+                        {
+                            switch (assetNode.Name.ToLower())
+                            {
+                                case ("subsystem"):
+                                    string subName = SubsystemFactory.GetSubsystem(assetNode, Dependencies, asset, SubsystemMap);
+                                    SubList.Add(SubsystemMap[subName]);
+                                    foreach (XmlNode subNode in assetNode.ChildNodes)
                                     {
-                                        depFunc = ICorDepNode.Attributes["fcnName"].Value.ToString();
-                                        _dependencyFcnMap.Add(new KeyValuePair<string, string>(subName, depFunc));
+                                        switch (subNode.Name.ToLower())
+                                        {
+                                            case ("ic"):
+                                                InitialSysState.Add(SystemState.SetInitialSystemState(subNode, asset));
+                                                break;
+                                            case ("dependency"):
+
+                                                string depSubName;
+                                                string depFunc;
+                                                depSubName = Subsystem.parseNameFromXmlNode(subNode, asset.Name);
+                                                DependencyList.Add(new KeyValuePair<string, string>(subName, depSubName));
+
+                                                if (subNode.Attributes["fcnName"] != null)
+                                                {
+                                                    depFunc = subNode.Attributes["fcnName"].Value.ToString();
+                                                    DependencyFcnList.Add(new KeyValuePair<string, string>(subName, depFunc));
+                                                }
+                                                break;
+                                        }
                                     }
-                                }
+                                    break;
+                                case ("constraint"):
+                                    ConstraintsList.Add(ConstraintFactory.GetConstraint(assetNode, SubsystemMap, asset));
+                                    break;
                             }
                         }
-                        //Create a new Constraint
-                        if (childNode.Name.Equals("CONSTRAINT"))
-                        {
-                            _constraintsList.Add(ConstraintFactory.GetConstraint(childNode, _subsystemMap, asset));
-                        }
-                    }
-                    if (ICNodes.Count > 0)
-                        InitialSysState.Add(SystemState.setInitialSystemState(ICNodes, asset));
-                    ICNodes.Clear();
+                        break;
+                    default:
+                        SystemUniverse = new SpaceEnvironment();
+                        break;
                 }
             }
-
-            foreach (KeyValuePair<string, Subsystem> sub in _subsystemMap)
-            {
-                if (!sub.Value.GetType().Equals(typeof(ScriptedSubsystem)))//let the scripted subsystems add their own dependency collector
-                sub.Value.AddDependencyCollector();
-
-                SubList.Add(sub.Value);
-            }
             log.Info("Subsystems and Constraints Loaded");
-            ConstraintsList = _constraintsList;
-            DependencyFcnMap = _dependencyFcnMap;
-            DependencyMap = _dependencyMap;
-            SubsystemMap = _subsystemMap;
-
         }
         public void LoadDependencies()
         {
             //Add all the dependent subsystems to the dependent subsystem list of the subsystems
-            foreach (KeyValuePair<string, string> depSubPair in _dependencyMap)
+            foreach (KeyValuePair<string, string> depSubPair in DependencyList)
             {
-                Subsystem subToAddDep, depSub;
-                _subsystemMap.TryGetValue(depSubPair.Key, out subToAddDep);
-                _subsystemMap.TryGetValue(depSubPair.Value, out depSub);
+                Subsystem subToAddDep;
+                Subsystem depSub;
+                SubsystemMap.TryGetValue(depSubPair.Key, out subToAddDep);
+                SubsystemMap.TryGetValue(depSubPair.Value, out depSub);
                 subToAddDep.DependentSubsystems.Add(depSub);
             }
 
             //give the dependency functions to all the subsytems that need them
-            foreach (KeyValuePair<string, string> depFunc in _dependencyFcnMap)
+            foreach (KeyValuePair<string, string> depFunc in DependencyFcnList)
             {
                 Subsystem subToAddDep;
-                _subsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
-                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, dependencies.GetDependencyFunc(depFunc.Value));
+                SubsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
+                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, Dependencies.GetDependencyFunc(depFunc.Value));
             }
-            _dependencies = dependencies;
+            //Dependencies = dependencies;
             log.Info("Dependencies Loaded");
+        }
+        public void LoadEvaluator()
+        {
+            _schedEvaluator = EvaluatorFactory.GetEvaluator(_evaluatorNode, Dependencies);
         }
         public void CreateSchedules(Stack<Task> systemTasks)
         {
-            simSystem = new SystemClass(AssetList, SubList, _constraintsList, SystemUniverse);
+            SimSystem = new SystemClass(AssetList, SubList, ConstraintsList, SystemUniverse);
 
-            if (simSystem.CheckForCircularDependencies())
+            if (SimSystem.CheckForCircularDependencies())
                 throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
 
-            schedEvaluator = EvaluatorFactory.GetEvaluator(evaluatorNode, dependencies);
-            Scheduler scheduler = new Scheduler(schedEvaluator);
-            schedules = scheduler.GenerateSchedules(simSystem, systemTasks, InitialSysState);
+            Scheduler _scheduler = new Scheduler(_schedEvaluator);
+            Schedules = _scheduler.GenerateSchedules(SimSystem, systemTasks, InitialSysState);
         }
         public double EvaluateSchedules()
         {
             // Evaluate the schedules and set their values
-            foreach (SystemSchedule systemSchedule in schedules)
+            foreach (SystemSchedule systemSchedule in Schedules)
             {
-                systemSchedule.ScheduleValue = schedEvaluator.Evaluate(systemSchedule);
+                systemSchedule.ScheduleValue = _schedEvaluator.Evaluate(systemSchedule);
                 bool canExtendUntilEnd = true;
                 // Extend the subsystem states to the end of the simulation 
-                foreach (var subsystem in simSystem.Subsystems)
+                foreach (var subsystem in SimSystem.Subsystems)
                 {
                     if (systemSchedule.AllStates.Events.Count > 0)
-                        if (!subsystem.CanExtend(systemSchedule.AllStates.Events.Peek(), (Domain)simSystem.Environment, SimParameters.SimEndSeconds))
+                        if (!subsystem.CanExtend(systemSchedule.AllStates.Events.Peek(), (Domain)SimSystem.Environment, SimParameters.SimEndSeconds))
                             log.Error("Cannot Extend " + subsystem.Name + " to end of simulation");
                 }
             }
 
             // Sort the sysScheds by their values
-            schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
-            schedules.Reverse();
-            double maxSched = schedules[0].ScheduleValue;
+            Schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
+            Schedules.Reverse();
+            double maxSched = Schedules[0].ScheduleValue;
             return maxSched;
         }
     }

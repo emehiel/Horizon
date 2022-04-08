@@ -61,7 +61,7 @@ namespace HSFSubsystem
             IsEvaluated = true;
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
-            if (_task.Type == TaskType.COMM)
+            if (_task.Type == "comm")
             {
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);
                 if (!newProf.Empty())

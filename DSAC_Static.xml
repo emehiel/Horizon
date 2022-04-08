@@ -1,7 +1,9 @@
 <MODEL>
+  <!--
 	<PYTHON
 		enableScripting = "true">
 	</PYTHON>
+  -->
 
 	<ASSET assetName="Asset1">
 		<DynamicState

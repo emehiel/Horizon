@@ -13,6 +13,8 @@ namespace UserModelUnitTest
         [Test]
         public void LoadSim()
         {
+
+            //arrange
             string simInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
 
             var XmlDoc = new XmlDocument();
@@ -21,7 +23,11 @@ namespace UserModelUnitTest
             var XmlEnum = simulationInputXMLNodeList.GetEnumerator();
             XmlEnum.MoveNext();
             var simulationInputXMLNode = (XmlNode)XmlEnum.Current;
+
+            //act
             bool bingo = SimParameters.LoadSimParameters(simulationInputXMLNode["SIMULATION_PARAMETERS"], "Act1");
+
+            //assert
             Assert.AreEqual(30, SimParameters.SimEndSeconds);
             Assert.AreEqual(0, SimParameters.SimStartSeconds);
             Assert.AreEqual(2454680.0, SimParameters.SimStartJD);
@@ -30,6 +36,7 @@ namespace UserModelUnitTest
         [Test]
         public void LoadSched()
         {
+            //arrange
             string simInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
 
             var XmlDoc = new XmlDocument();
@@ -38,7 +45,11 @@ namespace UserModelUnitTest
             var XmlEnum = simulationInputXMLNodeList.GetEnumerator();
             XmlEnum.MoveNext();
             var simulationInputXMLNode = (XmlNode)XmlEnum.Current;
+
+            //act
             bool bingo = SchedParameters.LoadSchedParameters(simulationInputXMLNode["SCHEDULER_PARAMETERS"]);
+            
+            //assert
             Assert.AreEqual(6, SchedParameters.MaxNumScheds);
             Assert.AreEqual(5, SchedParameters.NumSchedCropTo);
             Assert.AreEqual(30, SchedParameters.SimStepSeconds);

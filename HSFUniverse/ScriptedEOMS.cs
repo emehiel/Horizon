@@ -28,11 +28,15 @@ namespace HSFUniverse
         {
             string pythonFilePath = "", className = "";
             XmlParser.ParseScriptedSrc(scriptedNode, ref pythonFilePath, ref className);
-            if (!pythonFilePath.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
-            {
-                string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
-                pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
-            }
+
+            //  I believe this was added by Jack B. for unit testing.  Still need to sort out IO issues, but with this commented out
+            //  the execuitable will look for python files in the same directory as the .exe file is located.
+            //  Need to do better specifying the input and output paths.
+            //if (!pythonFilePath.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
+            //{
+            //    string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+            //    pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
+            //}
             var engine = Python.CreateEngine();
             //var engine = Python.CreateEngine();
             var scope = engine.CreateScope();

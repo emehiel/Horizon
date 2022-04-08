@@ -20,12 +20,16 @@ namespace UniverseUnitTest
         [Test]
         public void OrbitalConstructorUnitTest()
         {
-            OrbitalEOMS orb = new OrbitalEOMS();
+            //arrange
             Matrix<double> _A = new Matrix<double>(6);
             _A[1, 4] = 1.0;
             _A[2, 5] = 1.0;
             _A[3, 6] = 1.0;
 
+            //act
+            OrbitalEOMS orb = new OrbitalEOMS();
+
+            //assert
             Assert.AreEqual(_A, orb.getA_UnitTestOnly());
         }
         [Test]

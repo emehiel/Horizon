@@ -27,9 +27,9 @@ namespace HSFSchedulerUnitTest
         {
             Program programAct = new Program();
             Stack<Task> systemTasks = CheckerHelper(ref programAct);
-            //SystemState initialStateList = new SystemState();
-            Task unused = systemTasks.Pop();
-            Task unused2 = systemTasks.Pop();
+
+            systemTasks.Pop();
+            systemTasks.Pop();
             Task task3 = systemTasks.Pop();  // should be task 1.1, which can only perform at time 1, not time 0
             Task task4 = systemTasks.Pop();
 
@@ -45,6 +45,7 @@ namespace HSFSchedulerUnitTest
             SystemSchedule firstSchedule = new SystemSchedule(initialSchedule, targ1, 0);
 
             SystemSchedule secondSchedule = new SystemSchedule(initialSchedule, targ2, 0);
+
             SystemState initialSched2 = new SystemState();
             string ICString = Path.Combine(baselocation, @"UnitTestInputs\ICNode.xml");
             var XmlDoc = new XmlDocument();
@@ -56,10 +57,12 @@ namespace HSFSchedulerUnitTest
             XmlNode ICNode = (XmlNode)XmlEnum.Current;
             List<XmlNode> ICNodes = new List<XmlNode>();
             ICNodes.Add(ICNode);
-            initialSched2.Add(SystemState.setInitialSystemState(ICNodes, programAct.AssetList[0]));
+            initialSched2.Add(SystemState.SetInitialSystemState(ICNodes, programAct.AssetList[0]));
             SystemSchedule thirdSchedule = new SystemSchedule(initialSched2);
 
             SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
+           
+            //act
             bool check1 = Checker.CheckSchedule(simSystem, emptySchedule); //can accept empty sched
             bool check2 = Checker.CheckSchedule(simSystem, firstSchedule); //can accept valid schedule
             bool check3 = Checker.CheckSchedule(simSystem, secondSchedule); // cannot accept, no access (subcheck fails)
@@ -67,6 +70,7 @@ namespace HSFSchedulerUnitTest
             programAct.SubList[0].IsEvaluated = true;
             bool check5 = Checker.CheckSchedule(simSystem, secondSchedule); //subcheck should fail, but sub isEvaluated, so can accept this schedule
 
+            //assert
             Assert.IsTrue(check1);
             Assert.IsTrue(check2);
             Assert.IsFalse(check3);

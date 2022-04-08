@@ -13,8 +13,8 @@ namespace MissionElements
         // The name of the target 
         public string Name { get; private set; }
 
-        // The type of the target 
-        public TargetType Type { get; private set; }
+        // The type of the target (will always be converted to a lowercase string in constructor
+        public string Type { get; private set; }
 
         // The position of the target 
         public DynamicState DynamicState { get; private set; }
@@ -23,10 +23,10 @@ namespace MissionElements
         public int Value { get; private set; }
 
         #region Constructors
-        public Target(String name, TargetType type, DynamicState dynamicState, int value)
+        public Target(String name, string type, DynamicState dynamicState, int value)
         {
             Name = name;
-            Type = type;
+            Type = type.ToLower();
             DynamicState = dynamicState;
             Value = value;
         }
@@ -39,8 +39,8 @@ namespace MissionElements
         public Target(XmlNode targetXmlNode)
         {
             Name = targetXmlNode.Attributes["TargetName"].Value;
-            string typeString = targetXmlNode.Attributes["TargetType"].Value.ToString();
-            Type = (TargetType)Enum.Parse(typeof(TargetType), typeString);
+            Type = targetXmlNode.Attributes["TargetType"].Value.ToString();
+            //Type = (TargetType)Enum.Parse(typeof(TargetType), typeString);
             DynamicState = new DynamicState(targetXmlNode.ChildNodes.Item(0));
             Value = Convert.ToInt32(targetXmlNode.Attributes["Value"].Value);
         }
@@ -55,6 +55,7 @@ namespace MissionElements
         }
     }
 
+    // This was changed to a string type instead of an enum to support custom taskTypes on 1/31/2022
     // Types of targets that HSF supports
-    public enum TargetType { FacilityTarget, LocationTarget, FlyingAlong, Recovery }
+    // public enum TargetType { FacilityTarget, LocationTarget, FlyingAlong, Recovery }
 }

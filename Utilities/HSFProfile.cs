@@ -55,7 +55,7 @@ namespace Utilities
         }
 
         /// <summary>
-        /// Create a new Profile from two list of equal length
+        /// Create a new Profile from two lists of equal length
         /// </summary>
         /// <param name="timeIn"></param>
         /// <param name="valIn"></param>

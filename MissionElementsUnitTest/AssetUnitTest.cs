@@ -17,39 +17,33 @@ namespace MissionElementsUnitTest
         Asset asset;
         Asset asset3;
         DynamicState dynamicState;
-        bool helped = false;
         [Test]
         public void ConstructorUnitTest()
         {
+            //arrange + act for 'asset' in asset helper
+            Asset asset2 = new Asset();
 
-            if (!helped)
-            {
-                AssetHelper();
-            }
+            //assert
             Assert.AreEqual("asset1", asset.Name);
             Assert.AreEqual(dynamicState, asset.AssetDynamicState);
 
-            Asset asset2 = new Asset();  
             Assert.AreEqual(null, asset2.AssetDynamicState);
             Assert.AreEqual(null, asset2.Name);
-
-
-
-            
-            Assert.AreEqual("asset1", asset.Name);
-            Assert.AreEqual(dynamicState, asset.AssetDynamicState);
-
         }
         [Test]
         public void Equals()
         {
-            if (!helped)
-            {
-                AssetHelper();
-            }
-            Assert.IsTrue(asset.Equals(asset3));
+            //arrange
+            string ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_checker.xml");
+            XmlNode ModelFile = XmlParser.GetModelNode(ModelFilePath);
+            asset3 = new Asset(ModelFile.FirstChild);
+            //act
+            bool asset1equalsasset3 = asset3.Equals(asset);
+            //assert
+            Assert.IsTrue(asset1equalsasset3);
 
         }
+        [SetUp]
         public void AssetHelper()
         {
             string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
@@ -71,11 +65,6 @@ namespace MissionElementsUnitTest
 
             asset = new Asset(dynamicState, "asset1");
 
-
-            string ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_checker.xml");
-            XmlNode ModelFile = XmlParser.GetModelNode(ModelFilePath);
-            asset3 = new Asset(ModelFile.FirstChild);
-            helped = true;
         }
 
         

@@ -616,59 +616,48 @@ namespace MissionElements
                 valueOut.Add(profIn);
         }
 
-
-        //maybe add this functionality to subsystem? but then we would need to pass the state to the constructor
-        public static SystemState setInitialSystemState(List<XmlNode> ICNodes, Asset asset)
+        public static SystemState SetInitialSystemState(XmlNode ICNode, Asset asset)
         {
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
 
             SystemState state = new SystemState();
-            foreach (XmlNode ICNode in ICNodes)
+
+            string type = ICNode.Attributes["type"].Value;
+            string key = asset.Name + "."+ICNode.Attributes["key"].Value.ToLower();
+            if (type.Equals("Int"))
             {
-                string type = ICNode.Attributes["type"].Value;
-                string key = asset.Name + "."+ICNode.Attributes["key"].Value.ToLower();
-                if (type.Equals("Int"))
-                {
-                    int val;
-                    Int32.TryParse(ICNode.Attributes["value"].Value, out val);
-                    StateVarKey<int> svk = new StateVarKey<int>(key);
-                    state.AddValue(svk, new KeyValuePair<double, int>(SimParameters.SimStartSeconds, val));
-                }
-                //else if (type.Equals("Float"))
-                //{
-                //    float val;
-                //    float.TryParse(ICNode.Attributes["value"].Value.ToString(), out val);
-                //    StateVarKey<double> svk = new StateVarKey<double>(key);
-                //    state.addValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
-                //}
-                else if (type.Equals("Double"))
-                {
-                    double val;
-                    Double.TryParse(ICNode.Attributes["value"].Value, out val);
-                    StateVarKey<double> svk = new StateVarKey<double>(key);
-                    state.AddValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
-                }
-                else if (type.Equals("Bool"))
-                {
-                    string val = ICNode.Attributes["value"].Value;
-                    bool val_ = false;
-                    if (val.ToLower().Equals("true") || val.Equals("1"))
-                        val_ = true;
-                    StateVarKey<bool> svk = new StateVarKey<bool>(key);
-                    state.AddValue(svk, new KeyValuePair<double, bool>(SimParameters.SimStartSeconds, val_));
-                }
-                else if (type.Equals("Matrix"))
-                {
-                    Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"].Value);
-                    StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(key);
-                    state.AddValue(svk, new KeyValuePair<double, Matrix<double>>(SimParameters.SimStartSeconds, val));
-                }
-                else if (type.Equals("Quat"))
-                {
-                    Quat val = new Quat(ICNode.Attributes["value"].Value);
-                    StateVarKey<Quat>svk = new StateVarKey<Quat>(key);
-                    state.AddValue(svk, new KeyValuePair<double, Quat>(SimParameters.SimStartSeconds, val));
-                }
+                int val;
+                Int32.TryParse(ICNode.Attributes["value"].Value, out val);
+                StateVarKey<int> svk = new StateVarKey<int>(key);
+                state.AddValue(svk, new KeyValuePair<double, int>(SimParameters.SimStartSeconds, val));
+            }
+            else if (type.Equals("Double"))
+            {
+                double val;
+                Double.TryParse(ICNode.Attributes["value"].Value, out val);
+                StateVarKey<double> svk = new StateVarKey<double>(key);
+                state.AddValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
+            }
+            else if (type.Equals("Bool"))
+            {
+                string val = ICNode.Attributes["value"].Value;
+                bool val_ = false;
+                if (val.ToLower().Equals("true") || val.Equals("1"))
+                    val_ = true;
+                StateVarKey<bool> svk = new StateVarKey<bool>(key);
+                state.AddValue(svk, new KeyValuePair<double, bool>(SimParameters.SimStartSeconds, val_));
+            }
+            else if (type.Equals("Matrix"))
+            {
+                Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"].Value);
+                StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(key);
+                state.AddValue(svk, new KeyValuePair<double, Matrix<double>>(SimParameters.SimStartSeconds, val));
+            }
+            else if (type.Equals("Quat"))
+            {
+                Quat val = new Quat(ICNode.Attributes["value"].Value);
+                StateVarKey<Quat>svk = new StateVarKey<Quat>(key);
+                state.AddValue(svk, new KeyValuePair<double, Quat>(SimParameters.SimStartSeconds, val));
             }
             return state;
         }

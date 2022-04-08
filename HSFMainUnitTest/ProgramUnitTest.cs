@@ -182,8 +182,8 @@ namespace HSFMainUnitTest
             var subsystemMapAct = programAct.SubsystemMap;
             double numAsset = programAct.AssetList.Count;
             double numConstraints = programAct.ConstraintsList.Count;
-            double numDependencies = programAct.DependencyMap.Count;
-            double numDepFcn = programAct.DependencyFcnMap.Count;
+            double numDependencies = programAct.DependencyList.Count;
+            double numDepFcn = programAct.DependencyFcnList.Count;
             double numSubs = programAct.SubList.Count;
 
             //assert
@@ -194,10 +194,10 @@ namespace HSFMainUnitTest
             Assert.AreEqual(expConstraint, numConstraints);
             Assert.AreEqual("ssdr", programAct.ConstraintsList[0].Name);
             Assert.AreEqual(expDependencies, numDependencies);
-            Assert.AreEqual("asset1.access", programAct.DependencyMap[0].Value);
-            Assert.AreEqual("asset1.adcs", programAct.DependencyMap[0].Key);
+            Assert.AreEqual("asset1.access", programAct.DependencyList[0].Value);
+            Assert.AreEqual("asset1.adcs", programAct.DependencyList[0].Key);
             Assert.AreEqual(expDepFcn, numDepFcn);
-            Assert.AreEqual("SSDRfromEOSensor.asset1", programAct.DependencyFcnMap[0].Value);
+            Assert.AreEqual("SSDRfromEOSensor.asset1", programAct.DependencyFcnList[0].Value);
             Assert.AreEqual(expSubs, numSubs);
             Assert.AreEqual("asset1.access", programAct.SubList[0].Name);
             //Assert.AreEqual, programAct.InitialSysState.Ddata.Values); //maybe test this? so many objects created in this method

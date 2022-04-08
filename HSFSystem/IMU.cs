@@ -124,7 +124,7 @@ namespace HSFSystem
                 return true; // TODO Is this what we want to do?
 
             }
-            if (_task.Type == TaskType.FLYALONG)
+            if (_task.Type == "flyalong")
             {
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);
                 if (!newProf.Empty())

@@ -48,7 +48,7 @@ namespace HSFScheduler
         public static Stack<Access> getCurrentAccessesForAsset(Stack<Access> accesses, Asset asset, double currentTime)
         {
             Stack<Access> allAccesses = Access.getCurrentAccesses(accesses, currentTime);
-            return new Stack<Access>(allAccesses.Where(item => item.Asset == asset));
+            return new Stack<Access>(allAccesses.Where(item => item.Asset == asset)); //what is important to test from this line?
         }
 
         /// <summary>

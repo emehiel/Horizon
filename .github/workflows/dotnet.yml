@@ -1,0 +1,37 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Update NuGet
+      run: nuget restore
+    - name: Build
+      run: dotnet build
+    - name: Main Program Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFMainUnitTest\bin\Debug\HSFMainUnitTest.dll
+    - name: Scheduler Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFSchedulerUnitTest\bin\Debug\HSFSchedulerUnitTest.dll
+    - name: System Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFSystemUnitTest\bin\Debug\HSFSystemUnitTest.dll
+    - name: Universe Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFUniverseUnitTest\bin\Debug\UniverseUnitTest.dll
+    - name: Mission Elements Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe MissionElementsUnitTest\bin\Debug\MissionElementsUnitTest.dll
+    - name: User Model Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe UserModelUnitTest\bin\Debug\UserModelUnitTest.dll
+    - name: Utilities Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe UtilitiesUnitTest\bin\Debug\UtilitiesUnitTest.dll
+      
+# run: dotnet test --verbosity normal

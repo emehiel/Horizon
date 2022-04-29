@@ -20,6 +20,7 @@ namespace HSFSystem
         /// <summary>
         /// Applies the constraint to the appropriate variables in the given state,
         /// that contains updated state data for all the requested Subsystems.
+        /// what the hell is this?
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>

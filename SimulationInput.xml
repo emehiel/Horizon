@@ -2,12 +2,12 @@
 	<SIMULATION_PARAMETERS
 		SimStartJD="2454680.0"
 		SimStartSeconds="0.0"
-		SimEndSeconds="1000.0">
+		SimEndSeconds="3600">
 	</SIMULATION_PARAMETERS>
 
 	<SCHEDULER_PARAMETERS
-		maxNumSchedules="1"
-		numSchedCropTo="1"
-		simStepSeconds="30.0">
+		maxNumSchedules="10"
+		numSchedCropTo="5"
+		simStepSeconds="15">
 	</SCHEDULER_PARAMETERS>
 </SCENARIO>

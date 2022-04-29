@@ -43,5 +43,9 @@ namespace HSFUniverse
                 return dy;
             }
         }
+        public Matrix<double> getA_UnitTestOnly()
+        {
+            return _A;
+        }
     }
 }

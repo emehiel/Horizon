@@ -1,0 +1,10 @@
+<MODEL>		
+	<ASSET assetName="Asset1">
+		<CONSTRAINT
+			value="0.7"
+			subsystemName = "Power"
+			type="FAIL_IF_HIGHER">
+			<STATEVAR type = "Double" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+</MODEL>

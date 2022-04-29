@@ -71,7 +71,7 @@ namespace HSFScheduler
             foreach (var asset in system.Assets)
             {
                 if(asset.AssetDynamicState != null)
-                    canPregenAccess &= asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_ECI && asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_LLA;
+                    canPregenAccess &= asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_ECI && asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.DYNAMIC_LLA && asset.AssetDynamicState.Type != HSFUniverse.DynamicStateType.NULL_STATE;
                 else
                     canPregenAccess = false;
             }
@@ -91,7 +91,7 @@ namespace HSFScheduler
                 Access.writeAccessReport(preGeneratedAccesses); //- TODO:  Finish this code - EAM
                 log.Info("Done pregenerating accesses. There are " + preGeneratedAccesses.Count + " accesses.");
             }
-            // otherwise generate an exhaustive list of possibilities for assetTaskList
+            // otherwise generate an exhaustive list of possibilities for assetTaskList,
             else
             {
                 log.Info("Generating Exhaustive Task Combinations... ");
@@ -148,7 +148,7 @@ namespace HSFScheduler
                 //Parallel.ForEach(systemSchedules, (oldSystemSchedule) =>
                 foreach(var oldSystemSchedule in systemSchedules)
                 {
-                    potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
+                    //potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
                     foreach (var newAccessStack in scheduleCombos)
                     {
                         k++;
@@ -179,7 +179,7 @@ namespace HSFScheduler
                 systemCanPerformList.Reverse();
                 // Merge old and new systemSchedules
                 var oldSystemCanPerfrom = new List<SystemSchedule>(systemCanPerformList);
-                systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedules
+                systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedule doubling stuff up
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
 

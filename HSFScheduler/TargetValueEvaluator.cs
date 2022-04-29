@@ -36,7 +36,7 @@ namespace HSFScheduler
                 {
                     Task task = assetTask.Value;
                     sum += task.Target.Value;
-                    if(task.Type == TaskType.COMM)
+                    if(task.Type == "comm")
                         sum = sum + (double)Dependencies.GetDependencyFunc("EvalfromSSDR" + "." + assetTask.Key.Name).DynamicInvoke(eit);
                 }
             }

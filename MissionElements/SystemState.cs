@@ -91,6 +91,8 @@ namespace MissionElements
                 AddValue(data.Key, data.Value);
             foreach (var data in moreState.Mdata)
                 AddValue(data.Key, data.Value);
+            foreach (var data in moreState.Qdata)
+                AddValue(data.Key, data.Value);
         }
 
         public override string ToString()
@@ -109,7 +111,7 @@ namespace MissionElements
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public KeyValuePair<double, int> GetLastValue(StateVarKey<int> key) {
+        public KeyValuePair<double, int> GetLastValue(StateVarKey<int> key) { //TODO Test
             HSFProfile<int> valueOut;
             if (Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -572,56 +574,90 @@ namespace MissionElements
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
         }
-        //maybe add this functionality to subsystem? but then we would need to pass the state to the constructor
-        public static SystemState setInitialSystemState(List<XmlNode> ICNodes, Asset asset)
+
+        public void SetProfile(StateVarKey<Quat> key, HSFProfile<Quat> profIn)
+        {
+            HSFProfile<Quat> valueOut;
+            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Qdata.Add(key, profIn);
+            else
+            { // Otherwise, erase whatever is there, and insert a new one.
+                Qdata.Remove(key);
+                Qdata.Add(key, profIn);
+            }
+        }
+
+        /// <summary>
+        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
+        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
+        /// <param name="pairIn"></param>
+        public void AddValue(StateVarKey<Quat> key, KeyValuePair<double, Quat> pairIn)
+        {
+            HSFProfile<Quat> valueIn = new HSFProfile<Quat>(pairIn);
+            HSFProfile<Quat> valueOut = new HSFProfile<Quat>();
+            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Qdata.Add(key, valueIn);
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(pairIn); //TODO: make sure this is ok. was formally iterator.second.data
+        }
+
+        /// <summary>
+        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
+        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
+        /// <param name="pairIn"></param>
+        public void AddValue(StateVarKey<Quat> key, HSFProfile<Quat> profIn)
+        {
+            HSFProfile<Quat> valueOut;
+            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+                Qdata.Add(key, profIn);
+            else // Otherwise, add this data point to the existing Profile.
+                valueOut.Add(profIn);
+        }
+
+        public static SystemState SetInitialSystemState(XmlNode ICNode, Asset asset)
         {
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
-            //int n = modelInputXMLNode.ChildNode("ASSET");
+
             SystemState state = new SystemState();
-            foreach (XmlNode ICNode in ICNodes)
+
+            string type = ICNode.Attributes["type"].Value;
+            string key = asset.Name + "."+ICNode.Attributes["key"].Value.ToLower();
+            if (type.Equals("Int"))
             {
-                string type = ICNode.Attributes["type"].Value;
-                string key = asset.Name + "."+ICNode.Attributes["key"].Value.ToLower();
-                if (type.Equals("Int"))
-                {
-                    int val;
-                    Int32.TryParse(ICNode.Attributes["value"].Value, out val);
-                    StateVarKey<int> svk = new StateVarKey<int>(key);
-                    state.AddValue(svk, new KeyValuePair<double, int>(SimParameters.SimStartSeconds, val));
-                }
-                //else if (type.Equals("Float"))
-                //{
-                //    float val;
-                //    float.TryParse(ICNode.Attributes["value"].Value.ToString(), out val);
-                //    StateVarKey<double> svk = new StateVarKey<double>(key);
-                //    state.addValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
-                //}
-                else if (type.Equals("Double"))
-                {
-                    double val;
-                    Double.TryParse(ICNode.Attributes["value"].Value, out val);
-                    StateVarKey<double> svk = new StateVarKey<double>(key);
-                    state.AddValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
-                }
-                else if (type.Equals("Bool"))
-                {
-                    string val = ICNode.Attributes["value"].Value;
-                    bool val_ = false;
-                    if (val.Equals("True") || val.Equals("1"))
-                        val_ = true;
-                    StateVarKey<bool> svk = new StateVarKey<bool>(key);
-                    state.AddValue(svk, new KeyValuePair<double, bool>(SimParameters.SimStartSeconds, val_));
-                }
-                else if (type.Equals("Matrix"))
-                {
-                    Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"].Value);
-                    StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(key);
-                    state.AddValue(svk, new KeyValuePair<double, Matrix<double>>(SimParameters.SimStartSeconds, val));
-                }
-                else if (type.Equals("Quat"))
-                {
-                    // Quaternions still need an initializer from a string, like Matrices
-                }
+                int val;
+                Int32.TryParse(ICNode.Attributes["value"].Value, out val);
+                StateVarKey<int> svk = new StateVarKey<int>(key);
+                state.AddValue(svk, new KeyValuePair<double, int>(SimParameters.SimStartSeconds, val));
+            }
+            else if (type.Equals("Double"))
+            {
+                double val;
+                Double.TryParse(ICNode.Attributes["value"].Value, out val);
+                StateVarKey<double> svk = new StateVarKey<double>(key);
+                state.AddValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
+            }
+            else if (type.Equals("Bool"))
+            {
+                string val = ICNode.Attributes["value"].Value;
+                bool val_ = false;
+                if (val.ToLower().Equals("true") || val.Equals("1"))
+                    val_ = true;
+                StateVarKey<bool> svk = new StateVarKey<bool>(key);
+                state.AddValue(svk, new KeyValuePair<double, bool>(SimParameters.SimStartSeconds, val_));
+            }
+            else if (type.Equals("Matrix"))
+            {
+                Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"].Value);
+                StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(key);
+                state.AddValue(svk, new KeyValuePair<double, Matrix<double>>(SimParameters.SimStartSeconds, val));
+            }
+            else if (type.Equals("Quat"))
+            {
+                Quat val = new Quat(ICNode.Attributes["value"].Value);
+                StateVarKey<Quat>svk = new StateVarKey<Quat>(key);
+                state.AddValue(svk, new KeyValuePair<double, Quat>(SimParameters.SimStartSeconds, val));
             }
             return state;
         }

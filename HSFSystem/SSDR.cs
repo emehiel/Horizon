@@ -10,9 +10,11 @@ using MissionElements;
 using Utilities;
 using HSFSystem;
 using log4net;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
+    //[ExcludeFromCodeCoverage]
     public class SSDR : Subsystem
     {
         // Default Values
@@ -63,7 +65,7 @@ namespace HSFSubsystem
         {
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
-            if (_task.Type == TaskType.IMAGING)
+            if (_task.Type == "imaging")
             {
                 double ts = proposedEvent.GetTaskStart(Asset);
                 double te = proposedEvent.GetTaskEnd(Asset);
@@ -86,7 +88,7 @@ namespace HSFSubsystem
                 Console.WriteLine("SSDR buffer full");
                 return false;
             }
-            else if (_task.Type == TaskType.COMM)
+            else if (_task.Type == "comm")
             {
                 double ts = proposedEvent.GetTaskStart(Asset);
                 proposedEvent.SetTaskEnd(Asset, ts + 60.0);

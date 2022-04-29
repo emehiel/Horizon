@@ -1,0 +1,20 @@
+<MODEL>
+	<ASSET assetName="Asset1">
+		<DynamicState
+      DynamicStateType="PREDETERMINED_ECI"
+			ICs="[ 3000.0; 4100.0; 3400.0; 0.0; 6.02088; 4.215866]">
+			<EOMS
+				EOMSType="orbital_EOMS">
+			</EOMS>
+		</DynamicState>
+		<SUBSYSTEM
+			Type="SubTest"
+			subsystemName = "SubTest">
+<IC type="Double" key="maj_Key" value="1.0"></IC>
+<IC type="Int" key="IKey" value="2"></IC>
+<IC type="Bool" key="BKey" value="true"></IC>
+<IC type="Matrix" key="MKey" value="[1,2;3,4]"></IC>
+<IC type="Quat" key="QKey" value="[1.0,0.5,0.5,0.4]"></IC>
+		</SUBSYSTEM>
+	</ASSET>
+</MODEL>

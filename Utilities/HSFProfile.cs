@@ -55,7 +55,7 @@ namespace Utilities
         }
 
         /// <summary>
-        /// Create a new Profile from two list of equal length
+        /// Create a new Profile from two lists of equal length
         /// </summary>
         /// <param name="timeIn"></param>
         /// <param name="valIn"></param>
@@ -366,7 +366,7 @@ namespace Utilities
         public double Integrate(double startTime, double endTime, double initialValue)
         {
             if (endTime < startTime)
-                return -1.0 * Integrate(startTime, endTime, initialValue);
+                return -1.0 * Integrate(endTime, startTime, initialValue);
             if (Count() == 0 || endTime <= data.First().Key)
                 return (endTime - startTime) * initialValue;
             if (endTime == startTime)

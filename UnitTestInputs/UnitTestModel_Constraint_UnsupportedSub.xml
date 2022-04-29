@@ -1,0 +1,23 @@
+<MODEL>		
+	<ASSET assetName="Asset1">
+<SUBSYSTEM
+			Type="Power"
+			subsystemName = "Power"
+			batterySize="1000000"
+			fullSolarPower="150"
+			penumbraSolarPower="75">
+			<IC type="Double" key="DepthofDischarge" value="0.0"></IC>
+			<IC type="Double" key="SolarPanelPowerIn" value="0.0"></IC>
+			<DEPENDENCY subsystemName="Comm" fcnName="PowerfromComm.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="Adcs" fcnName="PowerfromADCS.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="EOSensor" fcnName="PowerfromEOSensor.asset1"></DEPENDENCY>
+			<DEPENDENCY subsystemName="SSDR" fcnName="PowerfromSSDR.asset1"></DEPENDENCY>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value="0.7"
+			subsystemName = "Power"
+			type="FAIL_IF_HIGHER">
+			<STATEVAR type = "Quaternion" key="DepthofDischarge"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+</MODEL>

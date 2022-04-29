@@ -1,0 +1,38 @@
+<MODEL>
+	<ASSET assetName="Asset1">
+		<DynamicState
+      DynamicStateType="PREDETERMINED_ECI"
+			ICs="[ 3000.0; 4100.0; 3400.0; 0.0; 6.02088; 4.215866]">
+			<EOMS
+				EOMSType="orbital_EOMS">
+			</EOMS>
+		</DynamicState>
+		<SUBSYSTEM
+			Type="TestSub"
+			subsystemName = "Sub1">
+			<DEPENDENCY subsystemName="Sub2"></DEPENDENCY>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			Type="TestSub"
+			subsystemName = "Sub2">
+			<DEPENDENCY subsystemName="Sub3"></DEPENDENCY>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			Type="TestSub"
+			subsystemName = "Sub3">
+			<DEPENDENCY subsystemName="Sub1"></DEPENDENCY>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			Type="TestSub"
+			subsystemName = "Sub4">
+			<DEPENDENCY subsystemName="Sub5"></DEPENDENCY>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			Type="TestSub"
+			subsystemName = "Sub5">
+			<DEPENDENCY subsystemName="Sub4"></DEPENDENCY>
+		</SUBSYSTEM>
+	</ASSET>
+
+
+</MODEL>

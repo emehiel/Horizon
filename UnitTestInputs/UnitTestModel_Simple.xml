@@ -1,0 +1,42 @@
+<MODEL>
+	<PYTHON
+		enableScripting = "true">
+	</PYTHON>
+
+	<ASSET assetName="Asset1">
+		<DynamicState
+      DynamicStateType="PREDETERMINED_ECI"
+			ICs="[ 3000.0; 4100.0; 3400.0; 0.0; 6.02088; 4.215866]">
+			<EOMS
+				EOMSType="orbital_EOMS">
+			</EOMS>
+		</DynamicState>
+		<SUBSYSTEM
+			Type="Access"
+			subsystemName = "Access">
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			Type="Adcs"
+			slewRate="5"
+			subsystemName = "Adcs">
+			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
+			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			Type="Ssdr"
+			subsystemName = "SSDR"
+			bufferSize = "5000">
+			<IC type="Double" key="DataBufferFillRatio" value="0.0"></IC>
+			<DEPENDENCY subsystemName="EOSensor" fcnName="SSDRfromEOSensor.asset1"></DEPENDENCY>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value="0.7"
+			subsystemName="SSDR"
+			type="FAIL_IF_HIGHER">
+			<STATEVAR type = "Double" key="DataBufferFillRatio"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+
+
+</MODEL>
+

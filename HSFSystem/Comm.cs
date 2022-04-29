@@ -6,11 +6,13 @@ using HSFUniverse;
 using MissionElements;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Xml;
 using Utilities;
 
 namespace HSFSubsystem
 {
+    //[ExcludeFromCodeCoverage]
     public class Comm : Subsystem
     {
         #region Attributes
@@ -59,7 +61,7 @@ namespace HSFSubsystem
             IsEvaluated = true;
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
-            if (_task.Type == TaskType.COMM)
+            if (_task.Type == "comm")
             {
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);
                 if (!newProf.Empty())

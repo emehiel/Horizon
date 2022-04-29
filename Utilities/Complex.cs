@@ -2,11 +2,13 @@
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Utilities
 {
     [Serializable]
+    //[ExcludeFromCodeCoverage]
     public class Complex<T> : ICloneable, ISerializable
     {
         #region Properties

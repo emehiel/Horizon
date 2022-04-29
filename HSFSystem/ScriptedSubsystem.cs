@@ -9,6 +9,7 @@ using MissionElements;
 using UserModel;
 using HSFUniverse;
 using System.Xml;
+using System.IO;
 
 namespace HSFSubsystem
 {
@@ -61,12 +62,21 @@ namespace HSFSubsystem
             GetSubNameFromXmlNode(scriptedSubXmlNode);
             string pythonFilePath ="", className = "";
             XmlParser.ParseScriptedSrc(scriptedSubXmlNode, ref pythonFilePath, ref className);
-            
+
+            //  I believe this was added by Jack B. for unit testing.  Still need to sort out IO issues, but with this commented out
+            //  the execuitable will look for python files in the same directory as the .exe file is located.
+            //  Need to do better specifying the input and output paths.
+            //if (!pythonFilePath.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
+            //{
+            //    string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
+            //    pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
+            //}
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
             var p = engine.GetSearchPaths();
             p.Add(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\PythonScripting");
+            p.Add(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\");
             engine.SetSearchPaths(p);
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);

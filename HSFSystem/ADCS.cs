@@ -8,15 +8,18 @@ using System.Xml;
 using MissionElements;
 using HSFUniverse;
 using HSFSystem;
+using System.Diagnostics.CodeAnalysis;
 //using Logging;
 
 namespace HSFSubsystem
 {
+    //[ExcludeFromCodeCoverage]
     public class ADCS : Subsystem
     {
         #region Attributes
         protected StateVarKey<Matrix<double>> POINTVEC_KEY;
-        protected double _slewRate = 5; //deg/sec
+         double _slewRate = 5;//deg/sec
+        //double _slewRate = 5;
         #endregion Attributes
 
         #region Constructors

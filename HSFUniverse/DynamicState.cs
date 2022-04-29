@@ -50,7 +50,7 @@ namespace HSFUniverse
                 Name = "Generic.DynamicState";
 
             // TODO add a line to pre-propagate to simEndTime if the type is predetermined
-            // TODO catch exception if _type or initial conditions are not set from teh XML file
+            // TODO catch exception if _type or initial conditions are not set from the XML file
             if (dynamicStateXMLNode.Attributes["DynamicStateType"] != null)
             {
                 string typeString = dynamicStateXMLNode.Attributes["DynamicStateType"].Value.ToString();
@@ -60,7 +60,7 @@ namespace HSFUniverse
             _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds/SchedParameters.SimStepSeconds));
             _stateData.Add(0.0, ics);
 
-            if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI))
+            if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI || Type == DynamicStateType.STATIC_LVLH || Type == DynamicStateType.NULL_STATE))
             {
                 Eoms = EOMFactory.GetEomClass(dynamicStateXMLNode);
                 
@@ -91,6 +91,7 @@ namespace HSFUniverse
 
         public DynamicState(DynamicStateType type, DynamicEOMS eoms, Vector initialConditions)
         {
+            _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds / SchedParameters.SimStepSeconds));
             _stateData.Add(0.0, initialConditions);
             Type = type;
             Eoms = eoms;
@@ -218,7 +219,7 @@ namespace HSFUniverse
                     return GeometryUtilities.LLA2ECI(InitialConditions(), JD);
                 }
 
-                else if (Type == DynamicStateType.STATIC_ECI)
+                else if (Type == DynamicStateType.STATIC_ECI || Type == DynamicStateType.STATIC_LVLH || Type == DynamicStateType.NULL_STATE)
                     return InitialConditions();
                 else if (Type == DynamicStateType.PREDETERMINED_ECI || Type == DynamicStateType.PREDETERMINED_LLA)
                 {
@@ -330,10 +331,14 @@ namespace HSFUniverse
 
             return csv.ToString();
         }
+        public IntegratorOptions getIntegratorOptions()
+        {
+            return _integratorOptions;
+        }
     }
     
     // Dynamic states type supported by HSF
-    public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI };
+    public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI, STATIC_LVLH, NULL_STATE };
 
     // Propagator types supported by HSF
     public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };

@@ -34,31 +34,59 @@ namespace HSFSubsystem
             {
                 if (type.Equals("access"))
                 {
-                    subDic.Add(name, new AccessSub(SubsystemXmlNode, asset));
+                    var sub = new AccessSub(SubsystemXmlNode, asset);
+                    sub.AddDependencyCollector();
+                    subDic.Add(name, sub);
+                    //subDic.Add(name, new AccessSub(SubsystemXmlNode, asset));
                 }
                 else if (type.Equals("adcs"))
                 {
-                   subDic.Add(name, new ADCS(SubsystemXmlNode, dependencies, asset));
+                    var sub = new ADCS(SubsystemXmlNode, dependencies, asset);
+                    sub.AddDependencyCollector();
+                    subDic.Add(name, sub);
+                    //subDic.Add(name, new ADCS(SubsystemXmlNode, dependencies, asset));
                 }
                 else if (type.Equals("power"))
                 {
-                    subDic.Add(name, new Power(SubsystemXmlNode, dependencies, asset));
+                    var sub = new Power(SubsystemXmlNode, dependencies, asset);
+                    sub.AddDependencyCollector();
+                    subDic.Add(name, sub);
+                    //subDic.Add(name, new Power(SubsystemXmlNode, dependencies, asset));
                 }
                 else if (type.Equals("eosensor"))
                 {
-                    subDic.Add(name, new EOSensor(SubsystemXmlNode, dependencies, asset));
+                    var sub = new EOSensor(SubsystemXmlNode, dependencies, asset);
+                    sub.AddDependencyCollector();
+                    subDic.Add(name, sub);
+                    //subDic.Add(name, new EOSensor(SubsystemXmlNode, dependencies, asset));
                 }
                 else if (type.Equals("ssdr"))
                 {
-                    subDic.Add(name, new SSDR(SubsystemXmlNode, dependencies, asset));
+                    var sub = new SSDR(SubsystemXmlNode, dependencies, asset);
+                    sub.AddDependencyCollector();
+                    subDic.Add(name, sub);
+                    //subDic.Add(name, new SSDR(SubsystemXmlNode, dependencies, asset));
                 }
                 else if (type.Equals("comm"))
                 {
-                    subDic.Add(name, new Comm(SubsystemXmlNode, dependencies, asset));
+                    var sub = new Comm(SubsystemXmlNode, dependencies, asset);
+                    sub.AddDependencyCollector();
+                    subDic.Add(name, sub);
+                    //subDic.Add(name, new Comm(SubsystemXmlNode, dependencies, asset));
                 }
                 else if (type.Equals("imu"))
                 {
-                    subDic.Add(name, new IMU(SubsystemXmlNode, dependencies, asset));
+                    var sub = new IMU(SubsystemXmlNode, dependencies, asset);
+                    sub.AddDependencyCollector();
+                    subDic.Add(name, sub);
+                    //subDic.Add(name, new IMU(SubsystemXmlNode, dependencies, asset));
+                }
+                else if (type.Equals("subtest"))
+                {
+                    var sub = new SubTest(SubsystemXmlNode, dependencies, asset);
+                    sub.AddDependencyCollector();
+                    subDic.Add(name, sub);
+                    //subDic.Add(name, new SubTest(SubsystemXmlNode, dependencies, asset));
                 }
                 else if (type.Equals("networked"))
                 {

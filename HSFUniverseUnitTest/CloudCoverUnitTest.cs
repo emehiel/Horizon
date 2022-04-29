@@ -1,24 +1,19 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using HSFUniverse;
 using Utilities;
 
 namespace UniverseUnitTest
 {
-    [TestClass]
+    [TestFixture]
     public class CloudCoverUnitTest
     {
         // TODO: Figure out what this was meant for.
-        /*[TestMethod]
+        [Test]
         public void TestMethod1()
         {
-            Sun mysun = new Sun();
-            Matrix<double> esVec = new Matrix<double>();
+            Assert.Inconclusive("not Implemented, No References");
 
-            esVec = mysun.getEarSunVec(20.0);
-
-            esVec.GetRow(4);
-
-        }*/
+        }
     }
 }

@@ -14,13 +14,14 @@ namespace HSFUniverse
     {
         #region Attributes
         public Sun Sun { get; private set; }
-        public StandardAtmosphere Atmos { get; private set; }
+        public Atmosphere Atmos { get; private set; }
         #endregion
 
         #region Constructors
         public SpaceEnvironment()
         {
             CreateUniverse();
+            Convert.ToDouble(34);
         }
         /*public SpaceEnvironment(Sun sun)
         {
@@ -50,8 +51,8 @@ namespace HSFUniverse
                 // Check the Sun XMLNode for the attribute
                 if (sunNode.Attributes["isSunVectConstant"] != null)
                 {
-                    bool sunVecConst = Convert.ToBoolean(sunNode.Attributes["isSunVecConstant"]);
-                    Sun = new Sun(sunVecConst);
+                    bool sunVectConst = Convert.ToBoolean(sunNode.Attributes["isSunVectConstant"].Value);
+                    Sun = new Sun(sunVectConst);
                 }
                 else
                 {
@@ -62,7 +63,30 @@ namespace HSFUniverse
             {
                 Sun = new Sun();
             }
-            
+            if (environmentNode["ATMOSPHERE"] != null)
+            {
+                // Create the Sun based on the XMLNode                
+                XmlNode atmosNode = environmentNode["ATMOSPHERE"];
+                //string atmotype = atmosNode.Attributes["type"].ToString;
+                // Check the Sun XMLNode for the attribute
+                string s = Convert.ToString(atmosNode.Attributes["type"].Value);
+                switch (s)
+                {
+                    case "StandardAtmosphere":
+                        Atmos = new StandardAtmosphere();
+                        break;
+                    case "RealTimeAtmosphere":
+                        Atmos = new RealTimeAtmosphere();
+                        break;
+                }
+
+
+            }
+            else
+            {
+                Atmos = new StandardAtmosphere();
+            }
+
         }
 
         /// <summary>

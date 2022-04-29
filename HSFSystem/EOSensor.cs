@@ -8,9 +8,11 @@ using MissionElements;
 using System.Xml;
 using HSFSystem;
 using Utilities;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSubsystem
 {
+    //[ExcludeFromCodeCoverage]
     public class EOSensor : Subsystem
     {
         #region Attributes
@@ -88,7 +90,7 @@ namespace HSFSubsystem
         {
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
-            if (_task.Type == TaskType.IMAGING)
+            if (_task.Type == "IMAGING")
             {
                 //set pixels and time to caputre based on target value
                 int value = _task.Target.Value;

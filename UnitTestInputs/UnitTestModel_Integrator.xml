@@ -1,0 +1,21 @@
+<MODEL>
+	<ASSET assetName="Asset1">
+		<DynamicState
+      DynamicStateType="PREDETERMINED_ECI"
+			ICs="[ -3000.0; -4100.0; -3400.0; 0.0; 6.02088; 4.215866]">
+			<EOMS
+				EOMSType="orbital_EOMS">
+			</EOMS>
+			<INTEGRATOR
+				h="1"
+				rtol="1"
+				atol="1"
+				eps="1">
+			</INTEGRATOR>
+		</DynamicState>
+
+	</ASSET>
+
+
+</MODEL>
+

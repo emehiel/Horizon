@@ -9,9 +9,11 @@ using System.Xml;
 using MissionElements;
 using Utilities;
 using HSFUniverse;
+using System.Diagnostics.CodeAnalysis;
 
 namespace HSFSystem
 {
+    //[ExcludeFromCodeCoverage]
     public class IMU:Subsystem
     {
         #region Attributes
@@ -122,7 +124,7 @@ namespace HSFSystem
                 return true; // TODO Is this what we want to do?
 
             }
-            if (_task.Type == TaskType.FLYALONG)
+            if (_task.Type == "flyalong")
             {
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);
                 if (!newProf.Empty())

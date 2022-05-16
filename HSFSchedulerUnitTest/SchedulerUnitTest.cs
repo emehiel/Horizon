@@ -63,9 +63,9 @@ namespace HSFSchedulerUnitTest
 
             XmlNode evalNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
 
-            Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evalNode, programAct._dependencies);
+            Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evalNode, programAct.Dependencies);
 
-            programAct.simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
+            programAct.SimSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
             Scheduler scheduler = new Scheduler(schedEvaluator);
 
 
@@ -75,7 +75,7 @@ namespace HSFSchedulerUnitTest
             int expschedule1_score = 4;
 
             //act
-            List<SystemSchedule> schedules = scheduler.GenerateSchedules(programAct.simSystem, systemTasks, programAct.InitialSysState);
+            List<SystemSchedule> schedules = scheduler.GenerateSchedules(programAct.SimSystem, systemTasks, programAct.InitialSysState);
             schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
             schedules.Reverse();
 
@@ -120,19 +120,19 @@ namespace HSFSchedulerUnitTest
             programAct.CreateSchedules(systemTasks);
 
             //TEST SCHED COUNT before crop,  if fail, then doesnt test the right scenario which is when the schedule count exceeds maxNumScheds
-            double schedCountAct = programAct.schedules.Count;
+            double schedCountAct = programAct.Schedules.Count;
             Assert.IsTrue(schedCountAct > SchedParameters.MaxNumScheds);
 
             //Crop Schedules
             Evaluator eval = new TargetValueEvaluator(programAct.Dependencies);
             Scheduler scheduler = new Scheduler(eval);
-            SystemSchedule empty = new SystemSchedule(programAct.schedules[0].AllStates);
+            SystemSchedule empty = new SystemSchedule(programAct.Schedules[0].AllStates);
             
             //act
-            scheduler.CropSchedules(programAct.schedules, eval, programAct.schedules[0]);
+            scheduler.CropSchedules(programAct.Schedules, eval, programAct.Schedules[0]);
 
             //assert
-            Assert.AreEqual(SchedParameters.NumSchedCropTo, programAct.schedules.Count());
+            Assert.AreEqual(SchedParameters.NumSchedCropTo, programAct.Schedules.Count());
 
         }
 
@@ -161,12 +161,12 @@ namespace HSFSchedulerUnitTest
             //accessing data...
 
             //TEST SCHED COUNT
-            double schedCountAct = programAct.schedules.Count;
+            double schedCountAct = programAct.Schedules.Count;
 
             //TEST Schedule[x].ScheduleValue & SORTING ALGORITHM
             //Expect 24 schedules, [0] with score of 5 and [1-4] with score of 1
-            double schedule0_score = programAct.schedules[0].ScheduleValue;
-            double schedule1_score = programAct.schedules[1].ScheduleValue;
+            double schedule0_score = programAct.Schedules[0].ScheduleValue;
+            double schedule1_score = programAct.Schedules[1].ScheduleValue;
 
             //TEST EVENTS SCHEDULED must pop after accessing
 
@@ -177,10 +177,10 @@ namespace HSFSchedulerUnitTest
             Task task0 = systemTasks.Pop();
 
 
-            Task target3 = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
-            Task target2 = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
-            Task target11 = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
-            Task target0 = programAct.schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target3 = programAct.Schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target2 = programAct.Schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target11 = programAct.Schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target0 = programAct.Schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
 
             //assert
             Assert.AreEqual(schedCountExp, schedCountAct);
@@ -215,15 +215,15 @@ namespace HSFSchedulerUnitTest
             programAct.CreateSchedules(systemTasks);
 
             //TEST SCHED COUNT
-            double schedCountAct = programAct.schedules.Count;
+            double schedCountAct = programAct.Schedules.Count;
 
             //TEST Schedule[x].ScheduleValue & SORTING ALGORITHM
             //Expect 
-            double schedule0_score = programAct.schedules[0].ScheduleValue;
-            double schedule1_score = programAct.schedules[1].ScheduleValue;
+            double schedule0_score = programAct.Schedules[0].ScheduleValue;
+            double schedule1_score = programAct.Schedules[1].ScheduleValue;
 
             //TEST the empty schedule
-            double emptySchedEventCount = programAct.schedules[7].AllStates.Events.Count();
+            double emptySchedEventCount = programAct.Schedules[7].AllStates.Events.Count();
 
             //assert
             Assert.AreEqual(schedCountExp, schedCountAct);

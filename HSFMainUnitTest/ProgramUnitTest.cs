@@ -248,7 +248,7 @@ namespace HSFMainUnitTest
             program.CreateSchedules(systemTasks);
 
             //assert
-            double actual = program.schedules.Count;
+            double actual = program.Schedules.Count;
             double expected = 17;
             Assert.AreEqual(expected, actual);
         }
@@ -276,8 +276,8 @@ namespace HSFMainUnitTest
 
             //assert
             Assert.AreEqual(exp_MaxSched, act_maxSched);
-            Assert.AreEqual(act_maxSched, program.schedules[0].ScheduleValue);
-            Assert.IsTrue(act_maxSched >= program.schedules[program.schedules.Count - 1].ScheduleValue);
+            Assert.AreEqual(act_maxSched, program.Schedules[0].ScheduleValue);
+            Assert.IsTrue(act_maxSched >= program.Schedules[program.Schedules.Count - 1].ScheduleValue);
 
         }
     }

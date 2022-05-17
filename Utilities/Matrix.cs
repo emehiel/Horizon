@@ -868,12 +868,13 @@ namespace Utilities
 
             }
 
-            for (int row = 1; row < B.NumRows; row++)
+            for (int row = 1; row <= B.NumRows; row++)
             {
                 // Divide by a constant to get 1 in first column
                 double Bk = B[row, row];
                 for (int col = row; col <= B.NumCols; col++)
                 {
+                    //B.SetRow(col, B.GetRow(col) / Bk);
                     B[row, col] = B[row, col] / Bk;
                 }
             }

@@ -68,8 +68,8 @@ namespace UtilitiesUnitTest
         public void MatrixInverse()
         {
             //arrange
-            Matrix<double> A = new Matrix<double>(new double[,] { { 1, 0, 1 }, { 1, 2, 0 }, { 1, 5, 1 } });
-            Matrix<double> expected = new Matrix<double>(new double[,] { { .4, 1, -.4 }, { -.2, 0, .2 }, { .6, -1, .4 } });
+            Matrix<double> A = new Matrix<double>(new double[,] { { 3, 0, 2 }, { 2, 0, -2 }, { 0, 1, 1 } });
+            Matrix<double> expected = new Matrix<double>(new double[,] { { .2, .2, 0 }, { -.2, .3, 1 }, { .2, -.3, 0 } });
 
             //act
             Matrix<double> result = Matrix<double>.Inverse(A);

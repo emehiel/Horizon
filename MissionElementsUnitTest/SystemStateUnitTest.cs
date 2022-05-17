@@ -146,7 +146,6 @@ namespace MissionElementsUnitTest
         [Test]
         public void setInitialConditions()
         {
-            //arrange
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSubICs.xml");
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
             XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
@@ -154,16 +153,23 @@ namespace MissionElementsUnitTest
             List<XmlNode> ICNodes = new List<XmlNode>();
             XmlNode modelNode = XmlParser.GetModelNode(modelInputFilePath);
 
-
-            ICNodes.Add(modelNode.FirstChild.ChildNodes[1].FirstChild);
-            ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[1]);
-            ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[2]);
-            ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[3]);
-            ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[4]);
+            SystemState systemState = new SystemState();
             Asset asset = new Asset(modelNode.FirstChild);
-            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
 
-            //get data
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[1], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[2], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[3], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[4], asset));
+
+            //ICNodes.Add(modelNode.FirstChild.ChildNodes[1].FirstChild);
+            //ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[1]);
+            //ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[2]);
+            //ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[3]);
+            //ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[4]);
+
+            //SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
+
             HSFProfile<Quat> newQuatProf = systemState.GetProfile(quatKey);
             Quat quatVal = newQuatProf.FirstValue();
             HSFProfile<bool> newboolProf = systemState.GetProfile(boolKey);
@@ -171,7 +177,14 @@ namespace MissionElementsUnitTest
             HSFProfile<double> newDoubleProf = systemState.GetProfile(doubleKey);
             HSFProfile<Matrix<double>> newMatrixProf = systemState.GetProfile(matrixKey);
 
-            //assert
+
+
+            Quat expQuat = new Quat("[1.0, 0.5, 0.5, 0.4]");
+            bool expBool = true;
+            int expInt = 2;
+            Matrix<double> expMat = new Matrix<double>("[1,2;3,4]");
+            double expDouble = 1.0;
+
             Assert.IsTrue(expQuat.Equals(newQuatProf.FirstValue()));
             Assert.AreEqual(expBool, newboolProf.FirstValue());
             Assert.AreEqual(expInt, newIntProf.FirstValue());
@@ -183,11 +196,11 @@ namespace MissionElementsUnitTest
         {
             //Arrange
             double expLastDoubleVal = -1;
-            KeyValuePair<double, double> doubleKVP = new KeyValuePair<double, double>(2,expLastDoubleVal);
+            KeyValuePair<double, double> doubleKVP = new KeyValuePair<double, double>(2, expLastDoubleVal);
             int expLastIntVal = -1;
             KeyValuePair<double, int> intKVP = new KeyValuePair<double, int>(2, expLastIntVal);
             Matrix<double> expLastMatrixVal = new Matrix<double>(1, 2, -1);
-            KeyValuePair<double, Matrix<double>> matrixKVP = new KeyValuePair<double,Matrix<double>>(2, expLastMatrixVal);
+            KeyValuePair<double, Matrix<double>> matrixKVP = new KeyValuePair<double, Matrix<double>>(2, expLastMatrixVal);
             bool expLastBoolVal = true;
             KeyValuePair<double, bool> boolKVP = new KeyValuePair<double, bool>(2, expLastBoolVal);
 
@@ -218,7 +231,7 @@ namespace MissionElementsUnitTest
             KeyValuePair<double, bool> boolKVP = new KeyValuePair<double, bool>(2, expLastBoolVal);
 
             //Act
-            KeyValuePair<double, double> lastDoubleVal = state.GetValueAtTime(doubleKey,2);
+            KeyValuePair<double, double> lastDoubleVal = state.GetValueAtTime(doubleKey, 2);
             KeyValuePair<double, int> lastintVal = state.GetValueAtTime(intKey, 2);
             KeyValuePair<double, bool> lastBoolVal = state.GetValueAtTime(boolKey, 2);
             KeyValuePair<double, Matrix<double>> lastMatVal = state.GetValueAtTime(matrixKey, 2);

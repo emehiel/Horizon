@@ -67,12 +67,12 @@ namespace HSFSystemUnitTest
             var modelInputNode = XmlParser.GetModelNode(ModelInputFilePath);
             DynamicState dynState = new DynamicState((DynamicStateType)Enum.Parse(typeof(DynamicStateType), "STATIC_LLA"), new OrbitalEOMS(), new Utilities.Vector("[33.47; -70.65; 0]"));
             SystemState sysState = new SystemState();
-            Target targ = new Target("dummy", (TargetType)Enum.Parse(typeof(TargetType), "LocationTarget"), dynState, 1);
+            Target targ = new Target("dummy", "LocationTarget", dynState, 1);
 
             if (perform)
-            { task = new Task((TaskType)Enum.Parse(typeof(TaskType), "IMAGING"), targ, 10); }
+            { task = new Task("IMAGING", targ, 10); }
             else
-            { task = new Task((TaskType)Enum.Parse(typeof(TaskType), "IMAGING"), targ, 2); }
+            { task = new Task("IMAGING", targ, 2); }
 
                 Dictionary<Asset, Task> taskdic = new Dictionary<Asset, Task>();
             asset = new Asset(modelInputNode.FirstChild);

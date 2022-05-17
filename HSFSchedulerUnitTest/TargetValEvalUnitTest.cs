@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using HSFScheduler;
-using HSFSystem;
 using NUnit.Framework;
 using Horizon;
 using System.IO;
@@ -47,26 +46,29 @@ namespace HSFSchedulerUnitTest
                 Console.WriteLine("LoadSubsystems Failed the Unit test");
                 Assert.Fail();
             }
-            List<XmlNode> ICNodes = new List<XmlNode>();
+            SystemState systemState = new SystemState();
 
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1]);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2]);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[4].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[5].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1]);
+            //List<XmlNode> ICNodes = new List<XmlNode>();
+            //ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
 
-            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[2].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[4].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[5].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1], asset));
+
+            //SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
             StateHistory hist = new StateHistory(systemState);
             Stack<Access> accesses = new Stack<Access>();
 
             accesses.Push(new Access(asset, systemTasks.Pop()));
             SystemSchedule sysSched = new SystemSchedule(hist, accesses, 0);
-            Evaluator TVE = new TargetValueEvaluator(programAct.Dependencies); 
-            double sum = TVE.Evaluate(sysSched); //started here, needed schedule (54) and evaluator (56)
-            Assert.AreEqual(1, sum);
+            //Evaluator TVE = new TargetValueEvaluator(programAct.Dependencies); 
+            //double sum = TVE.Evaluate(sysSched); //started here, needed schedule (54) and evaluator (56)
+            //Assert.AreEqual(1, sum);
 
             accesses.Pop();// goes one target deeper into the deck, val=-1
 
@@ -75,7 +77,7 @@ namespace HSFSchedulerUnitTest
 
             //act
             //constructor
-            Evaluator TVE = new TargetValueEvaluator(programAct._dependencies); 
+            Evaluator TVE = new TargetValueEvaluator(programAct.Dependencies); 
             //evaluate
             double sum = TVE.Evaluate(sysSched);
 

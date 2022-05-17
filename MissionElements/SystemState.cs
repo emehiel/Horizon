@@ -620,6 +620,8 @@ namespace MissionElements
         {
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
 
+            // TODO:  Why is this a static method passing back a SystemState?  Shouldn't it just update the IC of the SystemState
+
             SystemState state = new SystemState();
 
             string type = ICNode.Attributes["type"].Value;

@@ -33,26 +33,33 @@ namespace HSFSchedulerUnitTest
         public void Constructors()
         {
             //arrange
-            systemScheduleInitializer();
+            Program programAct = new Program();
+            string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_EnviroRTA.xml");
+            string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.ModelInputFilePath = modelInputFilePath;
+            programAct.SimulationInputFilePath = simulationInputFilePath;
 
-            Dictionary<Asset, Task> eventDic = new Dictionary<Asset, Task>();
-            eventDic.Add(asset, systemTasks.Pop());
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            Stack<Task> systemTasks = programAct.LoadTargets();
 
             XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
             XmlNode modelNode = XmlParser.GetModelNode(modelInputFilePath);
             Asset asset = new Asset(modelNode.ChildNodes[1]);
-            List<XmlNode> ICNodes = new List<XmlNode>();
+            SystemState systemState = new SystemState();
+            
+            //List<XmlNode> ICNodes = new List<XmlNode>();
+            //ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
+            
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[2].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[4].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[5].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1], asset));
 
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1]);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2]);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[4].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[5].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1]);
-
-            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
+            //SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
             StateHistory expHist = new StateHistory(systemState);
 
             //First Constructor test SystemSchedule(SystemState initialstates) 
@@ -62,6 +69,8 @@ namespace HSFSchedulerUnitTest
             SystemSchedule newSched2 = new SystemSchedule(initialHist);
 
             //Third Constructor test SystemSchedule(SystemState initialstates)
+            Dictionary<Asset, Task> eventDic = new Dictionary<Asset, Task>();
+            eventDic.Add(asset, systemTasks.Pop());
             Event event1 = new Event(eventDic, systemState);
             SystemSchedule newSched3 = new SystemSchedule(newSched2, event1);
 
@@ -89,18 +98,21 @@ namespace HSFSchedulerUnitTest
             XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
             XmlNode modelNode = XmlParser.GetModelNode(modelInputFilePath);
             Asset asset = new Asset(modelNode.ChildNodes[1]);
-            List<XmlNode> ICNodes = new List<XmlNode>();
+            SystemState systemState = new SystemState();
 
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1]);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2]);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[4].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[5].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1]);
+            //List<XmlNode> ICNodes = new List<XmlNode>();
+            //ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
 
-            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[2].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[4].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[5].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1], asset));
+
+            //SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
             StateHistory initialHist = new StateHistory(systemState);
             Dictionary<Asset, Task> tasks = new Dictionary<Asset, Task>();
 
@@ -162,18 +174,21 @@ namespace HSFSchedulerUnitTest
             XmlNode modelNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
             Stack<Task> systemTasks = programAct.LoadTargets();
             Asset asset = new Asset(modelNode.ChildNodes[1]);
+            SystemState systemState = new SystemState();
 
-            List<XmlNode> ICNodes = new List<XmlNode>();
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1]);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2]);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[4].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[5].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].FirstChild);
-            ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1]);
+            //List<XmlNode> ICNodes = new List<XmlNode>();
+            //ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
 
-            SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[2].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2], asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[4].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[5].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].FirstChild, asset));
+            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1], asset));
+
+            //SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
             StateHistory initialHist = new StateHistory(systemState);
 
             Stack<Access> accessList = new Stack<Access>();
@@ -287,18 +302,21 @@ namespace HSFSchedulerUnitTest
                 XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
                 XmlNode modelNode = XmlParser.GetModelNode(modelInputFilePath);
                 asset = new Asset(modelNode.ChildNodes[1]);
-                ICNodes = new List<XmlNode>();
+                SystemState systemState = new SystemState();
 
-                ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
-                ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].FirstChild);
-                ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1]);
-                ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2]);
-                ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[4].FirstChild);
-                ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[5].FirstChild);
-                ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].FirstChild);
-                ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1]);
+                //List<XmlNode> ICNodes = new List<XmlNode>();
+                //ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
 
-                systemState = SystemState.setInitialSystemState(ICNodes, asset);
+                systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[2].FirstChild, asset));
+                systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].FirstChild, asset));
+                systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1], asset));
+                systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2], asset));
+                systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[4].FirstChild, asset));
+                systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[5].FirstChild, asset));
+                systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].FirstChild, asset));
+                systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1], asset));
+
+                //SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
                 initialHist = new StateHistory(systemState);
 
                 sysSchedInit = true;

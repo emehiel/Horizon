@@ -97,7 +97,7 @@ namespace HSFSystemUnitTest
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
             var evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
             XmlNode modelChildNode = modelInputXMLNode.FirstChild;
-            List<XmlNode> ICNodes = new List<XmlNode>();
+            //List<XmlNode> ICNodes = new List<XmlNode>();
             Asset asset = new Asset(modelChildNode);
             Dictionary<string, Subsystem> _subsystemMap = new Dictionary<string, Subsystem>();
             List<Constraint> _constraintsList = new List<Constraint>();
@@ -111,7 +111,8 @@ namespace HSFSystemUnitTest
                     string subName = SubsystemFactory.GetSubsystem(modelChild2Node, null, asset, _subsystemMap);
                     foreach (XmlNode modelChild3Node in modelChild2Node.ChildNodes)
                     {
-                        ICNodes.Add(modelChild3Node);
+                        InitialSysState.Add(SystemState.SetInitialSystemState(modelChild3Node, asset));
+                        //ICNodes.Add(modelChild3Node);
                     }
                 }
                 if (modelChild2Node.Name.Equals("CONSTRAINT"))
@@ -134,7 +135,7 @@ namespace HSFSystemUnitTest
             SingleConstraint<double> LowerB = new SingleConstraint<double>(ConstraintNode[11], _subsystemMap["asset1.power"]);
 
 
-            InitialSysState.Add(SystemState.SetInitialSystemState(ICNodes,asset));
+            //InitialSysState.Add(SystemState.SetInitialSystemState(ICNodes,asset));
 
             //act + assert (testing accepts which is boolean)
             Assert.IsTrue(HigherA.Accepts(InitialSysState));

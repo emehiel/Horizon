@@ -1,0 +1,42 @@
+# This is a basic workflow that is manually triggered
+
+name: Manual workflow
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+on:
+  workflow_dispatch:
+  
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    
+    # Setup
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Update NuGet
+      run: nuget restore
+      
+    # Build Test
+    - name: Build
+      run: dotnet build
+      
+    # Unit/Integration Tests
+    - name: Utilities Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe UtilitiesUnitTest\bin\Debug\UtilitiesUnitTest.dll
+    - name: User Model Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe UserModelUnitTest\bin\Debug\UserModelUnitTest.dll
+    - name: Universe Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFUniverseUnitTest\bin\Debug\UniverseUnitTest.dll
+    - name: Mission Elements Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe MissionElementsUnitTest\bin\Debug\MissionElementsUnitTest.dll
+    - name: System Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFSystemUnitTest\bin\Debug\HSFSystemUnitTest.dll
+    - name: Scheduler Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFSchedulerUnitTest\bin\Debug\HSFSchedulerUnitTest.dll 
+    - name: Main Program Test
+      run: packages\NUnit.ConsoleRunner.3.12.0\tools\nunit3-console.exe HSFMainUnitTest\bin\Debug\HSFMainUnitTest.dll

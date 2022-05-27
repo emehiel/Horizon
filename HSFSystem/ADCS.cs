@@ -53,7 +53,7 @@ namespace HSFSubsystem
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             dependencies.Add("PowerfromADCS"+"."+Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
-            dependencies.Add("testDep", new Func<Event, HSFProfile<double>>((Delegate)"test");
+            //dependencies.Add("testDep", new Func<Event, HSFProfile<double>>((Delegate)"test");
         }
         public HSFProfile<double> test(Event currentEvent)
         {

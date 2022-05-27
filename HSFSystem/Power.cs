@@ -59,10 +59,13 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="PowerNode"></param>
         /// <param name="asset"></param>
+        /// 
+        /*
         public Power(XmlNode PowerNode, Asset asset) : base(PowerNode, asset)
         {
             
         }
+        */
         #endregion Constructors
 
         #region Methods

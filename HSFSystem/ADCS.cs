@@ -41,22 +41,25 @@ namespace HSFSubsystem
                 Double.TryParse(ADCSNode.Attributes["slewRate"].Value, out slewRate);
                 _slewRate = slewRate;
             }
-            POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
-            addKey(POINTVEC_KEY);
+
+            // Move this to SubsystemFactory
+            //var states = ADCSNode.SelectNodes("IC");
+            //foreach (XmlNode state in states)
+            //{
+            //    addKey(new StateVarKey<Matrix<double>>(Asset.Name + "." + state.Attributes["key"].Value));
+            //}
+            //POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
+            //addKey(POINTVEC_KEY);
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             dependencies.Add("PowerfromADCS"+"."+Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
+            dependencies.Add("testDep", new Func<Event, HSFProfile<double>>((Delegate)"test");
+        }
+        public HSFProfile<double> test(Event currentEvent)
+        {
+            return new HSFProfile<double>();
         }
 
-        /// <summary>
-        /// Constructor for scripted subsystems
-        /// </summary>
-        /// <param name="ADCSNode"></param>
-        /// <param name="asset"></param>
-        public ADCS(XmlNode ADCSNode, Asset asset) : base(ADCSNode, asset)
-        {
-            
-        }
         #endregion Constructors
 
         #region Methods
@@ -103,9 +106,10 @@ namespace HSFSubsystem
             }
 
 
-            
+
 
             // set state data
+            var POINTVEC_KEY = this.Mkeys[0];
             _newState.SetProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));
             proposedEvent.SetTaskStart(Asset, ts);
             return true;

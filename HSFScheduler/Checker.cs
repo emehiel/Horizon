@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using HSFSystem;
 using HSFSubsystem;
 using HSFUniverse;
+using MissionElements;
 using Logging;
 
 namespace HSFScheduler
@@ -20,6 +21,15 @@ namespace HSFScheduler
         /// <returns></returns>
         public static bool CheckSchedule(SystemClass system, SystemSchedule proposedSchedule)
         {
+            // Check that any Assets with IsTaskable = false only tasked to EmptyTarget 
+            var aaaaa = 0;
+            foreach (KeyValuePair<Asset, Task> taskDict in proposedSchedule.AllStates.Events.Peek().Tasks)
+            {
+                if ((!taskDict.Key.IsTaskable) && (taskDict.Value.Type != "empty"))
+                {
+                    return false;
+                }
+            }
             // Iterate through Subsystem Nodes and set that they havent run
             foreach (var subsystem in system.Subsystems)
                 subsystem.IsEvaluated = false;

@@ -105,7 +105,7 @@ namespace HSFScheduler
                         return false;
                 }
 
-		        if(access.Task != null)
+		        if((access.Task != null) && (access.Task.Type != "empty"))
                 {
 				    count += AllStates.timesCompletedTask(access.Task);
 			        if(count >= access.Task.MaxTimesToPerform)

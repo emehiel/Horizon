@@ -165,8 +165,6 @@ namespace HSFScheduler
                 int numSched = 0;
                 foreach (var potentialSchedule in potentialSystemSchedules)
                 {
-
-
                     if (Checker.CheckSchedule(system, potentialSchedule)) {
                         systemCanPerformList.Add(potentialSchedule);
                         numSched++;

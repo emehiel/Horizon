@@ -54,12 +54,12 @@ namespace MissionElements
         /// <param name="state"></param>
         public Event(Dictionary<Asset, Task> task, SystemState state)
         {
-            Tasks = task;
-            State = state; //Should this be a deep copy?
+            Tasks       = task;
+            State       = state; //Should this be a deep copy?
             EventStarts = new Dictionary<Asset, double>();
-            EventEnds = new Dictionary<Asset, double>();
-            TaskStarts = new Dictionary<Asset, double>();
-            TaskEnds = new Dictionary<Asset, double>();
+            EventEnds   = new Dictionary<Asset, double>();
+            TaskStarts  = new Dictionary<Asset, double>();
+            TaskEnds    = new Dictionary<Asset, double>();
             isEvaluated = 0;
         }
         /// <summary>
@@ -68,14 +68,14 @@ namespace MissionElements
         /// <param name="eventToCopyExactly"></param>
         public Event(Event eventToCopyExactly)
         {
-            Tasks = eventToCopyExactly.Tasks;
-            State = DeepCopy.Copy(eventToCopyExactly.State);
+            Tasks       = eventToCopyExactly.Tasks;
+            State       = DeepCopy.Copy(eventToCopyExactly.State);
             EventStarts = eventToCopyExactly.EventStarts;
-            EventEnds = eventToCopyExactly.EventEnds;
+            EventEnds   = eventToCopyExactly.EventEnds;
             //EventStarts = DeepCopy.Copy(eventToCopyExactly.EventStarts);
             //EventEnds = DeepCopy.Copy(eventToCopyExactly.EventEnds);
             TaskStarts = DeepCopy.Copy(eventToCopyExactly.TaskStarts);
-            TaskEnds = DeepCopy.Copy(eventToCopyExactly.TaskEnds);
+            TaskEnds   = DeepCopy.Copy(eventToCopyExactly.TaskEnds);
         }
         #endregion
 

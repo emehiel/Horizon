@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
 
+using HSFUniverse;
 using System;
 using System.Collections.Generic;
 using System.Xml;
@@ -35,8 +36,8 @@ namespace MissionElements
         /// <param name="maxTimesToPerform"></param>
         public Task(string type, Target target, int maxTimesToPerform)
         {
-            Type = type.ToLower();
-            Target = target;
+            Type              = type.ToLower();
+            Target            = target;
             MaxTimesToPerform = maxTimesToPerform;
         }
 
@@ -52,7 +53,7 @@ namespace MissionElements
                 return false;
             log.Info("Loading target deck...");
             int maxTimesPerform = 1;
-            bool allLoaded = true;
+            bool allLoaded      = true;
             string taskType;
             foreach (XmlNode targetNode in targetDeckXMLNode.ChildNodes)
             {
@@ -71,6 +72,12 @@ namespace MissionElements
                 else
                     tasks.Push(new Task(taskType, new Target(targetNode), maxTimesPerform));
             }
+            // Include Empty Task
+            DynamicStateType Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), "NULL_STATE");
+            DynamicState emptyDS  = new DynamicState(Type, new OrbitalEOMS(), new Utilities.Vector("[0]"));
+            Target emptyTgt       = new Target("EmptyTarget", "EMPTY", emptyDS, 0);
+            tasks.Push(new Task("EMPTY", emptyTgt, 0));
+
             log.Info("Number of Targets Loaded: "+ tasks.Count);
 
             return allLoaded;

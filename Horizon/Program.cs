@@ -215,7 +215,10 @@ namespace Horizon
                         break;
                     case ("asset"):
                         Asset asset = new Asset(modelNode);
-                        asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+                        if (asset.AssetDynamicState.Eoms != null)
+                        {
+                            asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+                        }
 
                         AssetList.Add(asset);
                         // Loop through all the of the ChildNodess for this Asset

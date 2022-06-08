@@ -14,20 +14,20 @@ namespace MissionElements
         #region Attributes
         public DynamicState AssetDynamicState{ get; private set; } //was protected, why?
         public string Name { get; private set; }
-        //TODO:make isTaskable mean something
-        public bool IsTaskable{ get; private set; }//was protected, why? do we need this?
+
+        public bool IsTaskable{ get; private set; }
         #endregion
 
         #region Constructors
         public Asset() {
-            IsTaskable = false;
+            IsTaskable = true; 
         }
 
         public Asset(DynamicState dynamicState, string name)
         {
-            Name = name;
+            Name              = name;
             AssetDynamicState = dynamicState;
-            IsTaskable = false;
+            IsTaskable        = true;
         }
 
         public Asset(XmlNode assetXMLNode)
@@ -36,9 +36,13 @@ namespace MissionElements
                 Name = assetXMLNode.Attributes["assetName"].Value.ToString().ToLower();
             else
                 throw new MissingMemberException("Missing name for Asset!");
+
             if (assetXMLNode["DynamicState"] != null)
                 AssetDynamicState = new DynamicState(assetXMLNode["DynamicState"]);
-            IsTaskable = false;
+
+            IsTaskable = true;
+            if (assetXMLNode["IsPassive"] != null)
+                    IsTaskable = false;
         }
         #endregion
 

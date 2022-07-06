@@ -18,12 +18,12 @@ namespace Utilities
         /// <summary>
         /// A map containing time-ordered values which stores SystemState data
         /// </summary>
-        private SortedDictionary<double, T> data = new SortedDictionary<double, T>();
+        private SortedDictionary<double, T> _data = new SortedDictionary<double, T>();
 
         public SortedDictionary<double, T> Data
         {
             get
-            { return data; }
+            { return _data; }
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Utilities
         /// <param name="pointIn">The intial point in the new profile</param>
         public HSFProfile(KeyValuePair<double, T> pointIn)
         {
-            data.Add(pointIn.Key, pointIn.Value);
+            _data.Add(pointIn.Key, pointIn.Value);
         }
 
         /// <summary>
@@ -51,7 +51,7 @@ namespace Utilities
         /// <param name="valIn"></param>
         public HSFProfile(double timeIn, T valIn)
         {
-            data.Add(timeIn, valIn);
+            _data.Add(timeIn, valIn);
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Utilities
             int i = 0;
             foreach (var item in timeIn)
             {
-                data.Add(item, valIn[i]);
+                _data.Add(item, valIn[i]);
                 i++;
             }
         }
@@ -76,7 +76,7 @@ namespace Utilities
         /// <param name="dataIn"></param>
         public HSFProfile(SortedDictionary<double, T> dataIn)
         {
-            data = new SortedDictionary<double, T>(dataIn);
+            _data = new SortedDictionary<double, T>(dataIn);
         }
 
         #region Indexers
@@ -88,10 +88,10 @@ namespace Utilities
             }
             set
             {
-            if (data.ContainsKey(key))
-                data[key] = value;
+            if (_data.ContainsKey(key))
+                _data[key] = value;
             else
-                data.Add(key, value);
+                _data.Add(key, value);
             }
         }
         #endregion
@@ -103,7 +103,7 @@ namespace Utilities
         /// <returns>The KeyValuePair representing the data point in the profile</returns>
         public KeyValuePair<double, T> First()
         {
-            return data.First();
+            return _data.First();
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace Utilities
         /// <returns>The first value in the profile as T</returns>
         public T FirstValue()
         {
-            return data.First().Value;
+            return _data.First().Value;
         }
         /// <summary>
         /// Returns the time of the first data point in the profile
@@ -120,7 +120,7 @@ namespace Utilities
         /// <returns>The time of the first data point as a double</returns>
         public double FirstTime()
         {
-            return data.First().Key;
+            return _data.First().Key;
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace Utilities
         /// <returns>The KeyValuePair representing the data point in the profile</returns>
         public KeyValuePair<double, T> Last()
         {
-            return data.Last();
+            return _data.Last();
         }
 
         /// <summary>
@@ -138,7 +138,7 @@ namespace Utilities
         /// <returns>Returns the last value in the profile</returns>
         public T LastValue()
         {
-            return data.Last().Value;
+            return _data.Last().Value;
         }
 
         /// <summary>
@@ -147,7 +147,7 @@ namespace Utilities
         /// <returns>The time of the last data point as a doubl</returns>
         public double LastTime()
         {
-            return data.Last().Key;
+            return _data.Last().Key;
         }
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Utilities
             {
                 if (!Empty())
                 {
-                    IEnumerable<KeyValuePair<double, T>> query = data.Where(item => item.Key <= time);
+                    IEnumerable<KeyValuePair<double, T>> query = _data.Where(item => item.Key <= time);
                     if (query.Count() != 0)
                     {
                         var v = query.Last();
@@ -172,7 +172,7 @@ namespace Utilities
                     else
                     {
                         log.Warn("WARNING - DataAtTime: Attempting to reference time before first data point in profile");
-                        return data.Single(item => item.Key == data.Keys.Min());
+                        return _data.Single(item => item.Key == _data.Keys.Min());
                     }
 
                 }
@@ -367,14 +367,14 @@ namespace Utilities
         {
             if (endTime < startTime)
                 return -1.0 * Integrate(endTime, startTime, initialValue);
-            if (Count() == 0 || endTime <= data.First().Key)
+            if (Count() == 0 || endTime <= _data.First().Key)
                 return (endTime - startTime) * initialValue;
             if (endTime == startTime)
                 return 0;
 
             //  KeyValuePair<double, double> query = (SortedDictionary<double, double>)data.Where(item => item.Key >= startTime && item.Key <= endTime);
             double query = initialValue;
-            foreach (var prof in data)
+            foreach (var prof in _data)
             {
                 if (prof.Key >= startTime && prof.Key <= endTime)
                 {
@@ -393,7 +393,7 @@ namespace Utilities
         /// <returns>dynamic type T sum of all elements of the profile</returns>
         public T Sum()
         {
-            return (dynamic)data.Sum(item => (dynamic)item.Value);
+            return (dynamic)_data.Sum(item => (dynamic)item.Value);
         }
 
         /// <summary>
@@ -402,7 +402,7 @@ namespace Utilities
         /// <returns>An integer representing the total number of data points in the profile</returns>
         public int Count()
         {
-            return data.Count();
+            return _data.Count();
         }
 
         /// <summary>
@@ -411,7 +411,7 @@ namespace Utilities
         /// <returns>A boolean, true for empty, false for not empty</returns>
         public bool Empty()
         {
-            return data.Count() == 0;
+            return _data.Count() == 0;
         }
 
         /// <summary>
@@ -420,8 +420,8 @@ namespace Utilities
         /// <returns>The maximum value in the profile</returns>
         public T Max()
         {
-            dynamic max = data.First().Value;
-            foreach (var item in data)
+            dynamic max = _data.First().Value;
+            foreach (var item in _data)
                 if (item.Value > max)
                     max = item.Value;
 
@@ -434,8 +434,8 @@ namespace Utilities
         /// <returns>The minimum value in the profile</returns>
         public T Min()
         {
-            dynamic min = data.First().Value;
-            foreach (var item in data)
+            dynamic min = _data.First().Value;
+            foreach (var item in _data)
                 if (item.Value > min)
                     min = item.Value;
 
@@ -449,7 +449,7 @@ namespace Utilities
         /// </summary>
         void RemoveDuplicates()
         {
-            data = (SortedDictionary<double, T>)data.Distinct();
+            _data = (SortedDictionary<double, T>)_data.Distinct();
         }
         #endregion
 
@@ -464,12 +464,12 @@ namespace Utilities
         {
             try
             {
-                data.Add(timeIn, valIn);
+                _data.Add(timeIn, valIn);
             }
             catch (ArgumentException)
             {
                 log.Warn("An element with Key/Value pair already exists in Profile - overwriting value.");
-                data[timeIn] = valIn;
+                _data[timeIn] = valIn;
             }
         }
 
@@ -481,12 +481,12 @@ namespace Utilities
         {
             try
             {
-                data.Add(pointIn.Key, pointIn.Value);
+                _data.Add(pointIn.Key, pointIn.Value);
             }
             catch (ArgumentException)
             {
                 log.Warn("An element with Key/Value pair already exists in Profile - overwriting value.");
-                data[pointIn.Key] = pointIn.Value;
+                _data[pointIn.Key] = pointIn.Value;
             }
         }
 
@@ -498,7 +498,7 @@ namespace Utilities
         {
             if (!otherProfile.Empty())
             {
-                foreach (var item in otherProfile.data)
+                foreach (var item in otherProfile._data)
                 {
                     Add(item);
                 }
@@ -516,7 +516,7 @@ namespace Utilities
         public static HSFProfile<T> MergeProfiles(HSFProfile<T> p1, HSFProfile<T> p2) //Morgan made this static
         {
             HSFProfile<T> p3 = new HSFProfile<T>();
-            p3.data = (SortedDictionary<double, T>)(p1.data.Union(p2.data));
+            p3._data = (SortedDictionary<double, T>)(p1._data.Union(p2._data));
             p3.RemoveDuplicates();
 
             return p3;
@@ -531,7 +531,7 @@ namespace Utilities
         public override string ToString()
         {
             string dataString = "";
-            foreach (var data in data)
+            foreach (var data in _data)
             {
                 dataString += data.Key + "," + data.Value + ",";
             }
@@ -554,8 +554,8 @@ namespace Utilities
 
             HSFProfile<T> p3 = new HSFProfile<T>();
 
-            IEnumerable<double> p1Keys = p1.data.Keys;
-            IEnumerable<double> p2Keys = p2.data.Keys;
+            IEnumerable<double> p1Keys = p1._data.Keys;
+            IEnumerable<double> p2Keys = p2._data.Keys;
             IEnumerable<double> uniqueTimes = p1Keys.Union(p2Keys).Distinct();
 
             foreach (double time in uniqueTimes)
@@ -581,7 +581,7 @@ namespace Utilities
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
 
-            foreach (KeyValuePair<double, T> item in p1.data)
+            foreach (KeyValuePair<double, T> item in p1._data)
                 pOut.Add(item.Key, item.Value + someNumber);
 
             return pOut;
@@ -609,7 +609,7 @@ namespace Utilities
         public static HSFProfile<T> operator -(HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
-            foreach (KeyValuePair<double, T> item in p1.data)
+            foreach (KeyValuePair<double, T> item in p1._data)
                 pOut.Add(item.Key, -1 * (dynamic)item.Value);
 
             return pOut;
@@ -661,7 +661,7 @@ namespace Utilities
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
 
-            foreach (KeyValuePair<double, T> item in p1.data)
+            foreach (KeyValuePair<double, T> item in p1._data)
                 pOut.Add(item.Key, item.Value * someNumber);
 
             return pOut;
@@ -689,7 +689,7 @@ namespace Utilities
         public static HSFProfile<T> operator /(dynamic someNumber, HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
-            foreach (KeyValuePair<double, T> item in p1.data)
+            foreach (KeyValuePair<double, T> item in p1._data)
                 pOut.Add(item.Key, someNumber / item.Value);
 
             return pOut;
@@ -704,7 +704,7 @@ namespace Utilities
         public static HSFProfile<T> operator /(HSFProfile<T> p1, dynamic someNumber)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
-            foreach (KeyValuePair<double, T> item in p1.data)
+            foreach (KeyValuePair<double, T> item in p1._data)
                 pOut.Add(item.Key, item.Value / someNumber);
 
             return pOut;
@@ -725,7 +725,7 @@ namespace Utilities
             // TODO: write your implementation of Equals() here
             HSFProfile<T> p = obj as HSFProfile<T>;
             bool areEqual = true;
-            foreach (var item in data.Zip(p.data, Tuple.Create))
+            foreach (var item in _data.Zip(p._data, Tuple.Create))
             {
                 areEqual &= item.Item1.Key == item.Item2.Key;
                 areEqual &= (dynamic)item.Item1.Value == item.Item2.Value;
@@ -762,7 +762,7 @@ namespace Utilities
         public override int GetHashCode()
         {
             // TODO: write your implementation of GetHashCode() here
-            return data.GetHashCode();
+            return _data.GetHashCode();
         }
         #endregion
 

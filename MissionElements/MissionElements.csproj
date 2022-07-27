@@ -68,7 +68,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="SystemState.cs" />
-    <Compile Include="SystemStateIdea.cs" />
     <Compile Include="Target.cs" />
     <Compile Include="Task.cs" />
   </ItemGroup>

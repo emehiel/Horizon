@@ -17,7 +17,7 @@ namespace HSFSubsystem
     public class ADCS : Subsystem
     {
         #region Attributes
-        protected StateVarKey<Matrix<double>> POINTVEC_KEY;
+        protected StateVariableKey<Matrix<double>> POINTVEC_KEY;
          double _slewRate = 5;//deg/sec
         //double _slewRate = 5;
         #endregion Attributes

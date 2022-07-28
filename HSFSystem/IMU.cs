@@ -18,9 +18,9 @@ namespace HSFSystem
     {
         #region Attributes
         // TODO update keys to accept vector
-        protected StateVarKey<Matrix<double>> MEASURE_KEY;
-        protected StateVarKey<Matrix<double>> CX_KEY;
-        protected StateVarKey<double> ALPHA_KEY;
+        protected StateVariableKey<Matrix<double>> MEASURE_KEY;
+        protected StateVariableKey<Matrix<double>> CX_KEY;
+        protected StateVariableKey<double> ALPHA_KEY;
         protected double _accNoiseDensity = 0.3;
         protected double _accNaturalFrequency = 150;
         protected double _accDampingratio = 0.707;
@@ -134,8 +134,8 @@ namespace HSFSystem
             Vector accel = new Vector(3);
             try
             {
-                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "gyro"));
-                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVarKey<Vector>(Asset.Name + "." + "accel"));
+                gyro = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVariableKey<Vector>(Asset.Name + "." + "gyro"));
+                accel = Asset.AssetDynamicState.IntegratorParameters.GetValue(new StateVariableKey<Vector>(Asset.Name + "." + "accel"));
             }
             catch (KeyNotFoundException)
             {

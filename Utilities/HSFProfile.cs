@@ -127,9 +127,9 @@ namespace Utilities
         /// Returns the last data point in the profile
         /// </summary>
         /// <returns>The KeyValuePair representing the data point in the profile</returns>
-        public KeyValuePair<double, T> Last()
+        public (double Time, T Value) Last()
         {
-            return _data.Last();
+            return (_data.Last().Key, _data.Last().Value);
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace Utilities
         /// <param name="time">a double representing the time at which to get the data point</param>
         /// <returns>a KeyValuePair representing the data point</returns>
         // MAJOR TODO: what should be returned when we try to access profile data before or after the first or last key (time)?
-        public KeyValuePair<double, T> DataAtTime(double time)
+        public (double Time, T Value) DataAtTime(double time)
         {
 
             try
@@ -167,19 +167,20 @@ namespace Utilities
                     if (query.Count() != 0)
                     {
                         var v = query.Last();
-                        return v;
+                        return (v.Key, v.Value);
                     }
                     else
                     {
                         log.Warn("WARNING - DataAtTime: Attempting to reference time before first data point in profile");
-                        return _data.Single(item => item.Key == _data.Keys.Min());
+                        var r = _data.Single(item => item.Key == _data.Keys.Min());
+                        return (r.Key, r.Value);
                     }
 
                 }
                 else
                 {
                     log.Warn("WARNING - DataAtTime: Attemping to get data point from empty profile. Returning null pair.");
-                    return new KeyValuePair<double, T>();  // TODO:  What to return if profile is empty?
+                    return (0, default);  // TODO:  What to return if profile is empty?
                 }
             }
             catch (ArgumentException e)
@@ -196,7 +197,7 @@ namespace Utilities
         /// <returns>the data value of type T</returns>
         public T ValueAtTime(double time)
         {
-            return DataAtTime(time).Value;
+            return DataAtTime(time).Item2;
         }
         #endregion
 

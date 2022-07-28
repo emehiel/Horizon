@@ -46,7 +46,7 @@ namespace HSFSubsystem
                     var states = SubsystemXmlNode.SelectNodes("IC");
                     foreach (XmlNode state in states)
                     {
-                        sub.addKey(new StateVarKey<Matrix<double>>(asset.Name + "." + state.Attributes["key"].Value));
+                        sub.addKey(new StateVariableKey<Matrix<double>>(asset.Name + "." + state.Attributes["key"].Value));
                     }
                     sub.AddDependencyCollector();
                     subDic.Add(name, sub);

@@ -24,8 +24,8 @@ namespace HSFSubsystem
         protected double _fullSolarPanelPower = 150;
         protected double _penumbraSolarPanelPower = 75;
 
-        protected StateVarKey<double> DOD_KEY;
-        protected StateVarKey<double> POWIN_KEY; 
+        protected StateVariableKey<double> DOD_KEY;
+        protected StateVariableKey<double> POWIN_KEY; 
         #endregion Attributes
 
         #region Constructors
@@ -40,8 +40,8 @@ namespace HSFSubsystem
             DefaultSubName = "Power";
             Asset = asset;
             GetSubNameFromXmlNode(PowerNode);
-            DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
-            POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");
+            DOD_KEY = new StateVariableKey<double>(Asset.Name + "." + "depthofdischarge");
+            POWIN_KEY = new StateVariableKey<double>(Asset.Name + "." + "solarpanelpowerin");
             addKey(DOD_KEY);
             addKey(POWIN_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
@@ -143,7 +143,7 @@ namespace HSFSubsystem
             }
 
             // get the old DOD
-            double olddod = _newState.GetLastValue(Dkeys.First()).Value;
+            double olddod = _newState.GetLastValue(Dkeys.First()).Item2;
 
             // collect power profile out
             Delegate DepCollector;
@@ -179,7 +179,7 @@ namespace HSFSubsystem
                 return false;
 
             Sun sun = universe.GetObject<Sun>("SUN");
-            double te = proposedEvent.State.GetLastValue(DOD_KEY).Key;
+            double te = proposedEvent.State.GetLastValue(DOD_KEY).Time;
             if (proposedEvent.GetEventEnd(Asset) < evalToTime)
                 proposedEvent.SetEventEnd(Asset, evalToTime);
 

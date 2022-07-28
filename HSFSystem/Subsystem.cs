@@ -21,25 +21,21 @@ namespace HSFSubsystem
         public string Name { get; protected set; }
         public static string DefaultSubName { get; protected set; }
         public virtual Dictionary<string, Delegate> SubsystemDependencyFunctions { get; set; }
-        public List<StateVarKey<int>> Ikeys { get; protected set; }
-        public List<StateVarKey<double>> Dkeys { get; protected set; }
-        public List<StateVarKey<float>> Fkeys { get; protected set; }
-        public List<StateVarKey<bool>> Bkeys { get; protected set; }
-        public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
-        public List<StateVarKey<Quat>> Qkeys { get; protected set; }
-
-        public List<string> StateKeys { get; set; }
+        public List<StateVariableKey<int>> Ikeys { get; private set; } = new List<StateVariableKey<int>>();
+        public List<StateVariableKey<double>> Dkeys { get; protected set; } = new List<StateVariableKey<double>>();
+        public List<StateVariableKey<bool>> Bkeys { get; protected set; } = new List<StateVariableKey<bool>>();
+        public List<StateVariableKey<Matrix<double>>> Mkeys { get; protected set; } = new List<StateVariableKey<Matrix<double>>>();
+        public List<StateVariableKey<Quaternion>> Qkeys { get; protected set; } = new List<StateVariableKey<Quaternion>>();
+        public List<StateVariableKey<Vector>> Vkeys { get; protected set; } = new List<StateVariableKey<Vector>>();
         public virtual SystemState _newState { get; set; }
         public virtual Task _task { get; set; }
         #endregion Attributes
 
         #region Constructors
-
         public Subsystem()
         {
 
         }
-        
         public Subsystem(string name) {
             Name = name;
         }
@@ -51,7 +47,6 @@ namespace HSFSubsystem
         {
             
         }
-        
         #endregion
 
         #region Methods
@@ -181,73 +176,79 @@ namespace HSFSubsystem
         /// <param name="currentSystemState"></param>
         /// <param name="time"></param>
         /// <returns></returns>
-        public SystemState getSubStateAtTime(SystemState currentSystemState, double time)
+        public SystemState GetSubStateAtTime(SystemState currentSystemState, double time)
         {
             SystemState state = new SystemState();
             foreach(var key in Ikeys)
             {
-                state.Idata.Add(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.AddValues(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.Idata.Add(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Bkeys)
             {
-                state.Bdata.Add(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.AddValue(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.Bdata.Add(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Dkeys)
             {
-                state.Ddata.Add(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.AddValue(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.Ddata.Add(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Mkeys)
             {
-                state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.AddValue(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+            }
+            foreach (var key in Qkeys)
+            {
+                state.AddValue(key, new HSFProfile<Quaternion>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+            }
+            foreach (var key in Vkeys)
+            {
+                state.AddValue(key, new HSFProfile<Vector>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             return state;
         }
         
         // Add keys depending on the type of the key
-        public void addKey(StateVarKey<int> keyIn) {
+        public void addKey(StateVariableKey<int> keyIn) {
             if (Ikeys == null) //Only construct what you need
             {
-                Ikeys = new List<StateVarKey<int>>();
+                Ikeys = new List<StateVariableKey<int>>();
             }
             Ikeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<double> keyIn) {
+        public void addKey(StateVariableKey<double> keyIn) {
             if (Dkeys == null) //Only construct what you need
             {
-                Dkeys = new List<StateVarKey<double>>();
+                Dkeys = new List<StateVariableKey<double>>();
             }
             Dkeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<float> keyIn) {
-            if (Fkeys == null) //Only construct what you need
-            {
-                Fkeys = new List<StateVarKey<float>>();
-            }
-            Fkeys.Add(keyIn);
-        }
-
-        public void addKey(StateVarKey<bool> keyIn) {
+        public void addKey(StateVariableKey<bool> keyIn) {
             if (Bkeys == null) //Only construct what you need
             {
-                Bkeys = new List<StateVarKey<bool>>();
+                Bkeys = new List<StateVariableKey<bool>>();
             }
             Bkeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<Matrix<double>> keyIn) {
+        public void addKey(StateVariableKey<Matrix<double>> keyIn) {
             if (Mkeys == null) //Only construct what you need
             {
-                Mkeys = new List<StateVarKey<Matrix<double>>>();
+                Mkeys = new List<StateVariableKey<Matrix<double>>>();
             }
             Mkeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<Quat> keyIn) {
+        public void addKey(StateVariableKey<Quaternion> keyIn) {
             if (Qkeys == null) //Only construct what you need
             {
-                Qkeys = new List<StateVarKey<Quat>>();
+                Qkeys = new List<StateVariableKey<Quaternion>>();
             }
             Qkeys.Add(keyIn);
         }

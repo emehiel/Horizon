@@ -19,7 +19,7 @@ namespace HSFSubsystem
     {
         // Default Values
         protected double _bufferSize = 4098;
-        protected StateVarKey<double> DATABUFFERRATIO_KEY;
+        protected StateVariableKey<double> DATABUFFERRATIO_KEY;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace HSFSubsystem
             GetSubNameFromXmlNode(SSDRXmlNode);
             if (SSDRXmlNode.Attributes["bufferSize"] != null)
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
-            DATABUFFERRATIO_KEY = new StateVarKey<double>(Asset.Name + "." +"databufferfillratio");
+            DATABUFFERRATIO_KEY = new StateVariableKey<double>(Asset.Name + "." +"databufferfillratio");
             addKey(DATABUFFERRATIO_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             DependentSubsystems = new List<Subsystem>();
@@ -101,7 +101,7 @@ namespace HSFSubsystem
                     dataqueout = data;
 
                 if (dataqueout > 0)
-                    _newState.AddValue(DATABUFFERRATIO_KEY, new KeyValuePair<double, double>(te, (data - dataqueout) / _bufferSize));
+                    _newState.AddValue(DATABUFFERRATIO_KEY, te, (data - dataqueout) / _bufferSize);
                 return true;
             }
             return true;

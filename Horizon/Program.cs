@@ -200,6 +200,7 @@ namespace Horizon
             // Find the main model node from the XML model input file
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
 
+            var x = modelInputXMLNode.SelectNodes("MODEL");
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
             foreach (XmlNode modelNode in modelInputXMLNode.ChildNodes)
             {
@@ -224,6 +225,8 @@ namespace Horizon
                             {
                                 case ("subsystem"):
                                     string subName = SubsystemFactory.GetSubsystem(assetNode, Dependencies, asset, SubsystemMap);
+                                    // Maybe something like string subName = SubsystemFactory.SetSubsystemIC(assetNode, asset);
+                                    // Maybe something link string subName = SubsystemFactory.SetDependencies(...);
                                     SubList.Add(SubsystemMap[subName]);
                                     foreach (XmlNode subNode in assetNode.ChildNodes)
                                     {

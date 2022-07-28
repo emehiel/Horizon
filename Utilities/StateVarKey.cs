@@ -40,7 +40,7 @@ namespace Utilities
             return VarName.Equals(p.VarName);
 
         }
-
+        
         public static implicit operator StateVarKey<int>(StateVarKey<T> i)
         {
             return new StateVarKey<int>(i.VarName);
@@ -65,7 +65,7 @@ namespace Utilities
         {
             return new StateVarKey<Quat>(i.VarName);
         }
-
+        
         public static bool operator ==(StateVarKey<T> p1, StateVarKey<T> p2)
         {
             return p1.Equals(p2);

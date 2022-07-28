@@ -7,6 +7,7 @@ using System.Xml;
 using HSFSystem;
 using MissionElements;
 using log4net;
+using Utilities;
 
 namespace HSFSubsystem
 {
@@ -42,6 +43,11 @@ namespace HSFSubsystem
                 else if (type.Equals("adcs"))
                 {
                     var sub = new ADCS(SubsystemXmlNode, dependencies, asset);
+                    var states = SubsystemXmlNode.SelectNodes("IC");
+                    foreach (XmlNode state in states)
+                    {
+                        sub.addKey(new StateVarKey<Matrix<double>>(asset.Name + "." + state.Attributes["key"].Value));
+                    }
                     sub.AddDependencyCollector();
                     subDic.Add(name, sub);
                     //subDic.Add(name, new ADCS(SubsystemXmlNode, dependencies, asset));
@@ -99,6 +105,11 @@ namespace HSFSubsystem
                 }
             }
             return name;
+        }
+
+        public static string SetDepedencies()
+        {
+            return "test";
         }
     }
 }

@@ -27,15 +27,19 @@ namespace HSFSubsystem
         public List<StateVarKey<bool>> Bkeys { get; protected set; }
         public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
         public List<StateVarKey<Quat>> Qkeys { get; protected set; }
+
+        public List<string> StateKeys { get; set; }
         public virtual SystemState _newState { get; set; }
         public virtual Task _task { get; set; }
         #endregion Attributes
 
         #region Constructors
+
         public Subsystem()
         {
 
         }
+        
         public Subsystem(string name) {
             Name = name;
         }
@@ -47,6 +51,7 @@ namespace HSFSubsystem
         {
             
         }
+        
         #endregion
 
         #region Methods

@@ -1,10 +1,4 @@
 <MODEL>
-  <!--
-	<PYTHON
-		enableScripting = "true">
-	</PYTHON>
-  -->
-
 	<ASSET assetName="Asset1">
 		<DynamicState
       DynamicStateType="PREDETERMINED_ECI"

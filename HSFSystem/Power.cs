@@ -160,8 +160,6 @@ namespace HSFSubsystem
             double freq = 1.0;
             HSFProfile<double> dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, ref exceeded, 0, olddod);
             //why is exceeded not checked anywhere??
-            if (exceeded)  // why is exceeded upper checked and not exceeded lower?  
-                return false;
             _newState.AddValue(DOD_KEY, dodProf);
             return true;
         }

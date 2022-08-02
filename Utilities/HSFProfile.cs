@@ -62,6 +62,7 @@ namespace Utilities
         public HSFProfile(List<double> timeIn, List<T> valIn)
         {
             // TODO:  Assert that both lists are of equal length
+            // TODO:  Make this foreeach loop a tuple
             int i = 0;
             foreach (var item in timeIn)
             {
@@ -469,6 +470,8 @@ namespace Utilities
             catch (ArgumentException)
             {
                 log.Warn("An element with Key/Value pair already exists in Profile - overwriting value.");
+                Console.WriteLine("An element with Key/Value pair already exists in Profile - overwriting value.");
+
                 data[timeIn] = valIn;
             }
         }
@@ -490,6 +493,7 @@ namespace Utilities
             }
         }
 
+        // TODO: Should this be called Merge()?
         /// <summary>
         /// Adds a new data points to an existing profile from some other existing profile
         /// </summary>
@@ -652,7 +656,7 @@ namespace Utilities
         }
 
         /// <summary>
-        /// Override subtraction operator to subtract a number from a hsfprofile
+        /// Override multiplication operator to scale a HSFprofile by some number
         /// </summary>
         /// <param name="p1"></param>
         /// <param name="someNumber"></param>
@@ -668,7 +672,7 @@ namespace Utilities
         }
 
         /// <summary>
-        /// Override the multiplcation operator to scale a profile by a number
+        /// Override the multiplcation operator to scale a HSFprofile by a number
         /// </summary>
         /// <param name="someNumber"></param>
         /// <param name="p1"></param>
@@ -681,7 +685,7 @@ namespace Utilities
         }
 
         /// <summary>
-        /// Override the division operator to divide a profile by a number
+        /// Override the division operator to divide a number by a profile
         /// </summary>
         /// <param name="someNumber"></param>
         /// <param name="p1"></param>

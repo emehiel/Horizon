@@ -21,13 +21,13 @@ namespace MissionElementsUnitTest
         public HSFProfile<int> intProf;
         public HSFProfile<double> doubleProf;
         public HSFProfile<bool> boolProf;
-        public HSFProfile<Quat> quatProf;
+        public HSFProfile<Quaternion> quatProf;
         string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
 
         public StateVarKey<int> intKey;
         StateVarKey<double> doubleKey;
         StateVarKey<Matrix<double>> matrixKey;
-        StateVarKey<Quat> quatKey;
+        StateVarKey<Quaternion> quatKey;
         StateVarKey<bool> boolKey;
         [SetUp]
         public void SystemStateCtor()
@@ -63,13 +63,13 @@ namespace MissionElementsUnitTest
             state.SetProfile(matrixKey, matrixProf);
 
 
-            quatProf = new HSFProfile<Quat>(0, new Quat(0, new Vector(3)));
+            quatProf = new HSFProfile<Quaternion>(0, new Quaternion(0, new Vector(3)));
             List<double> vectList = new List<double>();
             //vectList.Add();
-            quatProf.Add(1, new Quat(1, new Vector(3)));
-            quatProf.Add(2, new Quat(.5, new Vector(3)));
+            quatProf.Add(1, new Quaternion(1, new Vector(3)));
+            quatProf.Add(2, new Quaternion(.5, new Vector(3)));
 
-            quatKey = new StateVarKey<Quat>("asset1.QKey");
+            quatKey = new StateVarKey<Quaternion>("asset1.QKey");
             state.SetProfile(quatKey, quatProf);
 
 
@@ -87,7 +87,7 @@ namespace MissionElementsUnitTest
             Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<double>, HSFProfile<double>>), emptyState.Ddata);
             Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<bool>, HSFProfile<bool>>), emptyState.Bdata);
             Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>), emptyState.Mdata);
-            Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>), emptyState.Qdata);
+            Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<Quaternion>, HSFProfile<Quaternion>>), emptyState.Qdata);
 
             SystemState fullState = new SystemState(state);
             Assert.AreEqual(state.ToString(), fullState.Previous.ToString());
@@ -120,7 +120,7 @@ namespace MissionElementsUnitTest
         public void GetProfileTest()
         {
             //act
-            HSFProfile<Quat> newQuatProf = state.GetProfile(quatKey);
+            HSFProfile<Quaternion> newQuatProf = state.GetProfile(quatKey);
             HSFProfile<bool> newboolProf = state.GetProfile(boolKey);
             HSFProfile<int> newIntProf = state.GetProfile(intKey);
             HSFProfile<double> newDoubleProf = state.GetProfile(doubleKey);
@@ -170,8 +170,8 @@ namespace MissionElementsUnitTest
 
             //SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
 
-            HSFProfile<Quat> newQuatProf = systemState.GetProfile(quatKey);
-            Quat quatVal = newQuatProf.FirstValue();
+            HSFProfile<Quaternion> newQuatProf = systemState.GetProfile(quatKey);
+            Quaternion quatVal = newQuatProf.FirstValue();
             HSFProfile<bool> newboolProf = systemState.GetProfile(boolKey);
             HSFProfile<int> newIntProf = systemState.GetProfile(intKey);
             HSFProfile<double> newDoubleProf = systemState.GetProfile(doubleKey);
@@ -179,7 +179,7 @@ namespace MissionElementsUnitTest
 
 
 
-            Quat expQuat = new Quat("[1.0, 0.5, 0.5, 0.4]");
+            Quaternion expQuat = new Quaternion("[1.0, 0.5, 0.5, 0.4]");
             bool expBool = true;
             int expInt = 2;
             Matrix<double> expMat = new Matrix<double>("[1,2;3,4]");
@@ -249,7 +249,7 @@ namespace MissionElementsUnitTest
             //arrange
             SystemState newState = new SystemState(state);
             //act
-            HSFProfile<Quat> newQuatProf = newState.GetProfile(quatKey);
+            HSFProfile<Quaternion> newQuatProf = newState.GetProfile(quatKey);
             HSFProfile<bool> newboolProf = newState.GetProfile(boolKey);
             HSFProfile<int> newIntProf = newState.GetProfile(intKey);
             HSFProfile<double> newDoubleProf = newState.GetProfile(doubleKey);

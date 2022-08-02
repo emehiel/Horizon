@@ -20,8 +20,8 @@ namespace HSFSubsystem
         protected StateVarKey<int> IKey;
         Dictionary<string, bool> Blookup;
         protected StateVarKey<bool> BKey;
-        Dictionary<string, Quat> Qlookup;
-        protected StateVarKey<Quat> QKey;
+        Dictionary<string, Quaternion> Qlookup;
+        protected StateVarKey<Quaternion> QKey;
         Dictionary<string, Matrix<double>> Mlookup;
         protected StateVarKey<double> MKey;
 
@@ -59,7 +59,7 @@ namespace HSFSubsystem
             addKey(BKey);
             MKey = new StateVarKey<Matrix<double>>(Asset.Name + "." + "MKey");
             addKey(MKey);
-            QKey = new StateVarKey<Quat>(Asset.Name + "." + "QKey");
+            QKey = new StateVarKey<Quaternion>(Asset.Name + "." + "QKey");
             addKey(QKey);
         }
 

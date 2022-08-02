@@ -18,7 +18,7 @@ namespace UtilitiesUnitTest
             HSFProfile<double> hSFProfileD = new HSFProfile<double>(0, 2);
             HSFProfile<int> hSFProfileI = new HSFProfile<int>(0, 2);
             HSFProfile<bool> hSFProfileB = new HSFProfile<bool>(0, true);
-            HSFProfile<Quat> hSFProfile = new HSFProfile<Quat>(0, new Quat(1, new Vector(3)));
+            HSFProfile<Quaternion> hSFProfile = new HSFProfile<Quaternion>(0, new Quaternion(1, new Vector(3)));
         }
         [Test]
         public void EmptyHSFProfile()

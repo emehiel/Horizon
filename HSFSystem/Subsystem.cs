@@ -26,7 +26,7 @@ namespace HSFSubsystem
         public List<StateVarKey<float>> Fkeys { get; protected set; }
         public List<StateVarKey<bool>> Bkeys { get; protected set; }
         public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
-        public List<StateVarKey<Quat>> Qkeys { get; protected set; }
+        public List<StateVarKey<Quaternion>> Qkeys { get; protected set; }
 
         public List<string> StateKeys { get; set; }
         public virtual SystemState _newState { get; set; }
@@ -244,10 +244,10 @@ namespace HSFSubsystem
             Mkeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<Quat> keyIn) {
+        public void addKey(StateVarKey<Quaternion> keyIn) {
             if (Qkeys == null) //Only construct what you need
             {
-                Qkeys = new List<StateVarKey<Quat>>();
+                Qkeys = new List<StateVarKey<Quaternion>>();
             }
             Qkeys.Add(keyIn);
         }

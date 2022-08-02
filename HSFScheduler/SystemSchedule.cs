@@ -175,7 +175,7 @@ namespace HSFScheduler
             Dictionary<StateVarKey<int>, SortedList<double, int>> stateTimeIData = new Dictionary<StateVarKey<int>, SortedList<double, int>>();
             Dictionary<StateVarKey<int>, SortedList<double, int>> stateTimeBData = new Dictionary<StateVarKey<int>, SortedList<double, int>>(); // need 0s and 1 for matlab to read in csv
             Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>> stateTimeMData = new Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>>();
-            Dictionary<StateVarKey<Quat>, SortedList<double, Quat>> stateTimeQData = new Dictionary<StateVarKey<Quat>, SortedList<double, Quat>>();
+            Dictionary<StateVarKey<Quaternion>, SortedList<double, Quaternion>> stateTimeQData = new Dictionary<StateVarKey<Quaternion>, SortedList<double, Quaternion>>();
             string stateTimeData = "Time,";
             string stateData = "";
             csv.Clear();
@@ -231,7 +231,7 @@ namespace HSFScheduler
                     foreach (var data in kvpQuatProfile.Value.Data)
                         if (!stateTimeQData.ContainsKey(kvpQuatProfile.Key))
                         {
-                            var lt = new SortedList<double, Quat>();
+                            var lt = new SortedList<double, Quaternion>();
                             lt.Add(data.Key, data.Value);
                             stateTimeQData.Add(kvpQuatProfile.Key, lt);
                         }

@@ -61,9 +61,9 @@ namespace Utilities
             return new StateVarKey<Matrix<double>>(i.VarName);
         }
 
-        public static implicit operator StateVarKey<Quat>(StateVarKey<T> i)
+        public static implicit operator StateVarKey<Quaternion>(StateVarKey<T> i)
         {
-            return new StateVarKey<Quat>(i.VarName);
+            return new StateVarKey<Quaternion>(i.VarName);
         }
         
         public static bool operator ==(StateVarKey<T> p1, StateVarKey<T> p2)

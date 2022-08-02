@@ -33,7 +33,7 @@ namespace MissionElements
         public Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>> Mdata { get; private set; }
 
         /** The Dictionary of Quaternion Profiles. */
-        public Dictionary<StateVarKey<Quat>, HSFProfile<Quat>> Qdata { get; private set; }
+        public Dictionary<StateVarKey<Quaternion>, HSFProfile<Quaternion>> Qdata { get; private set; }
 
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace MissionElements
             Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
             Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
             Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
-            Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
+            Qdata = new Dictionary<StateVarKey<Quaternion>, HSFProfile<Quaternion>>();
         }
 
 
@@ -61,7 +61,7 @@ namespace MissionElements
             Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>();
             Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>();
             Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
-            Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>();
+            Qdata = new Dictionary<StateVarKey<Quaternion>, HSFProfile<Quaternion>>();
         }
         /// <summary>
         /// Use this constructor to create a copy of another state
@@ -75,7 +75,7 @@ namespace MissionElements
             Ddata = new Dictionary<StateVarKey<double>, HSFProfile<double>>(state.Ddata);
             Bdata = new Dictionary<StateVarKey<bool>, HSFProfile<bool>>(state.Bdata);
             Mdata = new Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>(state.Mdata);
-            Qdata = new Dictionary<StateVarKey<Quat>, HSFProfile<Quat>>(state.Qdata);
+            Qdata = new Dictionary<StateVarKey<Quaternion>, HSFProfile<Quaternion>>(state.Qdata);
         }
         /// <summary>
         /// combine two system states by adding the states from one into the other
@@ -186,9 +186,9 @@ namespace MissionElements
                return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
 
             }
-            else if (_key.GetType() == typeof(StateVarKey<Quat>))
+            else if (_key.GetType() == typeof(StateVarKey<Quaternion>))
            {
-               HSFProfile<Quat> valueOut;
+               HSFProfile<Quaternion> valueOut;
                if (Ddata.Count != 0)
                { // Are there any Profiles in there?
                    if (Qdata.TryGetValue(_key, out valueOut)) //see if our key is in there
@@ -575,9 +575,9 @@ namespace MissionElements
                 valueOut.Add(profIn);
         }
 
-        public void SetProfile(StateVarKey<Quat> key, HSFProfile<Quat> profIn)
+        public void SetProfile(StateVarKey<Quaternion> key, HSFProfile<Quaternion> profIn)
         {
-            HSFProfile<Quat> valueOut;
+            HSFProfile<Quaternion> valueOut;
             if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Qdata.Add(key, profIn);
             else
@@ -592,10 +592,10 @@ namespace MissionElements
         /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
         /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
         /// <param name="pairIn"></param>
-        public void AddValue(StateVarKey<Quat> key, KeyValuePair<double, Quat> pairIn)
+        public void AddValue(StateVarKey<Quaternion> key, KeyValuePair<double, Quaternion> pairIn)
         {
-            HSFProfile<Quat> valueIn = new HSFProfile<Quat>(pairIn);
-            HSFProfile<Quat> valueOut = new HSFProfile<Quat>();
+            HSFProfile<Quaternion> valueIn = new HSFProfile<Quaternion>(pairIn);
+            HSFProfile<Quaternion> valueOut = new HSFProfile<Quaternion>();
             if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Qdata.Add(key, valueIn);
             else // Otherwise, add this data point to the existing Profile.
@@ -607,9 +607,9 @@ namespace MissionElements
         /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
         /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
         /// <param name="pairIn"></param>
-        public void AddValue(StateVarKey<Quat> key, HSFProfile<Quat> profIn)
+        public void AddValue(StateVarKey<Quaternion> key, HSFProfile<Quaternion> profIn)
         {
-            HSFProfile<Quat> valueOut;
+            HSFProfile<Quaternion> valueOut;
             if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Qdata.Add(key, profIn);
             else // Otherwise, add this data point to the existing Profile.
@@ -657,9 +657,9 @@ namespace MissionElements
             }
             else if (type.Equals("Quat"))
             {
-                Quat val = new Quat(ICNode.Attributes["value"].Value);
-                StateVarKey<Quat>svk = new StateVarKey<Quat>(key);
-                state.AddValue(svk, new KeyValuePair<double, Quat>(SimParameters.SimStartSeconds, val));
+                Quaternion val = new Quaternion(ICNode.Attributes["value"].Value);
+                StateVarKey<Quaternion>svk = new StateVarKey<Quaternion>(key);
+                state.AddValue(svk, new KeyValuePair<double, Quaternion>(SimParameters.SimStartSeconds, val));
             }
             return state;
         }

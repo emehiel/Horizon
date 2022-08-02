@@ -17,7 +17,7 @@ namespace Utilities
         public ConcurrentDictionary<StateVarKey<bool>, bool> Bdata;
         public ConcurrentDictionary<StateVarKey<Matrix<double>>, Matrix<double>> Mdata;
         public ConcurrentDictionary<StateVarKey<Vector>, Vector> Vdata;
-        public ConcurrentDictionary<StateVarKey<Quat>, Quat> Qdata;
+        public ConcurrentDictionary<StateVarKey<Quaternion>, Quaternion> Qdata;
 
         public IntegratorParameters()
         {
@@ -26,7 +26,7 @@ namespace Utilities
             Bdata = new ConcurrentDictionary<StateVarKey<bool>, bool>();
             Mdata = new ConcurrentDictionary<StateVarKey<Matrix<double>>, Matrix<double>>();
             Vdata = new ConcurrentDictionary<StateVarKey<Vector>, Vector>();
-            Qdata = new ConcurrentDictionary<StateVarKey<Quat>, Quat>();
+            Qdata = new ConcurrentDictionary<StateVarKey<Quaternion>, Quaternion>();
         }
 
         public void Add(StateVarKey<double> key, double value)
@@ -84,13 +84,13 @@ namespace Utilities
                 throw new KeyNotFoundException();
             return value;
         }
-        public void Add(StateVarKey<Quat> key, Quat value)
+        public void Add(StateVarKey<Quaternion> key, Quaternion value)
         {
             Qdata.AddOrUpdate(key, value, (k, oldValue) => value);
         }
-        public Quat GetValue(StateVarKey<Quat> key)
+        public Quaternion GetValue(StateVarKey<Quaternion> key)
         {
-            Quat value;
+            Quaternion value;
             if (!Qdata.TryGetValue(key, out value))
                 throw new KeyNotFoundException();
             return value;

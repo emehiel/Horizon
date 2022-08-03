@@ -11,9 +11,22 @@ namespace Utilities
     [Serializable]
     // Assume the value of the data prior to the first time entry is zero (zero order hold)
     // Assume the value of the data after the last time entry is the last value in data
-    public class HSFProfile<T> : IHSFProfile   
+    public class HSFProfile<T> //: SortedDictionary<double, T>   
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+        /*
+        public new void Add(double time, T value)
+        {
+            base.Add(time, value);
+        }
+
+        public new T this[double time]
+        {
+            get { return base[time]; }
+            set { base[time] = value; }
+        }
+        */
 
         /// <summary>
         /// A map containing time-ordered values which stores SystemState data

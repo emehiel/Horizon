@@ -65,6 +65,7 @@ namespace MissionElements
             Bdata = new Dictionary<StateVariableKey<bool>, HSFProfile<bool>>(state.Bdata);
             Mdata = new Dictionary<StateVariableKey<Matrix<double>>, HSFProfile<Matrix<double>>>(state.Mdata);
             Qdata = new Dictionary<StateVariableKey<Quaternion>, HSFProfile<Quaternion>>(state.Qdata);
+            Vdata = new Dictionary<StateVariableKey<Vector>, HSFProfile<Vector>>(state.Vdata);
         }
         /// <summary>
         /// combine two system states by adding the states from one into the other
@@ -81,6 +82,8 @@ namespace MissionElements
             foreach (var data in moreState.Mdata)
                 AddValue(data.Key, data.Value);
             foreach (var data in moreState.Qdata)
+                AddValue(data.Key, data.Value);
+            foreach (var data in moreState.Vdata)
                 AddValue(data.Key, data.Value);
         }
 

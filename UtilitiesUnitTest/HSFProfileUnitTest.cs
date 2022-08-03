@@ -12,6 +12,13 @@ namespace UtilitiesUnitTest
     public class HSFProfileUnitTest
     {
         [Test]
+        public void Constructor()
+        {
+            var testProfile = new HSFProfile<int>();
+            testProfile.Add(0, 10);
+        }
+
+        [Test]
         public void GetProfile()
         {
             //runtime constructor check

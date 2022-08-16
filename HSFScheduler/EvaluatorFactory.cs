@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using Utilities;
 
 namespace HSFScheduler
 {
@@ -22,6 +23,7 @@ namespace HSFScheduler
         public static Evaluator GetEvaluator(XmlNode evaluatorNode, Dependency dependencies)
         {
             Evaluator schedEvaluator = new TargetValueEvaluator(dependencies); // default
+            schedEvaluator.Ikeys.Add(new StateVariableKey<int>("testVariable"));
             if (evaluatorNode != null)
                 schedEvaluator = new ScriptedEvaluator(evaluatorNode, dependencies);
             return schedEvaluator;

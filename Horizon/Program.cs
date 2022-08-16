@@ -224,8 +224,8 @@ namespace Horizon
                             switch (assetNode.Name.ToLower())
                             {
                                 case ("subsystem"):
-                                    string subName = SubsystemFactory.GetSubsystem(assetNode, Dependencies, asset, SubsystemMap);
-                                    // Maybe something like string subName = SubsystemFactory.SetSubsystemIC(assetNode, asset);
+                                    string subName = SubsystemFactory.GetSubsystem(assetNode, Dependencies, asset, SubsystemMap); //, InitialState);
+                                    // Maybe something like string subName = SubsystemFactory.SetSubsystemIC(InitialState, assetNode, asset);
                                     // Maybe something link string subName = SubsystemFactory.SetDependencies(...);
                                     SubList.Add(SubsystemMap[subName]);
                                     foreach (XmlNode subNode in assetNode.ChildNodes)

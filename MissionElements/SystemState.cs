@@ -186,7 +186,7 @@ namespace MissionElements
                return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
 
             }
-            else if (_key.GetType() == typeof(StateVarKey<Quaternion>))
+            else if (_key.GetType() == typeof(StateVariableKey<Quaternion>))
            {
                HSFProfile<Quaternion> valueOut;
                if (Ddata.Count != 0)
@@ -194,11 +194,12 @@ namespace MissionElements
                    if (Qdata.TryGetValue(_key, out valueOut)) //see if our key is in there
                        return (dynamic)valueOut;
                }
-               return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
+               return PreviousState.GetProfile(_key); // This isn't the right profile, go back one and try it out!
             }
-            throw new ArgumentException("Profile Type Not Found");
-       }
+            return PreviousState.GetProfile(_key);  // This isn't the right profile, go back one and try it out!
+        }
 
+        ///////////  NOT REFERENCED OUTSIDE METHOD - REMOVE?  /////////////////////
         /// <summary>
         /// Returns the integer Profile for this state and all previous states merged into one Profile
         /// </summary>
@@ -261,6 +262,13 @@ namespace MissionElements
                 Idata.Add(key, profIn);
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
+        }
+
+        // TODO:  Which AddValues() should we use, both?
+        public void AddValues(StateVariableKey<int> stateVariableKey, List<(double Time, int Value)> stateValues)
+        {
+            foreach (var value in stateValues)
+                AddValue(stateVariableKey, value.Time, value.Value);
         }
         /// <summary>
         ///  Gets the last int value set for the given state variable key in the state. If no value is found

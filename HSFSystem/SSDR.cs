@@ -38,6 +38,7 @@ namespace HSFSubsystem
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
             DATABUFFERRATIO_KEY = new StateVarKey<double>(Asset.Name + "." +"databufferfillratio");
             addKey(DATABUFFERRATIO_KEY);
+            //addKey(new StateVariableKey<double>(Asset.Name + "." + "databufferfillratio"));
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             DependentSubsystems = new List<Subsystem>();
             dependencies.Add("PowerfromSSDR" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_SSDRSUB));
@@ -65,6 +66,8 @@ namespace HSFSubsystem
         {
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
+
+            var DATABUFFERRATIO_KEY2 = this.Dkeys.Find(s => s.VariableName == "asset1.databufferfillratio");
             if (_task.Type == "imaging")
             {
                 double ts = proposedEvent.GetTaskStart(Asset);

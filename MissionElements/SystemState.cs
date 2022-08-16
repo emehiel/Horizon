@@ -196,9 +196,10 @@ namespace MissionElements
                }
                return Previous.GetProfile(_key); // This isn't the right profile, go back one and try it out!
             }
-            throw new ArgumentException("Profile Type Not Found");
-       }
+            return Previous.GetProfile(_key);  // This isn't the right profile, go back one and try it out!
+        }
 
+        ///////////  NOT REFERENCED OUTSIDE METHOD - REMOVE?  /////////////////////
         /// <summary>
         /// Returns the integer Profile for this state and all previous states merged into one Profile
         /// </summary>
@@ -261,6 +262,13 @@ namespace MissionElements
                 Idata.Add(key, profIn);
             else // Otherwise, add this data point to the existing Profile.
                 valueOut.Add(profIn);
+        }
+
+        // TODO:  Which AddValues() should we use, both?
+        public void AddValues(StateVarKey<int> stateVariableKey, List<(double Time, int Value)> stateValues)
+        {
+            foreach (var value in stateValues)
+                AddValue(stateVariableKey, new KeyValuePair<double, int>(value.Time, value.Value));
         }
         /// <summary>
         ///  Gets the last int value set for the given state variable key in the state. If no value is found

@@ -80,7 +80,7 @@ namespace HSFSubsystem
                 HSFProfile<double> newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 1, 1, ref exceeded, 0, oldbufferratio);
                 if (!exceeded)
                 {
-                    _newState.AddValue(DATABUFFERRATIO_KEY, newdataratio);
+                    _newState.AddValues(DATABUFFERRATIO_KEY, newdataratio);
                     return true;
                 }
 

@@ -114,7 +114,7 @@ namespace HSFSubsystem
                     lastShadow = shadow;
                 }
             }
-            state.AddValue(POWIN_KEY, solarPanelPowerProfile);
+            state.AddValues(POWIN_KEY, solarPanelPowerProfile);
             return solarPanelPowerProfile;
         }
 
@@ -161,7 +161,7 @@ namespace HSFSubsystem
             HSFProfile<double> dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, ref exceeded, 0, olddod);
             //why is exceeded not checked anywhere??
            
-            _newState.AddValue(DOD_KEY, dodProf);
+            _newState.AddValues(DOD_KEY, dodProf);
             return true;
         }
 
@@ -204,7 +204,7 @@ namespace HSFSubsystem
             {
                 dodProf[ee] = dodProf.LastValue();
             }
-            proposedEvent.State.AddValue(DOD_KEY, dodProf);
+            proposedEvent.State.AddValues(DOD_KEY, dodProf);
             return true;
         }
         #endregion Methods

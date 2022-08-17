@@ -128,7 +128,8 @@ namespace HSFSystem
             {
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);
                 if (!newProf.Empty())
-                    proposedEvent.State.SetProfile(MEASURE_KEY, newProf);
+                    proposedEvent.State.AddValues(MEASURE_KEY, newProf);
+                //proposedEvent.State.SetProfile(MEASURE_KEY, newProf);
             }
             Vector gyro = new Vector(3);
             Vector accel = new Vector(3);
@@ -148,7 +149,8 @@ namespace HSFSystem
             Matrix<double> measure = new Matrix<double>(1, 6);
             measure[1,new MatrixIndex(1, 3)] = acc;
             measure[1,new MatrixIndex(4,6)] = gyr;
-            _newState.AddValue(MEASURE_KEY, new HSFProfile<Matrix<double>>(ts, measure));
+            _newState.AddValue(MEASURE_KEY, ts, measure);
+            //_newState.AddValue(MEASURE_KEY, new HSFProfile<Matrix<double>>(ts, measure));
             return true;
         }
         #endregion

@@ -14,6 +14,7 @@ namespace MissionElements
     [Serializable]
     public class SystemState
     {
+        #region Properties
         /** The previous state, upon which this state is based */
         public SystemState PreviousState { get; set; } = null;
 
@@ -26,15 +27,18 @@ namespace MissionElements
         /** The Dictionary of boolean Profiles. */
         public Dictionary<StateVariableKey<bool>, HSFProfile<bool>> Bdata { get; private set; } = new Dictionary<StateVariableKey<bool>, HSFProfile<bool>>();
 
-        /** The Dictionary of Matrix Profiles. */
+        /** The Dictionary of Matrix<double> Profiles. */
         public Dictionary<StateVariableKey<Matrix<double>>, HSFProfile<Matrix<double>>> Mdata { get; private set; } = new Dictionary<StateVariableKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
 
         /** The Dictionary of Quaternion Profiles. */
         public Dictionary<StateVariableKey<Quaternion>, HSFProfile<Quaternion>> Qdata { get; private set; } = new Dictionary<StateVariableKey<Quaternion>, HSFProfile<Quaternion>>();
 
-        /** The Dictionary of Quaternion Profiles. */
+        /** The Dictionary of Vector Profiles. */
         public Dictionary<StateVariableKey<Vector>, HSFProfile<Vector>> Vdata { get; private set; } = new Dictionary<StateVariableKey<Vector>, HSFProfile<Vector>>();
 
+        #endregion
+
+        #region Constructors
         /// <summary>
         /// Creates an initial state   
         /// </summary>
@@ -67,6 +71,10 @@ namespace MissionElements
             Qdata = new Dictionary<StateVariableKey<Quaternion>, HSFProfile<Quaternion>>(state.Qdata);
             Vdata = new Dictionary<StateVariableKey<Vector>, HSFProfile<Vector>>(state.Vdata);
         }
+
+        #endregion
+
+        //TODO:  ONly used in unit testing
         /// <summary>
         /// combine two system states by adding the states from one into the other
         /// </summary>
@@ -76,17 +84,18 @@ namespace MissionElements
             foreach (var data in moreState.Idata)
                 AddValues(data.Key, data.Value);
             foreach (var data in moreState.Ddata)
-                AddValue(data.Key, data.Value);
+                AddValues(data.Key, data.Value);
             foreach (var data in moreState.Bdata)
-                AddValue(data.Key, data.Value);
+                AddValues(data.Key, data.Value);
             foreach (var data in moreState.Mdata)
-                AddValue(data.Key, data.Value);
+                AddValues(data.Key, data.Value);
             foreach (var data in moreState.Qdata)
-                AddValue(data.Key, data.Value);
+                AddValues(data.Key, data.Value);
             foreach (var data in moreState.Vdata)
-                AddValue(data.Key, data.Value);
+                AddValues(data.Key, data.Value);
         }
 
+        #region Overrides
         public override string ToString()
         {
             string stateData = "";
@@ -96,10 +105,12 @@ namespace MissionElements
             }
             return stateData;
         }
+        #endregion
 
+        #region GetLastValue
         /// <summary>
-        ///  Gets the last int value set for the given state variable key in the state. If no value is found
-        ///  it checks the previous state, continuing all the way to the initial state.
+        ///  Gets the last integer value set for the given state variable key in the SystemState. If no value is found
+        ///  it checks the previous SystemState, continuing all the way to the initial SystemState.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -113,8 +124,94 @@ namespace MissionElements
         }
 
         /// <summary>
-        ///  Gets the integer value of the state at a certain time.
-        ///  If the exact time is not found, the data is assumed to be on a zero-order hold, and the last value set is found.
+        ///  Gets the last double value set for the given state variable key in the SystemState. If no value is found
+        ///  it checks the previous SystemState, continuing all the way to the initial SystemState.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public (double Time, double Value) GetLastValue(StateVariableKey<double> key) {
+            HSFProfile<double> valueOut;
+            if (Ddata.Count != 0) { // Are there any Profiles in there?
+                if (Ddata.TryGetValue(key, out valueOut)) //see if our key is in there
+                    return valueOut.Last(); //found it, return it TODO: return last value or pair?
+            }
+            return PreviousState.GetLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
+        /// <summary>
+        ///  Gets the last boolean value set for the given state variable key in the SystemState. If no value is found
+        ///  it checks the previous SystemState, continuing all the way to the initial SystemState.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public (double Time, bool Value) GetLastValue(StateVariableKey<bool> key)
+        {
+            HSFProfile<bool> valueOut;
+            if (Bdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Bdata.TryGetValue(key, out valueOut)) //see if our key is in there
+                    return valueOut.Last(); //found it, return it TODO: return last value or pair?
+            }
+            return PreviousState.GetLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
+        /// <summary>
+        ///  Gets the last Matrix<double> value set for the given state variable key in the SystemState. If no value is found
+        ///  it checks the previous SystemState, continuing all the way to the initial SystemState.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public (double Time, Matrix<double> Value) GetLastValue(StateVariableKey<Matrix<double>> key)
+        {
+            HSFProfile<Matrix<double>> valueOut;
+            if (Mdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Mdata.TryGetValue(key, out valueOut)) //see if our key is in there
+                    return valueOut.Last(); //found it, return it TODO: return last value or pair?
+            }
+            return PreviousState.GetLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
+        /// <summary>
+        ///  Gets the last Vector value set for the given state variable key in the SystemState. If no value is found
+        ///  it checks the previous SystemState, continuing all the way to the initial SystemState.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public (double Time, Vector Value) GetLastValue(StateVariableKey<Vector> key)
+        {
+            HSFProfile<Vector> valueOut;
+            if (Vdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Vdata.TryGetValue(key, out valueOut)) //see if our key is in there
+                    return valueOut.Last(); //found it, return it TODO: return last value or pair?
+            }
+            return PreviousState.GetLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
+        /// <summary>
+        ///  Gets the last Matrix<double> value set for the given state variable key in the SystemState. If no value is found
+        ///  it checks the previous SystemState, continuing all the way to the initial SystemState.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public (double Time, Quaternion Value) GetLastValue(StateVariableKey<Quaternion> key)
+        {
+            HSFProfile<Quaternion> valueOut;
+            if (Qdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Qdata.TryGetValue(key, out valueOut)) //see if our key is in there
+                    return valueOut.Last(); //found it, return it TODO: return last value or pair?
+            }
+            return PreviousState.GetLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+        #endregion
+
+        #region GetValueAtTime
+
+        /// <summary>
+        ///  Gets the integer value of the SystemState at a certain time.
+        ///  If the exact time is not found, the data is assumed to be on a zero-order hold.
         /// </summary>
         /// <param name="key"></param>
         /// <param name="time"></param>
@@ -129,68 +226,165 @@ namespace MissionElements
         }
 
         /// <summary>
+        ///  Gets the double value of the SystemState at a certain time.
+        ///  If the exact time is not found, the data is assumed to be on a zero-order hold.        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public (double Time, double Value) GetValueAtTime(StateVariableKey<double> key, double time) {
+            HSFProfile<double> valueOut;
+            if (Ddata.Count != 0) { // Are there any Profiles in there?
+                if (Ddata.TryGetValue(key, out valueOut) && Ddata[key].LastTime() <= time) //see if our key is in there
+                    return valueOut.DataAtTime(time);
+            }
+            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
+        /// <summary>
+        ///  Gets the boolean value of the SystemState at a certain time.
+        ///  If the exact time is not found, the data is assumed to be on a zero-order hold.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public (double Time, bool Value) GetValueAtTime(StateVariableKey<bool> key, double time)
+        {
+            HSFProfile<bool> valueOut;
+            if (Bdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Bdata.TryGetValue(key, out valueOut) && Bdata[key].LastTime() <= time) //see if our key is in there
+                    return valueOut.DataAtTime(time);
+            }
+            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
+        /// <summary>
+        ///  Gets the Matrix(double) value of the SystemState at a certain time.
+        ///  If the exact time is not found, the data is assumed to be on a zero-order hold.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public (double Time, Matrix<double> Value) GetValueAtTime(StateVariableKey<Matrix<double>> key, double time)
+        {
+            HSFProfile<Matrix<double>> valueOut;
+            if (Mdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Mdata.TryGetValue(key, out valueOut) && Mdata[key].LastTime() <= time) //see if our key is in there
+                    return valueOut.DataAtTime(time);
+            }
+            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
+        /// <summary>
+        ///  Gets the vector value of the SystemState at a certain time.
+        ///  If the exact time is not found, the data is assumed to be on a zero-order hold.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public (double Time, Vector Value) GetValueAtTime(StateVariableKey<Vector> key, double time)
+        {
+            HSFProfile<Vector> valueOut;
+            if (Vdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Vdata.TryGetValue(key, out valueOut) && Vdata[key].LastTime() <= time) //see if our key is in there
+                    return valueOut.DataAtTime(time);
+            }
+            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+
+        /// <summary>
+        ///  Gets the quaternion value of the SystemState at a certain time.
+        ///  If the exact time is not found, the data is assumed to be on a zero-order hold.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="time"></param>
+        /// <returns></returns>
+        public (double Time, Quaternion Value) GetValueAtTime(StateVariableKey<Quaternion> key, double time)
+        {
+            HSFProfile<Quaternion> valueOut;
+            if (Qdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Qdata.TryGetValue(key, out valueOut) && Qdata[key].LastTime() <= time) //see if our key is in there
+                    return valueOut.DataAtTime(time);
+            }
+            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
+        }
+        #endregion
+
+        #region GetProfile
+        /// <summary>
         /// Returns the integer Profile matching the key given. If no Profile is found, it goes back one Event
         /// and checks again until it gets to the initial state.
         /// </summary>
         /// <typeparam name="T">The type of the profile we are getting</typeparam>
         /// <param name="_key">The state variable key that is being looked up.</param>
         /// <returns>Profile saved in the state.</returns>
-        public HSFProfile<T> GetProfile<T>(StateVariableKey<T> _key)
-       {
-           if (_key.GetType() == typeof(StateVariableKey<int>))
-           {
-               HSFProfile<int> valueOut;
-               if (Idata.Count != 0)
-               { // Are there any Profiles in there?
-                   if (Idata.TryGetValue(_key, out valueOut)) //see if our key is in there
-                       return (dynamic)valueOut;
-               }
-                return PreviousState.GetProfile(_key); // This isn't the right profile, go back one and try it out!
+        public HSFProfile<int> GetProfile(StateVariableKey<int> _key)
+        {
+            if (Idata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Idata.TryGetValue(_key, out HSFProfile<int> valueOut)) //see if our key is in there
+                    return valueOut;
             }
-            else if (_key.GetType() == typeof(StateVariableKey<double>))
-           {
-                HSFProfile<double> valueOut;
-               if (Ddata.Count != 0)
-               { // Are there any Profiles in there?
-                   if (Ddata.TryGetValue(_key, out valueOut)) //see if our key is in there
-                       return (dynamic)valueOut;
-               }
-               return PreviousState.GetProfile(_key);  // This isn't the right profile, go back one and try it out!
+            return PreviousState.GetProfile(_key); // This isn't the right profile, go back one and try it out!
+        }
+        public HSFProfile<double> GetProfile(StateVariableKey<double> _key)
+        {
+            if (Ddata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Ddata.TryGetValue(_key, out HSFProfile<double> valueOut)) //see if our key is in there
+                    return valueOut;
             }
-           else if (_key.GetType() == typeof(StateVariableKey<bool>))
-           {
-               HSFProfile<bool> valueOut;
-               if (Ddata.Count != 0)
-               { // Are there any Profiles in there?
-                   if (Bdata.TryGetValue(_key, out valueOut)) //see if our key is in there
-                       return (dynamic)valueOut;
-               }
-                return PreviousState.GetProfile(_key); // This isn't the right profile, go back one and try it out!
-            }
-            else if (_key.GetType() == typeof(StateVariableKey<Matrix<double>>))
-           {
-               HSFProfile<Matrix<double>> valueOut;
-               if (Ddata.Count != 0)
-               { // Are there any Profiles in there?
-                   if (Mdata.TryGetValue(_key, out valueOut)) //see if our key is in there
-                       return (dynamic)valueOut;
-               }
-               return PreviousState.GetProfile(_key); // This isn't the right profile, go back one and try it out!
+            return PreviousState.GetProfile(_key);  // This isn't the right profile, go back one and try it out!
+        }
 
+        public HSFProfile<bool> GetProfile(StateVariableKey<bool> _key)
+        {
+            if (Bdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Bdata.TryGetValue(_key, out HSFProfile<bool> valueOut)) //see if our key is in there
+                    return valueOut;
             }
-            else if (_key.GetType() == typeof(StateVariableKey<Quaternion>))
-           {
-               HSFProfile<Quaternion> valueOut;
-               if (Ddata.Count != 0)
-               { // Are there any Profiles in there?
-                   if (Qdata.TryGetValue(_key, out valueOut)) //see if our key is in there
-                       return (dynamic)valueOut;
-               }
-               return PreviousState.GetProfile(_key); // This isn't the right profile, go back one and try it out!
-            }
-            throw new ArgumentException("Profile Type Not Found");
-       }
+            return PreviousState.GetProfile(_key);  // This isn't the right profile, go back one and try it out!
+        }
 
+        public HSFProfile<Matrix<double>> GetProfile(StateVariableKey<Matrix<double>> _key)
+        {
+            if (Mdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Mdata.TryGetValue(_key, out HSFProfile<Matrix<double>> valueOut)) //see if our key is in there
+                    return valueOut;
+            }
+            return PreviousState.GetProfile(_key);  // This isn't the right profile, go back one and try it out!
+        }
+
+        public HSFProfile<Quaternion> GetProfile(StateVariableKey<Quaternion> _key)
+        {
+            if (Qdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Qdata.TryGetValue(_key, out HSFProfile<Quaternion> valueOut)) //see if our key is in there
+                    return valueOut;
+            }
+            return PreviousState.GetProfile(_key);  // This isn't the right profile, go back one and try it out!
+        }
+
+        public HSFProfile<Vector> GetProfile(StateVariableKey<Vector> _key)
+        {
+            if (Vdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Vdata.TryGetValue(_key, out HSFProfile<Vector> valueOut)) //see if our key is in there
+                    return valueOut;
+            }
+            return PreviousState.GetProfile(_key);  // This isn't the right profile, go back one and try it out!
+        }
+
+        #endregion
+
+        #region GetFullProfile
+
+        ///////////  NOT REFERENCED OUTSIDE METHOD - REMOVE?  /////////////////////
         /// <summary>
         /// Returns the integer Profile for this state and all previous states merged into one Profile
         /// </summary>
@@ -211,111 +405,6 @@ namespace MissionElements
         }
 
         /// <summary>
-        /// Sets the integer Profile in the state with its matching key. If a Profile is found already under
-        /// that key, this will overwrite the old Profile.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="profIn"></param>
-        public void SetProfile(StateVariableKey<int> key, HSFProfile<int> profIn) {
-            HSFProfile<int> valueOut;
-            if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Idata.Add(key, profIn);
-            else { // Otherwise, erase whatever is there, and insert a new one.
-                Idata.Remove(key);
-                Idata.Add(key, profIn);
-            }
-        }
-
-        /// <summary>
-        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
-        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
-        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
-        /// <param name="pairIn"></param>
-        public void AddValue(StateVariableKey<int> stateVariableKey, double time, int stateValue)
-        {
-            if (Idata.TryGetValue(stateVariableKey, out HSFProfile<int> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
-                valueOut[time] = stateValue;
-            else // Otherwise, insert a new one.
-                Idata[stateVariableKey] = new HSFProfile<int>(time, stateValue);
-        }
-        public void AddValue(StateVariableKey<double> stateVariableKey, double time, double stateValue)
-        {
-            if (Ddata.TryGetValue(stateVariableKey, out HSFProfile<double> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
-                valueOut[time] = stateValue;
-            else // Otherwise, insert a new one.
-                Ddata[stateVariableKey] = new HSFProfile<double>(time, stateValue);
-        }
-        public void AddValue(StateVariableKey<bool> stateVariableKey, double time, bool stateValue)
-        {
-            if (Bdata.TryGetValue(stateVariableKey, out HSFProfile<bool> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
-                valueOut[time] = stateValue;
-            else // Otherwise, insert a new one.
-                Bdata[stateVariableKey] = new HSFProfile<bool>(time, stateValue);
-        }
-        public void AddValue(StateVariableKey<Matrix<double>> stateVariableKey, double time, Matrix<double> stateValue)
-        {
-            if (Mdata.TryGetValue(stateVariableKey, out HSFProfile<Matrix<double>> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
-                valueOut[time] = stateValue;
-            else // Otherwise, insert a new one.
-                Mdata[stateVariableKey] = new HSFProfile<Matrix<double>>(time, stateValue);
-        }
-        public void AddValue(StateVariableKey<Quaternion> stateVariableKey, double time, Quaternion stateValue)
-        {
-            if (Qdata.TryGetValue(stateVariableKey, out HSFProfile<Quaternion> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
-                valueOut[time] = stateValue;
-            else // Otherwise, insert a new one.
-                Qdata[stateVariableKey] = new HSFProfile<Quaternion>(time, stateValue);
-        }
-        public void AddValue(StateVariableKey<Vector> stateVariableKey, double time, Vector stateValue)
-        {
-            if (Vdata.TryGetValue(stateVariableKey, out HSFProfile<Vector> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
-                valueOut[time] = stateValue;
-            else // Otherwise, insert a new one.
-                Vdata[stateVariableKey] = new HSFProfile<Vector>(time, stateValue);
-        }
-        /// <summary>
-        /// Adds values to an existing integer state variable.  If the state variable key does not exist
-        /// in Idata, a new HSFProfile<int> is added to Idata with the values in stateValues
-        /// </summary>
-        /// <param name="stateVariableKey">The StateVariableKey for the Idata</param>
-        /// <param name="stateValues">The integer values to add to the state stored in an HSFProfile<int></param>
-        public void AddValues(StateVariableKey<int> stateVariableKey, HSFProfile<int> stateValues)
-        {
-            foreach (var stateValue in stateValues.Data)
-                AddValue(stateVariableKey, stateValue.Key, stateValue.Value);
-        }
-        /// <summary>
-        ///  Gets the last int value set for the given state variable key in the state. If no value is found
-        ///  it checks the previous state, continuing all the way to the initial state.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public (double Time, double Value) GetLastValue(StateVariableKey<double> key) {
-            HSFProfile<double> valueOut;
-            if (Ddata.Count != 0) { // Are there any Profiles in there?
-                if (Ddata.TryGetValue(key, out valueOut)) //see if our key is in there
-                    return valueOut.Last(); //found it, return it TODO: return last value or pair?
-            }
-            return PreviousState.GetLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
-        }
-
-        /// <summary>
-        ///  Gets the integer value of the state at a certain time.
-        ///  If the exact time is not found, the data is assumed to be on a zero-order hold, and the last value set is found.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        public (double Time, double Value) GetValueAtTime(StateVariableKey<double> key, double time) {
-            HSFProfile<double> valueOut;
-            if (Ddata.Count != 0) { // Are there any Profiles in there?
-                if (Ddata.TryGetValue(key, out valueOut) && Ddata[key].LastTime() <= time) //see if our key is in there
-                    return valueOut.DataAtTime(time);
-            }
-            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
-        }
-
-        /// <summary>
         /// Returns the integer Profile for this state and all previous states merged into one Profile
         /// </summary>
         /// <param name="key"></param>
@@ -333,81 +422,6 @@ namespace MissionElements
                 return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
             return valueOut; //return empty profile
         }
-
-        /// <summary>
-        /// Sets the integer Profile in the state with its matching key. If a Profile is found already under
-        /// that key, this will overwrite the old Profile.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="profIn"></param>
-        public void SetProfile(StateVariableKey<double> key, HSFProfile<double> profIn)
-        {
-            HSFProfile<double> valueOut;
-            if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Ddata.Add(key, profIn);
-            else
-            { // Otherwise, erase whatever is there, and insert a new one.
-                Ddata.Remove(key);
-                Ddata.Add(key, profIn);
-            }
-        }
-
-        /// <summary>
-        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
-        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
-        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
-        /// <param name="pairIn"></param>
-        public void AddValue(StateVariableKey<double> key, HSFProfile<double> profIn) {
-            HSFProfile<double> valueOut;
-            if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Ddata.Add(key, profIn);
-            else // Otherwise, add this data point to the existing Profile.
-                valueOut.Add(profIn);
-        }
-        //public void addValue(StateVarKey<double> key, IronPython.Runtime.PythonTuple profIn)
-        //{
-        //    HSFProfile<double> valueOut;
-        //    if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-        //        Ddata.Add(key, profIn);
-        //    else // Otherwise, add this data point to the existing Profile.
-        //        valueOut.Add(profIn);
-        //}
-
-        /// <summary>
-        ///  Gets the last int value set for the given state variable key in the state. If no value is found
-        ///  it checks the previous state, continuing all the way to the initial state.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public (double Time, bool Value) GetLastValue(StateVariableKey<bool> key)
-        {
-            HSFProfile<bool> valueOut;
-            if (Bdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Bdata.TryGetValue(key, out valueOut)) //see if our key is in there
-                    return valueOut.Last(); //found it, return it TODO: return last value or pair?
-            }
-            return PreviousState.GetLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
-        }
-
-        /// <summary>
-        ///  Gets the integer value of the state at a certain time.
-        ///  If the exact time is not found, the data is assumed to be on a zero-order hold, and the last value set is found.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        public (double Time, bool Value) GetValueAtTime(StateVariableKey<bool> key, double time)
-        {
-            HSFProfile<bool> valueOut;
-            if (Bdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Bdata.TryGetValue(key, out valueOut) && Bdata[key].LastTime() <= time) //see if our key is in there
-                    return valueOut.DataAtTime(time);
-            }
-            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
-        }
-
         /// <summary>
         /// Returns the integer Profile for this state and all previous states merged into one Profile
         /// </summary>
@@ -429,108 +443,7 @@ namespace MissionElements
                 return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
             return valueOut; //return empty profile
         }
-
-        /// <summary>
-        /// Sets the integer Profile in the state with its matching key. If a Profile is found already under
-        /// that key, this will overwrite the old Profile.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="profIn"></param>
-        public void SetProfile(StateVariableKey<bool> key, HSFProfile<bool> profIn)
-        {
-            HSFProfile<bool> valueOut;
-            if (!Bdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Bdata.Add(key, profIn);
-            else { // Otherwise, erase whatever is there, and insert a new one.
-                Bdata.Remove(key);
-                Bdata.Add(key, profIn);
-            }
-        } 
-
-        /** 
-         * Adds a boolean Profile to the state with the given key. If no Profile exists, a new Profile is created
-         * with the corresponding key. If a Profile exists with that key, the Profile is appended onto the end of the Profile. 
-         * @param key The key corresponding to the state variable.
-         * @param profIn The Profile to be added to the boolean Profile.
-         */
-        public void AddValue(StateVariableKey<bool> key, HSFProfile<bool> profIn)
-        {
-            HSFProfile<bool> valueOut;
-            if (!Bdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Bdata.Add(key, profIn);
-            else // Otherwise, add this data point to the existing Profile.
-                valueOut.Add(profIn);
-        }
-
-        /// <summary>
-        ///  Gets the last int value set for the given state variable key in the state. If no value is found
-        ///  it checks the previous state, continuing all the way to the initial state.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public (double Time, Matrix<double> Value) GetLastValue(StateVariableKey<Matrix<double>> key)
-        {
-            HSFProfile<Matrix<double>> valueOut;
-            if (Mdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Mdata.TryGetValue(key, out valueOut)) //see if our key is in there
-                    return valueOut.Last(); //found it, return it TODO: return last value or pair?
-            }
-            return PreviousState.GetLastValue(key); //either no profiles or none that match our keys, try finding it in the previous one
-        }
-
-        /// <summary>
-        ///  Gets the integer value of the state at a certain time.
-        ///  If the exact time is not found, the data is assumed to be on a zero-order hold, and the last value set is found.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        public (double Time, Matrix<double> Value) GetValueAtTime(StateVariableKey<Matrix<double>> key, double time)
-        {
-            HSFProfile<Matrix<double>> valueOut;
-            if (Mdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Mdata.TryGetValue(key, out valueOut) && Mdata[key].LastTime() <= time) //see if our key is in there
-                    return valueOut.DataAtTime(time);
-            }
-            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
-        }
-
-        /// <summary>
-        ///  Gets the integer value of the state at a certain time.
-        ///  If the exact time is not found, the data is assumed to be on a zero-order hold, and the last value set is found.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        public (double Time, Vector Value) GetValueAtTime(StateVariableKey<Vector> key, double time)
-        {
-            HSFProfile<Vector> valueOut;
-            if (Vdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Vdata.TryGetValue(key, out valueOut) && Vdata[key].LastTime() <= time) //see if our key is in there
-                    return valueOut.DataAtTime(time);
-            }
-            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
-        }
-        /// <summary>
-        ///  Gets the integer value of the state at a certain time.
-        ///  If the exact time is not found, the data is assumed to be on a zero-order hold, and the last value set is found.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="time"></param>
-        /// <returns></returns>
-        public (double Time, Quaternion Value) GetValueAtTime(StateVariableKey<Quaternion> key, double time)
-        {
-            HSFProfile<Quaternion> valueOut;
-            if (Qdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Qdata.TryGetValue(key, out valueOut) && Qdata[key].LastTime() <= time) //see if our key is in there
-                    return valueOut.DataAtTime(time);
-            }
-            return PreviousState.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
-        }
+        
         /// <summary>
         /// Returns the integer Profile for this state and all previous states merged into one Profile
         /// </summary>
@@ -554,87 +467,466 @@ namespace MissionElements
         }
 
         /// <summary>
-        /// Sets the integer Profile in the state with its matching key. If a Profile is found already under
-        /// that key, this will overwrite the old Profile.
+        /// Returns the integer Profile for this state and all previous states merged into one Profile
         /// </summary>
         /// <param name="key"></param>
-        /// <param name="profIn"></param>
-        public void SetProfile(StateVariableKey<Matrix<double>> key, HSFProfile<Matrix<double>> profIn)
+        /// <returns></returns>
+        public HSFProfile<Vector> GetFullProfile(StateVariableKey<Vector> key)
         {
-            HSFProfile<Matrix<double>> valueOut;
-            if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Mdata.Add(key, profIn);
-            else { // Otherwise, erase whatever is there, and insert a new one.
-                Mdata.Remove(key);
-                Mdata.Add(key, profIn);
+            HSFProfile<Vector> valueOut = new HSFProfile<Vector>();
+            if (Vdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Vdata.TryGetValue(key, out valueOut))
+                { //see if our key is in there
+                    if (PreviousState != null) // Check whether we are at the first state
+                        return HSFProfile<Vector>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
+                    return valueOut;
+                }
             }
+            if (PreviousState != null)
+                return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
+            return valueOut; //return empty profile
         }
 
         /// <summary>
-        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
-        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
-        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
-        /// <param name="pairIn"></param>
-        public void AddValue(StateVariableKey<Matrix<double>> key, HSFProfile<Matrix<double>> profIn)
+        /// Returns the qu aternionProfile for this state and all previous states merged into one Profile
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public HSFProfile<Quaternion> GetFullProfile(StateVariableKey<Quaternion> key)
         {
-            HSFProfile<Matrix<double>> valueOut;
-            if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Mdata.Add(key, profIn);
-            else // Otherwise, add this data point to the existing Profile.
-                valueOut.Add(profIn);
-        }
-
-        public void SetProfile(StateVariableKey<Quaternion> key, HSFProfile<Quaternion> profIn)
-        {
-            HSFProfile<Quaternion> valueOut;
-            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Qdata.Add(key, profIn);
-            else
-            { // Otherwise, erase whatever is there, and insert a new one.
-                Qdata.Remove(key);
-                Qdata.Add(key, profIn);
+            HSFProfile<Quaternion> valueOut = new HSFProfile<Quaternion>();
+            if (Qdata.Count != 0)
+            { // Are there any Profiles in there?
+                if (Qdata.TryGetValue(key, out valueOut))
+                { //see if our key is in there
+                    if (PreviousState != null) // Check whether we are at the first state
+                        return HSFProfile<Quaternion>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
+                    return valueOut;
+                }
             }
+            if (PreviousState != null)
+                return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
+            return valueOut; //return empty profile
+        }
+        #endregion
+
+        #region SetProfile
+        // Eric Removed these because we do not want to overrite profile data (8/16/22).  If a user overwrites profiles, they are doing something wrong...
+        // TODO:  On that note, do we want to let the user overwrite a SINGLE VALUE at a SINGLE TIME?
+
+        ///// <summary>
+        ///// Sets the integer Profile in the state with its matching key. If a Profile is found already under
+        ///// that key, this will overwrite the old Profile.
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <param name="profIn"></param>
+        //public void SetProfile(StateVariableKey<int> key, HSFProfile<int> profIn) {
+        //    HSFProfile<int> valueOut;
+        //    if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+        //        Idata.Add(key, profIn);
+        //    else { // Otherwise, erase whatever is there, and insert a new one.
+        //        Idata.Remove(key);
+        //        Idata.Add(key, profIn);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Sets the integer Profile in the state with its matching key. If a Profile is found already under
+        ///// that key, this will overwrite the old Profile.
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <param name="profIn"></param>
+        //public void SetProfile(StateVariableKey<double> key, HSFProfile<double> profIn)
+        //{
+        //    HSFProfile<double> valueOut;
+        //    if (!Ddata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+        //        Ddata.Add(key, profIn);
+        //    else
+        //    { // Otherwise, erase whatever is there, and insert a new one.
+        //        Ddata.Remove(key);
+        //        Ddata.Add(key, profIn);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Sets the integer Profile in the state with its matching key. If a Profile is found already under
+        ///// that key, this will overwrite the old Profile.
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <param name="profIn"></param>
+        //public void SetProfile(StateVariableKey<bool> key, HSFProfile<bool> profIn)
+        //{
+        //    HSFProfile<bool> valueOut;
+        //    if (!Bdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+        //        Bdata.Add(key, profIn);
+        //    else { // Otherwise, erase whatever is there, and insert a new one.
+        //        Bdata.Remove(key);
+        //        Bdata.Add(key, profIn);
+        //    }
+        //}
+
+        ///// <summary>
+        ///// Sets the integer Profile in the state with its matching key. If a Profile is found already under
+        ///// that key, this will overwrite the old Profile.
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <param name="profIn"></param>
+        //public void SetProfile(StateVariableKey<Matrix<double>> key, HSFProfile<Matrix<double>> profIn)
+        //{
+        //    HSFProfile<Matrix<double>> valueOut;
+        //    if (!Mdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+        //        Mdata.Add(key, profIn);
+        //    else { // Otherwise, erase whatever is there, and insert a new one.
+        //        Mdata.Remove(key);
+        //        Mdata.Add(key, profIn);
+        //    }
+        //}
+
+        //public void SetProfile(StateVariableKey<Quaternion> key, HSFProfile<Quaternion> profIn)
+        //{
+        //    HSFProfile<Quaternion> valueOut;
+        //    if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+        //        Qdata.Add(key, profIn);
+        //    else
+        //    { // Otherwise, erase whatever is there, and insert a new one.
+        //        Qdata.Remove(key);
+        //        Qdata.Add(key, profIn);
+        //    }
+        //}
+
+        //public void SetProfile(StateVariableKey<Vector> key, HSFProfile<Vector> profIn)
+        //{
+        //    HSFProfile<Vector> valueOut;
+        //    if (!Vdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
+        //        Vdata.Add(key, profIn);
+        //    else
+        //    { // Otherwise, erase whatever is there, and insert a new one.
+        //        Vdata.Remove(key);
+        //        Vdata.Add(key, profIn);
+        //    }
+        //}
+        #endregion
+
+        #region AddValue (Key, Time, Value)
+        /// <summary>
+        /// Adds a integer (time, value) pair to the SystemState with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is added into the of the Profile in time order.
+        /// <param name="key"></param>
+        /// <param name="pairIn"></param>
+        public void AddValue(StateVariableKey<int> stateVariableKey, double time, int stateValue)
+        {
+            if (Idata.TryGetValue(stateVariableKey, out HSFProfile<int> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
+            {
+                if (valueOut.LastTime() < time)  // Only let the user add data points that are after the last data point
+                    valueOut[time] = stateValue;
+                else if (valueOut.Data.ContainsKey(time))
+                {
+                    string msg = $"Cannot overwrite SystemState Values '{stateVariableKey.ToString()}', at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+                else
+                {
+                    string msg = $"Cannot insert SystemState Values before last value (causality) '{stateVariableKey.ToString()}', at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+            }
+            else // Otherwise, insert a new one.
+                Idata[stateVariableKey] = new HSFProfile<int>(time, stateValue);
+        }
+        /// <summary>
+        /// Adds a double (time, value) pair to the SystemState with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is added into the of the Profile in time order.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="time"></param>
+        /// <param name="stateValue"></param>
+        public void AddValue(StateVariableKey<double> stateVariableKey, double time, double stateValue)
+        {
+            if (Ddata.TryGetValue(stateVariableKey, out HSFProfile<double> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
+            {
+                if (valueOut.LastTime() < time)  // Only let the user add data points that are after the last data point
+                    valueOut[time] = stateValue;
+                else if (valueOut.LastTime() == time)
+                {
+                    string msg = $"Cannot overwrite SystemState Values {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+                else
+                {
+                    string msg = $"Cannot insert SystemState Values before last value (causality) {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+            }
+            else // Otherwise, insert a new one.
+                Ddata[stateVariableKey] = new HSFProfile<double>(time, stateValue);
+        }
+        /// <summary>
+        /// Adds a boolean (time, value) pair to the SystemState with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is added into the of the Profile in time order.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="time"></param>
+        /// <param name="stateValue"></param>
+        public void AddValue(StateVariableKey<bool> stateVariableKey, double time, bool stateValue)
+        {
+            if (Bdata.TryGetValue(stateVariableKey, out HSFProfile<bool> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
+            {
+                if (valueOut.LastTime() < time)  // Only let the user add data points that are after the last data point
+                    valueOut[time] = stateValue;
+                else if (valueOut.LastTime() == time)
+                {
+                    string msg = $"Cannot overwrite SystemState Values {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+                else
+                {
+                    string msg = $"Cannot insert SystemState Values before last value (causality) {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+            }
+            else // Otherwise, insert a new one.
+                Bdata[stateVariableKey] = new HSFProfile<bool>(time, stateValue);
         }
 
         /// <summary>
-        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
-        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
-        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
-        /// <param name="pairIn"></param>
-        public void AddValue(StateVariableKey<Quaternion> key, HSFProfile<Quaternion> profIn)
+        /// Adds a Matrix(double) (time, value) pair to the SystemState with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is added into the of the Profile in time order.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="time"></param>
+        /// <param name="stateValue"></param>
+        public void AddValue(StateVariableKey<Matrix<double>> stateVariableKey, double time, Matrix<double> stateValue)
         {
-            HSFProfile<Quaternion> valueOut;
-            if (!Qdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Qdata.Add(key, profIn);
-            else // Otherwise, add this data point to the existing Profile.
-                valueOut.Add(profIn);
-        }
-
-        public void SetProfile(StateVariableKey<Vector> key, HSFProfile<Vector> profIn)
-        {
-            HSFProfile<Vector> valueOut;
-            if (!Vdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Vdata.Add(key, profIn);
-            else
-            { // Otherwise, erase whatever is there, and insert a new one.
-                Vdata.Remove(key);
-                Vdata.Add(key, profIn);
+            if (Mdata.TryGetValue(stateVariableKey, out HSFProfile<Matrix<double>> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
+            {
+                if (valueOut.LastTime() < time)  // Only let the user add data points that are after the last data point
+                    valueOut[time] = stateValue;
+                else if (valueOut.LastTime() == time)
+                {
+                    string msg = $"Cannot overwrite SystemState Values {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+                else
+                {
+                    string msg = $"Cannot insert SystemState Values before last value (causality) {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
             }
+            else // Otherwise, insert a new one.
+                Mdata[stateVariableKey] = new HSFProfile<Matrix<double>>(time, stateValue);
         }
 
         /// <summary>
-        /// Adds a Matrix Profile value pair to the state with the given key. If no Profile exists, a new Profile is created
-        /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
-        /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
-        /// <param name="pairIn"></param>
-        public void AddValue(StateVariableKey<Vector> key, HSFProfile<Vector> profIn)
+        /// Adds a Quaternion (time, value) pair to the SystemState with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is added into the of the Profile in time order.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="time"></param>
+        /// <param name="stateValue"></param>
+        public void AddValue(StateVariableKey<Quaternion> stateVariableKey, double time, Quaternion stateValue)
         {
-            HSFProfile<Vector> valueOut;
-            if (!Vdata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
-                Vdata.Add(key, profIn);
-            else // Otherwise, add this data point to the existing Profile.
-                valueOut.Add(profIn);
+            if (Qdata.TryGetValue(stateVariableKey, out HSFProfile<Quaternion> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
+            {
+                if (valueOut.LastTime() < time)  // Only let the user add data points that are after the last data point
+                    valueOut[time] = stateValue;
+                else if (valueOut.LastTime() == time)
+                {
+                    string msg = $"Cannot overwrite SystemState Values {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+                else
+                {
+                    string msg = $"Cannot insert SystemState Values before last value (causality) {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+            }
+            else // Otherwise, insert a new one.
+                Qdata[stateVariableKey] = new HSFProfile<Quaternion>(time, stateValue);
         }
+
+        /// <summary>
+        /// Adds a Vector (time, value) pair to the SystemState with the given key. If no Profile exists, a new Profile is created
+        /// with the corresponding key. If a Profile exists with that key, the pair is added into the of the Profile in time order.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="time"></param>
+        /// <param name="stateValue"></param>
+        public void AddValue(StateVariableKey<Vector> stateVariableKey, double time, Vector stateValue)
+        {
+            if (Vdata.TryGetValue(stateVariableKey, out HSFProfile<Vector> valueOut)) // If there's a Profile matching that key,add this data point to the existing Profile.
+            {
+                if (valueOut.LastTime() < time)  // Only let the user add data points that are after the last data point
+                    valueOut[time] = stateValue;
+                else if (valueOut.LastTime() == time)
+                {
+                    string msg = $"Cannot overwrite SystemState Values {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+                else
+                {
+                    string msg = $"Cannot insert SystemState Values before last value (causality) {stateVariableKey}, at {time}, with value {stateValue}";
+                    throw new ArgumentOutOfRangeException(msg);
+                }
+            }
+            else // Otherwise, insert a new one.
+                Vdata[stateVariableKey] = new HSFProfile<Vector>(time, stateValue);
+        }
+
+        #endregion
+
+        #region AddValues (key, HSFProfile)
+
+        // TODO:  May want to get ride of these so users can work with single (time, value) pairs, and list of (time, value) pairs
+        /// <summary>
+        /// Adds integer (time, value) pair to an existing SystemState variable from the input HSFProfile.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey">The StateVariableKey for the Idata</param>
+        /// <param name="stateValues">The integer values to add to the state stored in an HSFProfile<int></param>
+        public void AddValues(StateVariableKey<int> stateVariableKey, HSFProfile<int> stateValues)
+        {
+            foreach (var stateValue in stateValues.Data)
+                AddValue(stateVariableKey, stateValue.Key, stateValue.Value);
+        }
+
+        /// <summary>
+        /// Adds double (time, value) pair to an existing SystemState variable from the input HSFProfile.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey">The StateVariableKey for the Idata</param>
+        /// <param name="stateValues">The integer values to add to the state stored in an HSFProfile<int></param>
+        public void AddValues(StateVariableKey<double> stateVariableKey, HSFProfile<double> stateValues) {
+            foreach (var stateValue in stateValues.Data)
+                AddValue(stateVariableKey, stateValue.Key, stateValue.Value);
+        }
+
+        /// <summary>
+        /// Adds boolean (time, value) pair to an existing SystemState variable from the input HSFProfile.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey">The StateVariableKey for the Idata</param>
+        /// <param name="stateValues">The integer values to add to the state stored in an HSFProfile<int></param>
+        public void AddValues(StateVariableKey<bool> stateVariableKey, HSFProfile<bool> stateValues)
+        {
+            foreach (var stateValue in stateValues.Data)
+                AddValue(stateVariableKey, stateValue.Key, stateValue.Value);
+        }
+
+        /// <summary>
+        /// Adds Matrix<double> (time, value) pair to an existing SystemState variable from the input HSFProfile.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey">The StateVariableKey for the Idata</param>
+        /// <param name="stateValues">The integer values to add to the state stored in an HSFProfile<int></param>
+        public void AddValues(StateVariableKey<Matrix<double>> stateVariableKey, HSFProfile<Matrix<double>> stateValues)
+        {
+            foreach (var stateValue in stateValues.Data)
+                AddValue(stateVariableKey, stateValue.Key, stateValue.Value);
+        }
+
+        /// <summary>
+        /// Adds Quaterion (time, value) pair to an existing SystemState variable from the input HSFProfile.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey">The StateVariableKey for the Idata</param>
+        /// <param name="stateValues">The integer values to add to the state stored in an HSFProfile<int></param>
+        public void AddValues(StateVariableKey<Quaternion> stateVariableKey, HSFProfile<Quaternion> stateValues)
+        {
+            foreach (var stateValue in stateValues.Data)
+                AddValue(stateVariableKey, stateValue.Key, stateValue.Value);
+        }
+
+        /// <summary>
+        /// Adds Vector (time, value) pair to an existing SystemState variable from the input HSFProfile.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey">The StateVariableKey for the Idata</param>
+        /// <param name="stateValues">The integer values to add to the state stored in an HSFProfile<int></param>
+        public void AddValues(StateVariableKey<Vector> stateVariableKey, HSFProfile<Vector> stateValues)
+        {
+            foreach (var stateValue in stateValues.Data)
+                AddValue(stateVariableKey, stateValue.Key, stateValue.Value);
+        }
+        #endregion
+
+        #region AddValues (Key, List(Time, Value))
+        // TODO:  Which AddValues() should we use, both?
+        /// <summary>
+        /// Adds integer (time, value) pairs to an existing SystemState variable from the input list(time, value) pairs.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="stateValues"></param>
+        public void AddValues(StateVariableKey<int> stateVariableKey, List<(double Time, int Value)> stateValues)
+        {
+            foreach (var (time, value) in stateValues)
+                AddValue(stateVariableKey, time, value);
+        }
+
+        /// <summary>
+        /// Adds double (time, value) pairs to an existing SystemState variable from the input list(time, value) pairs.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="stateValues"></param>
+        public void AddValues(StateVariableKey<double> stateVariableKey, List<(double Time, double Value)> stateValues)
+        {
+            foreach (var (time, value) in stateValues)
+                AddValue(stateVariableKey, time, value);
+        }
+
+        /// <summary>
+        /// Adds boolean (time, value) pairs to an existing SystemState variable from the input list(time, value) pairs.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="stateValues"></param>
+        public void AddValues(StateVariableKey<bool> stateVariableKey, List<(double Time, bool Value)> stateValues)
+        {
+            foreach (var (time, value) in stateValues)
+                AddValue(stateVariableKey, time, value);
+        }
+
+        /// <summary>
+        /// Adds Matrix<double> (time, value) pairs to an existing SystemState variable from the input list(time, value) pairs.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="stateValues"></param>
+        public void AddValues(StateVariableKey<Matrix<double>> stateVariableKey, List<(double Time, Matrix<double> Value)> stateValues)
+        {
+            foreach (var (time, value) in stateValues)
+                AddValue(stateVariableKey, time, value);
+        }
+
+        /// <summary>
+        /// Adds Quaternion (time, value) pairs to an existing SystemState variable from the input list(time, value) pairs.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="stateValues"></param>
+        public void AddValues(StateVariableKey<Quaternion> stateVariableKey, List<(double Time, Quaternion Value)> stateValues)
+        {
+            foreach (var (time, value) in stateValues)
+                AddValue(stateVariableKey, time, value);
+        }
+
+        /// <summary>
+        /// Adds Vector (time, value) pairs to an existing SystemState variable from the input list(time, value) pairs.  If the state variable key does not exist
+        /// a new HSFProfile is added with the values in stateValues.
+        /// </summary>
+        /// <param name="stateVariableKey"></param>
+        /// <param name="stateValues"></param>
+        public void AddValues(StateVariableKey<Vector> stateVariableKey, List<(double Time, Vector Value)> stateValues)
+        {
+            foreach (var (time, value) in stateValues)
+                AddValue(stateVariableKey, time, value);
+        }
+
+        #endregion
+
+
 
         public void SetInitialSystemState(XmlNode ICNode, Asset asset)
         {

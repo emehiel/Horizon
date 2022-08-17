@@ -117,7 +117,7 @@ namespace HSFSubsystem
                 if (!dep.Key.Equals("DepCollector"))
                 {
                     HSFProfile<double> temp = (HSFProfile<double>)dep.Value.DynamicInvoke(currentEvent);
-                    outProf = outProf + temp;
+                    outProf += temp;
                 }
             }
             return outProf;
@@ -186,27 +186,27 @@ namespace HSFSubsystem
             }
             foreach (var key in Bkeys)
             {
-                state.AddValue(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.AddValues(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
                 //state.Bdata.Add(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Dkeys)
             {
-                state.AddValue(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.AddValues(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
                 //state.Ddata.Add(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Mkeys)
             {
-                state.AddValue(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.AddValues(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
                 //state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Qkeys)
             {
-                state.AddValue(key, new HSFProfile<Quaternion>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.AddValues(key, new HSFProfile<Quaternion>(time, currentSystemState.GetValueAtTime(key, time).Value));
                 //state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Vkeys)
             {
-                state.AddValue(key, new HSFProfile<Vector>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.AddValues(key, new HSFProfile<Vector>(time, currentSystemState.GetValueAtTime(key, time).Value));
                 //state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             return state;

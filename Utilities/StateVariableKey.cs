@@ -28,6 +28,11 @@ namespace Utilities
         #endregion
 
         #region Overrides
+
+        public override string ToString()
+        {
+            return $"{VariableName} of type {typeof(T).ToString()}";
+        }
         // override object.Equals
         public override bool Equals(object obj)
         {

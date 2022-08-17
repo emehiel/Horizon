@@ -24,11 +24,11 @@ namespace MissionElementsUnitTest
         public HSFProfile<Quaternion> quatProf;
         string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
 
-        public StateVarKey<int> intKey;
-        StateVarKey<double> doubleKey;
-        StateVarKey<Matrix<double>> matrixKey;
-        StateVarKey<Quaternion> quatKey;
-        StateVarKey<bool> boolKey;
+        public StateVariableKey<int> intKey;
+        StateVariableKey<double> doubleKey;
+        StateVariableKey<Matrix<double>> matrixKey;
+        StateVariableKey<Quaternion> quatKey;
+        StateVariableKey<bool> boolKey;
         [SetUp]
         public void SystemStateCtor()
         {
@@ -37,31 +37,34 @@ namespace MissionElementsUnitTest
             intProf.Add(1, 2);
             intProf.Add(2, -1);
 
-            intKey = new StateVarKey<int>("asset1.IKey");
-            state.SetProfile(intKey, intProf);
+            intKey = new StateVariableKey<int>("asset1.IKey");
+            state.AddValues(intKey, intProf);
+            //state.SetProfile(intKey, intProf);
 
             doubleProf = new HSFProfile<double>(0, 1);
             doubleProf.Add(1, 2);
             doubleProf.Add(2, -1);
 
-            doubleKey = new StateVarKey<double>("asset1.maj_Key");
-            state.SetProfile(doubleKey, doubleProf);
+            doubleKey = new StateVariableKey<double>("asset1.maj_Key");
+            //state.SetProfile(doubleKey, doubleProf);
+            state.AddValues(doubleKey, doubleProf);
 
             boolProf = new HSFProfile<bool>(0, true);
             boolProf.Add(1, false);
             boolProf.Add(2, true);
 
-            boolKey = new StateVarKey<bool>("asset1.BKey");
-            state.SetProfile(boolKey, boolProf);
+            boolKey = new StateVariableKey<bool>("asset1.BKey");
+            //state.SetProfile(boolKey, boolProf);
+            state.AddValues(boolKey, boolProf);
 
             matrixProf = new HSFProfile<Matrix<double>>(0, new Matrix<double>(1, 2, 1));
             matrixProf.Add(1, new Matrix<double>(1, 2, 2));
             matrixProf.Add(2, new Matrix<double>(1, 2, -1));
 
 
-            matrixKey = new StateVarKey<Matrix<double>>("asset1.MKey");
-            state.SetProfile(matrixKey, matrixProf);
-
+            matrixKey = new StateVariableKey<Matrix<double>>("asset1.MKey");
+           // state.SetProfile(matrixKey, matrixProf);
+           state.AddValues(matrixKey, matrixProf);
 
             quatProf = new HSFProfile<Quaternion>(0, new Quaternion(0, new Vector(3)));
             List<double> vectList = new List<double>();
@@ -69,9 +72,9 @@ namespace MissionElementsUnitTest
             quatProf.Add(1, new Quaternion(1, new Vector(3)));
             quatProf.Add(2, new Quaternion(.5, new Vector(3)));
 
-            quatKey = new StateVarKey<Quaternion>("asset1.QKey");
-            state.SetProfile(quatKey, quatProf);
-
+            quatKey = new StateVariableKey<Quaternion>("asset1.QKey");
+            //state.SetProfile(quatKey, quatProf);
+            state.AddValues(quatKey, boolProf);
 
 
         }
@@ -83,14 +86,14 @@ namespace MissionElementsUnitTest
         {
 
             SystemState emptyState = new SystemState();
-            Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<int>, HSFProfile<int>>), emptyState.Idata);
-            Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<double>, HSFProfile<double>>), emptyState.Ddata);
-            Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<bool>, HSFProfile<bool>>), emptyState.Bdata);
-            Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>>), emptyState.Mdata);
-            Assert.IsInstanceOf(typeof(Dictionary<StateVarKey<Quaternion>, HSFProfile<Quaternion>>), emptyState.Qdata);
+            //Assert.IsInstanceOf(typeof(Dictionary<StateVariableKey<int>, HSFProfile<int>>), emptyState.Idata);
+            //Assert.IsInstanceOf(typeof(Dictionary<StateVariableKey<double>, HSFProfile<double>>), emptyState.Ddata);
+            //Assert.IsInstanceOf(typeof(Dictionary<StateVariableKey<bool>, HSFProfile<bool>>), emptyState.Bdata);
+            //Assert.IsInstanceOf(typeof(Dictionary<StateVariableKey<Matrix<double>>, HSFProfile<Matrix<double>>>), emptyState.Mdata);
+            //Assert.IsInstanceOf(typeof(Dictionary<StateVariableKey<Quaternion>, HSFProfile<Quaternion>>), emptyState.Qdata);
 
             SystemState fullState = new SystemState(state);
-            Assert.AreEqual(state.ToString(), fullState.Previous.ToString());
+            Assert.AreEqual(state.ToString(), fullState.PreviousState.ToString());
 
         }
         /// <summary>
@@ -156,11 +159,17 @@ namespace MissionElementsUnitTest
             SystemState systemState = new SystemState();
             Asset asset = new Asset(modelNode.FirstChild);
 
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].FirstChild, asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[1], asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[2], asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[3], asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[4], asset));
+            systemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].FirstChild, asset);
+            systemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[1], asset);
+            systemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[2], asset);
+            systemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[3], asset);
+            systemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[4], asset);
+
+            //systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].FirstChild, asset));
+            //systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[1], asset));
+            //systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[2], asset));
+            //systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[3], asset));
+            //systemState.Add(SystemState.SetInitialSystemState(modelNode.FirstChild.ChildNodes[1].ChildNodes[4], asset));
 
             //ICNodes.Add(modelNode.FirstChild.ChildNodes[1].FirstChild);
             //ICNodes.Add(modelNode.FirstChild.ChildNodes[1].ChildNodes[1]);
@@ -205,10 +214,10 @@ namespace MissionElementsUnitTest
             KeyValuePair<double, bool> boolKVP = new KeyValuePair<double, bool>(2, expLastBoolVal);
 
             //Act
-            KeyValuePair<double, double> lastDoubleVal = state.GetLastValue(doubleKey);
-            KeyValuePair<double, int> lastintVal = state.GetLastValue(intKey);
-            KeyValuePair<double, bool> lastBoolVal = state.GetLastValue(boolKey);
-            KeyValuePair<double, Matrix<double>> lastMatVal = state.GetLastValue(matrixKey);
+            var lastDoubleVal = state.GetLastValue(doubleKey);
+            var lastintVal = state.GetLastValue(intKey);
+            var lastBoolVal = state.GetLastValue(boolKey);
+            var lastMatVal = state.GetLastValue(matrixKey);
 
             //Assert
             Assert.AreEqual(doubleKVP, lastDoubleVal);
@@ -231,10 +240,10 @@ namespace MissionElementsUnitTest
             KeyValuePair<double, bool> boolKVP = new KeyValuePair<double, bool>(2, expLastBoolVal);
 
             //Act
-            KeyValuePair<double, double> lastDoubleVal = state.GetValueAtTime(doubleKey, 2);
-            KeyValuePair<double, int> lastintVal = state.GetValueAtTime(intKey, 2);
-            KeyValuePair<double, bool> lastBoolVal = state.GetValueAtTime(boolKey, 2);
-            KeyValuePair<double, Matrix<double>> lastMatVal = state.GetValueAtTime(matrixKey, 2);
+            var lastDoubleVal = state.GetValueAtTime(doubleKey, 2);
+            var lastintVal = state.GetValueAtTime(intKey, 2);
+            var lastBoolVal = state.GetValueAtTime(boolKey, 2);
+            var lastMatVal = state.GetValueAtTime(matrixKey, 2);
 
             //Assert
             Assert.AreEqual(doubleKVP, lastDoubleVal);
@@ -272,6 +281,20 @@ namespace MissionElementsUnitTest
             Assert.AreEqual(intProf, fullIntProf);
             Assert.AreEqual(boolProf, fullboolProf);
 
+        }
+
+        [Test]
+        public void AddValueAfter()
+        {
+            SystemState state = new SystemState();
+            StateVariableKey<int> svk = new StateVariableKey<int>("testInt");
+            state.AddValue(svk, 0, 1);
+            state.AddValue(svk, 1, 2);
+            state.AddValue(svk, 10, 30);
+
+            Assert.AreEqual(3, state.Idata[svk].Data.Count);
+            Assert.Throws<ArgumentOutOfRangeException>(delegate { state.AddValue(svk, 1, 5); });
+            state.AddValue(svk, 8, 20);
         }
     }
 }

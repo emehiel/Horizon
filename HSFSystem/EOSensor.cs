@@ -18,9 +18,9 @@ namespace HSFSubsystem
         #region Attributes
         //Default Values
         public static string SUBNAME_EOSENSOR = "EOSensor";
-        protected StateVarKey<double> PIXELS_KEY;
-        protected StateVarKey<double> INCIDENCE_KEY;
-        protected StateVarKey<bool> EOON_KEY;
+        protected StateVariableKey<double> PIXELS_KEY;
+        protected StateVariableKey<double> INCIDENCE_KEY;
+        protected StateVariableKey<bool> EOON_KEY;
         protected double _lowQualityPixels = 5000;
         protected double _lowQualityTime = 3;
         protected double _midQualityPixels = 10000;
@@ -43,9 +43,9 @@ namespace HSFSubsystem
             DefaultSubName = "EOSensor";
             Asset = asset;
             GetSubNameFromXmlNode(EOSensorXmlNode);
-            PIXELS_KEY = new StateVarKey<double>(Asset.Name +"." + "numpixels");
-            INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "incidenceangle");
-            EOON_KEY = new StateVarKey<bool>(Asset.Name + "." + "eosensoron");
+            PIXELS_KEY = new StateVariableKey<double>(Asset.Name +"." + "numpixels");
+            INCIDENCE_KEY = new StateVariableKey<double>(Asset.Name + "." + "incidenceangle");
+            EOON_KEY = new StateVariableKey<bool>(Asset.Name + "." + "eosensoron");
             addKey(PIXELS_KEY);
             addKey(INCIDENCE_KEY);
             addKey(EOON_KEY);
@@ -135,14 +135,14 @@ namespace HSFSubsystem
                 double incidenceang = 90 - 180 / Math.PI * Math.Acos(Matrix<double>.Dot(pos_norm, pv_norm));
 
                 // set state data
-                _newState.AddValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage, incidenceang));
-                _newState.AddValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
+                _newState.AddValue(INCIDENCE_KEY, timage, incidenceang);
+                _newState.AddValue(INCIDENCE_KEY, timage + 1, 0.0);
 
-                _newState.AddValue(PIXELS_KEY, new KeyValuePair<double, double>(timage, pixels));
-                _newState.AddValue(PIXELS_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
+                _newState.AddValue(PIXELS_KEY, timage, pixels);
+                _newState.AddValue(PIXELS_KEY, timage + 1, 0.0);
 
-                _newState.AddValue(EOON_KEY, new KeyValuePair<double, bool>(ts, true));
-                _newState.AddValue(EOON_KEY, new KeyValuePair<double, bool>(te, false));
+                _newState.AddValue(EOON_KEY, ts, true);
+                _newState.AddValue(EOON_KEY, te, false);
             }
                 return true;
             

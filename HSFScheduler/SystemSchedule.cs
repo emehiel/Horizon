@@ -171,11 +171,11 @@ namespace HSFScheduler
         public static void WriteSchedule(SystemSchedule schedule, String scheduleWritePath) //TODO: Unit Test.
         {
             var csv = new StringBuilder();
-            Dictionary<StateVarKey<double>, SortedList<double, double>> stateTimeDData = new Dictionary<StateVarKey<double>, SortedList<double, double>>();
-            Dictionary<StateVarKey<int>, SortedList<double, int>> stateTimeIData = new Dictionary<StateVarKey<int>, SortedList<double, int>>();
-            Dictionary<StateVarKey<int>, SortedList<double, int>> stateTimeBData = new Dictionary<StateVarKey<int>, SortedList<double, int>>(); // need 0s and 1 for matlab to read in csv
-            Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>> stateTimeMData = new Dictionary<StateVarKey<Matrix<double>>, SortedList<double, Matrix<double>>>();
-            Dictionary<StateVarKey<Quaternion>, SortedList<double, Quaternion>> stateTimeQData = new Dictionary<StateVarKey<Quaternion>, SortedList<double, Quaternion>>();
+            Dictionary<StateVariableKey<double>, SortedList<double, double>> stateTimeDData = new Dictionary<StateVariableKey<double>, SortedList<double, double>>();
+            Dictionary<StateVariableKey<int>, SortedList<double, int>> stateTimeIData = new Dictionary<StateVariableKey<int>, SortedList<double, int>>();
+            Dictionary<StateVariableKey<int>, SortedList<double, int>> stateTimeBData = new Dictionary<StateVariableKey<int>, SortedList<double, int>>(); // need 0s and 1 for matlab to read in csv
+            Dictionary<StateVariableKey<Matrix<double>>, SortedList<double, Matrix<double>>> stateTimeMData = new Dictionary<StateVariableKey<Matrix<double>>, SortedList<double, Matrix<double>>>();
+            Dictionary<StateVariableKey<Quaternion>, SortedList<double, Quaternion>> stateTimeQData = new Dictionary<StateVariableKey<Quaternion>, SortedList<double, Quaternion>>();
             string stateTimeData = "Time,";
             string stateData = "";
             csv.Clear();
@@ -212,10 +212,10 @@ namespace HSFScheduler
                         {
                             var lt = new SortedList<double, int>();
                             lt.Add(data.Key, (data.Value ? 1 : 0)); //convert to int for matlab to read in for csv
-                            stateTimeBData.Add((StateVarKey<int>)kvpBoolProfile.Key, lt);
+                            stateTimeBData.Add((StateVariableKey<int>)kvpBoolProfile.Key, lt);
                         }
                         else if (!stateTimeBData[kvpBoolProfile.Key].ContainsKey(data.Key))
-                            stateTimeBData[(StateVarKey<int>)kvpBoolProfile.Key].Add(data.Key, data.Value ? 1 : 0);
+                            stateTimeBData[(StateVariableKey<int>)kvpBoolProfile.Key].Add(data.Key, data.Value ? 1 : 0);
 
                 foreach (var kvpMatrixProfile in sysState.Mdata)
                     foreach (var data in kvpMatrixProfile.Value.Data)
@@ -237,7 +237,7 @@ namespace HSFScheduler
                         }
                         else if (!stateTimeQData[kvpQuatProfile.Key].ContainsKey(data.Key))
                             stateTimeQData[kvpQuatProfile.Key].Add(data.Key, data.Value);
-                sysState = sysState.Previous;
+                sysState = sysState.PreviousState;
             }
 
             System.IO.Directory.CreateDirectory(scheduleWritePath);
@@ -263,10 +263,10 @@ namespace HSFScheduler
         /// <typeparam name="T"></typeparam>
         /// <param name="list"></param>
         /// <param name="scheduleWritePath"></param>
-        static void writeStateVariable<T>(KeyValuePair<StateVarKey<T>, SortedList<double, T>> list, string scheduleWritePath) //TODO: Unit Test.
+        static void writeStateVariable<T>(KeyValuePair<StateVariableKey<T>, SortedList<double, T>> list, string scheduleWritePath) //TODO: Unit Test.
         {
             var csv = new StringBuilder();
-            string fileName = list.Key.VarName;
+            string fileName = list.Key.VariableName;
 
             string invalidChars = "";
 

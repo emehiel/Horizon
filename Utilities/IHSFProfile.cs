@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+// ToDo:  Delete this interface?
+
 namespace Utilities
 {
     public interface IHSFProfile

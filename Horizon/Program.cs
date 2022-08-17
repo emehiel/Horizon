@@ -233,7 +233,7 @@ namespace Horizon
                                         switch (subNode.Name.ToLower())
                                         {
                                             case ("ic"):
-                                                InitialSysState.Add(SystemState.SetInitialSystemState(subNode, asset));
+                                                InitialSysState.SetInitialSystemState(subNode, asset);
                                                 break;
                                             case ("dependency"):
 

@@ -17,7 +17,7 @@ namespace HSFSubsystem
     public class ADCS : Subsystem
     {
         #region Attributes
-        protected StateVarKey<Matrix<double>> POINTVEC_KEY;
+        protected StateVariableKey<Matrix<double>> POINTVEC_KEY;
          double _slewRate = 5;//deg/sec
         //double _slewRate = 5;
         #endregion Attributes
@@ -110,7 +110,8 @@ namespace HSFSubsystem
 
             // set state data
             var POINTVEC_KEY = this.Mkeys[0];
-            _newState.SetProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));
+            //_newState.SetProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));
+            _newState.AddValue(POINTVEC_KEY, ts, m_pv);
             proposedEvent.SetTaskStart(Asset, ts);
             return true;
         }

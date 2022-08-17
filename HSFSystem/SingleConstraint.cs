@@ -13,7 +13,7 @@ namespace HSFSystem
     public class SingleConstraint<T>: Constraint
     {
         private T _value;
-        private StateVarKey<T> _key;
+        private StateVariableKey<T> _key;
         public ConstraintType Type { get; private set; }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace HSFSystem
             Subsystems = new List<Subsystem>() { sub };
             if (constraintXmlNode.ChildNodes[0] == null)
                 throw new MissingMemberException("Missing StateVarKey for Constraint!");
-            _key = new StateVarKey<T>(constraintXmlNode.ChildNodes[0], constraintXmlNode.ParentNode.Attributes["assetName"].Value.ToString());
+            _key = new StateVariableKey<T>(constraintXmlNode.ChildNodes[0], constraintXmlNode.ParentNode.Attributes["assetName"].Value.ToString());
             if (constraintXmlNode.Attributes["value"] == null)
                 throw new MissingFieldException("Missing Value Field for Constraint!");
             _value = (T)Convert.ChangeType(constraintXmlNode.Attributes["value"].Value, typeof(T));
@@ -40,7 +40,7 @@ namespace HSFSystem
 
         public override bool Accepts(SystemState state) //fix this to be a dependency function
         {
-            HSFProfile<T> prof = state.GetProfile(_key);
+            HSFProfile<double> prof = state.GetProfile((StateVariableKey<double>)_key);
             //TODO try catch
             switch (Type)
             {

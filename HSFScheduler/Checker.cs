@@ -22,7 +22,6 @@ namespace HSFScheduler
         public static bool CheckSchedule(SystemClass system, SystemSchedule proposedSchedule)
         {
             // Check that any Assets with IsTaskable = false only tasked to EmptyTarget 
-            var aaaaa = 0;
             foreach (KeyValuePair<Asset, Task> taskDict in proposedSchedule.AllStates.Events.Peek().Tasks)
             {
                 if ((!taskDict.Key.IsTaskable) && (taskDict.Value.Type != "empty"))

@@ -36,21 +36,11 @@ namespace HSFSubsystem
         /// lowQualityTime = 3s, midQyalityTime = 5s, highQualityTime = 7s
         /// </summary>
         /// <param name="EOSensorXmlNode"></param>
-        /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public EOSensor(XmlNode EOSensorXmlNode, Dependency dependencies, Asset asset)
+        public EOSensor(XmlNode EOSensorXmlNode)
         {
             DefaultSubName = "EOSensor";
-            Asset = asset;
-            GetSubNameFromXmlNode(EOSensorXmlNode);
-            PIXELS_KEY = new StateVarKey<double>(Asset.Name +"." + "numpixels");
-            INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "incidenceangle");
-            EOON_KEY = new StateVarKey<bool>(Asset.Name + "." + "eosensoron");
-            addKey(PIXELS_KEY);
-            addKey(INCIDENCE_KEY);
-            addKey(EOON_KEY);
-            DependentSubsystems = new List<Subsystem>();
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+
             if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
                 //Console.WriteLine("inside loop");
                 _lowQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityPixels"].Value.ToString(), typeof(double));
@@ -64,8 +54,6 @@ namespace HSFSubsystem
                 _highQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityPixels"].Value.ToString(), typeof(double));
             if (EOSensorXmlNode.Attributes["highQualityTime"] != null)
                 _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
-            dependencies.Add("PowerfromEOSensor"+"."+Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_EOSENSORSUB));
-            dependencies.Add("SSDRfromEOSensor" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(SSDRSUB_NewDataProfile_EOSENSORSUB));
         }
 
         /// <summary>
@@ -73,10 +61,12 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="EOSensorXmlNode"></param>
         /// <param name="asset"></param>
+        /*
         public EOSensor(XmlNode EOSensorXmlNode, Asset asset) : base(EOSensorXmlNode, asset)
         {
             
         }
+        */
         #endregion
 
         #region Methods
@@ -88,9 +78,13 @@ namespace HSFSubsystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
+            var PIXELS_KEY = Dkeys[0];
+            var INCIDENCE_KEY = Dkeys[1];
+            var EOON_KEY = Bkeys[0];
+
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
-            if (_task.Type == "IMAGING")
+            if (_task.Type == "imaging")
             {
                 //set pixels and time to caputre based on target value
                 int value = _task.Target.Value;
@@ -153,8 +147,9 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentEvent"></param>
         /// <returns></returns>
-        public HSFProfile<double> POWERSUB_PowerProfile_EOSENSORSUB(Event currentEvent)
+        public HSFProfile<double> Power_asset1_from_EOSensor_asset1(Event currentEvent)
         {
+            var EOON_KEY = Bkeys[0];
             HSFProfile<double> prof1 = new HSFProfile<double>();
             prof1[currentEvent.GetEventStart(Asset)] = 10;
             if (currentEvent.State.GetValueAtTime(EOON_KEY, currentEvent.GetTaskStart(Asset)).Value)
@@ -170,8 +165,9 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="state"></param>
         /// <returns></returns>
-        public HSFProfile<double> SSDRSUB_NewDataProfile_EOSENSORSUB(Event currentEvent)
+        public HSFProfile<double> SSDR_asset1_from_EOSensor_asset1(Event currentEvent)
         {
+            var PIXELS_KEY = Dkeys[0];
             return currentEvent.State.GetProfile(PIXELS_KEY) / 500;
         }
         #endregion

@@ -17,7 +17,7 @@ namespace HSFSubsystem
         #region Attributes
         public virtual bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
-        public virtual List<Subsystem> DependentSubsystems { get; set; }
+        public virtual List<Subsystem> DependentSubsystems { get; set; } = new List<Subsystem>();
         public string Name { get; protected set; }
         public static string DefaultSubName { get; protected set; }
         public virtual Dictionary<string, Delegate> SubsystemDependencyFunctions { get; set; }
@@ -27,6 +27,7 @@ namespace HSFSubsystem
         public List<StateVarKey<bool>> Bkeys { get; protected set; }
         public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
         public List<StateVarKey<Quat>> Qkeys { get; protected set; }
+        //public List<StateVarKey<Vector>> Vkeys { get; protected set; }
         public virtual SystemState _newState { get; set; }
         public virtual Task _task { get; set; }
         #endregion Attributes
@@ -195,6 +196,10 @@ namespace HSFSubsystem
             {
                 state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
+            //foreach (var key in Vkeys)
+            //{
+            //    state.Vdata.Add(key, new HSFProfile<Vector>(time, currentSystemState.GetValueAtTime(key, time).Value));
+            //}
             return state;
         }
         
@@ -246,6 +251,15 @@ namespace HSFSubsystem
             }
             Qkeys.Add(keyIn);
         }
+
+        //public void addKey(StateVarKey<Vector> keyIn)
+        //{
+        //    if (Vkeys == null) //Only construct what you need
+        //    {
+        //        Vkeys = new List<StateVarKey<Vector>>();
+        //    }
+        //    Vkeys.Add(keyIn);
+        //}
         #endregion
     }
 }//HSFSubsystem

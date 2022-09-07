@@ -179,7 +179,13 @@ namespace HSFScheduler
             string stateTimeData = "Time,";
             string stateData = "";
             csv.Clear();
-            SystemState sysState = schedule.AllStates.Events.Peek().State;
+
+            SystemState sysState=null;
+            if (schedule.AllStates.Events.Count!= 0)
+            {
+                sysState = schedule.AllStates.Events.Peek().State;
+            }
+            
 
             while(sysState != null) { 
                 foreach (var kvpDoubleProfile in sysState.Ddata)

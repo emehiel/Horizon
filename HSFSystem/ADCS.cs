@@ -28,24 +28,17 @@ namespace HSFSubsystem
         /// Defaults: Slew time: 10s
         /// </summary>
         /// <param name="ADCSNode"></param>
-        /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public ADCS(XmlNode ADCSNode, Dependency dependencies, Asset asset)
+        public ADCS(XmlNode ADCSNode)
         {
             DefaultSubName = "Adcs";
-            Asset = asset;
-            GetSubNameFromXmlNode(ADCSNode);
+
             double slewRate;
             if (ADCSNode.Attributes["slewRate"].Value != null)
             {
                 Double.TryParse(ADCSNode.Attributes["slewRate"].Value, out slewRate);
                 _slewRate = slewRate;
             }
-            POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
-            addKey(POINTVEC_KEY);
-            DependentSubsystems = new List<Subsystem>();
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            dependencies.Add("PowerfromADCS"+"."+Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_ADCSSUB));
         }
 
         /// <summary>
@@ -53,10 +46,13 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="ADCSNode"></param>
         /// <param name="asset"></param>
-        public ADCS(XmlNode ADCSNode, Asset asset) : base(ADCSNode, asset)
+
+       /* public ADCS(XmlNode ADCSNode, Asset asset) : base(ADCSNode, asset)
         {
             
         }
+       */
+
         #endregion Constructors
 
         #region Methods
@@ -68,6 +64,8 @@ namespace HSFSubsystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
+            var POINTVEC_KEY = Mkeys[0];
+            // Alternative method to get key: StateVarKey<Matrix<double>> POINTVEC_KEY = Mkeys.Find(S => S.VarName == "asset1.eci_pointing_vector(xyz)");
             if (base.CanPerform( proposedEvent, environment) == false)
                 return false;
 
@@ -116,7 +114,7 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentEvent"></param>
         /// <returns></returns>
-        public HSFProfile<double> POWERSUB_PowerProfile_ADCSSUB(Event currentEvent)
+        public HSFProfile<double> Power_asset1_from_ADCS_asset1(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
             prof1[currentEvent.GetEventStart(Asset)] = 40;

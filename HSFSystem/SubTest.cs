@@ -34,9 +34,8 @@ namespace HSFSubsystem
         /// Defaults: delay: 5s
         /// </summary>
         /// <param name="TestXmlNode"></param>
-        /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public SubTest(XmlNode TestXmlNode, Dependency dependencies, Asset asset)
+        public SubTest(XmlNode TestXmlNode, Asset asset)
         {
             Asset = asset;
             DependentSubsystems = new List<Subsystem>();
@@ -70,10 +69,10 @@ namespace HSFSubsystem
         /// <param name="TestNode"></param>
         /// <param name="asset"></param>
 
-        public SubTest(XmlNode TestNode, Asset asset) : base(TestNode, asset)
-        {
-            Asset = asset;
-        }
+        //public SubTest(XmlNode TestNode, Asset asset) : base(TestNode, asset)
+        //{
+        //    Asset = asset;
+        //}  
         #endregion Constructors
 
         #region Methods

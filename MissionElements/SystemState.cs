@@ -111,7 +111,8 @@ namespace MissionElements
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public KeyValuePair<double, int> GetLastValue(StateVarKey<int> key) { //TODO Test
+        public KeyValuePair<double, int> GetLastValue(StateVarKey<int> key) 
+        { //TODO Test
             HSFProfile<int> valueOut;
             if (Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -127,7 +128,8 @@ namespace MissionElements
         /// <param name="key"></param>
         /// <param name="time"></param>
         /// <returns></returns>
-        public KeyValuePair<double, int> GetValueAtTime(StateVarKey<int> key, double time) {
+        public KeyValuePair<double, int> GetValueAtTime(StateVarKey<int> key, double time) 
+        {
             HSFProfile<int> valueOut;
             if (Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut) && Idata[key].LastTime() <= time) //see if our key is in there
@@ -204,7 +206,8 @@ namespace MissionElements
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public HSFProfile<int> GetFullProfile(StateVarKey<int> key) {
+        public HSFProfile<int> GetFullProfile(StateVarKey<int> key) 
+        {
             HSFProfile<int> valueOut = new HSFProfile<int>();
             if (Idata.Count != 0) { // Are there any Profiles in there?
                 if (Idata.TryGetValue(key, out valueOut)) { //see if our key is in there
@@ -224,7 +227,8 @@ namespace MissionElements
         /// </summary>
         /// <param name="key"></param>
         /// <param name="profIn"></param>
-        public void SetProfile(StateVarKey<int> key, HSFProfile<int> profIn) {
+        public void SetProfile(StateVarKey<int> key, HSFProfile<int> profIn) 
+        {
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Idata.Add(key, profIn);
@@ -239,7 +243,8 @@ namespace MissionElements
         /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
         /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
         /// <param name="pairIn"></param>
-        void AddValue(StateVarKey<int> key, KeyValuePair<double, int> pairIn) {
+        void AddValue(StateVarKey<int> key, KeyValuePair<double, int> pairIn) 
+        {
             HSFProfile<int> valueIn = new HSFProfile<int>(pairIn);
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut))
@@ -255,7 +260,8 @@ namespace MissionElements
         /// with the corresponding key. If a Profile exists with that key, the pair is appended onto the end of the Profile. </summary>
         /// Ensure that the Profile is still time ordered if this is the case.<param name="key"></param>
         /// <param name="pairIn"></param>
-        public void AddValue(StateVarKey<int> key, HSFProfile<int> profIn) {
+        public void AddValue(StateVarKey<int> key, HSFProfile<int> profIn) 
+        {
             HSFProfile<int> valueOut;
             if (!Idata.TryGetValue(key, out valueOut)) // If there's no Profile matching that key, insert a new one.
                 Idata.Add(key, profIn);
@@ -268,7 +274,8 @@ namespace MissionElements
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public KeyValuePair<double, double> GetLastValue(StateVarKey<double> key) {
+        public KeyValuePair<double, double> GetLastValue(StateVarKey<double> key) 
+        {
             HSFProfile<double> valueOut;
             if (Ddata.Count != 0) { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut)) //see if our key is in there
@@ -284,7 +291,8 @@ namespace MissionElements
         /// <param name="key"></param>
         /// <param name="time"></param>
         /// <returns></returns>
-        public KeyValuePair<double, double> GetValueAtTime(StateVarKey<double> key, double time) {
+        public KeyValuePair<double, double> GetValueAtTime(StateVarKey<double> key, double time) 
+        {
             HSFProfile<double> valueOut;
             if (Ddata.Count != 0) { // Are there any Profiles in there?
                 if (Ddata.TryGetValue(key, out valueOut) && Ddata[key].LastTime() <= time) //see if our key is in there
@@ -616,51 +624,49 @@ namespace MissionElements
                 valueOut.Add(profIn);
         }
 
-        public static SystemState SetInitialSystemState(XmlNode ICNode, Asset asset)
+        public static SystemState SetInitialSystemState(XmlNode StateNode, string keyName)
         {
             // Set up Subsystem Nodes, first loop through the assets in the XML model input file
 
             SystemState state = new SystemState();
 
-            string type = ICNode.Attributes["type"].Value;
-            string key = asset.Name + "."+ICNode.Attributes["key"].Value.ToLower();
-            if (type.Equals("Int"))
+            string type = StateNode.Attributes["type"].Value.ToLower();
+            if (type.Equals("int"))
             {
                 int val;
-                Int32.TryParse(ICNode.Attributes["value"].Value, out val);
-                StateVarKey<int> svk = new StateVarKey<int>(key);
+                Int32.TryParse(StateNode.Attributes["value"].Value, out val);
+                StateVarKey<int> svk = new StateVarKey<int>(keyName);
                 state.AddValue(svk, new KeyValuePair<double, int>(SimParameters.SimStartSeconds, val));
             }
-            else if (type.Equals("Double"))
+            else if (type.Equals("double"))
             {
                 double val;
-                Double.TryParse(ICNode.Attributes["value"].Value, out val);
-                StateVarKey<double> svk = new StateVarKey<double>(key);
+                Double.TryParse(StateNode.Attributes["value"].Value, out val);
+                StateVarKey<double> svk = new StateVarKey<double>(keyName);
                 state.AddValue(svk, new KeyValuePair<double, double>(SimParameters.SimStartSeconds, val));
             }
-            else if (type.Equals("Bool"))
+            else if (type.Equals("bool"))
             {
-                string val = ICNode.Attributes["value"].Value;
+                string val = StateNode.Attributes["value"].Value;
                 bool val_ = false;
                 if (val.ToLower().Equals("true") || val.Equals("1"))
                     val_ = true;
-                StateVarKey<bool> svk = new StateVarKey<bool>(key);
+                StateVarKey<bool> svk = new StateVarKey<bool>(keyName);
                 state.AddValue(svk, new KeyValuePair<double, bool>(SimParameters.SimStartSeconds, val_));
             }
-            else if (type.Equals("Matrix"))
+            else if (type.Equals("matrix"))
             {
-                Matrix<double> val = new Matrix<double>(ICNode.Attributes["value"].Value);
-                StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(key);
+                Matrix<double> val = new Matrix<double>(StateNode.Attributes["value"].Value);
+                StateVarKey<Matrix<double>> svk = new StateVarKey<Matrix<double>>(keyName);
                 state.AddValue(svk, new KeyValuePair<double, Matrix<double>>(SimParameters.SimStartSeconds, val));
             }
-            else if (type.Equals("Quat"))
+            else if (type.Equals("quat"))
             {
-                Quat val = new Quat(ICNode.Attributes["value"].Value);
-                StateVarKey<Quat>svk = new StateVarKey<Quat>(key);
+                Quat val = new Quat(StateNode.Attributes["value"].Value);
+                StateVarKey<Quat>svk = new StateVarKey<Quat>(keyName);
                 state.AddValue(svk, new KeyValuePair<double, Quat>(SimParameters.SimStartSeconds, val));
             }
             return state;
         }
-        
     }
 }

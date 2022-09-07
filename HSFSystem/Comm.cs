@@ -24,18 +24,10 @@ namespace HSFSubsystem
         /// Constructor for built in subsystem
         /// </summary>
         /// <param name="CommXmlNode"></param>
-        /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public Comm(XmlNode CommXmlNode, Dependency dependencies, Asset asset)
+        public Comm(XmlNode CommXmlNode)
         {
             DefaultSubName = "Comm";
-            Asset = asset;
-            GetSubNameFromXmlNode(CommXmlNode);
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            DependentSubsystems = new List<Subsystem>();
-            DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "datarate(mb/s)");
-            addKey(DATARATE_KEY);
-            dependencies.Add("PowerfromComm" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_COMMSUB));
         }
 
         /// <summary>
@@ -43,10 +35,12 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="CommXmlNode"></param>
         /// <param name="asset"></param>
+        /*
         public Comm(XmlNode CommXmlNode, Asset asset) : base(CommXmlNode, asset)
         {
             
         }
+        */
         #endregion
 
         #region Methods
@@ -58,6 +52,7 @@ namespace HSFSubsystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
+            var DATARATE_KEY = Dkeys[0];
             IsEvaluated = true;
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
@@ -66,6 +61,7 @@ namespace HSFSubsystem
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);
                 if (!newProf.Empty())
                     proposedEvent.State.SetProfile(DATARATE_KEY, newProf);
+                //_newState.AddValue(DATARATE_KEY, new KeyValuePair<double, double>(<Time goes here>,<newProf value goes here>))
             }
             return true;
         }
@@ -75,8 +71,9 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentEvent"></param>
         /// <returns></returns>
-        public HSFProfile<double> POWERSUB_PowerProfile_COMMSUB(Event currentEvent)
+        public HSFProfile<double> Power_asset1_from_Comm_asset1(Event currentEvent)
         {
+            var DATARATE_KEY = Dkeys[0];
             return currentEvent.State.GetProfile(DATARATE_KEY) * 20;
         }
         #endregion

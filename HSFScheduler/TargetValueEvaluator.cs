@@ -12,12 +12,18 @@ namespace HSFScheduler
     {
         #region Attributes
         public Dependency Dependencies;
+        private Delegate _evalFunction;
         #endregion
 
         #region Constructors
         public TargetValueEvaluator(Dependency dependencies)
         {
             Dependencies = dependencies;
+        }
+        public TargetValueEvaluator(Delegate evalFunction)
+        {
+            _evalFunction = evalFunction;
+
         }
         #endregion
 
@@ -36,8 +42,12 @@ namespace HSFScheduler
                 {
                     Task task = assetTask.Value;
                     sum += task.Target.Value;
-                    if(task.Type == "comm")
-                        sum = sum + (double)Dependencies.GetDependencyFunc("EvalfromSSDR" + "." + assetTask.Key.Name).DynamicInvoke(eit);
+                    if (task.Type == "comm")
+                    {
+                        sum += 0;
+                        //sum += (double)_evalFunction.DynamicInvoke(eit);
+                        //sum = sum + (double)Dependencies.GetDependencyFunc("EvalfromSSDR" + "." + assetTask.Key.Name).DynamicInvoke(eit);
+                    }
                 }
             }
             return sum;

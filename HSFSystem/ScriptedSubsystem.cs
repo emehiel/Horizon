@@ -54,12 +54,9 @@ namespace HSFSubsystem
         /// Constructor to initialize the python subsystem
         /// </summary>
         /// <param name="scriptedSubXmlNode"></param>
-        /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Dependency dependencies, Asset asset)
+        public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Asset asset)
         {
-            Asset = asset;
-            GetSubNameFromXmlNode(scriptedSubXmlNode);
             string pythonFilePath ="", className = "";
             XmlParser.ParseScriptedSrc(scriptedSubXmlNode, ref pythonFilePath, ref className);
 
@@ -81,11 +78,9 @@ namespace HSFSubsystem
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
             _pythonInstance = ops.CreateInstance(pythonType, scriptedSubXmlNode, asset);
-            Dictionary<string, Delegate> newDependencies = _pythonInstance.GetDependencyDictionary();
-            dependencies.Append(newDependencies);
-            DependentSubsystems = new List<Subsystem>();
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+            // Dictionary<string, Delegate> newDependencies = _pythonInstance.GetDependencyDictionary();
             Delegate depCollector = _pythonInstance.GetDependencyCollector();
+            // new Sub
             SubsystemDependencyFunctions.Add("DepCollector", depCollector);
         }
         #endregion

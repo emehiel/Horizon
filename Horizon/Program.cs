@@ -36,8 +36,8 @@ namespace Horizon
         public List<Subsystem> SubList { get; set; } = new List<Subsystem>();
 
         // Maps used to set up preceeding nodes
-        public Dictionary<ISubsystem, XmlNode> SubsystemXMLNodeMap { get; set; } = new Dictionary<ISubsystem, XmlNode>();
-        public Dictionary<string, Subsystem> SubsystemMap { get; set; } = new Dictionary<string, Subsystem>();
+        //public Dictionary<ISubsystem, XmlNode> SubsystemXMLNodeMap { get; set; } = new Dictionary<ISubsystem, XmlNode>();
+        //public Dictionary<string, Subsystem> SubsystemMap { get; set; } = new Dictionary<string, Subsystem>();
         public List<KeyValuePair<string, string>> DependencyList { get; set; } = new List<KeyValuePair<string, string>>();
         public List<KeyValuePair<string, string>> DependencyFcnList { get; set; } = new List<KeyValuePair<string, string>>();
         
@@ -64,7 +64,7 @@ namespace Horizon
             program.LoadScenario();
             Stack<Task> systemTasks = program.LoadTargets();
             program.LoadSubsystems();
-            program.LoadDependencies();
+            //program.LoadDependencies();
             program.LoadEvaluator();
             program.CreateSchedules(systemTasks);
             double maxSched = program.EvaluateSchedules();
@@ -108,7 +108,9 @@ namespace Horizon
             // Set Defaults
             SimulationInputFilePath = @"..\..\..\SimulationInput.xml";
             TargetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            ModelInputFilePath = @"..\..\..\DSAC_Static.xml";
+            //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_ScriptedTest.xml"; // Scripted Test Case
+            ModelInputFilePath = @"..\..\..\DSAC_Static_Mod.xml"; // Nominal
+            // Try: ModelInputFilePath = @"..\..\..\Model_Static.xml";
             bool simulationSet = false, targetSet = false, modelSet = false;
 
             // Get the input filenames
@@ -200,92 +202,69 @@ namespace Horizon
             // Find the main model node from the XML model input file
             var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
 
-            // Set up Subsystem Nodes, first loop through the assets in the XML model input file
-            foreach (XmlNode modelNode in modelInputXMLNode.ChildNodes)
+            var environments = modelInputXMLNode.SelectNodes("ENVIRONMENT");
+
+            // check if enviro count is empty, default is space
+            if (environments.Count == 0)
             {
-                switch (modelNode.Name.ToLower())
+                SystemUniverse = new SpaceEnvironment();
+            }
+            
+            foreach (XmlNode environmentNode in environments)
+            {
+                SystemUniverse = UniverseFactory.GetUniverseClass(environmentNode);
+            }
+
+            var pythons = modelInputXMLNode.SelectNodes("PYTHON");
+            foreach (XmlNode pythonNode in pythons)
+            {
+                throw new NotImplementedException();
+            }
+
+            var assets = modelInputXMLNode.SelectNodes("ASSET");
+            foreach(XmlNode assetNode in assets)
+            {
+                Asset asset = new Asset(assetNode);
+                asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+                AssetList.Add(asset);
+
+                var subsystems = assetNode.SelectNodes("SUBSYSTEM");
+
+                foreach (XmlNode subsystemNode in subsystems)
                 {
+                    // removed Dependencies and SubsystemMap, returns Subsystem to add to list
+                    Subsystem subsys = SubsystemFactory.GetSubsystem(subsystemNode, asset);
+                    SubList.Add(subsys);
 
-                    case ("environment"):
-                        SystemUniverse = UniverseFactory.GetUniverseClass(modelNode);
-                        break;
-                    case ("python"):
-                        throw new NotImplementedException();
-                        break;
-                    case ("asset"):
-                        Asset asset = new Asset(modelNode);
-                        asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+                    var States = subsystemNode.SelectNodes("STATE");
 
-                        AssetList.Add(asset);
-                        // Loop through all the of the ChildNodess for this Asset
-                        foreach (XmlNode assetNode in modelNode.ChildNodes)
-                        {
-                            switch (assetNode.Name.ToLower())
-                            {
-                                case ("subsystem"):
-                                    string subName = SubsystemFactory.GetSubsystem(assetNode, Dependencies, asset, SubsystemMap);
-                                    SubList.Add(SubsystemMap[subName]);
-                                    foreach (XmlNode subNode in assetNode.ChildNodes)
-                                    {
-                                        switch (subNode.Name.ToLower())
-                                        {
-                                            case ("ic"):
-                                                InitialSysState.Add(SystemState.SetInitialSystemState(subNode, asset));
-                                                break;
-                                            case ("dependency"):
+                    foreach (XmlNode StateNode in States)
+                    {
+                        string keyName = SubsystemFactory.SetStateKeys(StateNode, subsys);
+                        InitialSysState.Add(SystemState.SetInitialSystemState(StateNode, keyName));
+                    }
+                }
+                var constraints = assetNode.SelectNodes("CONSTRAINT");
 
-                                                string depSubName;
-                                                string depFunc;
-                                                depSubName = Subsystem.parseNameFromXmlNode(subNode, asset.Name);
-                                                DependencyList.Add(new KeyValuePair<string, string>(subName, depSubName));
-
-                                                if (subNode.Attributes["fcnName"] != null)
-                                                {
-                                                    depFunc = subNode.Attributes["fcnName"].Value.ToString();
-                                                    DependencyFcnList.Add(new KeyValuePair<string, string>(subName, depFunc));
-                                                }
-                                                break;
-                                        }
-                                    }
-                                    break;
-                                case ("constraint"):
-                                    ConstraintsList.Add(ConstraintFactory.GetConstraint(assetNode, SubsystemMap, asset));
-                                    break;
-                            }
-                        }
-                        break;
-                    default:
-                        SystemUniverse = new SpaceEnvironment();
-                        break;
+                foreach (XmlNode constraintNode in constraints)
+                {
+                    ConstraintsList.Add(ConstraintFactory.GetConstraint(constraintNode, SubList, asset));
                 }
             }
             log.Info("Subsystems and Constraints Loaded");
-        }
-        public void LoadDependencies()
-        {
-            //Add all the dependent subsystems to the dependent subsystem list of the subsystems
-            foreach (KeyValuePair<string, string> depSubPair in DependencyList)
-            {
-                Subsystem subToAddDep;
-                Subsystem depSub;
-                SubsystemMap.TryGetValue(depSubPair.Key, out subToAddDep);
-                SubsystemMap.TryGetValue(depSubPair.Value, out depSub);
-                subToAddDep.DependentSubsystems.Add(depSub);
-            }
+            var dependencies = modelInputXMLNode.SelectNodes("DEPENDENCY");
 
-            //give the dependency functions to all the subsytems that need them
-            foreach (KeyValuePair<string, string> depFunc in DependencyFcnList)
+            foreach (XmlNode dependencyNode in dependencies)
             {
-                Subsystem subToAddDep;
-                SubsystemMap.TryGetValue(depFunc.Key, out subToAddDep);
-                subToAddDep.SubsystemDependencyFunctions.Add(depFunc.Value, Dependencies.GetDependencyFunc(depFunc.Value));
+                SubsystemFactory.SetDependencies(dependencyNode, SubList);
             }
-            //Dependencies = dependencies;
             log.Info("Dependencies Loaded");
         }
+
         public void LoadEvaluator()
         {
-            _schedEvaluator = EvaluatorFactory.GetEvaluator(_evaluatorNode, Dependencies);
+            //_schedEvaluator = EvaluatorFactory.GetEvaluator(_evaluatorNode, Dependencies, SubList);
+            _schedEvaluator = EvaluatorFactory.GetEvaluator(_evaluatorNode, Dependencies, AssetList);
         }
         public void CreateSchedules(Stack<Task> systemTasks)
         {

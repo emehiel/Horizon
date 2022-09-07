@@ -1,0 +1,121 @@
+<MODEL>
+	<ASSET assetName = "Servicer1">
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "tool"
+			Type          = "scripted"
+			src           = "tool.py"
+			className     = "tool"
+			toolType      = "A"
+			servicingTime = "600.0">
+			<IC type="Matrix" key="BODY_POINTING_VECTOR(XYZ)" value="[0.0; 1.0; 0.0]"></IC>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			subsystemName = "guidance"
+			Type          = "scripted"
+			src           = "guidance.py"
+			className     = "guidance"
+			dryMassKg     = "80.0"
+			Isp           = "200.0"
+			KOZ           = "[5, 10, 2]"
+			Grid_Points   = "100">
+			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
+			<IC type="Matrix" key="ric_state" value="[10.0; 20.0; 30.0; 0.0; 1.02; -0.05]"></IC>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "guidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "propellant_constraint">
+			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+
+	<ASSET assetName = "Servicer2">
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "tool"
+			Type          = "scripted"
+			src           = "tool.py"
+			className     = "tool"
+			toolType      = "A"
+			servicingTime = "600.0">
+			<IC type="Matrix" key="BODY_POINTING_VECTOR(XYZ)" value="[0.0; 0.0; 1.0]"></IC>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			subsystemName = "guidance"
+			Type          = "scripted"
+			src           = "guidance.py"
+			className     = "guidance"
+			dryMassKg     = "80.0"
+			Isp           = "200.0"
+			KOZ           = "[5, 10, 2]"
+			Grid_Points   = "100">
+			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
+			<IC type="Matrix" key="ric_state" value="[-10.0; 20.0; 13.0; -0.02; 0.05; -1.0]"></IC>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "guidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "propellant_constraint">
+			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+	
+	<ASSET assetName = "Servicer3">
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "tool"
+			Type          = "scripted"
+			src           = "tool.py"
+			className     = "tool"
+			toolType      = "A"
+			servicingTime = "600.0">
+			<IC type="Matrix" key="BODY_POINTING_VECTOR(XYZ)" value="[0.0; 0.0; 1.0]"></IC>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			subsystemName = "guidance"
+			Type          = "scripted"
+			src           = "guidance.py"
+			className     = "guidance"
+			dryMassKg     = "80.0"
+			Isp           = "200.0"
+			KOZ           = "[5, 10, 2]"
+			Grid_Points   = "100">
+			<IC type="Matrix" key="ric_state" value="[20.0; -12.0; 19.0; 0.01; -0.05; 0.09]"></IC>
+			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "guidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "propellant_constraint">
+			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+
+	<ASSET assetName = "Mothership">
+		<IsPassive/>
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "collision_avoidance"
+			Type          = "scripted"
+			src           = "collision_avoidance.py"
+			MinSpacing    = "25.0"
+			className     = "collision_avoidance">
+		</SUBSYSTEM>
+	</ASSET>
+</MODEL>

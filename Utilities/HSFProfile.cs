@@ -396,13 +396,26 @@ namespace Utilities
             if (endTime == startTime)
                 return default;
 
+            // Get profile data to integrate
             var query = data.Where(item => item.Key >= startTime && item.Key <= endTime).ToList();
+
+            if (query.Count() == 0)
+            {
+                var v = ValueAtTime(startTime);
+                return (dynamic)v * (endTime - startTime);
+            }
+            // Fill out the end point
             query.Add(new KeyValuePair<double, T>(endTime, query.Last().Value));
+
+            // if needed, fill out the state point
             if (query.First().Key != startTime)
                 query.Insert(0, new KeyValuePair<double, T>(startTime, this[startTime]));
 
             T result = default;
             double dt = 0;
+
+            // integrate over all the data using rectangle integration
+
 
             for (int i = 0; i < query.Count() - 1; i++)
             {
@@ -448,7 +461,12 @@ namespace Utilities
         /// <returns>The maximum value in the profile</returns>
         public T Max()
         {
-            return data.Max().Value;
+            dynamic max = data.First().Value;
+            foreach (var item in data)
+                if (item.Value > max)
+                    max = item.Value;
+            return max;
+            //return data.Max().Value;
         }
 
         /// <summary>
@@ -457,7 +475,12 @@ namespace Utilities
         /// <returns>The minimum value in the profile</returns>
         public T Min()
         {
-            return data.Min().Value;
+            dynamic min = data.First().Value;
+            foreach (var item in data)
+                if (item.Value > min)
+                    min = item.Value;
+            return min;
+            //return data.Min().Value;
         }
         // Functions
 

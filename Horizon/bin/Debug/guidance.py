@@ -57,6 +57,7 @@ singular_nt_array = [
 ] # first several nt that produce singularities in the cost function
 bracketPairs = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [6, 7], [7, 8], [9, 10], [10, 11], [12, 13]]
 # first 10 meaningful indice pairs to examine, skip the tiny brackets
+maxIters = 100
 
 ##
 # Utility Functions
@@ -87,13 +88,13 @@ def calcFuelCost(deltaV_mps, mass0_kg, Isp_sec):
     '''    
     return mass0_kg * (1 - math.exp(-1 * deltaV_mps / (Isp_sec * 9.81)))
 
-def constantBurnHold(R0, tHold, n, mass0, Isp):
+def constantBurnHoldFuelCost(R0_m, tHold_sec, n, mass0_kg, Isp_sec):
     '''
     Compute fuel cost for performing a constant burn hold at R0 for tHold
     Assume distributed thrust (dV cost is SUM of components, NOT norm)
     '''
-    deltaV = tHold * n**2 * (3 * R0[0] + R0[2])
-    return calcFuelCost(deltaV, mass0, Isp)
+    deltaV_mps = tHold_sec * n**2 * (3 * R0_m[0] + R0_m[2])
+    return calcFuelCost(deltaV_mps, mass0_kg, Isp_sec)
 
 
 
@@ -314,7 +315,7 @@ def solveForMinDV_Secant(RV0, RVf, n, tol):
     k = (RV0, RVf, n) # tuple of constants
     (tStar, numIts, cost, magDeriv, magStep) = secantMinimizer(t0, t1, impCost, k, tol)
     tPiRatio = tStar * n / math.pi
-    # TODO # TODO print('\ttStar = ' + str(tStar) + ' (' + str(tPiRatio) + '*pi), ' + str(numIts) + ' iterations, cost (f) = ' + str(cost) + ', fprime = ' + str(magDeriv) + ', final step size = ' + str(magStep))
+    # print('\ttStar = ' + str(tStar) + ' (' + str(tPiRatio) + '*pi), ' + str(numIts) + ' iterations, cost (f) = ' + str(cost) + ', fprime = ' + str(magDeriv) + ', final step size = ' + str(magStep))
     return tStar
 
 def bisectionMinimizer(a, b, f, k, tol):
@@ -326,7 +327,7 @@ def bisectionMinimizer(a, b, f, k, tol):
     x = (a + b) / 2
     (fprimeX, fX) = fprime(f, x, k)
     ii = 0
-    while (abs(fprimeX) > tol):
+    while ((abs(fprimeX) > tol) and (ii < maxIters)):
         if (fprimeX > 0):
             b = x
         else:
@@ -334,10 +335,9 @@ def bisectionMinimizer(a, b, f, k, tol):
         x = (a + b) / 2
         (fprimeX, fX) = fprime(f, x, k)
         ii += 1
-        if (ii > 100):
-            print('Getting stuck in bisectionMinimizer, idx = ' + str(ii))
-            print('   have lhs a = ' + str(a) + ' and rhs b = ' + str(b) + 'which is abs(fprime) = ' + str(abs(fprimeX)))
-            print('   RV0 = ' + str(k[0]) + ' and RVtgt = ' + str(k[1]))
+    
+    if (ii >= maxIters):
+        print('Exited bisectionMinimizer due to iterations exceeding maximum')
 
 
     return (x, ii, fX, fprimeX, b - a)
@@ -365,10 +365,10 @@ def solveForMinDV_Bisect(RV0, RVf, n, KOZ, gridPts, nBracks, tol):
         # solve for local bracket solution
         k = (RV0, RVf, n, KOZ, gridPts) # tuple of constants
         (tStar, numIts, cost, magDeriv, brackWidth) = bisectionMinimizer(a0, b0, impCost, k, tol)
-        # TODO print('unconstrained bisection arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
+        # print('unconstrained bisection arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
         (validBracket, tStar, numIts, cost, magDeriv, brackWidth) = modifiedBisectionMinimizer(a0, b0, impCost, isValidTOF, k, tol)
-        # TODO print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
-        # TODO print('')
+        # print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
+        # print('')
 
         if validBracket:
             tStarArr.append(tStar)
@@ -377,15 +377,15 @@ def solveForMinDV_Bisect(RV0, RVf, n, KOZ, gridPts, nBracks, tol):
             magDerivArr.append(magDeriv)
             brackWidthArr.append(brackWidth)
             tPiRatio = tStar * n / math.pi
-        ## TODO print('\t\tSol ' + str(bb) + ' tStar = ' + str(tStar) + ' (' + str(tPiRatio) + '*pi), ' + str(numIts) + ' iterations, cost (f) = ' + str(cost) + ', fprime = '  + str(magDeriv) + ', bracket width = ' + str(brackWidth))    
+        # print('\t\tSol ' + str(bb) + ' tStar = ' + str(tStar) + ' (' + str(tPiRatio) + '*pi), ' + str(numIts) + ' iterations, cost (f) = ' + str(cost) + ', fprime = '  + str(magDeriv) + ', bracket width = ' + str(brackWidth))    
     
     if costArr == []:
-        # TODO print('No Valid Trajectory Found!!')
+        print('No Valid Trajectory Found!!')
         return(False, 0)
 
     (globalMinCost, solIdx) = myMin(costArr)    
     globalTstar = tStarArr[solIdx]
-    ## TODO print('\tGlobal tStar = ' + str(globalTstar) + ', Cost = ' + str(globalMinCost))
+    # print('\tGlobal tStar = ' + str(globalTstar) + ', Cost = ' + str(globalMinCost))
     return (True, globalTstar)
 
 def __isRwithinKOZ(R, KOZ):
@@ -446,7 +446,7 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
     x = (a + b) / 2
     (fprimeX, fX) = fprime(f, x, k)
     ii = 0
-    while (abs(fprimeX) > tol):
+    while ((abs(fprimeX) > tol) and (ii < maxIters)):
         if (fprimeX > 0):
             b = x
         else:
@@ -454,9 +454,9 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
         x = (a + b) / 2
         (fprimeX, fX) = fprime(f, x, k)
         ii += 1
-        if (ii > 100):
-            print('stuck in first part of bisection at iteration ' + str(ii))
-            print('   have lhs a = ' + str(a) + ' and rhs b = ' + str(b) + 'which is abs(fprime) = ' + str(abs(fprimeX)))
+
+    if (ii >= maxIters):
+        print('Exited modifiedBisectionMinimizer unconstrained minimizer due to iterations exceeding maximum')
     
     # If Fails Constraint, Walk "Up" with increasing TOF
     isXvalid = c(x, k)
@@ -472,7 +472,6 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
             newX = x + dT * bb
             if c(newX, k):
                 isValid = True
-                # TODO print('Found a valid bracket!')
                 break
         if isValid:
             # Now have closest interval, bisect "down" to smallest valid tof
@@ -481,7 +480,8 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
             # Exit when bracket width is smaller than 10x the fprime tolerance
             a = newX - dT * bb
             b = newX
-            while ((b - a) > (10 * tol)):
+            thisMaxIters = maxIters + ii
+            while (((b - a) > (10 * tol)) and (ii < thisMaxIters)):
                 ii += 1
                 x = (a + b) / 2
                 isXvalid = c(x, k)
@@ -489,8 +489,8 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
                     b = x
                 else:
                     a = x
-                if (ii > 100):
-                    print('stuck in second part of bisection at iteration ' + str(ii))
+            if (ii >= thisMaxIters):
+                print('Exited modifiedBisectionMinimizer constraint solver due to iterations exceeding maximum')
             validX = b # know the upper boundary is valid
             (fprimeX, fX) = fprime(f, validX, k)
             return (True, validX, ii, fX, fprimeX, b - a)
@@ -522,6 +522,8 @@ class guidance(HSFSubsystem.Subsystem):
 
         instance.PROPELLANT_MASS_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'propellant_mass_kg')
         instance.addKey(instance.PROPELLANT_MASS_KEY)
+
+        instance.MODE_KEY = Utilities.StateVarKey[str](instance.Asset.Name + '.' + 'mode')
 
         # Define Constants
         instance.dryMass_kg = float(node.Attributes['dryMassKg'].Value)
@@ -565,7 +567,7 @@ class guidance(HSFSubsystem.Subsystem):
         ee = event.GetEventEnd(self.Asset)
         ts = event.GetTaskStart(self.Asset)
         te = event.GetTaskEnd(self.Asset)
-        ## TODO print('    Event Start: ' + es.ToString() + ' Event End (default): '+ ee.ToString() + ' Task Start: ' + ts.ToString() + ' Task End (default): ' + te.ToString())
+        # print('    Event Start: ' + es.ToString() + ' Event End (default): '+ ee.ToString() + ' Task Start: ' + ts.ToString() + ' Task End (default): ' + te.ToString())
 
         # Extract Last State Data
         lastState = event.State.GetLastValue(self.STATEVEC_KEY) # Returns matrix Object
@@ -575,6 +577,7 @@ class guidance(HSFSubsystem.Subsystem):
         V_inx     = Utilities.MatrixIndex(4, 6)
         R0        = RV0[R_inx, ":"]
         V0        = RV0[V_inx, ":"]
+        # print('Pulled off R0 = ' + str(R0) + ', V0 = ' + str(V0) + ' at time = ' + str(lastTime))
 
         # Free-Flight Propagate Forwards to Current Time Step
         dt1 = es - lastTime
@@ -591,7 +594,7 @@ class guidance(HSFSubsystem.Subsystem):
         else:
             RV1 = RV0
 
-        ## TODO print("Last State: " + RV0.ToString() + " New State: " + RV1.ToString())
+        # print("Last State: " + RV0.ToString() + " New State: " + RV1.ToString())
 
         # Perform Optimal 2-Impulse Rendezvous With Static Target
         Rtgt_dyn = event.GetAssetTask(self.Asset).Target.DynamicState.DynamicStateECI(ts)
@@ -601,7 +604,7 @@ class guidance(HSFSubsystem.Subsystem):
         Rtgt[3]  = Rtgt_dyn[3]
         Vtgt     = Utilities.Matrix[System.Double](3,1) # Zero velocity for static target
         RVtgt    = Utilities.Matrix[System.Double].Vertcat(Rtgt, Vtgt)
-        ## TODO print('RV of Tgt = ' + RVtgt.ToString())
+        # print('RV of Tgt = ' + RVtgt.ToString())
 
         optTol = 1e-4
         (isValid, tStarBisect) = solveForMinDV_Bisect(RV1, RVtgt, n, self.KOZ, self.gridPts, self.numBracks, optTol)
@@ -617,22 +620,29 @@ class guidance(HSFSubsystem.Subsystem):
         #event.State.AddValue(self.DELTAV_t_KEY, Utilities.HSFProfile[System.Double](ts, DVtot)) REPLACE WITH NMC/HOLD
 
         # Compute Fuel Cost for delta-V's
-        # TODO print(event.State)
         fuelMass0_kg = event.State.GetLastValue(self.PROPELLANT_MASS_KEY).Value
         m0_kg = self.dryMass_kg + fuelMass0_kg
         fuelBurned_kg = calcFuelCost(DVtot, m0_kg, self.Isp_sec)
         fuelMassLeft_kg = fuelMass0_kg - fuelBurned_kg
         event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + tStarBisect, fuelMassLeft_kg))
-        # TODO print('Had ' + str(fuelMass0_kg) + 'kg of Fuel at time = ' + str(ts) + ', now have ' + str(fuelMassLeft_kg) + 'kg of Fuel at time = ' + str(ts + tStarBisect))
+        # print('Had ' + str(fuelMass0_kg) + 'kg of Fuel at time = ' + str(ts) + ', now have ' + str(fuelMassLeft_kg) + 'kg of Fuel at time = ' + str(ts + tStarBisect))
 
+        # Assign mode
+        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[str](ts, 'transferring'))
+        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[str](ts + tStarBisect, 'servicing'))
+        tService_sec = 0 # TODO - get from tool.py
+        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[str](ts + tStarBisect + tService_sec, 'free'))
 
-        # TODO compute dV/fuel cost to hold position while servicing, this currently assumes u "latch" on
-
+        # Compute fuel cost to hold position while serivicing, TODO - consider just leaving as "latched on"
+        m0_kg = self.dryMass_kg + fuelMassLeft_kg
+        fuelBurned_kg = constantBurnHoldFuelCost(Rtgt, tService_sec, n, m0_kg, self.Isp_sec)
+        fuelMassLeft_kg = fuelMassLeft_kg - fuelBurned_kg
+        event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + tStarBisect + tService_sec, fuelMassLeft_kg))
 
         # TODO plan/compute exit strategy (dV to NMC, hop to Vbar, or hold), this currently assumes u "latch" on
 
         #event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts, RV1_plus))
-        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect, RVtgt)) # TODO at what epoch?? Is this right??
+        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect, RVtgt))
         event.SetTaskEnd(self.Asset, ts + tStarBisect)
         event.SetEventEnd(self.Asset, ts + tStarBisect)
         return True

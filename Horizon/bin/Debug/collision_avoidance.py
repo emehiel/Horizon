@@ -220,8 +220,8 @@ class collision_avoidance(HSFSubsystem.Subsystem):
         ##
         # Check for double-tasking
         ##
-        taskCheck = checkTasks(event)
-        if (not taskCheck):
+        taskCheckisGood = checkTasks(event)
+        if (not taskCheckisGood):
             return False
 
         ##

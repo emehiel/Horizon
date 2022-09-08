@@ -34,18 +34,11 @@ namespace HSFSubsystem
         /// Defaults: batterySize = 1000000, fullSolarPanelPower =150, penumbraSolarPanelPower = 75
         /// </summary>
         /// <param name="PowerNode"></param>
-        /// <param name="dependencies"></param>
-        public Power(XmlNode PowerNode, Dependency dependencies, Asset asset)
+        /// <param name="asset"></param>
+        public Power(XmlNode PowerNode)
         {
             DefaultSubName = "Power";
-            Asset = asset;
-            GetSubNameFromXmlNode(PowerNode);
-            DOD_KEY = new StateVariableKey<double>(Asset.Name + "." + "depthofdischarge");
-            POWIN_KEY = new StateVariableKey<double>(Asset.Name + "." + "solarpanelpowerin");
-            addKey(DOD_KEY);
-            addKey(POWIN_KEY);
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            DependentSubsystems = new List<Subsystem>();
+            
             if (PowerNode.Attributes["batterySize"] != null)
                 _batterySize = (double)Convert.ChangeType(PowerNode.Attributes["batterySize"].Value, typeof(double));
             if (PowerNode.Attributes["fullSolarPower"] != null)
@@ -59,7 +52,6 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="PowerNode"></param>
         /// <param name="asset"></param>
-        /// 
         /*
         public Power(XmlNode PowerNode, Asset asset) : base(PowerNode, asset)
         {
@@ -98,6 +90,7 @@ namespace HSFSubsystem
         /// <returns></returns>
         protected HSFProfile<double> CalcSolarPanelPowerProfile(double start, double end, SystemState state, DynamicState position, Domain universe)
         {
+            var POWIN_KEY = Dkeys[1];
             Sun sun = universe.GetObject<Sun>("SUN");
             // create solar panel profile for this event
             double freq = 5;
@@ -128,6 +121,7 @@ namespace HSFSubsystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain universe)
         {
+            var DOD_KEY = Dkeys[0]; // Should be needed?
             //Make sure all dependent subsystems have been evaluated
             if (!base.CanPerform(proposedEvent, universe)) 
                 return false;
@@ -173,7 +167,9 @@ namespace HSFSubsystem
         /// <param name="evalToTime"></param>
         /// <returns></returns>
         public override bool CanExtend(Event proposedEvent, Domain universe, double evalToTime) {
+            var DOD_KEY = Dkeys[0];
             double ee = proposedEvent.GetEventEnd(Asset);
+            //DOD_KEY = base.Dkeys.Find();
             if (ee > SimParameters.SimEndSeconds)
                 return false;
 

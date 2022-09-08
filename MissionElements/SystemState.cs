@@ -972,6 +972,5 @@ namespace MissionElements
                 Console.WriteLine($"State variable {stateVariableName} of type {type} is not supported by HSF.");
             }
         }
-        
     }
 }

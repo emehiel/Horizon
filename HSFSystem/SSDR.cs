@@ -27,23 +27,13 @@ namespace HSFSubsystem
         /// Default: BufferSize = 4098
         /// </summary>
         /// <param name="SSDRXmlNode"></param>
-        /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        public SSDR(XmlNode SSDRXmlNode, Dependency dependencies, Asset asset)
+        public SSDR(XmlNode SSDRXmlNode)
         {
             DefaultSubName = "SSDR";
-            Asset = asset;
-            GetSubNameFromXmlNode(SSDRXmlNode);
+
             if (SSDRXmlNode.Attributes["bufferSize"] != null)
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
-            DATABUFFERRATIO_KEY = new StateVariableKey<double>(Asset.Name + "." +"databufferfillratio");
-            addKey(DATABUFFERRATIO_KEY);
-            //addKey(new StateVariableKey<double>(Asset.Name + "." + "databufferfillratio"));
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            DependentSubsystems = new List<Subsystem>();
-            dependencies.Add("PowerfromSSDR" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_SSDRSUB));
-            dependencies.Add("CommfromSSDR" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(COMMSUB_DataRateProfile_SSDRSUB));
-            dependencies.Add("EvalfromSSDR" + "." + Asset.Name, new Func<Event, double>(EVAL_DataRateProfile_SSDRSUB));
         }
 
         /// <summary>
@@ -51,10 +41,12 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="SSDRXmlNode"></param>
         /// <param name="asset"></param>
+        /*
         public SSDR(XmlNode SSDRXmlNode, Asset asset) : base(SSDRXmlNode, asset)
         {
             
         }
+        */
 
         /// <summary>
         /// An override of the Subsystem CanPerform method
@@ -64,6 +56,7 @@ namespace HSFSubsystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
+            var DATABUFFERRATIO_KEY = Dkeys[0];
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
 
@@ -73,7 +66,7 @@ namespace HSFSubsystem
                 double ts = proposedEvent.GetTaskStart(Asset);
                 double te = proposedEvent.GetTaskEnd(Asset);
 
-                double oldbufferratio = _newState.GetLastValue(Dkeys[0]).Value;
+                double oldbufferratio = _newState.GetLastValue(DATABUFFERRATIO_KEY).Value;
 
                 Delegate DepCollector;
                 SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
@@ -115,7 +108,7 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentState"></param>
         /// <returns></returns>
-        public HSFProfile<double> POWERSUB_PowerProfile_SSDRSUB(Event currentEvent)
+        public HSFProfile<double> Power_asset1_from_SSDR_asset1(Event currentEvent)
         {
             HSFProfile<double> prof1 = new HSFProfile<double>();
             prof1[currentEvent.GetEventStart(Asset)] = 15;
@@ -127,8 +120,10 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="currentEvent"></param>
         /// <returns></returns>
-        public HSFProfile<double> COMMSUB_DataRateProfile_SSDRSUB(Event currentEvent)
+        public HSFProfile<double> Comm_asset1_from_SSDR_asset1(Event currentEvent)
         {
+            var DATABUFFERRATIO_KEY = Dkeys[0];
+            //var Asset = Asset;
             double datarate = 5000 * (currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskStart(Asset)).Value - currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) / (currentEvent.GetTaskEnd(Asset) - currentEvent.GetTaskStart(Asset));
             HSFProfile<double> prof1 = new HSFProfile<double>();
             if (datarate != 0)
@@ -141,8 +136,12 @@ namespace HSFSubsystem
 
         public double EVAL_DataRateProfile_SSDRSUB(Event currentEvent)
         {
-            return (currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value
-            - currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) *50;
+            var DATABUFFERRATIO_KEY = Dkeys[0];
+            //return (currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value
+            // - currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) *50;
+
+            return (currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskStart(Asset)).Value
+                  - currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) * 50;
         }
     }
 }

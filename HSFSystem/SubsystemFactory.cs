@@ -7,6 +7,7 @@ using System.Xml;
 using HSFSystem;
 using MissionElements;
 using log4net;
+using System.Reflection;
 using Utilities;
 
 namespace HSFSubsystem
@@ -18,81 +19,75 @@ namespace HSFSubsystem
         /// A method to interpret the Xml file and create subsystems
         /// </summary>
         /// <param name="SubsystemXmlNode"></param>
-        /// <param name="enableScripting"></param>
-        /// <param name="dependencies"></param>
         /// <param name="asset"></param>
-        /// <param name="subDic"></param>
         /// <returns></returns>
-        public static string GetSubsystem(XmlNode SubsystemXmlNode, Dependency dependencies, Asset asset, Dictionary<string, Subsystem> subDic)
+        public static Subsystem GetSubsystem(XmlNode SubsystemXmlNode, Asset asset)
         {
-            string type = SubsystemXmlNode.Attributes["Type"].Value.ToString().ToLower();
-            string name = Subsystem.parseNameFromXmlNode(SubsystemXmlNode, asset.Name);
+            string type = SubsystemXmlNode.Attributes["type"].Value.ToString().ToLower();
+            //string name = Subsystem.parseNameFromXmlNode(SubsystemXmlNode, asset.Name);
+            //Subsystem sub = null;
+            Subsystem sub;
             if (type.Equals("scripted"))
-            {
-                subDic.Add(name, new ScriptedSubsystem(SubsystemXmlNode, dependencies, asset));
+            {sub = new ScriptedSubsystem(SubsystemXmlNode, asset);
+                sub.Asset = asset;
+                sub.GetSubNameFromXmlNode(SubsystemXmlNode);
+                sub.DependentSubsystems = new List<Subsystem>();
+                sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             }
             else // not scripted subsystem
             {
                 if (type.Equals("access"))
-                {
-                    var sub = new AccessSub(SubsystemXmlNode, asset);
-                    sub.AddDependencyCollector();
-                    subDic.Add(name, sub);
-                    //subDic.Add(name, new AccessSub(SubsystemXmlNode, asset));
+                {sub = new AccessSub(SubsystemXmlNode);
+                    sub.Asset = asset;
+                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
+                    sub.DependentSubsystems = new List<Subsystem>();
+                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
                 }
                 else if (type.Equals("adcs"))
-                {
-                    var sub = new ADCS(SubsystemXmlNode, dependencies, asset);
-                    var states = SubsystemXmlNode.SelectNodes("IC");
-                    foreach (XmlNode state in states)
-                    {
-                        sub.addKey(new StateVariableKey<Matrix<double>>(asset.Name + "." + state.Attributes["key"].Value));
-                    }
-                    sub.AddDependencyCollector();
-                    subDic.Add(name, sub);
-                    //subDic.Add(name, new ADCS(SubsystemXmlNode, dependencies, asset));
+                {sub = new ADCS(SubsystemXmlNode);
+                    sub.Asset = asset;
+                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
+                    sub.DependentSubsystems = new List<Subsystem>();
+                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+                    //sub.DefaultSubName = "Adcs";
                 }
                 else if (type.Equals("power"))
-                {
-                    var sub = new Power(SubsystemXmlNode, dependencies, asset);
-                    sub.AddDependencyCollector();
-                    subDic.Add(name, sub);
-                    //subDic.Add(name, new Power(SubsystemXmlNode, dependencies, asset));
+                {sub = new Power(SubsystemXmlNode);
+                    sub.Asset = asset;
+                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
+                    sub.DependentSubsystems = new List<Subsystem>();
+                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
                 }
                 else if (type.Equals("eosensor"))
-                {
-                    var sub = new EOSensor(SubsystemXmlNode, dependencies, asset);
-                    sub.AddDependencyCollector();
-                    subDic.Add(name, sub);
-                    //subDic.Add(name, new EOSensor(SubsystemXmlNode, dependencies, asset));
+                {sub = new EOSensor(SubsystemXmlNode);
+                    sub.Asset = asset;
+                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
+                    sub.DependentSubsystems = new List<Subsystem>();
+                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
                 }
                 else if (type.Equals("ssdr"))
-                {
-                    var sub = new SSDR(SubsystemXmlNode, dependencies, asset);
-                    sub.AddDependencyCollector();
-                    subDic.Add(name, sub);
-                    //subDic.Add(name, new SSDR(SubsystemXmlNode, dependencies, asset));
+                {sub = new SSDR(SubsystemXmlNode);
+                    sub.Asset = asset;
+                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
+                    sub.DependentSubsystems = new List<Subsystem>();
+                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
                 }
                 else if (type.Equals("comm"))
-                {
-                    var sub = new Comm(SubsystemXmlNode, dependencies, asset);
-                    sub.AddDependencyCollector();
-                    subDic.Add(name, sub);
-                    //subDic.Add(name, new Comm(SubsystemXmlNode, dependencies, asset));
+                {sub = new Comm(SubsystemXmlNode);
+                    sub.Asset = asset;
+                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
+                    sub.DependentSubsystems = new List<Subsystem>();
+                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
                 }
                 else if (type.Equals("imu"))
                 {
-                    var sub = new IMU(SubsystemXmlNode, dependencies, asset);
-                    sub.AddDependencyCollector();
-                    subDic.Add(name, sub);
-                    //subDic.Add(name, new IMU(SubsystemXmlNode, dependencies, asset));
+                    //sub = new IMU(SubsystemXmlNode, asset);
+                    throw new NotImplementedException("Removed after the great Subsystem Factory update.");
                 }
                 else if (type.Equals("subtest"))
                 {
-                    var sub = new SubTest(SubsystemXmlNode, dependencies, asset);
-                    sub.AddDependencyCollector();
-                    subDic.Add(name, sub);
-                    //subDic.Add(name, new SubTest(SubsystemXmlNode, dependencies, asset));
+                    //sub = new SubTest(SubsystemXmlNode, asset);
+                    throw new NotImplementedException("Removed after the great Subsystem Factory update.");
                 }
                 else if (type.Equals("networked"))
                 {
@@ -104,7 +99,78 @@ namespace HSFSubsystem
                     throw new MissingMemberException("Unknown Subsystem Type " + type);
                 }
             }
-            return name;
+            sub.AddDependencyCollector();
+            
+            return sub;
+        }
+
+        public static void SetDependencies(XmlNode DepNode, List<Subsystem> SubList)
+        {
+            // Find names of asset, sub, dep asset, and dep sub
+            string assetName = DepNode.Attributes["assetName"].Value.ToString().ToLower();
+            string subName = DepNode.Attributes["subsystemName"].Value.ToString().ToLower();
+            string subNameUnchanged = DepNode.Attributes["depSubsystemName"].Value.ToString();
+            string depAssetName = DepNode.Attributes["depAssetName"].Value.ToString().ToLower();
+            string depSubName = DepNode.Attributes["depSubsystemName"].Value.ToString().ToLower();
+            //string depFnName = null;
+
+            // Add dep sub to sub's list of dep subs
+            var sub = SubList.Find(s => s.Name == assetName + "." + subName);
+            var depSub = SubList.Find(s => s.Name == depAssetName + "." + depSubName);
+            sub.DependentSubsystems.Add(depSub);
+
+            // XML specified depfn
+            if (DepNode.Attributes["fcnName"] != null)
+            {
+                // Get dep fn name
+                string depFnName = DepNode.Attributes["fcnName"].Value.ToString();
+
+                // Find method that matches name & add to sub's dep fns
+                var TypeIn = Type.GetType("HSFSubsystem." + subNameUnchanged).GetMethod(depFnName);
+                var fnc = Delegate.CreateDelegate(typeof(Func<Event, HSFProfile<double>>), depSub, TypeIn);
+
+                //dependencies.Add(depFnName, fnc);
+                sub.SubsystemDependencyFunctions.Add(depFnName,fnc);
+            }
+            return;
+        }
+        public static string SetStateKeys(XmlNode StateNode, Subsystem subsys)
+        {
+            string type = StateNode.Attributes["type"].Value.ToLower();
+            string keyName = StateNode.Attributes["key"].Value.ToLower();
+            string assetName = subsys.Asset.Name;
+            string key = assetName + "." + keyName;
+            if (type.Equals("int"))
+            {
+                StateVarKey<Int32> stateKey = new StateVarKey<Int32>(key);
+                subsys.addKey(stateKey);
+            }
+            else if (type.Equals("double"))
+            {
+                StateVarKey<Double> stateKey = new StateVarKey<Double>(key);
+                subsys.addKey(stateKey);
+            }
+            else if (type.Equals("bool"))
+            {
+                StateVarKey<bool> stateKey = new StateVarKey<bool>(key);
+                subsys.addKey(stateKey);
+            }
+            else if (type.Equals("matrix"))
+            {
+                StateVarKey<Matrix<double>> stateKey = new StateVarKey<Matrix<double>>(key);
+                subsys.addKey(stateKey);
+            }
+            else if (type.Equals("quat"))
+            {
+                StateVarKey<Quat> stateKey = new StateVarKey<Quat>(key);
+                subsys.addKey(stateKey);
+            }
+            //else if (type.Equals("vector"))
+            //{
+            //    StateVarKey<Vector> stateKey = new StateVarKey<Vector>(key);
+            //    subsys.addKey(stateKey);
+            //}
+            return key;
         }
 
         public static string SetDepedencies()

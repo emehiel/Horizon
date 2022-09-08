@@ -90,7 +90,9 @@
     <Compile Include="DynamicEOMS.cs" />
     <Compile Include="DynamicState.cs" />
     <Compile Include="EOMFactory.cs" />
+    <Compile Include="Moon.cs" />
     <Compile Include="OrbitalEOMS.cs" />
+    <Compile Include="OrbitalPertEOMS.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RealTimeAtmosphere.cs" />
     <Compile Include="ScriptedEOMS.cs" />

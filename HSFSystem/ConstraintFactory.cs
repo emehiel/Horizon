@@ -16,14 +16,14 @@ namespace HSFSystem
         /// Constraint generator to translate XML nodes to actual constraints
         /// </summary>
         /// <param name="constraintXmlNode"></param>
-        /// <param name="subsystemMap"></param>
+        /// <param name="subList"></param>
         /// <param name="asset"></param>
         /// <returns></returns>
-        public static Constraint GetConstraint(XmlNode constraintXmlNode, Dictionary<string, Subsystem> subsystemMap, Asset asset)
+        public static Constraint GetConstraint(XmlNode constraintXmlNode, List<Subsystem> subList, Asset asset)
         {
             Subsystem constrainedSub = null;
             string subName = Subsystem.parseNameFromXmlNode(constraintXmlNode, asset.Name);
-            subsystemMap.TryGetValue(subName, out constrainedSub);
+            constrainedSub = subList.Find(s => s.Name == subName);
             if (constrainedSub == null)
                 throw new MissingMemberException("Missing Subsystem Name in Constraint");
 
@@ -39,8 +39,6 @@ namespace HSFSystem
                 return new SingleConstraint<Matrix<double>>(constraintXmlNode,constrainedSub);
             else //TODO: Add functionality to create scripted constraints
                 throw new NotSupportedException("Unsupported type of constraint!");
-
-            
         }
     }
 }

@@ -182,6 +182,56 @@ namespace HSFUniverse
 
 	        return(shadow);
         }//End castShadowOnPos method
+
+        public ShadowState castShadowOnPos2(Matrix<double> pos, double simTime)
+        {
+            double penVert;
+            double satHoriz;
+            double satVert;
+            double sigma;
+            double umbVert;
+            ShadowState shadow;
+
+            const double alphaPen = 0.26900424;
+            const double alphaUmb = 0.26411888;
+            const double rad = Math.PI / 180;
+            const double rEar = 6378.137;
+
+            // Get earth-sun vector
+            Matrix<double> rSun = getEarSunVec(simTime);
+            // Get the vector from the earth to the object
+            Matrix<double> assetPosAtTime = pos; //TODO: this method is not yet implemented
+            double dot_p = Matrix<double>.Dot((-rSun), assetPosAtTime);
+            // Calculate the cosine of the angle between the position vector
+            // and the axis the earth-sun vector lies on
+            double arg = (dot_p) / (Matrix<double>.Norm(-rSun) * Matrix<double>.Norm(assetPosAtTime));
+
+            //fix argument, must be between -1 and 1
+            if (Math.Abs(arg) > 1)
+                arg = arg / Math.Abs(arg) * Math.Floor(Math.Abs(arg));
+            sigma = Math.Acos(arg);
+            // Calculate the distance from the 
+            satHoriz = Matrix<double>.Norm(assetPosAtTime) * Math.Cos(sigma);
+            satVert = Matrix<double>.Norm(assetPosAtTime) * Math.Sin(sigma);
+
+            // Calculate distance away from earth-sun axis where penumbra ends
+            penVert = rEar + Math.Tan(alphaPen * rad) * satHoriz;
+
+            // determine the shadow state of the position
+            if (dot_p > 0 && satVert <= penVert)
+            {
+                shadow = ShadowState.PENUMBRA;
+                //Calculate distance away from earth-sun axis where umbra ends
+                umbVert = rEar - Math.Tan(alphaUmb * rad) * satHoriz;
+
+                if (satVert <= umbVert)
+                    shadow = ShadowState.UMBRA;
+            }
+            else
+                shadow = ShadowState.NO_SHADOW;
+
+            return (shadow);
+        }//End castShadowOnPos2 method
         #endregion Methods
 
     } //end Sun Class

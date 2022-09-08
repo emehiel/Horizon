@@ -12,12 +12,18 @@ namespace HSFScheduler
     {
         #region Attributes
         public Dependency Dependencies;
+        private Delegate _evalFunction;
         #endregion
 
         #region Constructors
         public TargetValueEvaluator(Dependency dependencies)
         {
             Dependencies = dependencies;
+        }
+        public TargetValueEvaluator(Delegate evalFunction)
+        {
+            _evalFunction = evalFunction;
+
         }
         #endregion
 

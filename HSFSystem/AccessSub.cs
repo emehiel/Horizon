@@ -17,13 +17,9 @@ namespace HSFSubsystem
         /// </summary>
         /// <param name="subNode"></param>
         /// <param name="asset"></param>
-        public AccessSub(XmlNode subNode, Asset asset)
+        public AccessSub(XmlNode subNode)
         {
             DefaultSubName = "AccessToTarget";
-            Asset = asset;
-            GetSubNameFromXmlNode(subNode);
-            DependentSubsystems = new List<Subsystem>();
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
         }
 
         public override bool CanPerform( Event proposedEvent, Domain environment) 

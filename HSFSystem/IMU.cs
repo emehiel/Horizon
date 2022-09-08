@@ -46,6 +46,7 @@ namespace HSFSystem
         #region Constructors
         public IMU(XmlNode SubNode, Asset asset)
         {
+
             DefaultSubName = "IMU";
             Asset = asset;
             GetSubNameFromXmlNode(SubNode);
@@ -100,11 +101,10 @@ namespace HSFSystem
                 _accScaleFactor = (double)Convert.ChangeType(IMUNode.ChildNodes[acc].Attributes["accScaleFactor"].Value.ToString(), typeof(double));
 
         }
-        public IMU(XmlNode SubNode, Dependency dependencies ,Asset asset) : this(SubNode, asset)
-        {
-            DependentSubsystems = new List<Subsystem>();
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-        }
+        //public IMU(XmlNode SubNode ,Asset asset) : this(SubNode, asset)
+        //{
+
+        //}
         #endregion
         #region Overrides
         /// <summary>

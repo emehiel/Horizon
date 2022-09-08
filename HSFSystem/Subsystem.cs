@@ -257,14 +257,14 @@ namespace HSFSubsystem
             Qkeys.Add(keyIn);
         }
 
-        //public void addKey(StateVarKey<Vector> keyIn)
-        //{
-        //    if (Vkeys == null) //Only construct what you need
-        //    {
-        //        Vkeys = new List<StateVarKey<Vector>>();
-        //    }
-        //    Vkeys.Add(keyIn);
-        //}
+        public void addKey(StateVariableKey<Vector> keyIn)
+        {
+            if (Vkeys == null) //Only construct what you need
+            {
+                Vkeys = new List<StateVariableKey<Vector>>();
+            }
+            Vkeys.Add(keyIn);
+        }
         #endregion
     }
 }//HSFSubsystem

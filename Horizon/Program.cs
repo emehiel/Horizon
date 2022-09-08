@@ -241,7 +241,8 @@ namespace Horizon
                     foreach (XmlNode StateNode in States)
                     {
                         string keyName = SubsystemFactory.SetStateKeys(StateNode, subsys);
-                        InitialSysState.Add(SystemState.SetInitialSystemState(StateNode, keyName));
+                        InitialSysState.SetInitialSystemState(StateNode, keyName);
+                        //InitialSysState.Add(SystemState.SetInitialSystemState(StateNode, keyName));
                     }
                 }
                 var constraints = assetNode.SelectNodes("CONSTRAINT");

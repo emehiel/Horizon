@@ -142,34 +142,34 @@ namespace HSFSubsystem
             string key = assetName + "." + keyName;
             if (type.Equals("int"))
             {
-                StateVarKey<Int32> stateKey = new StateVarKey<Int32>(key);
+                StateVariableKey<Int32> stateKey = new StateVariableKey<Int32>(key);
                 subsys.addKey(stateKey);
             }
             else if (type.Equals("double"))
             {
-                StateVarKey<Double> stateKey = new StateVarKey<Double>(key);
+                StateVariableKey<Double> stateKey = new StateVariableKey<Double>(key);
                 subsys.addKey(stateKey);
             }
             else if (type.Equals("bool"))
             {
-                StateVarKey<bool> stateKey = new StateVarKey<bool>(key);
+                StateVariableKey<bool> stateKey = new StateVariableKey<bool>(key);
                 subsys.addKey(stateKey);
             }
             else if (type.Equals("matrix"))
             {
-                StateVarKey<Matrix<double>> stateKey = new StateVarKey<Matrix<double>>(key);
+                StateVariableKey<Matrix<double>> stateKey = new StateVariableKey<Matrix<double>>(key);
                 subsys.addKey(stateKey);
             }
             else if (type.Equals("quat"))
             {
-                StateVarKey<Quat> stateKey = new StateVarKey<Quat>(key);
+                StateVariableKey<Quaternion> stateKey = new StateVariableKey<Quaternion>(key);
                 subsys.addKey(stateKey);
             }
-            //else if (type.Equals("vector"))
-            //{
-            //    StateVarKey<Vector> stateKey = new StateVarKey<Vector>(key);
-            //    subsys.addKey(stateKey);
-            //}
+            else if (type.Equals("vector"))
+            {
+                StateVariableKey<Vector> stateKey = new StateVariableKey<Vector>(key);
+                subsys.addKey(stateKey);
+            }
             return key;
         }
 

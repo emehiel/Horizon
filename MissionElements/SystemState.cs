@@ -384,131 +384,131 @@ namespace MissionElements
 
         #region GetFullProfile
 
-        ///////////  NOT REFERENCED OUTSIDE METHOD - REMOVE?  /////////////////////
-        /// <summary>
-        /// Returns the integer Profile for this state and all previous states merged into one Profile
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public HSFProfile<int> GetFullProfile(StateVariableKey<int> key) {
-            HSFProfile<int> valueOut = new HSFProfile<int>();
-            if (Idata.Count != 0) { // Are there any Profiles in there?
-                if (Idata.TryGetValue(key, out valueOut)) { //see if our key is in there
-                    if (PreviousState != null) // Check whether we are at the first state
-                        return HSFProfile<int>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
-                    return valueOut;
-                }
-            }
-            if (PreviousState != null)
-                return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
-            return valueOut; //return empty profile
-        }
+        /////////////  NOT REFERENCED OUTSIDE METHOD - REMOVE?  /////////////////////
+        ///// <summary>
+        ///// Returns the integer Profile for this state and all previous states merged into one Profile
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <returns></returns>
+        //public HSFProfile<int> GetFullProfile(StateVariableKey<int> key) {
+        //    HSFProfile<int> valueOut = new HSFProfile<int>();
+        //    if (Idata.Count != 0) { // Are there any Profiles in there?
+        //        if (Idata.TryGetValue(key, out valueOut)) { //see if our key is in there
+        //            if (PreviousState != null) // Check whether we are at the first state
+        //                return HSFProfile<int>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
+        //            return valueOut;
+        //        }
+        //    }
+        //    if (PreviousState != null)
+        //        return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
+        //    return valueOut; //return empty profile
+        //}
 
-        /// <summary>
-        /// Returns the integer Profile for this state and all previous states merged into one Profile
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public HSFProfile<double> GetFullProfile(StateVariableKey<double> key) {
-            HSFProfile<double> valueOut = new HSFProfile<double>();
-            if (Ddata.Count != 0) { // Are there any Profiles in there?
-                if (Ddata.TryGetValue(key, out valueOut)) { //see if our key is in there
-                    if (PreviousState != null) // Check whether we are at the first state
-                        return HSFProfile<double>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
-                    return valueOut;
-                }
-            }
-            if (PreviousState != null)
-                return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
-            return valueOut; //return empty profile
-        }
-        /// <summary>
-        /// Returns the integer Profile for this state and all previous states merged into one Profile
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public HSFProfile<bool> GetFullProfile(StateVariableKey<bool> key)
-        {
-            HSFProfile<bool> valueOut = new HSFProfile<bool>();
-            if (Bdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Bdata.TryGetValue(key, out valueOut))
-                { //see if our key is in there
-                    if (PreviousState != null) // Check whether we are at the first state
-                        return HSFProfile<bool>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
-                    return valueOut;
-                }
-            }
-            if (PreviousState != null)
-                return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
-            return valueOut; //return empty profile
-        }
+        ///// <summary>
+        ///// Returns the integer Profile for this state and all previous states merged into one Profile
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <returns></returns>
+        //public HSFProfile<double> GetFullProfile(StateVariableKey<double> key) {
+        //    HSFProfile<double> valueOut = new HSFProfile<double>();
+        //    if (Ddata.Count != 0) { // Are there any Profiles in there?
+        //        if (Ddata.TryGetValue(key, out valueOut)) { //see if our key is in there
+        //            if (PreviousState != null) // Check whether we are at the first state
+        //                return HSFProfile<double>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
+        //            return valueOut;
+        //        }
+        //    }
+        //    if (PreviousState != null)
+        //        return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
+        //    return valueOut; //return empty profile
+        //}
+        ///// <summary>
+        ///// Returns the integer Profile for this state and all previous states merged into one Profile
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <returns></returns>
+        //public HSFProfile<bool> GetFullProfile(StateVariableKey<bool> key)
+        //{
+        //    HSFProfile<bool> valueOut = new HSFProfile<bool>();
+        //    if (Bdata.Count != 0)
+        //    { // Are there any Profiles in there?
+        //        if (Bdata.TryGetValue(key, out valueOut))
+        //        { //see if our key is in there
+        //            if (PreviousState != null) // Check whether we are at the first state
+        //                return HSFProfile<bool>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
+        //            return valueOut;
+        //        }
+        //    }
+        //    if (PreviousState != null)
+        //        return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
+        //    return valueOut; //return empty profile
+        //}
         
-        /// <summary>
-        /// Returns the integer Profile for this state and all previous states merged into one Profile
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public HSFProfile<Matrix<double>> GetFullProfile(StateVariableKey<Matrix<double>> key)
-        {
-            HSFProfile<Matrix<double>> valueOut = new HSFProfile<Matrix<double>>();
-            if (Mdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Mdata.TryGetValue(key, out valueOut))
-                { //see if our key is in there
-                    if (PreviousState != null) // Check whether we are at the first state
-                        return HSFProfile<Matrix<double>>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
-                    return valueOut;
-                }
-            }
-            if (PreviousState != null)
-                return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
-            return valueOut; //return empty profile
-        }
+        ///// <summary>
+        ///// Returns the integer Profile for this state and all previous states merged into one Profile
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <returns></returns>
+        //public HSFProfile<Matrix<double>> GetFullProfile(StateVariableKey<Matrix<double>> key)
+        //{
+        //    HSFProfile<Matrix<double>> valueOut = new HSFProfile<Matrix<double>>();
+        //    if (Mdata.Count != 0)
+        //    { // Are there any Profiles in there?
+        //        if (Mdata.TryGetValue(key, out valueOut))
+        //        { //see if our key is in there
+        //            if (PreviousState != null) // Check whether we are at the first state
+        //                return HSFProfile<Matrix<double>>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
+        //            return valueOut;
+        //        }
+        //    }
+        //    if (PreviousState != null)
+        //        return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
+        //    return valueOut; //return empty profile
+        //}
 
-        /// <summary>
-        /// Returns the integer Profile for this state and all previous states merged into one Profile
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public HSFProfile<Vector> GetFullProfile(StateVariableKey<Vector> key)
-        {
-            HSFProfile<Vector> valueOut = new HSFProfile<Vector>();
-            if (Vdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Vdata.TryGetValue(key, out valueOut))
-                { //see if our key is in there
-                    if (PreviousState != null) // Check whether we are at the first state
-                        return HSFProfile<Vector>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
-                    return valueOut;
-                }
-            }
-            if (PreviousState != null)
-                return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
-            return valueOut; //return empty profile
-        }
+        ///// <summary>
+        ///// Returns the integer Profile for this state and all previous states merged into one Profile
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <returns></returns>
+        //public HSFProfile<Vector> GetFullProfile(StateVariableKey<Vector> key)
+        //{
+        //    HSFProfile<Vector> valueOut = new HSFProfile<Vector>();
+        //    if (Vdata.Count != 0)
+        //    { // Are there any Profiles in there?
+        //        if (Vdata.TryGetValue(key, out valueOut))
+        //        { //see if our key is in there
+        //            if (PreviousState != null) // Check whether we are at the first state
+        //                return HSFProfile<Vector>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
+        //            return valueOut;
+        //        }
+        //    }
+        //    if (PreviousState != null)
+        //        return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
+        //    return valueOut; //return empty profile
+        //}
 
-        /// <summary>
-        /// Returns the qu aternionProfile for this state and all previous states merged into one Profile
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
-        public HSFProfile<Quaternion> GetFullProfile(StateVariableKey<Quaternion> key)
-        {
-            HSFProfile<Quaternion> valueOut = new HSFProfile<Quaternion>();
-            if (Qdata.Count != 0)
-            { // Are there any Profiles in there?
-                if (Qdata.TryGetValue(key, out valueOut))
-                { //see if our key is in there
-                    if (PreviousState != null) // Check whether we are at the first state
-                        return HSFProfile<Quaternion>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
-                    return valueOut;
-                }
-            }
-            if (PreviousState != null)
-                return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
-            return valueOut; //return empty profile
-        }
+        ///// <summary>
+        ///// Returns the qu aternionProfile for this state and all previous states merged into one Profile
+        ///// </summary>
+        ///// <param name="key"></param>
+        ///// <returns></returns>
+        //public HSFProfile<Quaternion> GetFullProfile(StateVariableKey<Quaternion> key)
+        //{
+        //    HSFProfile<Quaternion> valueOut = new HSFProfile<Quaternion>();
+        //    if (Qdata.Count != 0)
+        //    { // Are there any Profiles in there?
+        //        if (Qdata.TryGetValue(key, out valueOut))
+        //        { //see if our key is in there
+        //            if (PreviousState != null) // Check whether we are at the first state
+        //                return HSFProfile<Quaternion>.MergeProfiles(valueOut, PreviousState.GetFullProfile(key));
+        //            return valueOut;
+        //        }
+        //    }
+        //    if (PreviousState != null)
+        //        return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
+        //    return valueOut; //return empty profile
+        //}
         #endregion
 
         #region SetProfile
@@ -928,48 +928,48 @@ namespace MissionElements
 
 
 
-        public void SetInitialSystemState(XmlNode ICNode, Asset asset)
+        public void SetInitialSystemState(XmlNode StateNode, string keyName)
         {
-            string type = ICNode.Attributes["type"].Value;
-            string stateVariableName = asset.Name + "." + ICNode.Attributes["key"].Value.ToLower(); // This may be changing to not use asset.name
+            string type = StateNode.Attributes["type"].Value.ToLower();
+            //string stateVariableName = asset.Name + "." + ICNode.Attributes["key"].Value.ToLower(); // This may be changing to not use asset.name
             double time = SimParameters.SimStartSeconds;
 
             if (type.ToLower().Equals("int") || type.ToLower().Equals("integer"))
             {
-                Int32.TryParse(ICNode.Attributes["value"].Value, out int stateValue);
-                AddValue(new StateVariableKey<int>(stateVariableName), time, stateValue);
+                Int32.TryParse(StateNode.Attributes["value"].Value, out int stateValue);
+                AddValue(new StateVariableKey<int>(keyName), time, stateValue);
             }
             else if (type.ToLower().Equals("double"))
             {
-                Double.TryParse(ICNode.Attributes["value"].Value, out double stateValue);
-                AddValue(new StateVariableKey<double>(stateVariableName), time, stateValue);
+                Double.TryParse(StateNode.Attributes["value"].Value, out double stateValue);
+                AddValue(new StateVariableKey<double>(keyName), time, stateValue);
             }
             else if (type.ToLower().Equals("bool"))
             {
-                string val = ICNode.Attributes["value"].Value;
+                string val = StateNode.Attributes["value"].Value;
                 bool stateValue = false;
                 if (val.ToLower().Equals("true") || val.Equals("1"))
                     stateValue = true;
-                AddValue(new StateVariableKey<bool>(stateVariableName), time, stateValue);
+                AddValue(new StateVariableKey<bool>(keyName), time, stateValue);
             }
             else if (type.ToLower().Equals("matrix"))
             {
-                Matrix<double> stateValue = new Matrix<double>(ICNode.Attributes["value"].Value);
-                AddValue(new StateVariableKey<Matrix<double>>(stateVariableName), time, stateValue);
+                Matrix<double> stateValue = new Matrix<double>(StateNode.Attributes["value"].Value);
+                AddValue(new StateVariableKey<Matrix<double>>(keyName), time, stateValue);
             }
             else if (type.ToLower().Equals("quat") || type.ToLower().Equals("quaternion"))
             {
-                Quaternion stateValue = new Quaternion(ICNode.Attributes["value"].Value);
-                AddValue(new StateVariableKey<Quaternion>(stateVariableName), time, stateValue);
+                Quaternion stateValue = new Quaternion(StateNode.Attributes["value"].Value);
+                AddValue(new StateVariableKey<Quaternion>(keyName), time, stateValue);
             }
             else if (type.ToLower().Equals("vector"))
             {
-                Vector stateValue = new Vector(ICNode.Attributes["value"].Value);
-                AddValue(new StateVariableKey<Vector>(stateVariableName), time, stateValue);
+                Vector stateValue = new Vector(StateNode.Attributes["value"].Value);
+                AddValue(new StateVariableKey<Vector>(keyName), time, stateValue);
             }
             else
             {
-                Console.WriteLine($"State variable {stateVariableName} of type {type} is not supported by HSF.");
+                Console.WriteLine($"State variable {keyName} of type {type} is not supported by HSF.");
             }
         }
     }

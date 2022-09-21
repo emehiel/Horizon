@@ -92,10 +92,11 @@ def constantBurnHoldFuelCost(R0_m, tHold_sec, n, mass0_kg, Isp_sec):
     '''
     Compute fuel cost for performing a constant burn hold at R0 for tHold
     Assume distributed thrust (dV cost is SUM of components, NOT norm)
-    '''
-    deltaV_mps = tHold_sec * n**2 * (3 * R0_m[0] + R0_m[2])
-    return calcFuelCost(deltaV_mps, mass0_kg, Isp_sec)
 
+    NOTE - R0_m is HSF Matrix
+    '''
+    deltaV_mps = tHold_sec * n**2 * (3 * R0_m[1] + R0_m[3]) # 1-based index becasue this is a HSF Matrix
+    return calcFuelCost(deltaV_mps, mass0_kg, Isp_sec)
 
 
 ## 
@@ -523,7 +524,7 @@ class guidance(HSFSubsystem.Subsystem):
         instance.PROPELLANT_MASS_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'propellant_mass_kg')
         instance.addKey(instance.PROPELLANT_MASS_KEY)
 
-        instance.MODE_KEY = Utilities.StateVarKey[str](instance.Asset.Name + '.' + 'mode')
+        instance.MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_transfering')
 
         # Define Constants
         instance.dryMass_kg = float(node.Attributes['dryMassKg'].Value)
@@ -555,7 +556,7 @@ class guidance(HSFSubsystem.Subsystem):
         return System.Func[MissionElements.Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
 
     def CanPerform(self, event, universe):
-        # shorcut check for empty target
+        # check for empty target
         tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
         if (tgtName == 'EmptyTarget'):
             return True
@@ -628,10 +629,9 @@ class guidance(HSFSubsystem.Subsystem):
         # print('Had ' + str(fuelMass0_kg) + 'kg of Fuel at time = ' + str(ts) + ', now have ' + str(fuelMassLeft_kg) + 'kg of Fuel at time = ' + str(ts + tStarBisect))
 
         # Assign mode
-        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[str](ts, 'transferring'))
-        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[str](ts + tStarBisect, 'servicing'))
+        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[System.Boolean](ts, True))
+        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect, False))
         tService_sec = 0 # TODO - get from tool.py
-        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[str](ts + tStarBisect + tService_sec, 'free'))
 
         # Compute fuel cost to hold position while serivicing, TODO - consider just leaving as "latched on"
         m0_kg = self.dryMass_kg + fuelMassLeft_kg

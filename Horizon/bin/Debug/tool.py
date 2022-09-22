@@ -36,8 +36,11 @@ class tool(HSFSubsystem.Subsystem):
         instance.Asset = asset
         instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
 
-        instance.toolType = node.Attributes['toolType'].Value.ToString()       # TODO make these both lists instead!
-        instance.servicingTime = float(node.Attributes['servicingTime'].Value) # TODO make these both lists instead!
+        instance.toolType = node.Attributes['toolType'].Value.ToString()       # TODO make this a list!
+        instance.servicingTime = float(node.Attributes['servicingTime'].Value) # TODO make this a dictionary where tool type dictates time!
+
+        instance.SERVICING_TIME_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'servicing_time')
+        instance.addKey(instance.SERVICING_TIME_KEY)
 
         return instance
 
@@ -55,8 +58,9 @@ class tool(HSFSubsystem.Subsystem):
             return True
 
         if (self._task.Type == self.toolType.ToLower()):
+            event.State.AddValue(self.SERVICING_TIME_KEY, Utilities.HSFProfile[System.Double](event.GetTaskStart(self.Asset), self.servicingTime))
+            # TODO - improve this by using a dictionary, the tool type maps to a task time, not same-same for all tools!
             return True
-            # TODO also set event time here... needs to take time to perform operation!
         else:
             return False
 

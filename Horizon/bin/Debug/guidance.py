@@ -581,7 +581,7 @@ class guidance(HSFSubsystem.Subsystem):
         # print('Pulled off R0 = ' + str(R0) + ', V0 = ' + str(V0) + ' at time = ' + str(lastTime))
 
         # Free-Flight Propagate Forwards to Current Time Step
-        dt1 = es - lastTime
+        dt1 = ts - lastTime
         if (dt1 > 0):
             RV1 = Utilities.Matrix[System.Double](6,1)
             phiRR_matrix = phiRR(n, dt1)
@@ -631,11 +631,14 @@ class guidance(HSFSubsystem.Subsystem):
         # Assign mode
         event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[System.Boolean](ts, True))
         event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect, False))
-        tService_sec = 0 # TODO - get from tool.py
+
+        # Extract Servicing time from tool.py
+        stateKey     = Utilities.StateVarKey[System.Double](self.Asset.Name.ToString() + '.' + 'servicing_time')
+        tService_sec = event.State.GetLastValue(stateKey).Value
 
         # Compute fuel cost to hold position while serivicing, TODO - consider just leaving as "latched on"
-        m0_kg = self.dryMass_kg + fuelMassLeft_kg
-        fuelBurned_kg = constantBurnHoldFuelCost(Rtgt, tService_sec, n, m0_kg, self.Isp_sec)
+        m0_kg           = self.dryMass_kg + fuelMassLeft_kg
+        fuelBurned_kg   = constantBurnHoldFuelCost(Rtgt, tService_sec, n, m0_kg, self.Isp_sec)
         fuelMassLeft_kg = fuelMassLeft_kg - fuelBurned_kg
         event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + tStarBisect + tService_sec, fuelMassLeft_kg))
 

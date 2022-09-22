@@ -55,9 +55,13 @@ singular_nt_array = [
   28.274333882308138,
   31.415926535897931
 ] # first several nt that produce singularities in the cost function
+
 bracketPairs = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [6, 7], [7, 8], [9, 10], [10, 11], [12, 13]]
 # first 10 meaningful indice pairs to examine, skip the tiny brackets
 maxIters = 100
+
+R_inx = Utilities.MatrixIndex(1, 3)
+V_inx = Utilities.MatrixIndex(4, 6)
 
 ##
 # Utility Functions
@@ -210,8 +214,6 @@ def solveTwoImp(RV0, RVf, n, dt):
     '''
 
     # Extract Individual R, V
-    R_inx = Utilities.MatrixIndex(1, 3)
-    V_inx = Utilities.MatrixIndex(4, 6)
     R0 = RV0[R_inx, ":"]
     V0 = RV0[V_inx, ":"]
     Rf = RVf[R_inx, ":"]
@@ -223,7 +225,6 @@ def solveTwoImp(RV0, RVf, n, dt):
     phiRR_mat = phiRR(n, dt)
     phiVR_mat = phiVR(n, dt)
     phiVV_mat = phiVV(n, dt)
-
 
     # Compute V0_plus and Construct RV0_plus
     V0_plus = phiRV_inv * (Rf - phiRR_mat * R0)
@@ -249,8 +250,8 @@ def fprime(f, x, k):
     '''
     Forward Difference Approximate fdot(x)
     k is a tuple of addittional constants to evaluate f
+    finite difference step size is sqrt(eps) (Source: MathWorks)
     '''
-    # Set finite difference step size to be sqrt(eps) (Source: MathWorks)
     epsVal = 7.0/3.0 - 4.0/3.0 - 1.0
     h = math.sqrt(epsVal)
 
@@ -365,9 +366,10 @@ def solveForMinDV_Bisect(RV0, RVf, n, KOZ, gridPts, nBracks, tol):
 
         # solve for local bracket solution
         k = (RV0, RVf, n, KOZ, gridPts) # tuple of constants
-        (tStar, numIts, cost, magDeriv, brackWidth) = bisectionMinimizer(a0, b0, impCost, k, tol)
-        # print('unconstrained bisection arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
+        #(tStar, numIts, cost, magDeriv, brackWidth) = bisectionMinimizer(a0, b0, impCost, k, tol)
         (validBracket, tStar, numIts, cost, magDeriv, brackWidth) = modifiedBisectionMinimizer(a0, b0, impCost, isValidTOF, k, tol)
+        
+        # print('unconstrained bisection arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
         # print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
         # print('')
 
@@ -512,11 +514,11 @@ class guidance(HSFSubsystem.Subsystem):
         instance.STATEVEC_KEY = Utilities.StateVarKey[Utilities.Matrix[System.Double]](instance.Asset.Name + '.' + 'ric_state')
         instance.addKey(instance.STATEVEC_KEY)
 
-        instance.DELTAV_i_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'deltaV_i')
-        instance.addKey(instance.DELTAV_i_KEY)
+        instance.DELTAV_1_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'deltaV_i')
+        instance.addKey(instance.DELTAV_1_KEY)
 
-        instance.DELTAV_f_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'deltaV_f')
-        instance.addKey(instance.DELTAV_f_KEY)
+        instance.DELTAV_2_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'deltaV_f')
+        instance.addKey(instance.DELTAV_2_KEY)
 
         instance.DELTAV_nmc_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'deltaV_nmc')
         instance.addKey(instance.DELTAV_nmc_KEY)
@@ -524,7 +526,7 @@ class guidance(HSFSubsystem.Subsystem):
         instance.PROPELLANT_MASS_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'propellant_mass_kg')
         instance.addKey(instance.PROPELLANT_MASS_KEY)
 
-        instance.MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_transfering')
+        instance.MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_transferring')
 
         # Define Constants
         instance.dryMass_kg = float(node.Attributes['dryMassKg'].Value)
@@ -571,14 +573,12 @@ class guidance(HSFSubsystem.Subsystem):
         # print('    Event Start: ' + es.ToString() + ' Event End (default): '+ ee.ToString() + ' Task Start: ' + ts.ToString() + ' Task End (default): ' + te.ToString())
 
         # Extract Last State Data
-        lastState = event.State.GetLastValue(self.STATEVEC_KEY) # Returns matrix Object
+        lastState = event.State.GetLastValue(self.STATEVEC_KEY) # Returns HSF Matrix Object
         lastTime  = lastState.Key
         RV0       = lastState.Value
-        R_inx     = Utilities.MatrixIndex(1, 3)
-        V_inx     = Utilities.MatrixIndex(4, 6)
         R0        = RV0[R_inx, ":"]
         V0        = RV0[V_inx, ":"]
-        # print('Pulled off R0 = ' + str(R0) + ', V0 = ' + str(V0) + ' at time = ' + str(lastTime))
+        #print('Pulled off R0 = ' + str(R0) + ', V0 = ' + str(V0) + ' at time = ' + str(lastTime))
 
         # Free-Flight Propagate Forwards to Current Time Step
         dt1 = ts - lastTime
@@ -592,8 +592,14 @@ class guidance(HSFSubsystem.Subsystem):
             R1 = phiRR_matrix * R0 + phiRV_matrix * V0
             V1 = phiVR_matrix * R0 + phiVV_matrix * V0
             RV1 = Utilities.Matrix[System.Double].Vertcat(R1, V1)
-        else:
+        elif (dt1 == 0):
+            # R1 = 'no dt, no R1'
+            # V1 = 'no dt, no V1'
             RV1 = RV0
+        else:
+            print('ERROR: State is defined in the future, something went wrong!')
+        
+        #print('Propagated state to current epoch thru dt = ' + str(dt1) + ' to R1 = ' + str(R1) + ', V1 = ' + str(V1))
 
         # print("Last State: " + RV0.ToString() + " New State: " + RV1.ToString())
 
@@ -612,23 +618,25 @@ class guidance(HSFSubsystem.Subsystem):
         if not isValid:
             # Cannot Perform Transfer with any TOF brackets explored!
             return False
-
+        
         # Reconstruct
         (RV1_plus, DV1_vec, DV2_vec, DVtot) = solveTwoImp(RV1, RVtgt, n, tStarBisect)
 
-        event.State.AddValue(self.DELTAV_i_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts, DV1_vec))
-        event.State.AddValue(self.DELTAV_f_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect, DV2_vec))
-        #event.State.AddValue(self.DELTAV_t_KEY, Utilities.HSFProfile[System.Double](ts, DVtot)) REPLACE WITH NMC/HOLD
+        # Log RV1_plus state
+        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts, RV1_plus))
 
-        # Compute Fuel Cost for delta-V's
+        # Log Impulses
+        event.State.AddValue(self.DELTAV_1_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts, DV1_vec))
+        event.State.AddValue(self.DELTAV_2_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect, DV2_vec))
+
+        # Compute Fuel Cost for delta-V's and log fuel mass
         fuelMass0_kg = event.State.GetLastValue(self.PROPELLANT_MASS_KEY).Value
         m0_kg = self.dryMass_kg + fuelMass0_kg
         fuelBurned_kg = calcFuelCost(DVtot, m0_kg, self.Isp_sec)
         fuelMassLeft_kg = fuelMass0_kg - fuelBurned_kg
         event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + tStarBisect, fuelMassLeft_kg))
-        # print('Had ' + str(fuelMass0_kg) + 'kg of Fuel at time = ' + str(ts) + ', now have ' + str(fuelMassLeft_kg) + 'kg of Fuel at time = ' + str(ts + tStarBisect))
 
-        # Assign mode
+        # Log "mode" to define when transfering and when servicing
         event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[System.Boolean](ts, True))
         event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect, False))
 
@@ -642,12 +650,12 @@ class guidance(HSFSubsystem.Subsystem):
         fuelMassLeft_kg = fuelMassLeft_kg - fuelBurned_kg
         event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + tStarBisect + tService_sec, fuelMassLeft_kg))
 
-        # TODO plan/compute exit strategy (dV to NMC, hop to Vbar, or hold), this currently assumes u "latch" on
+        # TODO plan/compute exit strategy (dV to NMC, hop to Vbar, or hold), this currently assumes u "latch" on after servicing
 
-        #event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts, RV1_plus))
-        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect, RVtgt))
-        event.SetTaskEnd(self.Asset, ts + tStarBisect)
-        event.SetEventEnd(self.Asset, ts + tStarBisect)
+        # Log final state
+        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect + tService_sec, RVtgt))
+        event.SetTaskEnd(self.Asset, ts + tStarBisect + tService_sec)
+        event.SetEventEnd(self.Asset, ts + tStarBisect + tService_sec)
         return True
 
     def CanExtend(self, event, universe, extendTo):

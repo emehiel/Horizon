@@ -29,12 +29,13 @@ from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
-from math import sin, cos
-import math
+from math import sin, cos, sqrt
 
 #
 ## Constants
 #
+R_inx = Utilities.MatrixIndex(1, 3)
+V_inx = Utilities.MatrixIndex(4, 6)
 
 # 
 ## CW Functions
@@ -60,10 +61,10 @@ def phiRR(n, t):
     nt = n*t
 
     phiRR_mat = Utilities.Matrix[System.Double](3,3)
-    phiRR_mat[1,1] = 4.0 - 3.0 * math.cos(nt)
-    phiRR_mat[2,1] = 6.0 * (math.sin(nt) - nt)
+    phiRR_mat[1,1] = 4.0 - 3.0 * cos(nt)
+    phiRR_mat[2,1] = 6.0 * (sin(nt) - nt)
     phiRR_mat[2,2] = 1.0
-    phiRR_mat[3,3] = math.cos(nt)
+    phiRR_mat[3,3] = cos(nt)
 
     return phiRR_mat
 
@@ -74,11 +75,11 @@ def phiRV(n, t):
     nt = n*t
 
     phiRV_mat = Utilities.Matrix[System.Double](3,3)
-    phiRV_mat[1,1] = math.sin(nt) / n
-    phiRV_mat[1,2] = 2.0 * (1.0 - math.cos(nt)) / n
-    phiRV_mat[2,1] = 2.0 * (math.cos(nt) - 1.0) / n
-    phiRV_mat[2,2] = (4.0 * math.sin(nt) - 3.0 * nt) / n
-    phiRV_mat[3,3] = math.sin(nt) / n
+    phiRV_mat[1,1] = sin(nt) / n
+    phiRV_mat[1,2] = 2.0 * (1.0 - cos(nt)) / n
+    phiRV_mat[2,1] = 2.0 * (cos(nt) - 1.0) / n
+    phiRV_mat[2,2] = (4.0 * sin(nt) - 3.0 * nt) / n
+    phiRV_mat[3,3] = sin(nt) / n
 
     return phiRV_mat
 
@@ -89,9 +90,9 @@ def phiVR(n, t):
     nt = n*t
 
     phiVR_mat = Utilities.Matrix[System.Double](3,3)
-    phiVR_mat[1,1] = 3.0 * n * math.sin(nt)
-    phiVR_mat[2,1] = 6.0 * n * (math.cos(nt) - 1)
-    phiVR_mat[3,3] = -1.0 * n * math.sin(nt)
+    phiVR_mat[1,1] = 3.0 * n * sin(nt)
+    phiVR_mat[2,1] = 6.0 * n * (cos(nt) - 1)
+    phiVR_mat[3,3] = -1.0 * n * sin(nt)
 
     return phiVR_mat
 
@@ -130,6 +131,12 @@ def propCW(R0, V0, n, t):
 ## Collision Functions
 #
 
+def hsfMatNorm(R):
+    '''
+    Return 2-Norm of R, expressed as an HSF Matrix Object, which is 1-indexed
+    '''
+    return sqrt(R[1]**2 + R[2]**2 + R[3]**2)
+
 def checkTasks(event):
     '''
     Check for colliding tasks (2+ assets attempting to service a single target)
@@ -152,25 +159,52 @@ def checkTasks(event):
                 return False
     return True
 
-def checkCollision(allRV, minDistance):
+def checkCollisions(allRV, minDistance):
     '''
-    Check for collisions in allRV
+    Check for collisions in allRV (poor man's conjunction analysis)
+    
+    INPUTS
+        allRV       - list of all active asset's RV expressed as HSF Matrix Objects
+        minDistance - float of minimum safe spacing, effectively assuming all
+                      assets have a constant, spherical position uncertainty
+
+    Return True if Safe, False if there is a Collision
     '''
     if (len(allRV) < 2):
         return True
 
-    R_inx     = Utilities.MatrixIndex(1, 3)
-
-    # for idx1 in range(0, len(allRV) - 1):
-    #   RV1 = allRV[idx1]
-    #   R1 = RV1[R_inx, ":"]
-    #   for idx2 in range(idx1+1, len(allRV)):
-    #       RV2 = allRV[idx2]
-    #       R2 = RV2[R_inx, ":"]
-    #       if (norm(R2 - R1) < minDistance):
-    #           return False
+    for idx1 in range(0, len(allRV) - 1):
+        RV1 = allRV[idx1]
+        R1 = RV1[R_inx, ":"]
+        for idx2 in range(idx1 + 1, len(allRV)):
+            RV2 = allRV[idx2]
+            R2 = RV2[R_inx, ":"]
+            if (hsfMatNorm(R2 - R1) < minDistance):
+                return False
 
     return True
+
+
+def getActives(event, activeAssets, tNow):
+    '''
+    Return updated list of active assets and their states
+    '''
+    stillActiveAssets = []
+    activeStates      = []
+
+    for asset in activeAssets:
+        modeKey = Utilities.StateVarKey[System.Boolean](asset + '.' + 'is_transferring')
+        isAssetActive = event.State.GetValueAtTime(modeKey, tNow).Value
+        if isAssetActive:
+            stillActiveAssets.append(asset)
+
+            # get state
+            stateKey = Utilities.StateVarKey[Utilities.Matrix[System.Double]](asset + '.' + 'ric_state')
+            assetRVState = event.State.GetLastValue(stateKey).Value
+            activeStates.append(assetRVState)
+        else:
+            continue
+    return (stillActiveAssets, activeStates)
 
 #
 ## Class Definition
@@ -181,6 +215,11 @@ class collision_avoidance(HSFSubsystem.Subsystem):
         instance.Asset = asset
         instance.Name  = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
 
+        # Set Mean Motion
+        instance.mean_motion = 7.2e-5 # hardcoded, roughly GEO
+        if (node.Attributes['Mean_Motion'] != None):
+            instance.mean_motion = float(node.Attributes['Mean_Motion'].Value)
+
         # Set Spacing
         instance.MinSpacing = 10.0 # meters, minimum allowed spacing between assets at any time
         if (node.Attributes['MinSpacing'] != None):
@@ -190,6 +229,7 @@ class collision_avoidance(HSFSubsystem.Subsystem):
         instance.gridPts = 100
         if (node.Attributes['GridPoints'] != None):
             instance.gridPts = int(node.Attributes['GridPoints'].Value)
+        
         return instance
 
     def GetDependencyDictionary(self):
@@ -199,24 +239,7 @@ class collision_avoidance(HSFSubsystem.Subsystem):
     def GetDependencyCollector(self):
         return System.Func[MissionElements.Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
 
-    def CanPerform(self, event, universe):        
-        # get task/event end times for all proposed task/target/asset/event
-
-        # AN EVENT IS THE COLLECTION OF ALL ASSETS/TASKS... HAS DICT OF THE PAIRS!
-
-        # get RV0+ for everything with a burn commanded, RV0 for NMC / drifters
-
-        # step each with grid of N points up to __end of event, end of last event??
-
-        #ISSUE: If go to end of event, this would allow colliding trajectories to pass as true!
-        # If go to end of last epoch, this may fail collisions that aren't necessarily collisions, 
-        #    as an early-finisher or drifter could get out of the way on the next step...
-
-
-        # SOLUTION: check up to event end for all objects (assume step size less than any tStar, should be by design!),
-        #  then, dont check against NMCs/drifters anymore, check for the remaining trajectories up to the point
-        #  when each ends its event... keep going until only one object to check!
-
+    def CanPerform(self, event, universe):
         ##
         # Check for double-tasking
         ##
@@ -225,13 +248,14 @@ class collision_avoidance(HSFSubsystem.Subsystem):
             return False
 
         ##
-        # Check for phyiscal collisions
+        # Check for collisions
         ##
-        to = event.GetEventStart(self.Asset)
-        tf = event.GetEventEnd(self.Asset)
-        dt = (tf - to) / self.gridPts
+        to   = event.GetEventStart(self.Asset)
+        tf   = event.GetEventEnd(self.Asset)
+        dt   = (tf - to) / self.gridPts
+        tNow = to
 
-        # Extract list of all servicer assets
+        # Extract list of all servicer assets and all active servicer assets
         tasksCdict   = event.Tasks
         allAssets    = []
         activeAssets = []
@@ -243,6 +267,7 @@ class collision_avoidance(HSFSubsystem.Subsystem):
                 continue
             else:
                 allAssets.append(asset)
+            
             # Check if target is EmptyTarget
             if (target == 'EmptyTarget'):
                 continue
@@ -250,47 +275,48 @@ class collision_avoidance(HSFSubsystem.Subsystem):
                 activeAssets.append(asset)
 
         # Extract all RIC states at start of event
-        #   active assets
+        allServicerStates = []
+        for asset in allAssets:
+            stateKey     = Utilities.StateVarKey[Utilities.Matrix[System.Double]](asset + '.' + 'ric_state')
+            assetRVState = event.State.GetLastValue(stateKey).Value
+            allServicerStates.append(assetRVState)
+        
+        # Check for initial collisions
+        isSafe = checkCollisions(allServicerStates, self.MinSpacing)
+        if (not isSafe):
+            return False
 
-        for ii in range(0, self.gridPts + 1):
-            # Construct 2D array of states
-            allServicerStates = []
-            for asset in allAssets:
-                stateKey     = Utilities.StateVarKey[Utilities.Matrix[System.Double]](asset + '.' + 'ric_state')
-                assetRVState = event.State.GetLastValue(stateKey).Value
-                allServicerStates.append(assetRVState)
-                #assetRVState = event.State.GetValueAtTime(stateKey, event.GetTaskStart(self.Asset)).Value 
-                # Get whole profile?
+        # Check all objects through duration of event
+        for idx in range(0, self.gridPts + 1):
+            # step all servicers
+            for servicerState in allServicerStates:
+                servicerState = propCW(servicerState[R_inx, ":"], servicerState[V_inx, ":"], self.mean_motion, dt)
+            
+            # check for collisions
+            isSafe = checkCollisions(allServicerStates, self.MinSpacing)
+            if (not isSafe):
+                return False
+            
+            # Increment Time
+            tNow += dt
+        
+        # Check all remaining active servicers until no more are active
+        (activeAssets, activeStates) = getActives(event, activeAssets, tNow)
+        while (len(activeAssets) > 1):
+            # Step Forward all Active Assets
+            for servicerState in activeStates:
+                servicerState = propCW(servicerState[R_inx, ":"], servicerState[V_inx, ":"], self.mean_motion, dt)
 
-                # Propbably want to GET all the LVLH states and THEN propagate/check
-                # DRIFTERS will have no task, their last RV state is the NMC (need to put in!) I want to check
-                # ACTIVES I need their transfer path and end date for checking thru their active timeline...
+            # Check for collisions
+            isSafe = checkCollisions(allServicerStates, self.MinSpacing)
+            if (not isSafe):
+                return False
 
-            t = to + (dt * ii)
+            # Update activeAssets and activeStates
+            tNow += dt
+            (activeAssets, activeStates) = getActives(event, activeAssets, tNow)
 
-        # for all gridPts in step:
-        #   get all states @ gridPt
-
-        #   check for collisions
-        #   isSafe = checkCollisions(allRV, minDist)
-        #   if not isSafe:
-        #       return False
-
-        # end for loop
-
-        # trim list to only active assets
-        # while activeList > 1 asset:
-        #   get all states @ gridPt
-
-        #   check for collisions
-        #   isSafe = checkCollisions(allRV, minDist)
-        #   if not isSafe:
-        #       return False
-
-        #   step fwd to next gridPt
-        #   re-trim activeList based on who is still active
-        # end while loop
-
+        # Return True if all checks have passed!
         return True
 
     def CanExtend(self, event, universe, extendTo):

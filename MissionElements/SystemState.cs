@@ -130,7 +130,7 @@ namespace MissionElements
         public KeyValuePair<double, int> GetValueAtTime(StateVarKey<int> key, double time) {
             HSFProfile<int> valueOut;
             if (Idata.Count != 0) { // Are there any Profiles in there?
-                if (Idata.TryGetValue(key, out valueOut) && Idata[key].LastTime() <= time) //see if our key is in there
+                if (Idata.TryGetValue(key, out valueOut) && Idata[key].FirstTime() <= time) //see if our key is in there and has a valid time
                     return valueOut.DataAtTime(time);
             }
             return Previous.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
@@ -287,7 +287,7 @@ namespace MissionElements
         public KeyValuePair<double, double> GetValueAtTime(StateVarKey<double> key, double time) {
             HSFProfile<double> valueOut;
             if (Ddata.Count != 0) { // Are there any Profiles in there?
-                if (Ddata.TryGetValue(key, out valueOut) && Ddata[key].LastTime() <= time) //see if our key is in there
+                if (Ddata.TryGetValue(key, out valueOut) && Ddata[key].FirstTime() <= time) //see if our key is in there and has a valid time
                     return valueOut.DataAtTime(time);
             }
             return Previous.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
@@ -395,7 +395,7 @@ namespace MissionElements
             HSFProfile<bool> valueOut;
             if (Bdata.Count != 0)
             { // Are there any Profiles in there?
-                if (Bdata.TryGetValue(key, out valueOut) && Bdata[key].LastTime() <= time) //see if our key is in there
+                if (Bdata.TryGetValue(key, out valueOut) && Bdata[key].FirstTime() <= time) //see if our key is in there and has a valid time
                     return valueOut.DataAtTime(time);
             }
             return Previous.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one
@@ -501,7 +501,7 @@ namespace MissionElements
             HSFProfile<Matrix<double>> valueOut;
             if (Mdata.Count != 0)
             { // Are there any Profiles in there?
-                if (Mdata.TryGetValue(key, out valueOut) && Mdata[key].LastTime() <= time) //see if our key is in there
+                if (Mdata.TryGetValue(key, out valueOut) && Mdata[key].FirstTime() <= time) //see if our key is in there and has a valid time
                     return valueOut.DataAtTime(time);
             }
             return Previous.GetValueAtTime(key, time); //either no profiles or none that match our keys, try finding it in the previous one

@@ -114,6 +114,7 @@ def phiVV(n, t):
 def propCW(R0, V0, n, t):
     '''
     Propagate RV0 with CW equations
+    R0, V0, and RV1 are all HSF Matrix Objects
     '''
     phiRR_matrix = phiRR(n, t)
     phiRV_matrix = phiRV(n, t)
@@ -180,12 +181,16 @@ def checkCollisions(allRV, minDistance):
             RV2 = allRV[idx2]
             R2 = RV2[R_inx, ":"]
             if (hsfMatNorm(R2 - R1) < minDistance):
+                print('Collision Detected!')
                 return False
 
     return True
 
+#
+## Extraction Functions
+#
 
-def getActives(event, activeAssets, tNow):
+def getActives(event, activeAssets, activeStates, tOld, tNow_sec):
     '''
     Return updated list of active assets and their states
     '''
@@ -194,17 +199,42 @@ def getActives(event, activeAssets, tNow):
 
     for asset in activeAssets:
         modeKey = Utilities.StateVarKey[System.Boolean](asset + '.' + 'is_transferring')
-        isAssetActive = event.State.GetValueAtTime(modeKey, tNow).Value
+        isAssetActive = event.State.GetValueAtTime(modeKey, tNow_sec).Value
+        #print('Finding that ' + asset.ToString() + ' is active = ' + str(isAssetActive) + ' at time ' + str(tNow_sec))
         if isAssetActive:
             stillActiveAssets.append(asset)
 
             # get state
             stateKey = Utilities.StateVarKey[Utilities.Matrix[System.Double]](asset + '.' + 'ric_state')
-            assetRVState = event.State.GetLastValue(stateKey).Value
+            assetRVState = event.State.GetLastValue(stateKey).Value ## TODO - propagate from the known state instead?? Careful about getting lastValue vs value at time......
+
             activeStates.append(assetRVState)
         else:
             continue
     return (stillActiveAssets, activeStates)
+
+def getAllStates(event, assetNames, tNow_sec, n_radps):
+    '''
+    Return all asset states given the event, list of active asset names, and current time
+    '''
+    allStates = []
+    for assetName in assetNames:
+        # Extract last defined state - either RV1plus or RVTgt or RVTgt
+        stateKey      = Utilities.StateVarKey[Utilities.Matrix[System.Double]](assetName + '.' + 'ric_state')
+        assetRV0State = event.State.GetValueAtTime(stateKey, tNow_sec).Value
+        assetT0       = event.State.GetValueAtTime(stateKey, tNow_sec).Key
+
+        # Propagate forward unless it is servicing
+        isServicingKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_servicing')
+        isServicing = event.State.GetValueAtTime(isServicingKey, tNow_sec).Value
+        if (not isServicing):
+            # asset is drifting if its not servicing
+            assetRVState = propCW(assetRV0State[R_inx, ":"], assetRV0State[V_inx, ":"], n_radps, tNow_sec - assetT0)
+            allStates.append(assetRVState)
+        else:
+            allStates.append(assetRV0State)
+
+    return allStates
 
 #
 ## Class Definition
@@ -216,9 +246,9 @@ class collision_avoidance(HSFSubsystem.Subsystem):
         instance.Name  = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
 
         # Set Mean Motion
-        instance.mean_motion = 7.2e-5 # hardcoded, roughly GEO
-        if (node.Attributes['Mean_Motion'] != None):
-            instance.mean_motion = float(node.Attributes['Mean_Motion'].Value)
+        instance.meanMotion_radps = 7.2e-5 # hardcoded, roughly GEO
+        if (node.Attributes['meanMotion_radps'] != None):
+            instance.meanMotion_radps = float(node.Attributes['meanMotion_radps'].Value)
 
         # Set Spacing
         instance.MinSpacing = 10.0 # meters, minimum allowed spacing between assets at any time
@@ -250,71 +280,90 @@ class collision_avoidance(HSFSubsystem.Subsystem):
         ##
         # Check for collisions
         ##
-        to   = event.GetEventStart(self.Asset)
-        tf   = event.GetEventEnd(self.Asset)
-        dt   = (tf - to) / self.gridPts
-        tNow = to
 
-        # Extract list of all servicer assets and all active servicer assets
-        tasksCdict   = event.Tasks
-        allAssets    = []
-        activeAssets = []
+        # Extract global timing information
+        t0_sec   = event.GetEventStart(self.Asset)
+        tf_sec   = event.GetEventEnd(self.Asset)
+        print(tf_sec)
+        dt_sec   = (tf_sec - t0_sec) / self.gridPts
+
+        # Extract all servicer assets and their task end times
+        tasksCdict = event.Tasks # this is a C# object
+        allAssetData = {}
         for assetTask in tasksCdict:
-            asset  = assetTask.Key.Name.ToString()
-            target = assetTask.Value.Target.Name.ToString()
-            # Check if asset is this mothership
-            if (asset == self.Asset.Name.ToString()):
-                continue
+            assetName  = assetTask.Key.Name.ToString()
+            #targetName = assetTask.Value.Target.Name.ToString()
+            if (assetName == self.Asset.Name.ToString()):
+                continue # skip asset if its this mothership
             else:
-                allAssets.append(asset)
-            
-            # Check if target is EmptyTarget
-            if (target == 'EmptyTarget'):
-                continue
-            else:
-                activeAssets.append(asset)
-
-        # Extract all RIC states at start of event
-        allServicerStates = []
-        for asset in allAssets:
-            stateKey     = Utilities.StateVarKey[Utilities.Matrix[System.Double]](asset + '.' + 'ric_state')
-            assetRVState = event.State.GetLastValue(stateKey).Value
-            allServicerStates.append(assetRVState)
-        
-        # Check for initial collisions
-        isSafe = checkCollisions(allServicerStates, self.MinSpacing)
+                allAssetData[assetName] = {
+                    'taskEndTime' : event.GetTaskEnd(assetTask.Key)
+                }
+        # TODO - NOTE - what is the "tasks" if something is busy because of canExtend()????
+        #    Hopefully it is the correct tasks as set from prior, but I don't really know.....
+    
+        # Check for collisions among initial states
+        allStates = getAllStates(event, allAssetData.keys(), t0_sec, self.meanMotion_radps)
+        isSafe = checkCollisions(allStates, self.MinSpacing)
         if (not isSafe):
             return False
 
-        # Check all objects through duration of event
-        for idx in range(0, self.gridPts + 1):
-            # step all servicers
-            for servicerState in allServicerStates:
-                servicerState = propCW(servicerState[R_inx, ":"], servicerState[V_inx, ":"], self.mean_motion, dt)
+
+        # Find all mode change times
+        allModeChangeTimes = []
+        for assetName in allAssetData.keys():
+            allAssetData[assetName]['modeChangeTimes'] = []
+
+            # isServicing mode changes
+            isServicingKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_servicing')
+            isServicingCdict = event.State.GetProfile(isServicingKey).Data # this is a C# Sorted Dictionary
+            for cKey in isServicingCdict.Keys:
+                allAssetData[assetName]['modeChangeTimes'].append(cKey)
+                allModeChangeTimes.append(cKey)
             
-            # check for collisions
-            isSafe = checkCollisions(allServicerStates, self.MinSpacing)
-            if (not isSafe):
-                return False
+            # isTransferring mode changes
+            isTransferringKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_transferring')
+            isTransferringCdict = event.State.GetProfile(isTransferringKey).Data # this is a C# Sorted Dictionary
+            for cKey in isTransferringCdict.Keys:
+                allAssetData[assetName]['modeChangeTimes'].append(cKey)
+                allModeChangeTimes.append(cKey)
             
-            # Increment Time
-            tNow += dt
+        # Filter mode changes based on if they happen before/after the end of the nominal event (fundamental time step)
+        nominalModeChangeTimes = filter(lambda t_sec : t_sec > t0_sec and t_sec < tf_sec, allModeChangeTimes)
+        lateModeChangeTimes = filter(lambda t_sec : t_sec > tf_sec, allModeChangeTimes) # TODO - use when checking post-nominal...
+
+        # put these in with nominal timesteps to ensure nominal steps and mode changes are all evaluated
+        tVec_sec = [t0_sec + dt_sec]
+        for _ in range(1, self.gridPts):
+            tVec_sec.append(tVec_sec[-1] + dt_sec)
         
-        # Check all remaining active servicers until no more are active
-        (activeAssets, activeStates) = getActives(event, activeAssets, tNow)
-        while (len(activeAssets) > 1):
-            # Step Forward all Active Assets
-            for servicerState in activeStates:
-                servicerState = propCW(servicerState[R_inx, ":"], servicerState[V_inx, ":"], self.mean_motion, dt)
+        tVec_sec.extend(nominalModeChangeTimes)
+        tVec_sec = list(set(tVec_sec))
+        tVec_sec.sort()
+        print(tVec_sec)
 
-            # Check for collisions
-            isSafe = checkCollisions(allServicerStates, self.MinSpacing)
+        # Check for collisions in the nominal event timeframe
+        for tNow_sec in tVec_sec:
+            allStates = getAllStates(event, allAssetData.keys(), tNow_sec, self.meanMotion_radps) # NOTE - this repeats the get/check/propagate process, quicker to stepCW dT unless mode change happened...
+            isSafe = checkCollisions(allStates, self.MinSpacing)
             if (not isSafe):
                 return False
+        
+        # # Check all remaining active servicers until no more are active
+        # (activeAssets, activeStates) = getActives(event, activeAssets, activeStates, (tNow_sec - dt_sec), tNow_sec)
+        # while (len(activeAssets) > 1):
+        #     # Step Forward all Active Assets
+        #     for servicerState in activeStates:
+        #         servicerState = propCW(servicerState[R_inx, ":"], servicerState[V_inx, ":"], self.meanMotion_radps, dt_sec)
 
-            # Update activeAssets and activeStates
-            tNow += dt
-            (activeAssets, activeStates) = getActives(event, activeAssets, tNow)
+        #     # Check for collisions
+        #     isSafe = checkCollisions(allServicerStates, self.MinSpacing)
+        #     if (not isSafe):
+        #         return False
+
+        #     # Update activeAssets and activeStates
+        #     tNow_sec += dt_sec
+        #     (activeAssets, activeStates) = getActives(event, activeAssets, tNow_sec)
 
         # Return True if all checks have passed!
         return True

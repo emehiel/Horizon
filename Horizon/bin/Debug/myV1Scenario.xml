@@ -8,6 +8,6 @@
     <SCHEDULER_PARAMETERS
 		maxNumSchedules = "40"
 		numSchedCropTo  = "20"
-		simStepSeconds  = "100000">
+		simStepSeconds  = "80000">
     </SCHEDULER_PARAMETERS>
 </SCENARIO>

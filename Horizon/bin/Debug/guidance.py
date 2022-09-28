@@ -424,11 +424,11 @@ def isValidTOF(x, k):
     n       = k[2]
     KOZ     = k[3]
     gridPts = k[4]
-    (RV1_plus, DV1_vec, DV2_vec, DVtot)  = solveTwoImp(RV0, RVtgt, n, tof)
+    (RV1plus, DV1_vec, DV2_vec, DVtot)  = solveTwoImp(RV0, RVtgt, n, tof)
 
     # Convert HSF Matrix into list
     RV0plus = []
-    strMatrix = RV1_plus.ToString()
+    strMatrix = RV1plus.ToString()
     RV0plus = [float(stateStr) for stateStr in strMatrix[1:-1].split(';')]
     return __isValidTrajectory(RV0plus, n, KOZ, tof, gridPts)
 
@@ -526,7 +526,8 @@ class guidance(HSFSubsystem.Subsystem):
         instance.PROPELLANT_MASS_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'propellant_mass_kg')
         instance.addKey(instance.PROPELLANT_MASS_KEY)
 
-        instance.MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_transferring')
+        instance.TRANSFER_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_transferring')
+        instance.SERVICE_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_servicing')
 
         # Define Constants
         instance.dryMass_kg = float(node.Attributes['dryMassKg'].Value)
@@ -620,10 +621,10 @@ class guidance(HSFSubsystem.Subsystem):
             return False
         
         # Reconstruct
-        (RV1_plus, DV1_vec, DV2_vec, DVtot) = solveTwoImp(RV1, RVtgt, n, tStarBisect)
+        (RV1plus, DV1_vec, DV2_vec, DVtot) = solveTwoImp(RV1, RVtgt, n, tStarBisect)
 
-        # Log RV1_plus state
-        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts, RV1_plus))
+        # Log RV1plus state
+        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts, RV1plus))
 
         # Log Impulses
         event.State.AddValue(self.DELTAV_1_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts, DV1_vec))
@@ -637,12 +638,16 @@ class guidance(HSFSubsystem.Subsystem):
         event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + tStarBisect, fuelMassLeft_kg))
 
         # Log "mode" to define when transfering and when servicing
-        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[System.Boolean](ts, True))
-        event.State.AddValue(self.MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect, False))
+        event.State.AddValue(self.TRANSFER_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts, True))
+        event.State.AddValue(self.TRANSFER_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect, False))
+        
+        event.State.AddValue(self.SERVICE_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect, True))
 
         # Extract Servicing time from tool.py
         stateKey     = Utilities.StateVarKey[System.Double](self.Asset.Name.ToString() + '.' + 'servicing_time')
         tService_sec = event.State.GetLastValue(stateKey).Value
+        event.State.AddValue(self.SERVICE_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect + tService_sec, False))
+
 
         # Compute fuel cost to hold position while serivicing, TODO - consider just leaving as "latched on"
         m0_kg           = self.dryMass_kg + fuelMassLeft_kg
@@ -653,6 +658,7 @@ class guidance(HSFSubsystem.Subsystem):
         # TODO plan/compute exit strategy (dV to NMC, hop to Vbar, or hold), this currently assumes u "latch" on after servicing
 
         # Log final state
+        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect, RVtgt))
         event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect + tService_sec, RVtgt))
         event.SetTaskEnd(self.Asset, ts + tStarBisect + tService_sec)
         event.SetEventEnd(self.Asset, ts + tStarBisect + tService_sec)

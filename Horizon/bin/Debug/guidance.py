@@ -459,7 +459,7 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
         ii += 1
 
     if (ii >= maxIters):
-        print('Exited modifiedBisectionMinimizer unconstrained minimizer due to iterations exceeding maximum')
+        print('Exited modifiedBisectionMinimizer unconstrained minimizer due to iterations exceeding maximum, stuck at fprimeX = ' + str(fprimeX))
     
     # If Fails Constraint, Walk "Up" with increasing TOF
     isXvalid = c(x, k)
@@ -655,7 +655,7 @@ class guidance(HSFSubsystem.Subsystem):
         fuelMassLeft_kg = fuelMassLeft_kg - fuelBurned_kg
         event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + tStarBisect + tService_sec, fuelMassLeft_kg))
 
-        # TODO plan/compute exit strategy (dV to NMC, hop to Vbar, or hold), this currently assumes u "latch" on after servicing
+        # TODO plan/compute exit strategy (dV(s) to NMC, hop to Vbar, or hold), this currently assumes assets drift away after servicing
 
         # Log final state
         event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect, RVtgt))

@@ -1,6 +1,6 @@
 <TARGETDECK>
 	<TARGET
-		TargetName = "target1"
+		TargetName = "serviceTgt1"
 		TargetType = "Servicing"
 		Value = "7"
 		TaskType = "A"
@@ -13,9 +13,10 @@
 	</TARGET>
 
 	<TARGET
-		TargetName = "target2"
+		TargetName = "serviceTgt2"
 		TargetType = "Servicing"
 		Value = "8"
+		
 		TaskType = "A"
 		MaxTimes = "1"
 	>
@@ -26,7 +27,7 @@
 	</TARGET>
 	
 	<TARGET
-		TargetName = "target3"
+		TargetName = "serviceTgt3"
 		TargetType = "Servicing"
 		Value = "5"
 		TaskType = "A"
@@ -39,7 +40,7 @@
 	</TARGET>
 
 	<TARGET
-		TargetName = "target4"
+		TargetName = "serviceTgt4"
 		TargetType = "Servicing"
 		Value = "6"
 		TaskType = "A"

@@ -65,7 +65,7 @@ class tool(HSFSubsystem.Subsystem):
             return False
 
     def CanExtend(self, event, universe, extendTo):
-        return super(tool, self).CanExtend(event, universe, extendTo)
+        return True
 
     def DependencyCollector(self, currentEvent):
         return super(tool, self).DependencyCollector(currentEvent)

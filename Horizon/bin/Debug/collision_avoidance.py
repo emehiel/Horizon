@@ -365,8 +365,8 @@ class collision_avoidance(HSFSubsystem.Subsystem):
         return True
 
     def CanExtend(self, event, universe, extendTo):
-        #return true
-        return super(collision_avoidance, self).CanExtend(event, universe, extendTo)
+        return True
+
 
     def DependencyCollector(self, currentEvent):
         return super(collision_avoidance, self).DependencyCollector(currentEvent)

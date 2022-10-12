@@ -665,8 +665,8 @@ class guidance(HSFSubsystem.Subsystem):
         return True
 
     def CanExtend(self, event, universe, extendTo):
-        #return true
-        return super(guidance, self).CanExtend(event, universe, extendTo)
+        return True
+
 
     def DependencyCollector(self, currentEvent):
         #return {}

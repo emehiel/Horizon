@@ -19,6 +19,7 @@ namespace Horizon
 {
     public class Program
     {
+        //Jason testing Git change funcitonality
         public ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         public string SimulationInputFilePath { get; set; }

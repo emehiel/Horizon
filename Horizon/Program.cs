@@ -31,13 +31,13 @@ namespace Horizon
         //Create singleton dependency dictionary
         public Dependency Dependencies { get; } = Dependency.Instance;
 
-        // Initialize List to hold assets and subsystem nodes
+        // Initialize Lists to hold assets, subsystems and evaluators
         public List<Asset> AssetList { get; set; } = new List<Asset>();
         public List<Subsystem> SubList { get; set; } = new List<Subsystem>();
 
         // Maps used to set up preceeding nodes
-        //public Dictionary<ISubsystem, XmlNode> SubsystemXMLNodeMap { get; set; } = new Dictionary<ISubsystem, XmlNode>();
-        //public Dictionary<string, Subsystem> SubsystemMap { get; set; } = new Dictionary<string, Subsystem>();
+        //public Dictionary<ISubsystem, XmlNode> SubsystemXMLNodeMap { get; set; } = new Dictionary<ISubsystem, XmlNode>(); //Depreciated (?)
+
         public List<KeyValuePair<string, string>> DependencyList { get; set; } = new List<KeyValuePair<string, string>>();
         public List<KeyValuePair<string, string>> DependencyFcnList { get; set; } = new List<KeyValuePair<string, string>>();
         
@@ -45,10 +45,10 @@ namespace Horizon
         public List<Constraint> ConstraintsList { get; set; } = new List<Constraint>();
 
         //Create Lists to hold all the dependency nodes to be parsed later
-        List<XmlNode> _depNodes = new List<XmlNode>();
+        //List<XmlNode> _depNodes = new List<XmlNode>();
         public SystemState InitialSysState { get; set; } = new SystemState();
 
-        XmlNode _evaluatorNode;
+        //XmlNode _evaluatorNode; //Depreciated (?)
         Evaluator _schedEvaluator;
         public List<SystemSchedule> Schedules { get; set; }
         public SystemClass SimSystem { get; set; }
@@ -64,7 +64,6 @@ namespace Horizon
             program.LoadScenario();
             Stack<Task> systemTasks = program.LoadTargets();
             program.LoadSubsystems();
-            //program.LoadDependencies();
             program.LoadEvaluator();
             program.CreateSchedules(systemTasks);
             double maxSched = program.EvaluateSchedules();
@@ -108,9 +107,10 @@ namespace Horizon
             // Set Defaults
             SimulationInputFilePath = @"..\..\..\SimulationInput.xml";
             TargetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_ScriptedTest.xml"; // Scripted Test Case
-            ModelInputFilePath = @"..\..\..\DSAC_Static_Mod.xml"; // Nominal
-            // Try: ModelInputFilePath = @"..\..\..\Model_Static.xml";
+            //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_Scripted.xml"; // Asset 1 Scripted, Asset 2 C#
+            ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_PartialScripted.xml"; // Asset 1 mix Scripted/C#, Asset 2 C#
+
+            //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod.xml"; // Asset 1 C#, Asset 2 C#
             bool simulationSet = false, targetSet = false, modelSet = false;
 
             // Get the input filenames
@@ -144,17 +144,18 @@ namespace Horizon
 
             if (!simulationSet)
             {
+                Console.WriteLine("Using Default Simulation File");
                 log.Info("Using Default Simulation File");
             }
 
             if (!targetSet)
             {
-                log.Info("Using Default Target File");
+                log.Info("Using Default Simulation File");
             }
 
             if (!modelSet)
             {
-                log.Info("Using Default Model File");
+                log.Info("Using Default Simulation File");
             }
 
         }
@@ -181,7 +182,7 @@ namespace Horizon
         public void LoadScenario()
         {
             // Find the main input node from the XML input files
-            _evaluatorNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
+            XmlParser.ParseSimulationInput(SimulationInputFilePath);
         }
         public Stack<Task> LoadTargets()
         {
@@ -204,23 +205,27 @@ namespace Horizon
 
             var environments = modelInputXMLNode.SelectNodes("ENVIRONMENT");
 
-            // check if enviro count is empty, default is space
+            // Check if environment count is empty, default is space
             if (environments.Count == 0)
             {
                 SystemUniverse = new SpaceEnvironment();
+                Console.WriteLine("Default Space Environment Loaded");
+                log.Info("Default Space Environment Loaded");
             }
             
+            // Load Environments
             foreach (XmlNode environmentNode in environments)
             {
                 SystemUniverse = UniverseFactory.GetUniverseClass(environmentNode);
             }
 
-            var pythons = modelInputXMLNode.SelectNodes("PYTHON");
-            foreach (XmlNode pythonNode in pythons)
+            var snakes = modelInputXMLNode.SelectNodes("PYTHON");
+            foreach (XmlNode pythonNode in snakes)
             {
                 throw new NotImplementedException();
             }
 
+            // Load Assets
             var assets = modelInputXMLNode.SelectNodes("ASSET");
             foreach(XmlNode assetNode in assets)
             {
@@ -228,23 +233,27 @@ namespace Horizon
                 asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
                 AssetList.Add(asset);
 
+                // Load Subsystems
                 var subsystems = assetNode.SelectNodes("SUBSYSTEM");
 
                 foreach (XmlNode subsystemNode in subsystems)
                 {
-                    // removed Dependencies and SubsystemMap, returns Subsystem to add to list
                     Subsystem subsys = SubsystemFactory.GetSubsystem(subsystemNode, asset);
                     SubList.Add(subsys);
 
+                    // Load States (Formerly ICs)
                     var States = subsystemNode.SelectNodes("STATE");
 
                     foreach (XmlNode StateNode in States)
                     {
+                        // Parse state node for key name and state type, add the key to the subsys's list of keys, return the key name
                         string keyName = SubsystemFactory.SetStateKeys(StateNode, subsys);
+                        // Use key name and state type to set initial conditions 
                         InitialSysState.SetInitialSystemState(StateNode, keyName);
-                        //InitialSysState.Add(SystemState.SetInitialSystemState(StateNode, keyName));
                     }
                 }
+
+                // Load Constraints
                 var constraints = assetNode.SelectNodes("CONSTRAINT");
 
                 foreach (XmlNode constraintNode in constraints)
@@ -252,20 +261,37 @@ namespace Horizon
                     ConstraintsList.Add(ConstraintFactory.GetConstraint(constraintNode, SubList, asset));
                 }
             }
-            log.Info("Subsystems and Constraints Loaded");
+            Console.WriteLine("Environment, Assets, and Constraints Loaded");
+            log.Info("Environment, Assets, and Constraints Loaded");
+
+            // Load Dependencies
             var dependencies = modelInputXMLNode.SelectNodes("DEPENDENCY");
 
             foreach (XmlNode dependencyNode in dependencies)
             {
-                SubsystemFactory.SetDependencies(dependencyNode, SubList);
+                var SubFact = new SubsystemFactory();
+                SubFact.SetDependencies(dependencyNode, SubList);
             }
+            Console.WriteLine("Dependencies Loaded");
             log.Info("Dependencies Loaded");
         }
 
         public void LoadEvaluator()
         {
-            //_schedEvaluator = EvaluatorFactory.GetEvaluator(_evaluatorNode, Dependencies, SubList);
-            _schedEvaluator = EvaluatorFactory.GetEvaluator(_evaluatorNode, Dependencies, AssetList);
+            var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
+            var evalNodes = modelInputXMLNode.SelectNodes("EVALUATOR");
+            if (evalNodes.Count > 1)
+            {
+                throw new NotImplementedException("Too many evaluators in XML input!");
+                Console.WriteLine("Too many evaluators in XML input");
+                log.Info("Too many evaluators in XML input");
+            }
+            else
+            {
+                _schedEvaluator = EvaluatorFactory.GetEvaluator(evalNodes[0],SubList);
+                Console.WriteLine("Evaluator Loaded");
+                log.Info("Evaluator Loaded");
+            }
         }
         public void CreateSchedules(Stack<Task> systemTasks)
         {
@@ -288,7 +314,7 @@ namespace Horizon
                 foreach (var subsystem in SimSystem.Subsystems)
                 {
                     if (systemSchedule.AllStates.Events.Count > 0)
-                        if (!subsystem.CanExtend(systemSchedule.AllStates.Events.Peek(), (Domain)SimSystem.Environment, SimParameters.SimEndSeconds))
+                            if (!subsystem.CanExtend(systemSchedule.AllStates.Events.Peek(), (Domain)SimSystem.Environment, SimParameters.SimEndSeconds))
                             log.Error("Cannot Extend " + subsystem.Name + " to end of simulation");
                 }
             }

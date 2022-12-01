@@ -24,70 +24,46 @@ namespace HSFSubsystem
         public static Subsystem GetSubsystem(XmlNode SubsystemXmlNode, Asset asset)
         {
             string type = SubsystemXmlNode.Attributes["type"].Value.ToString().ToLower();
-            //string name = Subsystem.parseNameFromXmlNode(SubsystemXmlNode, asset.Name);
-            //Subsystem sub = null;
             Subsystem sub;
             if (type.Equals("scripted"))
-            {sub = new ScriptedSubsystem(SubsystemXmlNode, asset);
-                sub.Asset = asset;
-                sub.GetSubNameFromXmlNode(SubsystemXmlNode);
-                sub.DependentSubsystems = new List<Subsystem>();
-                sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+            {
+                sub = new ScriptedSubsystem(SubsystemXmlNode, asset);
             }
             else // not scripted subsystem
             {
                 if (type.Equals("access"))
-                {sub = new AccessSub(SubsystemXmlNode);
-                    sub.Asset = asset;
-                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
-                    sub.DependentSubsystems = new List<Subsystem>();
-                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+                {
+                    sub = new AccessSub(SubsystemXmlNode);
                 }
                 else if (type.Equals("adcs"))
-                {sub = new ADCS(SubsystemXmlNode);
-                    sub.Asset = asset;
-                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
-                    sub.DependentSubsystems = new List<Subsystem>();
-                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-                    //sub.DefaultSubName = "Adcs";
+                {
+                    sub = new ADCS(SubsystemXmlNode);
                 }
                 else if (type.Equals("power"))
-                {sub = new Power(SubsystemXmlNode);
-                    sub.Asset = asset;
-                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
-                    sub.DependentSubsystems = new List<Subsystem>();
-                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+                {
+                    sub = new Power(SubsystemXmlNode);
                 }
                 else if (type.Equals("eosensor"))
-                {sub = new EOSensor(SubsystemXmlNode);
-                    sub.Asset = asset;
-                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
-                    sub.DependentSubsystems = new List<Subsystem>();
-                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+                {
+                    sub = new EOSensor(SubsystemXmlNode);
                 }
                 else if (type.Equals("ssdr"))
-                {sub = new SSDR(SubsystemXmlNode);
-                    sub.Asset = asset;
-                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
-                    sub.DependentSubsystems = new List<Subsystem>();
-                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+                {
+                    sub = new SSDR(SubsystemXmlNode);
                 }
                 else if (type.Equals("comm"))
-                {sub = new Comm(SubsystemXmlNode);
-                    sub.Asset = asset;
-                    sub.GetSubNameFromXmlNode(SubsystemXmlNode);
-                    sub.DependentSubsystems = new List<Subsystem>();
-                    sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+                {
+                    sub = new Comm(SubsystemXmlNode);
                 }
                 else if (type.Equals("imu"))
                 {
                     //sub = new IMU(SubsystemXmlNode, asset);
-                    throw new NotImplementedException("Removed after the great Subsystem Factory update.");
+                    throw new NotImplementedException("Removed after the great SubsystemFactory update.");
                 }
                 else if (type.Equals("subtest"))
                 {
                     //sub = new SubTest(SubsystemXmlNode, asset);
-                    throw new NotImplementedException("Removed after the great Subsystem Factory update.");
+                    throw new NotImplementedException("Removed after the great SubsystemFactory update.");
                 }
                 else if (type.Equals("networked"))
                 {
@@ -98,40 +74,55 @@ namespace HSFSubsystem
                     log.Fatal("Horizon does not recognize the subsystem: " + type);
                     throw new MissingMemberException("Unknown Subsystem Type " + type);
                 }
+                // Below assignment should NOT happen when sub is scripted, that is handled in ScriptedSubsystem
+                sub.DependentSubsystems = new List<Subsystem>();
+                sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+                sub.Asset = asset;
+                sub.GetSubNameFromXmlNode(SubsystemXmlNode);
+                sub.AddDependencyCollector();
+                //sub.inputType = SubsystemXmlNode.Attributes["type"].Value.ToString().ToLower();
             }
-            sub.AddDependencyCollector();
-            
             return sub;
         }
 
-        public static void SetDependencies(XmlNode DepNode, List<Subsystem> SubList)
+        public void SetDependencies(XmlNode DepNode, List<Subsystem> SubList) // was static to not req object
         {
             // Find names of asset, sub, dep asset, and dep sub
             string assetName = DepNode.Attributes["assetName"].Value.ToString().ToLower();
             string subName = DepNode.Attributes["subsystemName"].Value.ToString().ToLower();
-            string subNameUnchanged = DepNode.Attributes["depSubsystemName"].Value.ToString();
+            string depSubName = DepNode.Attributes["depSubsystemName"].Value.ToString(); // NOT lowercase
             string depAssetName = DepNode.Attributes["depAssetName"].Value.ToString().ToLower();
-            string depSubName = DepNode.Attributes["depSubsystemName"].Value.ToString().ToLower();
-            //string depFnName = null;
+            //string depSubName = DepNode.Attributes["depSubsystemName"].Value.ToString().ToLower();
 
             // Add dep sub to sub's list of dep subs
             var sub = SubList.Find(s => s.Name == assetName + "." + subName);
-            var depSub = SubList.Find(s => s.Name == depAssetName + "." + depSubName);
+            var depSub = SubList.Find(s => s.Name == depAssetName + "." + depSubName.ToLower());
             sub.DependentSubsystems.Add(depSub);
 
-            // XML specified depfn
             if (DepNode.Attributes["fcnName"] != null)
             {
                 // Get dep fn name
                 string depFnName = DepNode.Attributes["fcnName"].Value.ToString();
 
-                // Find method that matches name & add to sub's dep fns
-                var TypeIn = Type.GetType("HSFSubsystem." + subNameUnchanged).GetMethod(depFnName);
-                var fnc = Delegate.CreateDelegate(typeof(Func<Event, HSFProfile<double>>), depSub, TypeIn);
-
-                //dependencies.Add(depFnName, fnc);
-                sub.SubsystemDependencyFunctions.Add(depFnName,fnc);
-            }
+                // Determine in what type of sub the depFn lives
+                Type depSubType = depSub.GetType();
+                
+                if (depSubType.Name == "ScriptedSubsystem") // If depFn lives in Python subsystem
+                {
+                    // Cast depSub to Scripted so compiler does not get mad (it should be scripted to reach here?)
+                    ScriptedSubsystem depSubCasted = (ScriptedSubsystem) depSub;
+                    // Get method from python script & add to sub's dep fns
+                    Delegate fnc = depSubCasted.GetDepFn(depFnName, depSubCasted); 
+                    sub.SubsystemDependencyFunctions.Add(depFnName, fnc);
+                }
+                else // If depFn lives in C# subsystem
+                {
+                    // Find method that matches name via reflection & add to sub's dep fns
+                    var TypeIn = Type.GetType("HSFSubsystem." + depSubName).GetMethod(depFnName);
+                    Delegate fnc = Delegate.CreateDelegate(typeof(Func<Event, HSFProfile<double>>), depSub, TypeIn);
+                    sub.SubsystemDependencyFunctions.Add(depFnName, fnc);
+                }
+            }  
             return;
         }
         public static string SetStateKeys(XmlNode StateNode, Subsystem subsys)
@@ -171,11 +162,6 @@ namespace HSFSubsystem
                 subsys.addKey(stateKey);
             }
             return key;
-        }
-
-        public static string SetDepedencies()
-        {
-            return "test";
         }
     }
 }

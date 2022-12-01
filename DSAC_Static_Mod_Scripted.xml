@@ -1,5 +1,5 @@
-﻿<MODEL>
-	<!--
+<MODEL>
+  <!--
 	<PYTHON
 		enableScripting = "true">
 	</PYTHON>
@@ -13,20 +13,38 @@
 				EOMSType="orbital_EOMS">
 			</EOMS>
 		</DynamicState>
+		
 		<SUBSYSTEM
 			type="Access"
 			subsystemName = "Access">
 		</SUBSYSTEM>
+		
+		<!--
 		<SUBSYSTEM
 			type="ADCS"
 			subsystemName = "ADCS"
 			slewRate = "5">
+			<STATE 
+				type="Matrix" 
+				key="ECI_Pointing_Vector(XYZ)" 
+				value="[0.0; 0.0; 0.0]">
+			</STATE>
+		</SUBSYSTEM>
+		-->
+		
+		<SUBSYSTEM
+			type="scripted"
+			subsystemName = "ADCS"
+			src="..\..\..\adcs.py"
+			className="adcs">
 			<STATE
 				type="Matrix"
 				key="ECI_Pointing_Vector(XYZ)"
 				value="[0.0; 0.0; 0.0]">
 			</STATE>
 		</SUBSYSTEM>
+
+		<!--
 		<SUBSYSTEM
 			type="EOSensor"
 			subsystemName = "EOSensor"
@@ -52,9 +70,54 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
+		-->
+		
+		<SUBSYSTEM
+			type="scripted"
+			subsystemName = "EOSensor"
+			src = "..\..\..\eosensor.py"
+			className = "eosensor"
+			lowQualityNumPixels="5000"
+			midQualityNumPixels="10000"
+			highQualityNumPixels="15000"
+			lowQualityCaptureTime="3"
+			midQualityCaptureTime="5"
+			highQualityCaptureTime="7">
+			<STATE
+				type="Double" 
+				key="numPixels" 
+				value="0.0">
+			</STATE>
+			<STATE
+				type="Double" 
+				key="IncidenceAngle" 
+				value="0.0">
+			</STATE>
+			<STATE
+				type="Bool" 
+				key="EOSensorOn" 
+				value="0.0">
+			</STATE>
+		</SUBSYSTEM>
+
+		<!--
 		<SUBSYSTEM
 			type="Ssdr"
 			subsystemName = "SSDR"
+			bufferSize = "5000">
+			<STATE
+				type="Double" 
+				key="DataBufferFillRatio" 
+				value="0.0">
+			</STATE>
+		</SUBSYSTEM>
+		-->
+
+		<SUBSYSTEM
+			type="scripted"
+			subsystemName = "SSDR"
+			src = "..\..\..\ssdr.py"
+			className = "ssdr"
 			bufferSize = "5000">
 			<STATE
 				type="Double"
@@ -62,6 +125,8 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
+		
+		<!--
 		<SUBSYSTEM
 			type="Comm"
 			subsystemName = "Comm">
@@ -71,6 +136,21 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
+		-->
+		
+		<SUBSYSTEM
+			type="scripted"
+			subsystemName = "Comm"
+			src="..\..\..\comm.py"
+			className="comm">
+			<STATE
+				type="Double"
+				key="DataRate(MB/s)"
+				value="0.0">
+			</STATE>
+		</SUBSYSTEM>
+		
+		<!--
 		<SUBSYSTEM
 			type="Power"
 			subsystemName = "Power"
@@ -88,42 +168,50 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
+		-->
+		
 		<SUBSYSTEM
-			subsystemName = "Camera_look"
-			type = "scripted"
-			src = "camera_look.py"
-			className = "camera_look">
+			type="scripted"
+			subsystemName = "Power"
+			src = "..\..\..\power.py"
+			className = "power"
+			batterySize="1000000"
+			fullSolarPower="150"
+			penumbraSolarPower="75">
 			<STATE
-				type = "Matrix"
-				key = "ECI_Camera_Pointing_Vector(XYZ)"
-				value = "[0.0; 0.0; 0.0]">
+				type="Double"
+				key="DepthofDischarge"
+				value="0.0">
 			</STATE>
 			<STATE
-				type = "Double"
-				key = "Look_Angle(rad)"
-				value = "0.0">
+				type="Double" 
+				key="SolarPanelPowerIn" 
+				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
+		
 		<CONSTRAINT
 			value="0.25"
 			subsystemName = "Power"
 			type="FAIL_IF_HIGHER"
 			name="con1">
-			<STATEVAR
-				type = "Double"
+			<STATEVAR 
+				type = "Double" 
 				key="DepthofDischarge">
 			</STATEVAR>
 		</CONSTRAINT>
+		
 		<CONSTRAINT
 			value="0.7"
 			subsystemName="SSDR"
 			type="FAIL_IF_HIGHER"
 			name="con2">
-			<STATEVAR
-				type = "Double"
+			<STATEVAR 
+				type = "Double" 
 				key="DataBufferFillRatio">
 			</STATEVAR>
 		</CONSTRAINT>
+		
 	</ASSET>
 	<ASSET assetName="Asset2">
 		<DynamicState
@@ -142,8 +230,8 @@
 			subsystemName = "ADCS"
 			slewRate = "5">
 			<STATE
-				type="Matrix"
-				key="ECI_Pointing_Vector(XYZ)"
+				type="Matrix" 
+				key="ECI_Pointing_Vector(XYZ)" 
 				value="[0.0; 0.0; 0.0]">
 			</STATE>
 		</SUBSYSTEM>
@@ -157,18 +245,18 @@
 			midQualityCaptureTime="5"
 			highQualityCaptureTime="7">
 			<STATE
-				type="Double"
-				key="numPixels"
+				type="Double" 
+				key="numPixels" 
 				value="0.0">
 			</STATE>
 			<STATE
-				type="Double"
-				key="IncidenceAngle"
+				type="Double" 
+				key="IncidenceAngle" 
 				value="0.0">
 			</STATE>
 			<STATE
-				type="Bool"
-				key="EOSensorOn"
+				type="Bool" 
+				key="EOSensorOn" 
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
@@ -177,8 +265,8 @@
 			subsystemName = "SSDR"
 			bufferSize = "5000">
 			<STATE
-				type="Double"
-				key="DataBufferFillRatio"
+				type="Double" 
+				key="DataBufferFillRatio" 
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
@@ -186,11 +274,11 @@
 			type="Comm"
 			subsystemName = "Comm">
 			<STATE
-				type="Double"
-				key="DataRate(MB/s)"
+				type="Double" 
+				key="DataRate(MB/s)" 
 				value="0.0">
-			</STATE>
-		</SUBSYSTEM>
+			</STATE>		
+		</SUBSYSTEM>		
 		<SUBSYSTEM
 			type="Power"
 			subsystemName = "Power"
@@ -198,13 +286,13 @@
 			fullSolarPower="150"
 			penumbraSolarPower="75">
 			<STATE
-				type="Double"
-				key="DepthofDischarge"
+				type="Double" 
+				key="DepthofDischarge" 
 				value="0.0">
 			</STATE>
 			<STATE
-				type="Double"
-				key="SolarPanelPowerIn"
+				type="Double" 
+				key="SolarPanelPowerIn" 
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
@@ -213,8 +301,8 @@
 			subsystemName = "Power"
 			type="FAIL_IF_HIGHER"
 			name="con1">
-			<STATEVAR
-				type = "Double"
+			<STATEVAR 
+				type = "Double" 
 				key="DepthofDischarge">
 			</STATEVAR>
 		</CONSTRAINT>
@@ -223,8 +311,8 @@
 			subsystemName="SSDR"
 			type="FAIL_IF_HIGHER"
 			name="con2">
-			<STATEVAR
-				type = "Double"
+			<STATEVAR 
+				type = "Double" 
 				key="DataBufferFillRatio">
 			</STATEVAR>
 		</CONSTRAINT>
@@ -284,7 +372,7 @@
 		depAssetName = "Asset1"
 		fcnName="Power_asset1_from_SSDR_asset1">
 	</DEPENDENCY>
-	<!-- Asset 2 Deps-->
+	<!-- Asset 2 Deps -->
 	<DEPENDENCY
 		subsystemName = "ADCS"
 		assetName = "Asset2"
@@ -310,6 +398,7 @@
 		depSubsystemName = "SSDR"
 		depAssetName = "Asset2"
 		fcnName="Comm_asset1_from_SSDR_asset1">
+		<!--<DEPENDENCY subsystemName="SSDR" fcnName="Asset1.CommfromSSDR"></DEPENDENCY>-->
 	</DEPENDENCY>
 	<DEPENDENCY
 		subsystemName = "Power"
@@ -339,11 +428,30 @@
 		depAssetName = "Asset2"
 		fcnName = "Power_asset1_from_SSDR_asset1">
 	</DEPENDENCY>
-	<!-- 
+	<!-- Evaluator -->
 	<EVALUATOR
-		evalAssetName = "Asset1"
-		evalSubsystemName = "SSDR"
-		evalFcnName = "EVAL_DataRateProfile_SSDRSUB">
-	</EVALUATOR>
-	-->
+		type = "targetvalueevaluator"
+		src ="..\..\..\eval.py"
+		className ="eval">
+		<KEYREQUEST
+			keyAsset = "Asset1"
+			keySub = "SSDR"
+			keyType = "Double">
+		</KEYREQUEST>
+		<KEYREQUEST
+			keyAsset ="Asset2"
+			keySub = "SSDR"
+			keyType = "Double">
+		</KEYREQUEST>
+		<KEYREQUEST
+			keyAsset ="Asset2"
+			keySub = "EOSensor"
+			keyType = "Bool">
+		</KEYREQUEST>
+		<KEYREQUEST
+			keyAsset ="Asset1"
+			keySub = "ADCS"
+			keyType = "Matrix">
+		</KEYREQUEST>
+</EVALUATOR>
 </MODEL>

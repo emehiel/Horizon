@@ -5,25 +5,24 @@ using System;
 using System.Collections.Generic;
 using HSFSystem;
 using MissionElements;
+using Utilities;
 
 namespace HSFScheduler
 {
     public class TargetValueEvaluator : Evaluator
     {
         #region Attributes
-        public Dependency Dependencies;
-        private Delegate _evalFunction;
+        public List<dynamic> _keychain;
         #endregion
 
         #region Constructors
-        public TargetValueEvaluator(Dependency dependencies)
+        public TargetValueEvaluator()
         {
-            Dependencies = dependencies;
+            
         }
-        public TargetValueEvaluator(Delegate evalFunction)
+        public TargetValueEvaluator(List<dynamic> keychain)
         {
-            _evalFunction = evalFunction;
-
+            _keychain = keychain;
         }
         #endregion
 
@@ -38,12 +37,20 @@ namespace HSFScheduler
             double sum = 0;
             foreach(Event eit in schedule.AllStates.Events)
             {
-                foreach(KeyValuePair<Asset, Task> assetTask in eit.Tasks)
+                foreach (KeyValuePair<Asset, Task> assetTask in eit.Tasks)
                 {
                     Task task = assetTask.Value;
+                    Asset asset = assetTask.Key;
                     sum += task.Target.Value;
                     if (task.Type == "comm")
-                        sum = sum + (double)Dependencies.GetDependencyFunc("EvalfromSSDR" + "." + assetTask.Key.Name).DynamicInvoke(eit);
+                    {
+                        StateVariableKey<double> DATABUFFERRATIOKEY = _keychain.Find(s => s.VariableName == asset.Name + ".databufferfillratio");
+                        double StartTime = eit.GetTaskStart(asset);
+                        double EndTime = eit.GetTaskEnd(asset);
+                        var dataBufferRatioStart = eit.State.GetValueAtTime(DATABUFFERRATIOKEY, StartTime).Value;
+                        double dataBufferRatioEnd = eit.State.GetValueAtTime(DATABUFFERRATIOKEY, EndTime).Value;
+                        sum += (dataBufferRatioStart - dataBufferRatioEnd) * 50;
+                    }
                 }
             }
             return sum;

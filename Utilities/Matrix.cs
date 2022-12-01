@@ -640,7 +640,7 @@ namespace Utilities
         
         #endregion
 
-            #region Dynamics
+        #region Dynamics
 
             /// <summary>
             /// Converts a Matrix<T> to an array of T type numbers

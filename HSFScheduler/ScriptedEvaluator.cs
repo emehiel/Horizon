@@ -8,6 +8,7 @@ using System.Xml;
 using UserModel;
 using System.IO;
 using System;
+using System.Collections.Generic;
 
 namespace HSFScheduler
 {
@@ -28,7 +29,8 @@ namespace HSFScheduler
         /// </summary>
         /// <param name="scriptedNode"></param>
         /// <param name="deps"></param>
-        public ScriptedEvaluator(XmlNode scriptedNode, Dependency deps)
+        //public ScriptedEvaluator(XmlNode scriptedNode, Dependency deps)
+        public ScriptedEvaluator(XmlNode scriptedNode, List<dynamic> keychain)
         {
             string pythonFilePath = "", className = "";
             XmlParser.ParseScriptedSrc(scriptedNode, ref pythonFilePath, ref className);
@@ -42,10 +44,11 @@ namespace HSFScheduler
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
-            engine.ExecuteFile(pythonFilePath, scope);
+            engine.ExecuteFile (pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
-            _pythonInstance = ops.CreateInstance(pythonType, deps);
-            Dependencies = deps;
+            _pythonInstance = ops.CreateInstance(pythonType, keychain);
+            //_pythonInstance = ops.CreateInstance(pythonType, deps);
+            //Dependencies = deps;
         }
         #endregion
 
@@ -58,6 +61,7 @@ namespace HSFScheduler
         public override double Evaluate(SystemSchedule schedule)
         {
             dynamic eval = _pythonInstance.Evaluate(schedule);
+            double test = 1;
             return (double)eval;
         }
         #endregion

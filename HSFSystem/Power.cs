@@ -169,7 +169,6 @@ namespace HSFSubsystem
         public override bool CanExtend(Event proposedEvent, Domain universe, double evalToTime) {
             var DOD_KEY = Dkeys[0];
             double ee = proposedEvent.GetEventEnd(Asset);
-            //DOD_KEY = base.Dkeys.Find();
             if (ee > SimParameters.SimEndSeconds)
                 return false;
 

@@ -60,7 +60,7 @@ namespace HSFSubsystem
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
 
-            var DATABUFFERRATIO_KEY2 = this.Dkeys.Find(s => s.VariableName == "asset1.databufferfillratio");
+            //var DATABUFFERRATIO_KEY2 = this.Dkeys.Find(s => s.VariableName == "asset1.databufferfillratio");
             if (_task.Type == "imaging")
             {
                 double ts = proposedEvent.GetTaskStart(Asset);
@@ -68,9 +68,13 @@ namespace HSFSubsystem
 
                 double oldbufferratio = _newState.GetLastValue(DATABUFFERRATIO_KEY).Value;
 
-                Delegate DepCollector;
-                SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
-                HSFProfile<double> newdataratein = ((HSFProfile<double>)DepCollector.DynamicInvoke(proposedEvent) / _bufferSize);
+                //Delegate DepCollector;
+                //SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
+                //HSFProfile<double> newdataratein = ((HSFProfile<double>)DepCollector.DynamicInvoke(proposedEvent) / _bufferSize);
+
+                Delegate DepNeeded;
+                SubsystemDependencyFunctions.TryGetValue("SSDR_asset1_from_EOSensor_asset1", out DepNeeded);
+                HSFProfile<double> newdataratein = ((HSFProfile<double>)DepNeeded.DynamicInvoke(proposedEvent) / _bufferSize);
 
                 bool exceeded = false;
                 HSFProfile<double> newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 1, 1, ref exceeded, 0, oldbufferratio);
@@ -132,16 +136,6 @@ namespace HSFSubsystem
                 prof1[currentEvent.GetTaskEnd(Asset)] = 0;
             }
             return prof1;
-        }
-
-        public double EVAL_DataRateProfile_SSDRSUB(Event currentEvent)
-        {
-            var DATABUFFERRATIO_KEY = Dkeys[0];
-            //return (currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value
-            // - currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) *50;
-
-            return (currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskStart(Asset)).Value
-                  - currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) * 50;
         }
     }
 }

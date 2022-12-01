@@ -50,8 +50,8 @@ namespace HSFSystem
         public void Add(string callKey, Delegate func)
         {
             if (DependencyFunctions.ContainsKey(callKey))
-                DependencyFunctions.Remove(callKey);
-            DependencyFunctions.Add(callKey, func);
+                DependencyFunctions.Remove(callKey); // Do this if yes
+            DependencyFunctions.Add(callKey, func); // Always do this
         }
 
         /// <summary>
@@ -64,7 +64,7 @@ namespace HSFSystem
             Delegate ret;
             if(DependencyFunctions.TryGetValue(callKey, out ret))
                 return ret;
-            throw new KeyNotFoundException();
+             throw new KeyNotFoundException();
         }
 
         /// <summary>

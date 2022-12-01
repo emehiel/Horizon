@@ -109,6 +109,10 @@ namespace HSFSubsystem
         /// <returns></returns>
         public virtual HSFProfile<double> DependencyCollector(Event currentEvent)
         {
+            if (this.Name != "asset1.power" & this.Name != "asset2.power" & this.Name != "asset1.ssdr" & this.Name != "asset2.ssdr" & this.Name != "asset1.comm" & this.Name != "asset2.comm")
+            { // Manually ensuring all subs that call DependencyCollector only have dep fns that return doubles
+
+            }
             if (SubsystemDependencyFunctions.Count == 0)
                 throw new MissingMemberException("You may not call the dependency collector in your can perform because you have not specified any dependency functions for " + Name);
             HSFProfile<double> outProf = new HSFProfile<double>();
@@ -120,6 +124,7 @@ namespace HSFSubsystem
                     outProf += temp;
                 }
             }
+
             return outProf;
         }
 

@@ -4,7 +4,7 @@
 			DynamicStateType="PREDETERMINED_ECI"
 			ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866]">
       <EOMS
-				EOMSType="orbital_EOMS">
+			EOMSType="orbital_EOMS">
       </EOMS>
     </DynamicState>
     <SUBSYSTEM
@@ -16,8 +16,7 @@
 			subsystemName = "Adcs"
       			src="..\..\..\Adcs.py"
       			className ="adcs">
-      			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
-      			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
+      			<STATE type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></STATE>
     </SUBSYSTEM>
     <SUBSYSTEM
 			Type="scripted"
@@ -27,7 +26,6 @@
       <IC type="Double" key="numPixels" value="0.0"></IC>
       <IC type="Double" key="IncidenceAngle" value="0.0"></IC>
       <IC type="Bool" key="EOSensorOn" value="0.0"></IC>
-      <DEPENDENCY subsystemName="Adcs"></DEPENDENCY>
     </SUBSYSTEM>
     <SUBSYSTEM
 			Type="scripted"
@@ -73,4 +71,59 @@
       <STATEVAR type = "Double" key="DataBufferFillRatio"></STATEVAR>
     </CONSTRAINT>
   </ASSET>
+	<DEPENDENCY
+		subsystemName = "ADCS"
+		assetName = "Asset1"
+		depSubsystemName = "Access"
+		depAssetName = "Asset1">
+	</DEPENDENCY>
+	<DEPENDENCY
+		subsystemName = "EOSensor"
+		assetName = "Asset1"
+		depSubsystemName = "ADCS"
+		depAssetName = "Asset1">
+	</DEPENDENCY>
+	<DEPENDENCY
+		subsystemName = "SSDR"
+		assetName = "Asset1"
+		depSubsystemName = "EOSensor"
+		depAssetName = "Asset1"
+		fcnName="SSDR_asset1_from_EOSensor_asset1">
+		<!--fcnName="Asset1.CommfromSSDR-->
+	</DEPENDENCY>
+	<DEPENDENCY
+		subsystemName = "Comm"
+		assetName = "Asset1"
+		depSubsystemName = "SSDR"
+		depAssetName = "Asset1"
+		fcnName="Comm_asset1_from_SSDR_asset1">
+	</DEPENDENCY>
+	<DEPENDENCY
+		subsystemName = "Power"
+		assetName = "Asset1"
+		depSubsystemName = "Comm"
+		depAssetName = "Asset1"
+		fcnName="Power_asset1_from_Comm_asset1">
+	</DEPENDENCY>
+	<DEPENDENCY
+		subsystemName = "Power"
+		assetName = "Asset1"
+		depSubsystemName = "ADCS"
+		depAssetName = "Asset1"
+		fcnName="Power_asset1_from_ADCS_asset1">
+	</DEPENDENCY>
+	<DEPENDENCY
+		subsystemName = "Power"
+		assetName = "Asset1"
+		depSubsystemName = "EOSensor"
+		depAssetName = "Asset1"
+		fcnName="Power_asset1_from_EOSensor_asset1">
+	</DEPENDENCY>
+	<DEPENDENCY
+		subsystemName = "Power"
+		assetName = "Asset1"
+		depSubsystemName = "SSDR"
+		depAssetName = "Asset1"
+		fcnName="Power_asset1_from_SSDR_asset1">
+	</DEPENDENCY>
 </MODEL>

@@ -10,6 +10,7 @@ using UserModel;
 using HSFUniverse;
 using System.Xml;
 using System.IO;
+using System.Reflection;
 
 namespace HSFSubsystem
 {
@@ -57,6 +58,9 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Asset asset)
         {
+            Asset = asset;
+            GetSubNameFromXmlNode(scriptedSubXmlNode);
+
             string pythonFilePath ="", className = "";
             XmlParser.ParseScriptedSrc(scriptedSubXmlNode, ref pythonFilePath, ref className);
 
@@ -78,10 +82,10 @@ namespace HSFSubsystem
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
             _pythonInstance = ops.CreateInstance(pythonType, scriptedSubXmlNode, asset);
-            // Dictionary<string, Delegate> newDependencies = _pythonInstance.GetDependencyDictionary();
             Delegate depCollector = _pythonInstance.GetDependencyCollector();
-            // new Sub
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             SubsystemDependencyFunctions.Add("DepCollector", depCollector);
+            DependentSubsystems = new List<Subsystem>();
         }
         #endregion
 
@@ -112,6 +116,15 @@ namespace HSFSubsystem
         {
             dynamic extend = _pythonInstance.CanExtend(proposedEvent, environment, evalToTime);
             return (bool)extend;
+        }
+
+        public Delegate GetDepFn(string depFnName, ScriptedSubsystem depSub)
+        {
+            // Access the python instance, call DepFinder from python model, return the Delegate fn requested
+            var pythonInstance = depSub._pythonInstance;
+            Dictionary<String, Delegate> theBook = pythonInstance.DepFinder(depFnName);
+            Delegate page = theBook[depFnName];
+            return page;
         }
         #endregion
     }

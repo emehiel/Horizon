@@ -18,20 +18,20 @@
 			type="Access"
 			subsystemName = "Access">
 		</SUBSYSTEM>
-
-
+		
+		<!--
 		<SUBSYSTEM
 			type="ADCS"
 			subsystemName = "ADCS"
 			slewRate = "5">
-			<STATE
-				type="Matrix"
-				key="ECI_Pointing_Vector(XYZ)"
+			<STATE 
+				type="Matrix" 
+				key="ECI_Pointing_Vector(XYZ)" 
 				value="[0.0; 0.0; 0.0]">
 			</STATE>
 		</SUBSYSTEM>
+		-->
 		
-		<!--
 		<SUBSYSTEM
 			type="scripted"
 			subsystemName = "ADCS"
@@ -43,7 +43,7 @@
 				value="[0.0; 0.0; 0.0]">
 			</STATE>
 		</SUBSYSTEM>
-		-->
+
 		
 		<SUBSYSTEM
 			type="EOSensor"
@@ -100,7 +100,7 @@
 			</STATE>
 		</SUBSYSTEM>
 		-->
-		
+		<!--
 		<SUBSYSTEM
 			type="Ssdr"
 			subsystemName = "SSDR"
@@ -111,8 +111,8 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
-		
-		<!--
+		-->
+
 		<SUBSYSTEM
 			type="scripted"
 			subsystemName = "SSDR"
@@ -125,7 +125,7 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
-		-->
+		
 		
 		<SUBSYSTEM
 			type="Comm"
@@ -150,7 +150,7 @@
 			</STATE>
 		</SUBSYSTEM>
 		-->
-		
+		<!--
 		<SUBSYSTEM
 			type="Power"
 			subsystemName = "Power"
@@ -168,8 +168,8 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
+		-->
 		
-		<!--
 		<SUBSYSTEM
 			type="scripted"
 			subsystemName = "Power"
@@ -189,7 +189,7 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
-		-->
+		
 		<CONSTRAINT
 			value="0.25"
 			subsystemName = "Power"
@@ -398,6 +398,7 @@
 		depSubsystemName = "SSDR"
 		depAssetName = "Asset2"
 		fcnName="Comm_asset1_from_SSDR_asset1">
+		<!--<DEPENDENCY subsystemName="SSDR" fcnName="Asset1.CommfromSSDR"></DEPENDENCY>-->
 	</DEPENDENCY>
 	<DEPENDENCY
 		subsystemName = "Power"

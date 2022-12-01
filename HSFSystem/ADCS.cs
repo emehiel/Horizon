@@ -18,7 +18,7 @@ namespace HSFSubsystem
     {
         #region Attributes
         protected StateVariableKey<Matrix<double>> POINTVEC_KEY;
-         double _slewRate = 5;//deg/sec
+        double _slewRate = 5;//deg/sec
         //double _slewRate = 5;
         #endregion Attributes
 
@@ -99,9 +99,6 @@ namespace HSFSubsystem
                 else
                     ts = es + timetoslew;
             }
-
-
-
 
             // set state data
             //var POINTVEC_KEY = this.Mkeys[0];

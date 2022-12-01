@@ -34,7 +34,7 @@ namespace UserModel
         /// </summary>
         /// <param name="simulationInputFilePath"></param>
         /// <returns></returns>
-        public static XmlNode ParseSimulationInput(string simulationInputFilePath)
+        public static void ParseSimulationInput(string simulationInputFilePath)
         {
             var XmlDoc = new XmlDocument();
             XmlDoc.Load(simulationInputFilePath);
@@ -57,9 +57,8 @@ namespace UserModel
             foreach (XmlNode child in schedParametersXMLNode.ChildNodes)
             {
                 if (child.Name.Equals("SCRIPTED_EVALUATOR"))
-                    return child;                    
+                    Console.WriteLine("Scripted evaluators are loaded via the model input XML node!");
             }
-            return null;
         }
 
         /// <summary>

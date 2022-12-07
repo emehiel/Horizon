@@ -166,6 +166,7 @@ namespace HSFSubsystem
         /// <param name="universe"></param>
         /// <param name="evalToTime"></param>
         /// <returns></returns>
+        /*
         public override bool CanExtend(Event proposedEvent, Domain universe, double evalToTime) {
             var DOD_KEY = Dkeys[0];
             double ee = proposedEvent.GetEventEnd(Asset);
@@ -202,6 +203,7 @@ namespace HSFSubsystem
             proposedEvent.State.AddValues(DOD_KEY, dodProf);
             return true;
         }
+        */
         #endregion Methods
     }
 

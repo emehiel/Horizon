@@ -108,9 +108,9 @@ namespace Horizon
             SimulationInputFilePath = @"..\..\..\SimulationInput.xml";
             TargetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
             //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_Scripted.xml"; // Asset 1 Scripted, Asset 2 C#
-            ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_PartialScripted.xml"; // Asset 1 mix Scripted/C#, Asset 2 C#
+            //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_PartialScripted.xml"; // Asset 1 mix Scripted/C#, Asset 2 C#
 
-            //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod.xml"; // Asset 1 C#, Asset 2 C#
+            ModelInputFilePath = @"..\..\..\DSAC_Static_Mod.xml"; // Asset 1 C#, Asset 2 C#
             bool simulationSet = false, targetSet = false, modelSet = false;
 
             // Get the input filenames

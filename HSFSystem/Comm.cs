@@ -28,7 +28,7 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public Comm(XmlNode CommXmlNode, Dependency dependencies, Asset asset)
         {
-            DefaultSubName = "Comm";
+            //DefaultSubName = "Comm";
             Asset = asset;
             GetSubNameFromXmlNode(CommXmlNode);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
@@ -58,9 +58,8 @@ namespace HSFSubsystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
-            IsEvaluated = true;
-            if (!base.CanPerform(proposedEvent, environment))
-                return false;
+            //if (!base.CanPerform(proposedEvent, environment))
+            //    return false;
             if (_task.Type == "comm")
             {
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);

@@ -18,15 +18,15 @@ namespace HSFSubsystem
         #region Attributes
         //Default Values
         public static string SUBNAME_EOSENSOR = "EOSensor";
-        protected StateVarKey<double> PIXELS_KEY;
-        protected StateVarKey<double> INCIDENCE_KEY;
-        protected StateVarKey<bool> EOON_KEY;
+        protected StateVariableKey<double> PIXELS_KEY;
+        protected StateVariableKey<double> INCIDENCE_KEY;
+        protected StateVariableKey<bool> EOON_KEY;
         protected double _lowQualityPixels = 5000;
-        protected double _lowQualityTime = 3;
+        protected double _lowQualityCaptureTime = 3;
         protected double _midQualityPixels = 10000;
-        protected double _midQualityTime = 5;
+        protected double _midQualityCaptureTime = 5;
         protected double _highQualityPixels = 15000;
-        protected double _highQualityTime = 7;
+        protected double _highQualityCaptureTime = 7;
         #endregion
 
         #region Constructors
@@ -40,7 +40,7 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public EOSensor(XmlNode EOSensorXmlNode, Dependency dependencies, Asset asset)
         {
-            DefaultSubName = "EOSensor";
+            //DefaultSubName = "EOSensor";
             Asset = asset;
             GetSubNameFromXmlNode(EOSensorXmlNode);
             PIXELS_KEY = new StateVarKey<double>(Asset.Name +"." + "numpixels");
@@ -54,16 +54,19 @@ namespace HSFSubsystem
             if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
                 //Console.WriteLine("inside loop");
                 _lowQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityPixels"].Value.ToString(), typeof(double));
-            if (EOSensorXmlNode.Attributes["lowQualityTime"] != null)
-                _lowQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityTime"].Value.ToString(), typeof(double));
+            if (EOSensorXmlNode.Attributes["lowQualityCaptureTime"] != null)
+                _lowQualityCaptureTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["lowQualityCaptureTime"].Value.ToString(), typeof(double));
+            
             if (EOSensorXmlNode.Attributes["midQualityPixels"] != null)
                 _midQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["midQualityPixels"].Value.ToString(), typeof(double));
-            if (EOSensorXmlNode.Attributes["midQualityTime"] != null)
-                _midQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["midQualityTime"].Value.ToString(), typeof(double));
+            if (EOSensorXmlNode.Attributes["midQualityCaptureTime"] != null)
+                _midQualityCaptureTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["midQualityCaptureTime"].Value.ToString(), typeof(double));
+            
             if (EOSensorXmlNode.Attributes["highQualityPixels"] != null)
                 _highQualityPixels = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityPixels"].Value.ToString(), typeof(double));
-            if (EOSensorXmlNode.Attributes["highQualityTime"] != null)
-                _highQualityTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityTime"].Value.ToString(), typeof(double));
+            if (EOSensorXmlNode.Attributes["highQualityCaptureTime"] != null)
+                _highQualityCaptureTime = (double)Convert.ChangeType(EOSensorXmlNode.Attributes["highQualityCaptureTime"].Value.ToString(), typeof(double));
+            
             dependencies.Add("PowerfromEOSensor"+"."+Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_EOSENSORSUB));
             dependencies.Add("SSDRfromEOSensor" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(SSDRSUB_NewDataProfile_EOSENSORSUB));
         }
@@ -88,23 +91,23 @@ namespace HSFSubsystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
-            if (!base.CanPerform(proposedEvent, environment))
-                return false;
-            if (_task.Type == "IMAGING")
+            //if (!base.CanPerform(proposedEvent, environment))
+            //    return false;
+            if (_task.Type == "imaging")
             {
                 //set pixels and time to caputre based on target value
                 int value = _task.Target.Value;
                 double pixels = _lowQualityPixels;
-                double timetocapture = _lowQualityTime;
-                if (value <= _highQualityTime && value >= _midQualityTime) //Morgan took out magic numbers
+                double timetocapture = _lowQualityCaptureTime;
+                if (value <= 7 && value >= 5) //Morgan took out magic numbers
                 {
                     pixels = _midQualityPixels;
-                    timetocapture = _midQualityTime;
+                    timetocapture = 5;
                 }
-                if (value > _highQualityTime)
+                if (value > 7)
                 {
                     pixels = _highQualityPixels;
-                    timetocapture = _highQualityTime;
+                    timetocapture = _highQualityCaptureTime;
                 }
 
                 // get event start and task start times
@@ -135,8 +138,8 @@ namespace HSFSubsystem
                 double incidenceang = 90 - 180 / Math.PI * Math.Acos(Matrix<double>.Dot(pos_norm, pv_norm));
 
                 // set state data
-                _newState.AddValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage, incidenceang));
-                _newState.AddValue(INCIDENCE_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));
+                _newState.AddValue(INCIDENCE_KEY, timage, incidenceang);
+                //_newState.AddValue(INCIDENCE_KEY, timage + 1, 0.0);
 
                 _newState.AddValue(PIXELS_KEY, new KeyValuePair<double, double>(timage, pixels));
                 _newState.AddValue(PIXELS_KEY, new KeyValuePair<double, double>(timage + 1, 0.0));

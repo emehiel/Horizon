@@ -29,7 +29,7 @@ namespace HSFScheduler
             {
                 foreach (Subsystem sub in constraint.Subsystems)
                 {
-                    if (!checkSub(sub, proposedSchedule, system.Environment))
+                    if (!CheckSub(sub, proposedSchedule, system.Environment))
                         return false;
                     if (!CheckConstraints(system, proposedSchedule, constraint))
                         return false;
@@ -38,7 +38,7 @@ namespace HSFScheduler
                 }
             }
             // Check the remaining Subsystems that aren't included in any Constraints
-            if (!checkSubs(system.Subsystems, proposedSchedule, system.Environment))
+            if (!CheckSubs(system.Subsystems, proposedSchedule, system.Environment))
                 return false;
 
             return true;
@@ -51,24 +51,38 @@ namespace HSFScheduler
         /// <param name="proposedSchedule"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        private static bool checkSub(Subsystem subsystem, SystemSchedule proposedSchedule, Domain environment)
+        private static bool CheckSub(Subsystem subsystem, SystemSchedule proposedSchedule, Domain environment)
         {
             if (subsystem.IsEvaluated)
                 return true;
             var events = proposedSchedule.AllStates.Events;
-            if (events.Count != 0)
+            //if (events.Count != 0)
+            //{
+            //if (events.Count > 1)
+            //    subsystem._oldState = events.ElementAt(events.Count - 2).State;
+            //else
+            //    subsystem._oldState = null;
+            try
             {
-                //if (events.Count > 1)
-                //    subsystem._oldState = events.ElementAt(events.Count - 2).State;
-                //else
-                //    subsystem._oldState = null;
-
-                    if (!subsystem.CanPerform(events.Peek(), environment))
-                        return false;
-                    events.Peek().isEvaluated +=1;
-
+                return subsystem.CheckDependentSubsystems(events.Peek(), environment);
             }
-            return true;
+            catch
+            {
+                throw new Exception("Empty set of events on proposed schedule");
+            }
+                //if (!subsystem.CheckDependentSubsystems(events.Peek(), environment))
+                //{
+                //    return false;
+                //}
+
+                //if (!subsystem.CanPerform(events.Peek(), environment))
+                //{
+                //    return false;
+                //}
+                //events.Peek().TimesEvaluated += 1;
+
+            //}
+            //return true;
         }
 
         /// <summary>
@@ -78,11 +92,11 @@ namespace HSFScheduler
         /// <param name="proposedSchedule"></param>
         /// <param name="environment"></param>
         /// <returns></returns>
-        private static bool checkSubs(List<Subsystem> subsystems, SystemSchedule proposedSchedule, Domain environment)
+        private static bool CheckSubs(List<Subsystem> subsystems, SystemSchedule proposedSchedule, Domain environment)
         {
             foreach (var sub in subsystems)
             {
-                if (!sub.IsEvaluated && !checkSub(sub, proposedSchedule, environment))
+                if (!sub.IsEvaluated && !CheckSub(sub, proposedSchedule, environment))
                     return false;
             }
             return true;

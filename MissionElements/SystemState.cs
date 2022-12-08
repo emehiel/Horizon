@@ -18,22 +18,22 @@ namespace MissionElements
         public SystemState Previous { get; set; }
 
         /** The Dictionary of integer Profiles. */
-        public Dictionary<StateVarKey<int>, HSFProfile<int>> Idata { get; private set; }
+        public Dictionary<StateVariableKey<int>, HSFProfile<int>> Idata { get; private set; } = new Dictionary<StateVariableKey<int>, HSFProfile<int>>();
 
         /** The Dictionary of double precision Profiles. */
-        public Dictionary<StateVarKey<double>, HSFProfile<double>> Ddata { get; private set; }
+        public Dictionary<StateVariableKey<double>, HSFProfile<double>> Ddata { get; private set; } = new Dictionary<StateVariableKey<double>, HSFProfile<double>>();
 
         /** The Dictionary of floating point value Profiles. */
         //   public Dictionary<StateVarKey<float>, HSFProfile<float>> Fdata { get; private set; }
 
         /** The Dictionary of boolean Profiles. */
-        public Dictionary<StateVarKey<bool>, HSFProfile<bool>> Bdata { get; private set; }
+        public Dictionary<StateVariableKey<bool>, HSFProfile<bool>> Bdata { get; private set; } = new Dictionary<StateVariableKey<bool>, HSFProfile<bool>>();
 
-        /** The Dictionary of Matrix Profiles. */
-        public Dictionary<StateVarKey<Matrix<double>>, HSFProfile<Matrix<double>>> Mdata { get; private set; }
+        /** The Dictionary of Matrix<double> Profiles. */
+        public Dictionary<StateVariableKey<Matrix<double>>, HSFProfile<Matrix<double>>> Mdata { get; private set; } = new Dictionary<StateVariableKey<Matrix<double>>, HSFProfile<Matrix<double>>>();
 
         /** The Dictionary of Quaternion Profiles. */
-        public Dictionary<StateVarKey<Quaternion>, HSFProfile<Quaternion>> Qdata { get; private set; }
+        public Dictionary<StateVariableKey<Quaternion>, HSFProfile<Quaternion>> Qdata { get; private set; } = new Dictionary<StateVariableKey<Quaternion>, HSFProfile<Quaternion>>();
 
 
         /// <summary>

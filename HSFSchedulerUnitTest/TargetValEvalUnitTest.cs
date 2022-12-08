@@ -51,14 +51,14 @@ namespace HSFSchedulerUnitTest
             //List<XmlNode> ICNodes = new List<XmlNode>();
             //ICNodes.Add(modelNode.ChildNodes[1].ChildNodes[2].FirstChild);
 
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[2].FirstChild, asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].FirstChild, asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1], asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2], asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[4].FirstChild, asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[5].FirstChild, asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].FirstChild, asset));
-            systemState.Add(SystemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1], asset));
+            systemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[2].FirstChild, asset);
+            systemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].FirstChild, asset);
+            systemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[1], asset);
+            systemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[3].ChildNodes[2], asset);
+            systemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[4].FirstChild, asset);
+            systemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[5].FirstChild, asset);
+            systemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].FirstChild, asset);
+            systemState.SetInitialSystemState(modelNode.ChildNodes[1].ChildNodes[6].ChildNodes[1], asset);
 
             //SystemState systemState = SystemState.SetInitialSystemState(ICNodes, asset);
             StateHistory hist = new StateHistory(systemState);

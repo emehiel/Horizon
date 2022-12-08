@@ -19,16 +19,16 @@ namespace HSFSubsystem
         public Asset Asset { get; set; }
         public virtual List<Subsystem> DependentSubsystems { get; set; }
         public string Name { get; protected set; }
-        public static string DefaultSubName { get; protected set; }
+        //public static string DefaultSubName { get; protected set; }
         public virtual Dictionary<string, Delegate> SubsystemDependencyFunctions { get; set; }
-        public List<StateVarKey<int>> Ikeys { get; protected set; }
-        public List<StateVarKey<double>> Dkeys { get; protected set; }
-        public List<StateVarKey<float>> Fkeys { get; protected set; }
-        public List<StateVarKey<bool>> Bkeys { get; protected set; }
-        public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
-        public List<StateVarKey<Quaternion>> Qkeys { get; protected set; }
-
-        public List<string> StateKeys { get; set; }
+        public List<StateVariableKey<int>> Ikeys { get; private set; } = new List<StateVariableKey<int>>();
+        public List<StateVariableKey<double>> Dkeys { get; protected set; } = new List<StateVariableKey<double>>();
+        public List<StateVariableKey<bool>> Bkeys { get; protected set; } = new List<StateVariableKey<bool>>();
+        public List<StateVariableKey<Matrix<double>>> Mkeys { get; protected set; } = new List<StateVariableKey<Matrix<double>>>();
+        public List<StateVariableKey<Quaternion>> Qkeys { get; protected set; } = new List<StateVariableKey<Quaternion>>();
+        public List<StateVariableKey<Vector>> Vkeys { get; protected set; } = new List<StateVariableKey<Vector>>();
+        
+        // _newState and _task are here so the ScriptedSubsystem _pythonInstance can access them
         public virtual SystemState _newState { get; set; }
         public virtual Task _task { get; set; }
         #endregion Attributes
@@ -39,10 +39,9 @@ namespace HSFSubsystem
         {
 
         }
-        
-        public Subsystem(string name) {
-            Name = name;
-        }
+        //public Subsystem(string name) {
+        //    Name = name;
+        //}
         public Subsystem(XmlNode xmlNode, Asset asset)
         {
             
@@ -55,9 +54,9 @@ namespace HSFSubsystem
         #endregion
 
         #region Methods
-        public virtual Subsystem clone() {
-            return DeepCopy.Copy<Subsystem>(this);
-        }
+        //public virtual Subsystem Clone() {
+        //    return DeepCopy.Copy<Subsystem>(this);
+        //}
 
         /// <summary>
         /// The default canPerform method. 
@@ -70,18 +69,62 @@ namespace HSFSubsystem
         /// <returns></returns>
         public virtual bool CanPerform(Event proposedEvent, Domain environment)
         {
-            foreach (var sub in DependentSubsystems)
-            {
-                if (!sub.IsEvaluated)// && !sub.GetType().Equals(typeof(ScriptedSubsystem)))
-                    if (sub.CanPerform(proposedEvent, environment) == false)
-                        return false;
-            }
-            _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
-            _newState = proposedEvent.State;
-            IsEvaluated = true;
+            //foreach (var sub in DependentSubsystems)
+            //{
+            //    if (!sub.IsEvaluated)// && !sub.GetType().Equals(typeof(ScriptedSubsystem)))
+            //        if (sub.CanPerform(proposedEvent, environment) == false)
+            //            return false;
+            //}
+            //_task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
+            //_newState = proposedEvent.State;
+            //IsEvaluated = true;
             return true;
         }
 
+        /// <summary>
+        /// This method tracks four things:
+        /// 1.  Ensure all dependents Subsystems are evaluated before the current Subsystem is evaluates and set the
+        ///     IsEvaluated status.
+        /// 2.  Calls the CanPerform() method for the subsystem when all dependent subsystems have been evlauted
+        /// 3.  Calls the CanPerform() method when a subsystem has no dependent subsystems
+        /// 4.  If a Subsystem CanPerform() method returns false, colapse the nested call to false
+        /// </summary>
+        /// <param name="proposedEvent"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
+        public bool CheckDependentSubsystems(Event proposedEvent, Domain environment)
+        {
+            if (DependentSubsystems.Count == 0)
+            {
+                IsEvaluated = true;
+                _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
+                _newState = proposedEvent.State;
+                return this.CanPerform(proposedEvent, environment);
+            }
+            else
+            {
+                foreach (var sub in DependentSubsystems)
+                {
+                    if (!sub.IsEvaluated)// && !sub.GetType().Equals(typeof(ScriptedSubsystem)))
+                    {
+                        if (sub.CheckDependentSubsystems(proposedEvent, environment))
+                        {
+                            IsEvaluated = true;
+                            _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
+                            _newState = proposedEvent.State;
+                            if (!CanPerform(proposedEvent, environment))
+                                return false;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
+
+        }
         /// <summary>
         /// The default canExtend function. May be over written for additional functionality.
         /// </summary>
@@ -137,12 +180,12 @@ namespace HSFSubsystem
             string assetName = Asset.Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
                 Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString().ToLower();
-            else if (DefaultSubName != null)
-                Name = assetName + "." + DefaultSubName.ToLower() ;
-            else if (subXmlNode.Attributes["type"] != null)
-                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
+            //else if (DefaultSubName != null)
+            //    Name = assetName + "." + DefaultSubName.ToLower() ;
+            //else if (subXmlNode.Attributes["type"] != null)
+            //    Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
             else
-                throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
+                throw new ArgumentException($"Missing a subsystem name attribute for subsystem in {assetName}!");
         }
 
         /// <summary>
@@ -156,12 +199,12 @@ namespace HSFSubsystem
             string Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
                 Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString().ToLower();
-            else if (DefaultSubName != null)
-                Name = assetName + "." + DefaultSubName.ToLower() ;
-            else if (subXmlNode.Attributes["type"] != null)
-                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
+            //else if (DefaultSubName != null)
+            //    Name = assetName + "." + DefaultSubName.ToLower() ;
+            //else if (subXmlNode.Attributes["type"] != null)
+            //    Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
             else
-                throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
+                throw new ArgumentException($"Missing a subsystem name attribute for subsystem in {assetName}!");
             return Name;
         }
 

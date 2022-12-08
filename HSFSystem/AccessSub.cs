@@ -19,7 +19,7 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public AccessSub(XmlNode subNode, Asset asset)
         {
-            DefaultSubName = "AccessToTarget";
+            //DefaultSubName = "AccessToTarget";
             Asset = asset;
             GetSubNameFromXmlNode(subNode);
             DependentSubsystems = new List<Subsystem>();
@@ -28,8 +28,8 @@ namespace HSFSubsystem
 
         public override bool CanPerform( Event proposedEvent, Domain environment) 
         {
-            if (!base.CanPerform( proposedEvent, environment))
-                return false;
+            //if (!base.CanPerform( proposedEvent, environment))
+            //    return false;
             DynamicState position = Asset.AssetDynamicState;
             Vector assetPosECI = position.PositionECI(proposedEvent.GetTaskStart(Asset));
             Vector targetPosECI = _task.Target.DynamicState.PositionECI(proposedEvent.GetTaskStart(Asset));

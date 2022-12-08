@@ -216,6 +216,8 @@ namespace UtilitiesUnitTest
             List<double> v = new List<double>(new double[] { 10, 20, 10, 15, 30 });
             var p1 = new HSFProfile<double>(t, v);
 
+            Assert.AreEqual(20, p1.Integrate(2, 3));
+            Assert.AreEqual(0, p1.Integrate(-1, -.5));
             Assert.AreEqual(185, p1.Integrate(0, 10, 0));
             Assert.AreEqual(110, p1.Integrate(0, 7, 0));
             Assert.AreEqual(80, p1.Integrate(2, 7, 0));

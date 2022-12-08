@@ -89,6 +89,7 @@ namespace HSFSubsystem
             lookup.TryGetValue(taskathand, out tasknum);
             if (tasknum == es)
             {
+                _newState.AddValue(MKey, es, new Matrix<double>(3,3,tasknum));
                 return true;
             }
             else

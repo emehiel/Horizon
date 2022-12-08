@@ -17,7 +17,7 @@ namespace HSFSubsystem
     public class ADCS : Subsystem
     {
         #region Attributes
-        protected StateVarKey<Matrix<double>> POINTVEC_KEY;
+        protected StateVariableKey<Matrix<double>> POINTVEC_KEY;
          double _slewRate = 5;//deg/sec
         //double _slewRate = 5;
         #endregion Attributes
@@ -32,7 +32,7 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public ADCS(XmlNode ADCSNode, Dependency dependencies, Asset asset)
         {
-            DefaultSubName = "Adcs";
+            //DefaultSubName = "Adcs";
             Asset = asset;
             GetSubNameFromXmlNode(ADCSNode);
             double slewRate;
@@ -43,12 +43,12 @@ namespace HSFSubsystem
             }
 
             // Move this to SubsystemFactory
-            //var states = ADCSNode.SelectNodes("IC");
+            var states = ADCSNode.SelectNodes("IC");
             //foreach (XmlNode state in states)
             //{
             //    addKey(new StateVarKey<Matrix<double>>(Asset.Name + "." + state.Attributes["key"].Value));
             //}
-            //POINTVEC_KEY = new StateVarKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
+            //POINTVEC_KEY = new StateVariableKey<Matrix<double>>(Asset.Name + "." + "eci_pointing_vector(xyz)");
             //addKey(POINTVEC_KEY);
             DependentSubsystems = new List<Subsystem>();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
@@ -71,24 +71,28 @@ namespace HSFSubsystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
-            if (base.CanPerform( proposedEvent, environment) == false)
-                return false;
+            //if (base.CanPerform( proposedEvent, environment) == false)
+            //    return false;
+            var POINTVEC_KEY = this.Mkeys[0];
 
             double es = proposedEvent.GetEventStart(Asset);
             double ts = proposedEvent.GetTaskStart(Asset);
-            double te = proposedEvent.GetTaskEnd(Asset);            
-            
-            // from Brown, Pp. 99
+            double te = proposedEvent.GetTaskEnd(Asset);
+
+            //  Now accounting for previous pointing vector...
+            var pc = _newState.GetLastValue(POINTVEC_KEY).Value;
+
             DynamicState position = Asset.AssetDynamicState;
-            Matrix<double> m_SC_pos_at_ts_ECI = position.PositionECI(ts);
-            Matrix<double> m_target_pos_at_ts_ECI = _task.Target.DynamicState.PositionECI(ts);
-            Matrix<double> m_pv = m_target_pos_at_ts_ECI - m_SC_pos_at_ts_ECI;
+            Matrix<double> sc = position.PositionECI(ts);
+            Matrix<double> t = _task.Target.DynamicState.PositionECI(ts);
+            Matrix<double> p = t - sc;
 
-            Matrix<double> sc_n = m_SC_pos_at_ts_ECI / Matrix<double>.Norm(m_SC_pos_at_ts_ECI);
-            Matrix<double> pv_n = m_pv / Matrix<double>.Norm(m_pv);
+            Matrix<double> sc_n = sc / Matrix<double>.Norm(sc);
+            Matrix<double> pc_n = pc / Matrix<double>.Norm(pc);
+            Matrix<double> p_n = p / Matrix<double>.Norm(p);
 
-
-            double slewAngle = Math.Acos(Matrix<double>.Dot(pv_n, -sc_n)) * 180 / Math.PI;
+            double slewAngle = Math.Acos(Matrix<double>.Dot(p_n, pc_n)) * 180 / Math.PI;
+            //double slewAngle = Math.Acos(Matrix<double>.Dot(p_n, -sc_n)) * 180 / Math.PI;
                         
             //double timetoslew = (rand()%5)+8;
             double timetoslew = slewAngle/_slewRate;
@@ -109,8 +113,9 @@ namespace HSFSubsystem
 
 
             // set state data
-            var POINTVEC_KEY = this.Mkeys[0];
-            _newState.SetProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));
+
+            //_newState.SetProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));
+            _newState.AddValue(POINTVEC_KEY, ts, p);
             proposedEvent.SetTaskStart(Asset, ts);
             return true;
         }

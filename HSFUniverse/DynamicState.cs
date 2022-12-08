@@ -57,7 +57,7 @@ namespace HSFUniverse
                 Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
             }
             Vector ics = new Vector(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
-            _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds/SchedParameters.SimStepSeconds));
+            _stateData = new SortedList<double, Vector>();// (int)SimParameters.SimEndSeconds/SchedParameters.SimStepSeconds));
             _stateData.Add(0.0, ics);
 
             if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI || Type == DynamicStateType.STATIC_LVLH || Type == DynamicStateType.NULL_STATE))

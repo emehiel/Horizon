@@ -24,8 +24,8 @@ namespace HSFSubsystem
         protected double _fullSolarPanelPower = 150;
         protected double _penumbraSolarPanelPower = 75;
 
-        protected StateVarKey<double> DOD_KEY;
-        protected StateVarKey<double> POWIN_KEY; 
+        protected StateVariableKey<double> DOD_KEY;
+        protected StateVariableKey<double> POWIN_KEY; 
         #endregion Attributes
 
         #region Constructors
@@ -37,7 +37,7 @@ namespace HSFSubsystem
         /// <param name="dependencies"></param>
         public Power(XmlNode PowerNode, Dependency dependencies, Asset asset)
         {
-            DefaultSubName = "Power";
+            //DefaultSubName = "Power";
             Asset = asset;
             GetSubNameFromXmlNode(PowerNode);
             DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
@@ -129,9 +129,10 @@ namespace HSFSubsystem
         public override bool CanPerform(Event proposedEvent, Domain universe)
         {
             //Make sure all dependent subsystems have been evaluated
-            if (!base.CanPerform(proposedEvent, universe)) 
-                return false;
+            //if (!base.CanPerform(proposedEvent, universe)) 
+            //    return false;
             double es = proposedEvent.GetEventStart(Asset);
+            double ts = proposedEvent.GetTaskStart(Asset);
             double te = proposedEvent.GetTaskEnd(Asset);
             double ee = proposedEvent.GetEventEnd(Asset);
             double powerSubPowerOut = 10;
@@ -158,7 +159,8 @@ namespace HSFSubsystem
 
             bool exceeded= false ;
             double freq = 1.0;
-            HSFProfile<double> dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, ref exceeded, 0, olddod);
+            // Still don't quite understand this method... - Eric
+            HSFProfile<double> dodProf = dodrateofchange.LowerLimitIntegrateToProf(es, ee, freq, 0.0, ref exceeded, 0, olddod);
             //why is exceeded not checked anywhere??
             _newState.AddValue(DOD_KEY, dodProf);
             return true;

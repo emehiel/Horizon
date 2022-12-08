@@ -31,7 +31,7 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public SSDR(XmlNode SSDRXmlNode, Dependency dependencies, Asset asset)
         {
-            DefaultSubName = "SSDR";
+            //DefaultSubName = "SSDR";
             Asset = asset;
             GetSubNameFromXmlNode(SSDRXmlNode);
             if (SSDRXmlNode.Attributes["bufferSize"] != null)
@@ -64,10 +64,9 @@ namespace HSFSubsystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
-            if (!base.CanPerform(proposedEvent, environment))
-                return false;
+            //if (!base.CanPerform(proposedEvent, environment))
+            //    return false;
 
-            var DATABUFFERRATIO_KEY2 = this.Dkeys.Find(s => s.VariableName == "asset1.databufferfillratio");
             if (_task.Type == "imaging")
             {
                 double ts = proposedEvent.GetTaskStart(Asset);
@@ -94,7 +93,8 @@ namespace HSFSubsystem
             else if (_task.Type == "comm")
             {
                 double ts = proposedEvent.GetTaskStart(Asset);
-                proposedEvent.SetTaskEnd(Asset, ts + 60.0);
+                //proposedEvent.SetTaskEnd(Asset, ts + 60.0);
+                proposedEvent.SetTaskEnd(Asset, proposedEvent.GetEventEnd(Asset));
                 double te = proposedEvent.GetTaskEnd(Asset);
 
                 double data = _bufferSize * _newState.GetLastValue(Dkeys.First()).Value;
@@ -141,8 +141,10 @@ namespace HSFSubsystem
 
         public double EVAL_DataRateProfile_SSDRSUB(Event currentEvent)
         {
-            return (currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value
-            - currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) *50;
+            var val =  (currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetEventStart(Asset)).Value
+            - currentEvent.State.GetValueAtTime(DATABUFFERRATIO_KEY, currentEvent.GetTaskEnd(Asset)).Value) *500;
+
+            return val;
         }
     }
 }

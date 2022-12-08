@@ -19,7 +19,7 @@
 			Type="Adcs"
 			subsystemName = "Adcs"
       slewRate = "5">
-			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
+			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[-7378.137; 0.0; 0.0]"></IC>
 			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM
@@ -93,7 +93,7 @@
 			Type="Adcs"
 			subsystemName = "Adcs"
       slewRate = "5">
-			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
+			<IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[7378.137; 0.0; 0.0]"></IC>
 			<DEPENDENCY subsystemName="Access"></DEPENDENCY>
 		</SUBSYSTEM>
 		<SUBSYSTEM

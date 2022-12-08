@@ -35,7 +35,7 @@ namespace MissionElementsUnitTest
             Assert.AreEqual(new Dictionary<Asset, double>(), vent.EventEnds);
             Assert.AreEqual(new Dictionary<Asset, double>(), vent.TaskStarts);
             Assert.AreEqual(new Dictionary<Asset, double>(), vent.TaskEnds);
-            Assert.AreEqual(0, vent.isEvaluated);
+            Assert.AreEqual(0, vent.TimesEvaluated);
 
             Assert.AreNotSame(copyVent.TaskStarts, vent.TaskStarts);
             Assert.AreNotSame(copyVent.TaskEnds, vent.TaskStarts);

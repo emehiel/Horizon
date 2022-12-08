@@ -29,7 +29,9 @@ namespace HSFSubsystem
             string name = Subsystem.parseNameFromXmlNode(SubsystemXmlNode, asset.Name);
             if (type.Equals("scripted"))
             {
-                subDic.Add(name, new ScriptedSubsystem(SubsystemXmlNode, dependencies, asset));
+                var sub = new ScriptedSubsystem(SubsystemXmlNode, dependencies, asset);
+                sub.AddDependencyCollector();
+                subDic.Add(name, sub);
             }
             else // not scripted subsystem
             {

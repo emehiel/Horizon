@@ -69,15 +69,15 @@ namespace Utilities
             }
             else
             {
-                foreach (var tup in Times.Zip(Values, (time, value) => (time, value)))
-                    Add(tup.time, tup.value);
+                foreach (var (time, value) in Times.Zip(Values, (time, value) => (time, value)))
+                    Add(time, value);
             }
         }
 
         public HSFProfile(List<(double Time, T Value)> TimeValuePairs)
         {
-            foreach (var timeValuePair in TimeValuePairs)
-                Add(timeValuePair.Time, timeValuePair.Value);
+            foreach (var (Time, Value) in TimeValuePairs)
+                Add(Time, Value);
         }
         /// <summary>
         /// Create a new Profile from a copy on an existing profile
@@ -293,7 +293,8 @@ namespace Utilities
             double time;
             for (time = start + saveFreq; time < end; time += saveFreq)
             {
-                Double.TryParse(Integrate(time - saveFreq, time, iv).ToString(), out result); //Morgan isn't sure about this
+                //Double.TryParse(Integrate(time - saveFreq, time, iv).ToString(), out result); //Morgan isn't sure about this
+                result = Convert.ToDouble(Integrate(time - saveFreq, time, iv));
                 result += last;
                 if (result.CompareTo(upperBound) >=0)
                 {
@@ -311,7 +312,8 @@ namespace Utilities
                 }
                 last = result;
             }
-            Double.TryParse(Integrate(time -= saveFreq, end, iv).ToString(), out result); //Morgan isn't sure about this
+            //Double.TryParse(Integrate(time -= saveFreq, end, iv).ToString(), out result); //Morgan isn't sure about this
+            result = Convert.ToDouble(Integrate(time -= saveFreq, end, iv));
             result += last;
             if (result > upperBound)
             {
@@ -345,13 +347,14 @@ namespace Utilities
         /// <param name="iv"></param>
         /// <param name="ic"></param>
         /// <returns></returns>
-        public HSFProfile<double> lowerLimitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, ref bool exceeded, double iv, double ic)
+        public HSFProfile<double> LowerLimitIntegrateToProf(double start, double end, double saveFreq, double lowerBound, ref bool exceeded, double iv, double ic)
         {
             HSFProfile<double> prof = new HSFProfile<double>();
             double last = ic, time, result = 0;
             for (time = start + saveFreq; time < end; time += saveFreq)
             {
-                Double.TryParse(Integrate(time - saveFreq, time, iv).ToString(), out result); //TODO: Morgan isn't sure about this
+                //Double.TryParse(Integrate(time - saveFreq, time, iv).ToString(), out result); //TODO: Morgan isn't sure about this
+                result = Convert.ToDouble(Integrate(time - saveFreq, time, iv));
                 result += last;
                 if (result < lowerBound)
                 {
@@ -364,7 +367,8 @@ namespace Utilities
                 }
                 last = result;
             }
-            Double.TryParse(Integrate(time -= saveFreq, end, iv).ToString(), out result); //TODO: Morgan isn't sure about this
+            //Double.TryParse(Integrate(time -= saveFreq, end, iv).ToString(), out result); //TODO: Morgan isn't sure about this
+            result = Convert.ToDouble(Integrate(time - saveFreq, time, iv));
             result += last;
             if (result < lowerBound)
             {
@@ -396,14 +400,25 @@ namespace Utilities
             if (endTime == startTime)
                 return default;
 
+            // Get profile data to integrate
             var query = data.Where(item => item.Key >= startTime && item.Key <= endTime).ToList();
+
+            if (query.Count() == 0)
+            {
+                var v = ValueAtTime(startTime);
+                return (dynamic)v * (endTime - startTime);
+            }
+            // Fill out the end point
             query.Add(new KeyValuePair<double, T>(endTime, query.Last().Value));
+            
+            // if needed, fill out the state point
             if (query.First().Key != startTime)
                 query.Insert(0, new KeyValuePair<double, T>(startTime, this[startTime]));
 
             T result = default;
             double dt = 0;
 
+            // integrate over all the data using rectangle integration
             for (int i = 0; i < query.Count() - 1; i++)
             {
                 dt = query[i + 1].Key - query[i].Key;
@@ -448,7 +463,7 @@ namespace Utilities
         /// <returns>The maximum value in the profile</returns>
         public T Max()
         {
-            return data.Max().Value;
+            return data.Max(s => s.Value);
         }
 
         /// <summary>

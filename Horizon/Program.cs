@@ -109,6 +109,7 @@ namespace Horizon
             SimulationInputFilePath = @"..\..\..\SimulationInput.xml";
             TargetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
             ModelInputFilePath = @"..\..\..\DSAC_Static.xml";
+            //ModelInputFilePath = @"..\..\..\Model_Static.xml";
             bool simulationSet = false, targetSet = false, modelSet = false;
 
             // Get the input filenames
@@ -262,6 +263,7 @@ namespace Horizon
                         break;
                 }
             }
+            SystemUniverse = new SpaceEnvironment();
             log.Info("Subsystems and Constraints Loaded");
         }
         public void LoadDependencies()

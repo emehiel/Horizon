@@ -19,16 +19,16 @@ namespace HSFSubsystem
         public Asset Asset { get; set; }
         public virtual List<Subsystem> DependentSubsystems { get; set; }
         public string Name { get; protected set; }
-        //public static string DefaultSubName { get; protected set; }
+        public static string DefaultSubName { get; protected set; }
         public virtual Dictionary<string, Delegate> SubsystemDependencyFunctions { get; set; }
-        public List<StateVariableKey<int>> Ikeys { get; private set; } = new List<StateVariableKey<int>>();
-        public List<StateVariableKey<double>> Dkeys { get; protected set; } = new List<StateVariableKey<double>>();
-        public List<StateVariableKey<bool>> Bkeys { get; protected set; } = new List<StateVariableKey<bool>>();
-        public List<StateVariableKey<Matrix<double>>> Mkeys { get; protected set; } = new List<StateVariableKey<Matrix<double>>>();
-        public List<StateVariableKey<Quaternion>> Qkeys { get; protected set; } = new List<StateVariableKey<Quaternion>>();
-        public List<StateVariableKey<Vector>> Vkeys { get; protected set; } = new List<StateVariableKey<Vector>>();
-        
-        // _newState and _task are here so the ScriptedSubsystem _pythonInstance can access them
+        public List<StateVarKey<int>> Ikeys { get; protected set; }
+        public List<StateVarKey<double>> Dkeys { get; protected set; }
+        public List<StateVarKey<float>> Fkeys { get; protected set; }
+        public List<StateVarKey<bool>> Bkeys { get; protected set; }
+        public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
+        public List<StateVarKey<Quaternion>> Qkeys { get; protected set; }
+
+        public List<string> StateKeys { get; set; }
         public virtual SystemState _newState { get; set; }
         public virtual Task _task { get; set; }
         #endregion Attributes
@@ -39,9 +39,10 @@ namespace HSFSubsystem
         {
 
         }
-        //public Subsystem(string name) {
-        //    Name = name;
-        //}
+        
+        public Subsystem(string name) {
+            Name = name;
+        }
         public Subsystem(XmlNode xmlNode, Asset asset)
         {
             
@@ -54,9 +55,9 @@ namespace HSFSubsystem
         #endregion
 
         #region Methods
-        //public virtual Subsystem Clone() {
-        //    return DeepCopy.Copy<Subsystem>(this);
-        //}
+        public virtual Subsystem clone() {
+            return DeepCopy.Copy<Subsystem>(this);
+        }
 
         /// <summary>
         /// The default canPerform method. 
@@ -125,7 +126,6 @@ namespace HSFSubsystem
                 return true;
             }
 
-        }
         /// <summary>
         /// The default canExtend function. May be over written for additional functionality.
         /// </summary>
@@ -181,12 +181,12 @@ namespace HSFSubsystem
             string assetName = Asset.Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
                 Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString().ToLower();
-            //else if (DefaultSubName != null)
-            //    Name = assetName + "." + DefaultSubName.ToLower() ;
-            //else if (subXmlNode.Attributes["type"] != null)
-            //    Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
+            else if (DefaultSubName != null)
+                Name = assetName + "." + DefaultSubName.ToLower() ;
+            else if (subXmlNode.Attributes["type"] != null)
+                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
             else
-                throw new ArgumentException($"Missing a subsystem name attribute for subsystem in {assetName}!");
+                throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
         }
 
         /// <summary>
@@ -200,12 +200,12 @@ namespace HSFSubsystem
             string Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
                 Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString().ToLower();
-            //else if (DefaultSubName != null)
-            //    Name = assetName + "." + DefaultSubName.ToLower() ;
-            //else if (subXmlNode.Attributes["type"] != null)
-            //    Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
+            else if (DefaultSubName != null)
+                Name = assetName + "." + DefaultSubName.ToLower() ;
+            else if (subXmlNode.Attributes["type"] != null)
+                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
             else
-                throw new ArgumentException($"Missing a subsystem name attribute for subsystem in {assetName}!");
+                throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
             return Name;
         }
 

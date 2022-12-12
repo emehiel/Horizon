@@ -46,7 +46,7 @@ namespace HSFSystem
         #region Constructors
         public IMU(XmlNode SubNode, Asset asset)
         {
-            //DefaultSubName = "IMU";
+            DefaultSubName = "IMU";
             Asset = asset;
             GetSubNameFromXmlNode(SubNode);
             int gyr = 0;
@@ -116,9 +116,9 @@ namespace HSFSystem
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
             double ts = proposedEvent.GetTaskStart(Asset);
-
-            //if (!base.CanPerform(proposedEvent, environment))
-            //    return false;
+            IsEvaluated = true;
+            if (!base.CanPerform(proposedEvent, environment))
+                return false;
             if(_task == null)
             {
                 return true; // TODO Is this what we want to do?

@@ -10,7 +10,6 @@ using UserModel;
 using HSFUniverse;
 using System.Xml;
 using System.IO;
-using Microsoft.Scripting.Hosting;
 
 namespace HSFSubsystem
 {
@@ -72,17 +71,16 @@ namespace HSFSubsystem
             //    string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
             //    pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
             //}
-            ScriptEngine engine = Python.CreateEngine();
-            ScriptScope scope = engine.CreateScope();
-            ObjectOperations ops = engine.Operations;
-            ICollection<string> p = engine.GetSearchPaths();
+            var engine = Python.CreateEngine();
+            var scope = engine.CreateScope();
+            var ops = engine.Operations;
+            var p = engine.GetSearchPaths();
             p.Add(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\PythonScripting");
             p.Add(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\");
             engine.SetSearchPaths(p);
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
             _pythonInstance = ops.CreateInstance(pythonType, scriptedSubXmlNode, asset);
-            
             Dictionary<string, Delegate> newDependencies = _pythonInstance.GetDependencyDictionary();
             dependencies.Append(newDependencies);
             DependentSubsystems = new List<Subsystem>();

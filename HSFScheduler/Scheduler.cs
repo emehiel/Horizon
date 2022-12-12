@@ -122,8 +122,7 @@ namespace HSFScheduler
             /// TODO: Delete (or never create in the first place) schedules with inconsistent asset tasks (because of asset dependencies)
 
             // Find the next timestep for the simulation
-            //DWORD startSchedTickCount = GetTickCount();
-            // int i = 1;
+
             List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
             List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
             for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
@@ -143,33 +142,26 @@ namespace HSFScheduler
 
                 // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
                 //TODO: Parallelize this.
-                int k = 0;
 
-                //Parallel.ForEach(systemSchedules, (oldSystemSchedule) =>
+                //Parallel.ForEach(systemSchedules, oldSystemSchedule =>
                 foreach(var oldSystemSchedule in systemSchedules)
                 {
                     //potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
                     foreach (var newAccessStack in scheduleCombos)
                     {
-                        k++;
                         if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
                         {
                             var CopySchedule = new StateHistory(oldSystemSchedule.AllStates);
                             potentialSystemSchedules.Add(new SystemSchedule(CopySchedule, newAccessStack, currentTime));
                             // oldSched = new SystemSchedule(CopySchedule);
                         }
-
                     }
                 }
 
-                int numSched = 0;
                 foreach (var potentialSchedule in potentialSystemSchedules)
                 {
-
-
                     if (Checker.CheckSchedule(system, potentialSchedule)) {
                         systemCanPerformList.Add(potentialSchedule);
-                        numSched++;
                     }
                 }
                 foreach (SystemSchedule systemSchedule in systemCanPerformList)
@@ -177,6 +169,7 @@ namespace HSFScheduler
 
                 systemCanPerformList.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
                 systemCanPerformList.Reverse();
+
                 // Merge old and new systemSchedules
                 var oldSystemCanPerfrom = new List<SystemSchedule>(systemCanPerformList);
                 systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedule doubling stuff up

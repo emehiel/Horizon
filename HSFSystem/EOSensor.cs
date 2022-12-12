@@ -43,9 +43,9 @@ namespace HSFSubsystem
             //DefaultSubName = "EOSensor";
             Asset = asset;
             GetSubNameFromXmlNode(EOSensorXmlNode);
-            PIXELS_KEY = new StateVarKey<double>(Asset.Name +"." + "numpixels");
-            INCIDENCE_KEY = new StateVarKey<double>(Asset.Name + "." + "incidenceangle");
-            EOON_KEY = new StateVarKey<bool>(Asset.Name + "." + "eosensoron");
+            PIXELS_KEY = new StateVariableKey<double>(Asset.Name +"." + "numpixels");
+            INCIDENCE_KEY = new StateVariableKey<double>(Asset.Name + "." + "incidenceangle");
+            EOON_KEY = new StateVariableKey<bool>(Asset.Name + "." + "eosensoron");
             addKey(PIXELS_KEY);
             addKey(INCIDENCE_KEY);
             addKey(EOON_KEY);

@@ -16,7 +16,7 @@ namespace HSFSubsystem
     public class Comm : Subsystem
     {
         #region Attributes
-        protected StateVarKey<double> DATARATE_KEY;
+        protected StateVariableKey<double> DATARATE_KEY;
         #endregion
 
         #region Constructors
@@ -33,7 +33,7 @@ namespace HSFSubsystem
             GetSubNameFromXmlNode(CommXmlNode);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
             DependentSubsystems = new List<Subsystem>();
-            DATARATE_KEY = new StateVarKey<double>(Asset.Name + "." + "datarate(mb/s)");
+            DATARATE_KEY = new StateVariableKey<double>(Asset.Name + "." + "datarate(mb/s)");
             addKey(DATARATE_KEY);
             dependencies.Add("PowerfromComm" + "." + Asset.Name, new Func<Event, HSFProfile<double>>(POWERSUB_PowerProfile_COMMSUB));
         }

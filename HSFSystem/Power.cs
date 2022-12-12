@@ -40,8 +40,8 @@ namespace HSFSubsystem
             //DefaultSubName = "Power";
             Asset = asset;
             GetSubNameFromXmlNode(PowerNode);
-            DOD_KEY = new StateVarKey<double>(Asset.Name + "." + "depthofdischarge");
-            POWIN_KEY = new StateVarKey<double>(Asset.Name + "." + "solarpanelpowerin");
+            DOD_KEY = new StateVariableKey<double>(Asset.Name + "." + "depthofdischarge");
+            POWIN_KEY = new StateVariableKey<double>(Asset.Name + "." + "solarpanelpowerin");
             addKey(DOD_KEY);
             addKey(POWIN_KEY);
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>();

@@ -7,19 +7,19 @@ using System.Xml;
 namespace Utilities
 {
     [Serializable]
-    public class StateVarKey<T>
+    public class StateVariableKey<T>
     {
         #region Attributes
         public string VarName { get; set; }
         #endregion
 
         #region Constructors
-        public StateVarKey(string varName)
+        public StateVariableKey(string varName)
         {
             VarName = varName.ToLower();
         }
 
-        public StateVarKey(XmlNode varXmlNode, string assetName)
+        public StateVariableKey(XmlNode varXmlNode, string assetName)
         {
             if (varXmlNode.Attributes["key"] == null)
                 throw new MissingMemberException("Missing key field in constraint!");
@@ -36,42 +36,42 @@ namespace Utilities
                 return false;
             }
 
-            StateVarKey<T> p = obj as StateVarKey<T>;
+            StateVariableKey<T> p = obj as StateVariableKey<T>;
             return VarName.Equals(p.VarName);
 
         }
         
-        public static implicit operator StateVarKey<int>(StateVarKey<T> i)
+        public static implicit operator StateVariableKey<int>(StateVariableKey<T> i)
         {
-            return new StateVarKey<int>(i.VarName);
+            return new StateVariableKey<int>(i.VarName);
         }
 
-        public static implicit operator StateVarKey<double>(StateVarKey<T> i)
+        public static implicit operator StateVariableKey<double>(StateVariableKey<T> i)
         {
-            return new StateVarKey<double>(i.VarName);
+            return new StateVariableKey<double>(i.VarName);
         }
 
-        public static implicit operator StateVarKey<bool>(StateVarKey<T> i)
+        public static implicit operator StateVariableKey<bool>(StateVariableKey<T> i)
         {
-            return new StateVarKey<bool>(i.VarName);
+            return new StateVariableKey<bool>(i.VarName);
         }
 
-        public static implicit operator StateVarKey<Matrix<double>>(StateVarKey<T> i)
+        public static implicit operator StateVariableKey<Matrix<double>>(StateVariableKey<T> i)
         {
-            return new StateVarKey<Matrix<double>>(i.VarName);
+            return new StateVariableKey<Matrix<double>>(i.VarName);
         }
 
-        public static implicit operator StateVarKey<Quaternion>(StateVarKey<T> i)
+        public static implicit operator StateVariableKey<Quaternion>(StateVariableKey<T> i)
         {
-            return new StateVarKey<Quaternion>(i.VarName);
+            return new StateVariableKey<Quaternion>(i.VarName);
         }
         
-        public static bool operator ==(StateVarKey<T> p1, StateVarKey<T> p2)
+        public static bool operator ==(StateVariableKey<T> p1, StateVariableKey<T> p2)
         {
             return p1.Equals(p2);
         }
 
-        public static bool operator !=(StateVarKey<T> p1, StateVarKey<T> p2)
+        public static bool operator !=(StateVariableKey<T> p1, StateVariableKey<T> p2)
         {
             return !(p1 == p2);
         }
@@ -84,9 +84,9 @@ namespace Utilities
         }
         #endregion
         #region Methods
-        public StateVarKey<T> DeepClone()
+        public StateVariableKey<T> DeepClone()
         {
-            return new StateVarKey<T>(VarName);
+            return new StateVariableKey<T>(VarName);
         }
         #endregion
     }

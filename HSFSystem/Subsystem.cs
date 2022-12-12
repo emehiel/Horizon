@@ -60,7 +60,8 @@ namespace HSFSubsystem
 
         /// <summary>
         /// The default canPerform method. 
-        /// Should be used to check if all dependent subsystems can perform and extended by subsystem implementations.
+        /// When overridden, a particular instance of a subsystem can determine if the subsystem "CanPerform" 
+        /// the proposed task
         /// </summary>
         /// <param name="oldState"></param>
         /// <param name="newState"></param>
@@ -83,11 +84,11 @@ namespace HSFSubsystem
 
         /// <summary>
         /// This method tracks four things:
-        /// 1.  Ensure all dependents Subsystems are evaluated before the current Subsystem is evaluates and set the
+        /// 1.  Ensure all dependents Subsystems are evaluated before the current Subsystem is evaluated and set the
         ///     IsEvaluated status.
         /// 2.  Calls the CanPerform() method for the subsystem when all dependent subsystems have been evlauted
         /// 3.  Calls the CanPerform() method when a subsystem has no dependent subsystems
-        /// 4.  If a Subsystem CanPerform() method returns false, colapse the nested call to false
+        /// 4.  If a Subsystem CanPerform() method returns false, colapse the nested call and return false
         /// </summary>
         /// <param name="proposedEvent"></param>
         /// <param name="environment"></param>
@@ -247,50 +248,50 @@ namespace HSFSubsystem
         }
         
         // Add keys depending on the type of the key
-        public void addKey(StateVarKey<int> keyIn) {
+        public void addKey(StateVariableKey<int> keyIn) {
             if (Ikeys == null) //Only construct what you need
             {
-                Ikeys = new List<StateVarKey<int>>();
+                Ikeys = new List<StateVariableKey<int>>();
             }
             Ikeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<double> keyIn) {
+        public void addKey(StateVariableKey<double> keyIn) {
             if (Dkeys == null) //Only construct what you need
             {
-                Dkeys = new List<StateVarKey<double>>();
+                Dkeys = new List<StateVariableKey<double>>();
             }
             Dkeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<float> keyIn) {
+        public void addKey(StateVariableKey<float> keyIn) {
             if (Fkeys == null) //Only construct what you need
             {
-                Fkeys = new List<StateVarKey<float>>();
+                Fkeys = new List<StateVariableKey<float>>();
             }
             Fkeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<bool> keyIn) {
+        public void addKey(StateVariableKey<bool> keyIn) {
             if (Bkeys == null) //Only construct what you need
             {
-                Bkeys = new List<StateVarKey<bool>>();
+                Bkeys = new List<StateVariableKey<bool>>();
             }
             Bkeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<Matrix<double>> keyIn) {
+        public void addKey(StateVariableKey<Matrix<double>> keyIn) {
             if (Mkeys == null) //Only construct what you need
             {
-                Mkeys = new List<StateVarKey<Matrix<double>>>();
+                Mkeys = new List<StateVariableKey<Matrix<double>>>();
             }
             Mkeys.Add(keyIn);
         }
 
-        public void addKey(StateVarKey<Quaternion> keyIn) {
+        public void addKey(StateVariableKey<Quaternion> keyIn) {
             if (Qkeys == null) //Only construct what you need
             {
-                Qkeys = new List<StateVarKey<Quaternion>>();
+                Qkeys = new List<StateVariableKey<Quaternion>>();
             }
             Qkeys.Add(keyIn);
         }

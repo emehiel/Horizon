@@ -15,15 +15,15 @@ namespace HSFSubsystem
         #region Attributes
 
         Dictionary<string, double> lookup;
-        protected StateVarKey<double> maj_Key;
+        protected StateVariableKey<double> maj_Key;
         Dictionary<string, int> Ilookup;
-        protected StateVarKey<int> IKey;
+        protected StateVariableKey<int> IKey;
         Dictionary<string, bool> Blookup;
-        protected StateVarKey<bool> BKey;
+        protected StateVariableKey<bool> BKey;
         Dictionary<string, Quaternion> Qlookup;
-        protected StateVarKey<Quaternion> QKey;
+        protected StateVariableKey<Quaternion> QKey;
         Dictionary<string, Matrix<double>> Mlookup;
-        protected StateVarKey<double> MKey;
+        protected StateVariableKey<double> MKey;
 
 
         #endregion
@@ -51,15 +51,15 @@ namespace HSFSubsystem
             {
                 lookup = getList();
             }
-            maj_Key = new StateVarKey<double>(Asset.Name + "." + "majorKey");
+            maj_Key = new StateVariableKey<double>(Asset.Name + "." + "majorKey");
             addKey(maj_Key);
-            IKey = new StateVarKey<int>(Asset.Name + "." + "IKey");
+            IKey = new StateVariableKey<int>(Asset.Name + "." + "IKey");
             addKey(IKey);
-            BKey = new StateVarKey<bool>(Asset.Name + "." + "BKey");
+            BKey = new StateVariableKey<bool>(Asset.Name + "." + "BKey");
             addKey(BKey);
-            MKey = new StateVarKey<Matrix<double>>(Asset.Name + "." + "MKey");
+            MKey = new StateVariableKey<Matrix<double>>(Asset.Name + "." + "MKey");
             addKey(MKey);
-            QKey = new StateVarKey<Quaternion>(Asset.Name + "." + "QKey");
+            QKey = new StateVariableKey<Quaternion>(Asset.Name + "." + "QKey");
             addKey(QKey);
         }
 

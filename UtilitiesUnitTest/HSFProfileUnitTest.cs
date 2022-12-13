@@ -52,10 +52,10 @@ namespace UtilitiesUnitTest
              
         }
         [Test]
-        public void TimeValueHSFProfile()
+        public void KeyvalHSFProfile()
         {
             //arrange
-            (double, double) kvp = (1.0, 2.0);
+            KeyValuePair<double, double> kvp = new KeyValuePair<double, double>(1,2);
             //act
             HSFProfile<double> hSFProfile = new HSFProfile<double>(kvp);
             //assert
@@ -66,7 +66,7 @@ namespace UtilitiesUnitTest
         public void Indexer()
         {
             //arrange
-            (double, double) kvp = (0.0, 1.0);
+            KeyValuePair<double, double> kvp = new KeyValuePair<double, double>(0, 1);
             HSFProfile<double> hSFProfile = new HSFProfile<double>(kvp);
 
             //assert + act with indexing hSFProfile
@@ -82,7 +82,7 @@ namespace UtilitiesUnitTest
         public void FirstTime()
         {
             //arrange
-            (double, double) kvp = (3.0, 3.0);
+            KeyValuePair<double, double> kvp = new KeyValuePair<double, double>(3, 3);
             HSFProfile<double> hSFProfile = new HSFProfile<double>(kvp);
             hSFProfile[1] = 2;
             hSFProfile[2] = 3;
@@ -98,14 +98,14 @@ namespace UtilitiesUnitTest
         public void Last()
         {
             //arrange
-            (double, double) kvp = (3.0, 3.0);
+            KeyValuePair<double, double> kvp = new KeyValuePair<double, double>(3, 3);
             HSFProfile<double> hSFProfile = new HSFProfile<double>(kvp);
             hSFProfile[1] = 2;
             hSFProfile[2] = 3;
             hSFProfile[0] = 1;
 
             //act
-            (double, double) kvpAct = hSFProfile.Last();
+            KeyValuePair<double, double> kvpAct = hSFProfile.Last();
 
             //assert
             Assert.AreEqual(kvp, kvpAct);
@@ -114,7 +114,7 @@ namespace UtilitiesUnitTest
         public void LastVal()
         {
             //arrange
-            (double, double) kvp = (3.0, 3.0);
+            KeyValuePair<double, double> kvp = new KeyValuePair<double, double>(3, 3);
             HSFProfile<double> hSFProfile = new HSFProfile<double>(kvp);
             hSFProfile[1] = 2;
             hSFProfile[2] = 3;
@@ -130,7 +130,7 @@ namespace UtilitiesUnitTest
         public void LastTime()
         {
             //arrange
-            (double, double) kvp = (3.0, 3.0);
+            KeyValuePair<double, double> kvp = new KeyValuePair<double, double>(3, 3);
             HSFProfile<double> hSFProfile = new HSFProfile<double>(kvp);
             hSFProfile[1] = 2;
             hSFProfile[2] = 3;
@@ -146,7 +146,7 @@ namespace UtilitiesUnitTest
         public void Dataattime()
         {
             //arrange
-            (double, double) kvp = (3.0, 3.0);
+            KeyValuePair<double, double> kvp = new KeyValuePair<double, double>(3, 3);
             HSFProfile<double> hSFProfile = new HSFProfile<double>(kvp);
             HSFProfile<double> hSFProfile2 = new HSFProfile<double>();
             hSFProfile[1] = 2;
@@ -154,19 +154,19 @@ namespace UtilitiesUnitTest
             hSFProfile[0] = 1;
 
             //act
-            var dataAtTime0 = hSFProfile.DataAtTime(0);
-            var dataAtTime1 = hSFProfile.DataAtTime(1);
-            var dataAtTime2 = hSFProfile.DataAtTime(-1);
-            var dataAtTime5 = hSFProfile2.DataAtTime(5);
+            KeyValuePair<double, double>  dataAtTime0 = hSFProfile.DataAtTime(0);
+            KeyValuePair<double, double>  dataAtTime1 = hSFProfile.DataAtTime(1);
+            KeyValuePair<double, double> dataAtTime2 = hSFProfile.DataAtTime(-1);
+            KeyValuePair<double, double> dataAtTime5 = hSFProfile2.DataAtTime(5);
 
-            var kvp1 = (1.0, 2.0);
-            var kvp2 = (1.0, 2.0);
-            var kvp0 = (0.0, 1.0);
-            var kvp5 = (0.0, 0.0);
+            KeyValuePair<double, double> kvp1 = new KeyValuePair<double, double>(1, 2);
+            KeyValuePair<double, double> kvp2 = new KeyValuePair<double, double>(1, 2);
+            KeyValuePair<double, double> kvp0 = new KeyValuePair<double, double>(0, 1);
+            KeyValuePair<double, double> kvp5 = new KeyValuePair<double, double>(0, 0);
 
             //assert
             Assert.AreEqual(kvp0, dataAtTime0);
-            Assert.AreEqual(kvp1, dataAtTime1);
+            Assert.AreEqual(kvp1,dataAtTime1);
             Assert.AreEqual(kvp0, dataAtTime2);
             Assert.AreEqual(kvp5, dataAtTime5);
 
@@ -180,7 +180,7 @@ namespace UtilitiesUnitTest
         public void ValAtTime()
         {
             //arrange
-            (double, double) kvp = (3, 3);
+            KeyValuePair<double, double> kvp = new KeyValuePair<double, double>(3, 3);
             HSFProfile<double> hSFProfile = new HSFProfile<double>(kvp);
             hSFProfile[1] = 2;
             hSFProfile[2] = 3;
@@ -196,7 +196,7 @@ namespace UtilitiesUnitTest
         public void Integrate() //TODO: HSFProfile.Integrate needs attention. See Github "Project" section: https://github.com/emehiel/Horizon/projects
         {
             //arrange
-            (double, double) kvp = (3.0, 3.0);
+            KeyValuePair<double, double> kvp = new KeyValuePair<double, double>(3, 3);
             HSFProfile<double> hSFProfile = new HSFProfile<double>(kvp);
             hSFProfile[1] = 1;
             hSFProfile[2] = 2;
@@ -261,7 +261,7 @@ namespace UtilitiesUnitTest
         public void Add()
         {
             //arrange
-            HSFProfile<double> hSFProfile = new HSFProfile<double>(0, 1);
+            HSFProfile<double> hSFProfile = new HSFProfile<double>(0,1);
             HSFProfile<double> hSFProfile2 = new HSFProfile<double>(0, 1);
             HSFProfile<double> hSFProfile3 = new HSFProfile<double>(0, 1);
 

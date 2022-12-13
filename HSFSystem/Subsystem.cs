@@ -125,6 +125,7 @@ namespace HSFSubsystem
                 }
                 return true;
             }
+        }
 
         /// <summary>
         /// The default canExtend function. May be over written for additional functionality.

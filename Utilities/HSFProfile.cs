@@ -11,38 +11,26 @@ namespace Utilities
     [Serializable]
     // Assume the value of the data prior to the first time entry is zero (zero order hold)
     // Assume the value of the data after the last time entry is the last value in data
-    public class HSFProfile<T>
+    public class HSFProfile<T> : IHSFProfile   
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         /// A map containing time-ordered values which stores SystemState data
         /// </summary>
-        private readonly SortedDictionary<double, T> data = new SortedDictionary<double, T>();
+        private SortedDictionary<double, T> data = new SortedDictionary<double, T>();
 
         public SortedDictionary<double, T> Data
         {
             get
             { return data; }
         }
-        
-        #region Constructors
+
         /// <summary>
         /// Creates a new empty profile
         /// </summary>
         public HSFProfile()
         {
-            //Default - Nothing to do
-        }
-
-        /// <summary>
-        /// Creates a new profile with one initial (time, value) pair
-        /// </summary>
-        /// <param name="Time"></param>
-        /// <param name="Value"></param>
-        public HSFProfile(double Time, T Value)
-        {
-            data.Add(Time, Value);
         }
 
         /// <summary>
@@ -50,35 +38,39 @@ namespace Utilities
         /// as a KeyValuePair
         /// </summary>
         /// <param name="pointIn">The intial point in the new profile</param>
-        public HSFProfile((double Time, T Value) pointIn)
+        public HSFProfile(KeyValuePair<double, T> pointIn)
         {
-            data.Add(pointIn.Time, pointIn.Value);
+            data.Add(pointIn.Key, pointIn.Value);
         }
 
+        /// <summary>
+        /// Create a new Profile fron an initial point
+        /// as two different input parameters timeIn, valIn
+        /// </summary>
+        /// <param name="timeIn"></param>
+        /// <param name="valIn"></param>
+        public HSFProfile(double timeIn, T valIn)
+        {
+            data.Add(timeIn, valIn);
+        }
 
         /// <summary>
         /// Create a new Profile from two lists of equal length
         /// </summary>
         /// <param name="timeIn"></param>
         /// <param name="valIn"></param>
-        public HSFProfile(List<double> Times, List<T> Values)
+        public HSFProfile(List<double> timeIn, List<T> valIn)
         {
-            if (Times.Count != Values.Count)
+            // TODO:  Assert that both lists are of equal length
+            // TODO:  Make this foreeach loop a tuple
+            int i = 0;
+            foreach (var item in timeIn)
             {
-                throw new ArgumentException("Lists of Times/Values for HSFProfile are not of equal length");
-            }
-            else
-            {
-                foreach (var tup in Times.Zip(Values, (time, value) => (time, value)))
-                    Add(tup.time, tup.value);
+                data.Add(item, valIn[i]);
+                i++;
             }
         }
 
-        public HSFProfile(List<(double Time, T Value)> TimeValuePairs)
-        {
-            foreach (var timeValuePair in TimeValuePairs)
-                Add(timeValuePair.Time, timeValuePair.Value);
-        }
         /// <summary>
         /// Create a new Profile from a copy on an existing profile
         /// </summary>
@@ -88,27 +80,19 @@ namespace Utilities
             data = new SortedDictionary<double, T>(dataIn);
         }
 
-        #endregion
-        
         #region Indexers
-        /// <summary>
-        /// Returns the Value in the HSFProfile at time Time, or if the there is a value at Time, overwrite the value,
-        /// or if there is no value at Time, Add() the value at Time.
-        /// </summary>
-        /// <param name="Time"></param>
-        /// <returns></returns>
-        public T this[double Time]
+        public T this[double key]
         {
             get
             {
-                return ValueAtTime(Time);
+                return ValueAtTime(key);
             }
             set
             {
-            if (data.ContainsKey(Time))
-                data[Time] = value;
+            if (data.ContainsKey(key))
+                data[key] = value;
             else
-                data.Add(Time, value);
+                data.Add(key, value);
             }
         }
         #endregion
@@ -118,10 +102,9 @@ namespace Utilities
         /// Returns the first data point in the profile
         /// </summary>
         /// <returns>The KeyValuePair representing the data point in the profile</returns>
-        // Old HSFProfile passed KeyValuePairs back.  Switching to Tuples.  Faster.
-        public (double Time, T Value) First()
+        public KeyValuePair<double, T> First()
         {
-            return (data.First().Key, data.First().Value);
+            return data.First();
         }
 
         /// <summary>
@@ -145,9 +128,9 @@ namespace Utilities
         /// Returns the last data point in the profile
         /// </summary>
         /// <returns>The KeyValuePair representing the data point in the profile</returns>
-        public (double Time, T Value) Last()
+        public KeyValuePair<double, T> Last()
         {
-            return (data.Last().Key, data.Last().Value);
+            return data.Last();
         }
 
         /// <summary>
@@ -174,36 +157,36 @@ namespace Utilities
         /// <param name="time">a double representing the time at which to get the data point</param>
         /// <returns>a KeyValuePair representing the data point</returns>
         // MAJOR TODO: what should be returned when we try to access profile data before or after the first or last key (time)?
-        public (double Time, T Value) DataAtTime(double Time)
+        public KeyValuePair<double, T> DataAtTime(double time)
         {
+
             try
             {
-                if (Empty())
+                if (!Empty())
                 {
-                    log.Warn("WARNING - DataAtTime: Attemping to get data point from empty profile. Returning null pair.");
-                    return (0, (T)new object());  // TODO:  What to return if profile is empty?
-                }
-                else
-                {
-                    var query = data.Where(item => item.Key <= Time);
+                    IEnumerable<KeyValuePair<double, T>> query = data.Where(item => item.Key <= time);
                     if (query.Count() != 0)
                     {
                         var v = query.Last();
-                        return (v.Key, v.Value);
+                        return v;
                     }
                     else
                     {
                         log.Warn("WARNING - DataAtTime: Attempting to reference time before first data point in profile");
-                        var v = data.Single(item => item.Key == data.Keys.Min());
-                        return (v.Key, v.Value);
+                        return data.Single(item => item.Key == data.Keys.Min());
                     }
+
+                }
+                else
+                {
+                    log.Warn("WARNING - DataAtTime: Attemping to get data point from empty profile. Returning null pair.");
+                    return new KeyValuePair<double, T>();  // TODO:  What to return if profile is empty?
                 }
             }
-            catch
+            catch (ArgumentException e)
             {
-                string msg = $"Attempt to find data point in profile failed at time {Time} failed";
-                log.Warn(msg);
-                throw new ArgumentException(msg);
+                log.Warn("attempt to find data point in profile failed at time " + time + "failed");
+                throw;
             }
         }
 
@@ -219,8 +202,6 @@ namespace Utilities
         #endregion
 
         #region Integration Methods
-        //TODO: This should be templated
-        //TODO:  Do we want to keep these utilities?
         /// <summary>
         /// Integrate the profile from start to end time and set to upper limit if limit is exceeded
         /// </summary>
@@ -271,7 +252,6 @@ namespace Utilities
         }
 
         //TODO: This should be templated
-        //TODO:  Do we want to keep these utilities?
         /// <summary>
         /// Integrate the profile from start to end time and set to limit if exceeded
         /// </summary>
@@ -331,8 +311,6 @@ namespace Utilities
             return prof;
 
         }
-        //TODO: This should be templated
-        //TODO:  Do we want to keep these utilities?
         /// <summary>
         ///  Integrates the Profile with a lower limit given an initial value and condition from the start to end time
         ///  If the integral falls below the lower limit, the value for the integral is set to the lower limit
@@ -386,31 +364,26 @@ namespace Utilities
         /// <param name="endTime"></param>
         /// <param name="initialValue"></param>
         /// <returns></returns>
-        // Eric got this working correctly and tested 8/5/2022
-        public T Integrate(double startTime, double endTime, double initialValue = 0)
+        public double Integrate(double startTime, double endTime, double initialValue)
         {
             if (endTime < startTime)
-                return -1.0 * (dynamic)Integrate(endTime, startTime, initialValue);
+                return -1.0 * Integrate(endTime, startTime, initialValue);
             if (Count() == 0 || endTime <= data.First().Key)
-                return (endTime - startTime) * (dynamic)initialValue;
+                return (endTime - startTime) * initialValue;
             if (endTime == startTime)
-                return default;
+                return 0;
 
-            var query = data.Where(item => item.Key >= startTime && item.Key <= endTime).ToList();
-            query.Add(new KeyValuePair<double, T>(endTime, query.Last().Value));
-            if (query.First().Key != startTime)
-                query.Insert(0, new KeyValuePair<double, T>(startTime, this[startTime]));
-
-            T result = default;
-            double dt = 0;
-
-            for (int i = 0; i < query.Count() - 1; i++)
+            //  KeyValuePair<double, double> query = (SortedDictionary<double, double>)data.Where(item => item.Key >= startTime && item.Key <= endTime);
+            double query = initialValue;
+            foreach (var prof in data)
             {
-                dt = query[i + 1].Key - query[i].Key;
-                result += dt * (dynamic)query[i].Value;
+                if (prof.Key >= startTime && prof.Key <= endTime)
+                {
+                    query += (dynamic)prof.Value;
+                }
             }
-            return result + (dynamic)initialValue;
-
+            return query;
+            //  return query.Sum(queryItem => queryItem.Value) + initialValue;
         }
         #endregion
 
@@ -448,7 +421,12 @@ namespace Utilities
         /// <returns>The maximum value in the profile</returns>
         public T Max()
         {
-            return data.Max().Value;
+            dynamic max = data.First().Value;
+            foreach (var item in data)
+                if (item.Value > max)
+                    max = item.Value;
+
+            return max;
         }
 
         /// <summary>
@@ -457,7 +435,12 @@ namespace Utilities
         /// <returns>The minimum value in the profile</returns>
         public T Min()
         {
-            return data.Min().Value;
+            dynamic min = data.First().Value;
+            foreach (var item in data)
+                if (item.Value > min)
+                    min = item.Value;
+
+            return min;
         }
         // Functions
 
@@ -467,9 +450,7 @@ namespace Utilities
         /// </summary>
         void RemoveDuplicates()
         {
-            var temp = data.Distinct();
-            data.Clear();
-            data.Union(temp);
+            data = (SortedDictionary<double, T>)data.Distinct();
         }
         #endregion
 
@@ -478,21 +459,20 @@ namespace Utilities
         /// <summary>
         /// Adds a new data point to an existing profile
         /// </summary>
-        /// <param name="Time">the time of the point to add</param>
-        /// <param name="Value">the value of the point to add</param>
-        public void Add(double Time, T Value)
+        /// <param name="timeIn">the time of the point to add</param>
+        /// <param name="valIn">the value of the point to add</param>
+        public void Add(double timeIn, T valIn)
         {
             try
             {
-                data.Add(Time, Value);
+                data.Add(timeIn, valIn);
             }
             catch (ArgumentException)
             {
-                string msg = "An element with Time/Value pair already exists in Profile - overwriting value.";
-                log.Warn(msg);
-                Console.WriteLine(msg);
+                log.Warn("An element with Key/Value pair already exists in Profile - overwriting value.");
+                Console.WriteLine("An element with Key/Value pair already exists in Profile - overwriting value.");
 
-                data[Time] = Value;
+                data[timeIn] = valIn;
             }
         }
 
@@ -500,16 +480,16 @@ namespace Utilities
         /// Adds a new data point to an existing profile
         /// </summary>
         /// <param name="pointIn">The data point to add to the profile as a KeyValuePair</param>
-        public void Add((double Time, T Value) TimeValuePair)
+        public void Add(KeyValuePair<double, T> pointIn)
         {
             try
             {
-                data.Add(TimeValuePair.Time, TimeValuePair.Value);
+                data.Add(pointIn.Key, pointIn.Value);
             }
             catch (ArgumentException)
             {
                 log.Warn("An element with Key/Value pair already exists in Profile - overwriting value.");
-                data[TimeValuePair.Time] = TimeValuePair.Value;
+                data[pointIn.Key] = pointIn.Value;
             }
         }
 
@@ -518,9 +498,32 @@ namespace Utilities
         /// Adds a new data points to an existing profile from some other existing profile
         /// </summary>
         /// <param name="otherProfile">The existing profile which is merged with this profile</param>
-        public void Union(HSFProfile<T> otherProfile)
+        public void Add(HSFProfile<T> otherProfile)
         {
-            data.Union(otherProfile.Data);
+            if (!otherProfile.Empty())
+            {
+                foreach (var item in otherProfile.data)
+                {
+                    Add(item);
+                }
+            }
+        }
+        #endregion
+
+        #region Operators
+        /// <summary>
+        /// Merge the data in two profiles by performing a union
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <returns></returns>
+        public static HSFProfile<T> MergeProfiles(HSFProfile<T> p1, HSFProfile<T> p2) //Morgan made this static
+        {
+            HSFProfile<T> p3 = new HSFProfile<T>();
+            p3.data = (SortedDictionary<double, T>)(p1.data.Union(p2.data));
+            p3.RemoveDuplicates();
+
+            return p3;
         }
         #endregion
 
@@ -649,7 +652,7 @@ namespace Utilities
         public static HSFProfile<T> operator -(dynamic someNumber, HSFProfile<T> p1)
         {
             HSFProfile<T> pOut = new HSFProfile<T>();
-            return pOut = someNumber + (-p1);
+            return pOut = -p1 + someNumber;
         }
 
         /// <summary>

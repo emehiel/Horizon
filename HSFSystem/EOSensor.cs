@@ -18,9 +18,9 @@ namespace HSFSubsystem
         #region Attributes
         //Default Values
         public static string SUBNAME_EOSENSOR = "EOSensor";
-        protected StateVarKey<double> PIXELS_KEY;
-        protected StateVarKey<double> INCIDENCE_KEY;
-        protected StateVarKey<bool> EOON_KEY;
+        protected StateVariableKey<double> PIXELS_KEY;
+        protected StateVariableKey<double> INCIDENCE_KEY;
+        protected StateVariableKey<bool> EOON_KEY;
         protected double _lowQualityPixels = 5000;
         protected double _lowQualityTime = 3;
         protected double _midQualityPixels = 10000;

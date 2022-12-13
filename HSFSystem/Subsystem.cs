@@ -21,12 +21,12 @@ namespace HSFSubsystem
         public string Name { get; protected set; }
         public static string DefaultSubName { get; protected set; }
         public virtual Dictionary<string, Delegate> SubsystemDependencyFunctions { get; set; }
-        public List<StateVarKey<int>> Ikeys { get; protected set; }
-        public List<StateVarKey<double>> Dkeys { get; protected set; }
-        public List<StateVarKey<float>> Fkeys { get; protected set; }
-        public List<StateVarKey<bool>> Bkeys { get; protected set; }
-        public List<StateVarKey<Matrix<double>>> Mkeys { get; protected set; }
-        public List<StateVarKey<Quaternion>> Qkeys { get; protected set; }
+        public List<StateVariableKey<int>> Ikeys { get; protected set; }
+        public List<StateVariableKey<double>> Dkeys { get; protected set; }
+        public List<StateVariableKey<float>> Fkeys { get; protected set; }
+        public List<StateVariableKey<bool>> Bkeys { get; protected set; }
+        public List<StateVariableKey<Matrix<double>>> Mkeys { get; protected set; }
+        public List<StateVariableKey<Quaternion>> Qkeys { get; protected set; }
 
         public List<string> StateKeys { get; set; }
         public virtual SystemState _newState { get; set; }

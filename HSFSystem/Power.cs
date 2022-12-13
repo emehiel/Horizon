@@ -24,8 +24,8 @@ namespace HSFSubsystem
         protected double _fullSolarPanelPower = 150;
         protected double _penumbraSolarPanelPower = 75;
 
-        protected StateVarKey<double> DOD_KEY;
-        protected StateVarKey<double> POWIN_KEY; 
+        protected StateVariableKey<double> DOD_KEY;
+        protected StateVariableKey<double> POWIN_KEY; 
         #endregion Attributes
 
         #region Constructors

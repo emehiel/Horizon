@@ -67,7 +67,7 @@ namespace HSFSubsystem
             if (!base.CanPerform(proposedEvent, environment))
                 return false;
 
-            var DATABUFFERRATIO_KEY2 = this.Dkeys.Find(s => s.VariableName == "asset1.databufferfillratio");
+            var DATABUFFERRATIO_KEY2 = this.Dkeys.Find(s => s.VarName == "asset1.databufferfillratio");
             if (_task.Type == "imaging")
             {
                 double ts = proposedEvent.GetTaskStart(Asset);

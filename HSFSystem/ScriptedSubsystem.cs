@@ -92,20 +92,20 @@ namespace HSFSubsystem
         #region Methods
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
-            if (IsEvaluated)
-                return true;
+            //if (IsEvaluated)
+            //    return true;
 
-            // Check all dependent subsystems
-            foreach (var sub in DependentSubsystems)
-            {
-                if (!sub.IsEvaluated)
-                    if (sub.CanPerform(proposedEvent, environment) == false)
-                        return false;
-            }
+            //// Check all dependent subsystems
+            //foreach (var sub in DependentSubsystems)
+            //{
+            //    if (!sub.IsEvaluated)
+            //        if (sub.CanPerform(proposedEvent, environment) == false)
+            //            return false;
+            //}
 
-            _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
-            _newState = proposedEvent.State;
-            IsEvaluated = true;
+            //_task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
+            //_newState = proposedEvent.State;
+            //IsEvaluated = true;
 
             // Call the can perform method that is in the python class
             dynamic perform = _pythonInstance.CanPerform(proposedEvent, environment);

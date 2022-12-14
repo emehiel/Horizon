@@ -27,7 +27,7 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public Comm(XmlNode CommXmlNode)
         {
-            DefaultSubName = "Comm";
+            //DefaultSubName = "Comm";
         }
 
         /// <summary>
@@ -53,9 +53,7 @@ namespace HSFSubsystem
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
             var DATARATE_KEY = Dkeys[0];
-            IsEvaluated = true;
-            if (!base.CanPerform(proposedEvent, environment))
-                return false;
+
             if (_task.Type == "comm")
             {
                 HSFProfile<double> newProf = DependencyCollector(proposedEvent);

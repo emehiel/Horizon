@@ -8,7 +8,7 @@ using HSFUniverse;
 using HSFSystem;
 using MissionElements;
 using System.Xml;
-
+using System.Runtime.CompilerServices;
 
 namespace HSFSubsystem
 {
@@ -19,7 +19,7 @@ namespace HSFSubsystem
         public Asset Asset { get; set; }
         public virtual List<Subsystem> DependentSubsystems { get; set; } = new List<Subsystem>();
         public string Name { get; protected set; }
-        public static string DefaultSubName { get; protected set; }
+        //public static string DefaultSubName { get; protected set; }
         public virtual Dictionary<string, Delegate> SubsystemDependencyFunctions { get; set; }
         public List<StateVariableKey<int>> Ikeys { get; private set; } = new List<StateVariableKey<int>>();
         public List<StateVariableKey<double>> Dkeys { get; protected set; } = new List<StateVariableKey<double>>();
@@ -65,18 +65,61 @@ namespace HSFSubsystem
         /// <returns></returns>
         public virtual bool CanPerform(Event proposedEvent, Domain environment)
         {
-            foreach (var sub in DependentSubsystems)
-            {
-                if (!sub.IsEvaluated)// && !sub.GetType().Equals(typeof(ScriptedSubsystem)))
-                    if (sub.CanPerform(proposedEvent, environment) == false)
-                        return false;
-            }
-            _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
-            _newState = proposedEvent.State;
-            IsEvaluated = true;
+            //foreach (var sub in DependentSubsystems)
+            //{
+            //    if (!sub.IsEvaluated)// && !sub.GetType().Equals(typeof(ScriptedSubsystem)))
+            //        if (sub.CanPerform(proposedEvent, environment) == false)
+            //            return false;
+            //}
+            //_task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
+            //_newState = proposedEvent.State;
+            //IsEvaluated = true;
             return true;
         }
+        /// <summary>
+        /// This method tracks four things:
+        /// 1.  Ensure all dependents Subsystems are evaluated before the current Subsystem is evaluates and set the
+        ///     IsEvaluated status.
+        /// 2.  Calls the CanPerform() method for the subsystem when all dependent subsystems have been evlauted
+        /// 3.  Calls the CanPerform() method when a subsystem has no dependent subsystems
+        /// 4.  If a Subsystem CanPerform() method returns false, colapse the nested call to false
+        /// </summary>
+        /// <param name="proposedEvent"></param>
+        /// <param name="environment"></param>
+        /// <returns></returns>
+        public bool CheckDependentSubsystems(Event proposedEvent, Domain environment)
+        {
+            if (DependentSubsystems.Count == 0)
+            {
+                IsEvaluated = true;
+                _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
+                _newState = proposedEvent.State;
+                return this.CanPerform(proposedEvent, environment);
+            }
+            else
+            {
+                foreach (var sub in DependentSubsystems)
+                {
+                    if (!sub.IsEvaluated)// && !sub.GetType().Equals(typeof(ScriptedSubsystem)))
+                    {
+                        if (sub.CheckDependentSubsystems(proposedEvent, environment))
+                        {
+                            IsEvaluated = true;
+                            _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
+                            _newState = proposedEvent.State;
+                            if (!CanPerform(proposedEvent, environment))
+                                return false;
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+                return true;
+            }
 
+        }
         /// <summary>
         /// The default canExtend function. May be over written for additional functionality.
         /// </summary>
@@ -137,12 +180,12 @@ namespace HSFSubsystem
             string assetName = Asset.Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
                 Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString().ToLower();
-            else if (DefaultSubName != null)
-                Name = assetName + "." + DefaultSubName.ToLower() ;
-            else if (subXmlNode.Attributes["type"] != null)
-                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
+            //else if (DefaultSubName != null)
+            //    Name = assetName + "." + DefaultSubName.ToLower() ;
+            //else if (subXmlNode.Attributes["type"] != null)
+            //    Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
             else
-                throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
+                throw new ArgumentException($"Missing a subsystem name attribute for subsystem in {assetName}!");
         }
 
         /// <summary>
@@ -156,12 +199,12 @@ namespace HSFSubsystem
             string Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
                 Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString().ToLower();
-            else if (DefaultSubName != null)
-                Name = assetName + "." + DefaultSubName.ToLower() ;
-            else if (subXmlNode.Attributes["type"] != null)
-                Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
+            //else if (DefaultSubName != null)
+            //    Name = assetName + "." + DefaultSubName.ToLower() ;
+            //else if (subXmlNode.Attributes["type"] != null)
+            //    Name = assetName + "." + subXmlNode.Attributes["type"].Value.ToString().ToLower();
             else
-                throw new MissingMemberException("Missing a subsystemName or type field for subsystem!");
+                throw new ArgumentException($"Missing a subsystem name attribute for subsystem in {assetName}!");
             return Name;
         }
 
@@ -186,38 +229,33 @@ namespace HSFSubsystem
             SystemState state = new SystemState();
             foreach(var key in Ikeys)
             {
-                state.AddValues(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
-                //state.Idata.Add(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.AddValues(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Idata.Add(key, new HSFProfile<int>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Bkeys)
             {
-                state.AddValues(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
-                //state.Bdata.Add(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.AddValues(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Bdata.Add(key, new HSFProfile<bool>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Dkeys)
             {
-                state.AddValues(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
-                //state.Ddata.Add(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.AddValues(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Ddata.Add(key, new HSFProfile<double>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Mkeys)
             {
-                state.AddValues(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
-                //state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.AddValues(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Qkeys)
             {
-                state.AddValues(key, new HSFProfile<Quaternion>(time, currentSystemState.GetValueAtTime(key, time).Value));
-                //state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                //state.AddValues(key, new HSFProfile<Quaternion>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Qdata.Add(key, new HSFProfile<Quaternion>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
             foreach (var key in Vkeys)
             {
-                state.AddValues(key, new HSFProfile<Vector>(time, currentSystemState.GetValueAtTime(key, time).Value));
-                //state.Mdata.Add(key, new HSFProfile<Matrix<double>>(time, currentSystemState.GetValueAtTime(key, time).Value));
+                state.Vdata.Add(key, new HSFProfile<Vector>(time, currentSystemState.GetValueAtTime(key, time).Value));
             }
-            //foreach (var key in Vkeys)
-            //{
-            //    state.Vdata.Add(key, new HSFProfile<Vector>(time, currentSystemState.GetValueAtTime(key, time).Value));
-            //}
             return state;
         }
         

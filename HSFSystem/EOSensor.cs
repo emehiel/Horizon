@@ -39,7 +39,6 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public EOSensor(XmlNode EOSensorXmlNode)
         {
-            DefaultSubName = "EOSensor";
 
             if (EOSensorXmlNode.Attributes["lowQualityPixels"] != null)
                 //Console.WriteLine("inside loop");
@@ -82,8 +81,6 @@ namespace HSFSubsystem
             var INCIDENCE_KEY = Dkeys[1];
             var EOON_KEY = Bkeys[0];
 
-            if (!base.CanPerform(proposedEvent, environment))
-                return false;
             if (_task.Type == "imaging")
             {
                 //set pixels and time to caputre based on target value

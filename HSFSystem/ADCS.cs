@@ -31,7 +31,7 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public ADCS(XmlNode ADCSNode)
         {
-            DefaultSubName = "Adcs";
+            //DefaultSubName = "Adcs";
 
             double slewRate;
             if (ADCSNode.Attributes["slewRate"].Value != null)
@@ -66,9 +66,7 @@ namespace HSFSubsystem
         {
             var POINTVEC_KEY = Mkeys[0];
             // Alternative method to get key: StateVarKey<Matrix<double>> POINTVEC_KEY = Mkeys.Find(S => S.VarName == "asset1.eci_pointing_vector(xyz)");
-            if (base.CanPerform( proposedEvent, environment) == false)
-                return false;
-
+            
             double es = proposedEvent.GetEventStart(Asset);
             double ts = proposedEvent.GetTaskStart(Asset);
             double te = proposedEvent.GetTaskEnd(Asset);            

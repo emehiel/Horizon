@@ -36,8 +36,7 @@ namespace HSFSubsystem
         /// <param name="PowerNode"></param>
         /// <param name="asset"></param>
         public Power(XmlNode PowerNode)
-        {
-            DefaultSubName = "Power";
+        { 
             
             if (PowerNode.Attributes["batterySize"] != null)
                 _batterySize = (double)Convert.ChangeType(PowerNode.Attributes["batterySize"].Value, typeof(double));
@@ -122,9 +121,7 @@ namespace HSFSubsystem
         public override bool CanPerform(Event proposedEvent, Domain universe)
         {
             var DOD_KEY = Dkeys[0]; // Should be needed?
-            //Make sure all dependent subsystems have been evaluated
-            if (!base.CanPerform(proposedEvent, universe)) 
-                return false;
+
             double es = proposedEvent.GetEventStart(Asset);
             double te = proposedEvent.GetTaskEnd(Asset);
             double ee = proposedEvent.GetEventEnd(Asset);

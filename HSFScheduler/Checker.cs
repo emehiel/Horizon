@@ -55,22 +55,38 @@ namespace HSFScheduler
         {
             if (subsystem.IsEvaluated)
                 return true;
+
             var events = proposedSchedule.AllStates.Events;
-            if (events.Count != 0)
-            {
+            
+            //if (events.Count != 0)
+            //{
                 //if (events.Count > 1)
                 //    subsystem._oldState = events.ElementAt(events.Count - 2).State;
                 //else
                 //    subsystem._oldState = null;
+                try
+                {
+                    return subsystem.CheckDependentSubsystems(events.Peek(), environment);
+                }
+                catch
+                {
+                    throw new Exception("Empty set of events on proposed schedule");
+                }
+                //if (!subsystem.CheckDependentSubsystems(events.Peek(), environment))
+                //{
+                //    return false;
+                //}
 
-                    if (!subsystem.CanPerform(events.Peek(), environment))
-                        return false;
-                    events.Peek().isEvaluated +=1;
+                //if (!subsystem.CanPerform(events.Peek(), environment))
+                //{
+                //    return false;
+                //}
+                //events.Peek().TimesEvaluated += 1;
 
-            }
-            return true;
+                //}
+                //return true;
+            //}
         }
-
         /// <summary>
         /// See if all the subsystems can perform the most recent task that was added to the schedule
         /// </summary>

@@ -30,7 +30,7 @@ namespace HSFSubsystem
         /// <param name="asset"></param>
         public SSDR(XmlNode SSDRXmlNode)
         {
-            DefaultSubName = "SSDR";
+            //DefaultSubName = "SSDR";
 
             if (SSDRXmlNode.Attributes["bufferSize"] != null)
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
@@ -57,8 +57,7 @@ namespace HSFSubsystem
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
             var DATABUFFERRATIO_KEY = Dkeys[0];
-            if (!base.CanPerform(proposedEvent, environment))
-                return false;
+
 
             //var DATABUFFERRATIO_KEY2 = this.Dkeys.Find(s => s.VariableName == "asset1.databufferfillratio");
             if (_task.Type == "imaging")

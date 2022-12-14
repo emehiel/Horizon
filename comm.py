@@ -43,7 +43,7 @@ class comm(HSFSubsystem.Subsystem):
 
     def CanPerform(self, event, universe):
         #print("Entry of Comm CanPreform")
-        print(self._task.Type)
+        #print(self._task.Type)
         if self._task.Type == "comm":
             newProf = self.DependencyCollector(event)
             if (newProf.Empty() == False):

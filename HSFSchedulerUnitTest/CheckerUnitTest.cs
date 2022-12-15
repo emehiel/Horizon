@@ -26,12 +26,12 @@ namespace HSFSchedulerUnitTest
         public void CheckScheduleUnitTest()
         {
             Program programAct = new Program();
-            Stack<Task> systemTasks = CheckerHelper(ref programAct);
+            CheckerHelper(ref programAct);
 
-            systemTasks.Pop();
-            systemTasks.Pop();
-            Task task3 = systemTasks.Pop();  // should be task 1.1, which can only perform at time 1, not time 0
-            Task task4 = systemTasks.Pop();
+            programAct.SystemTasks.Pop();
+            programAct.SystemTasks.Pop();
+            Task task3 = programAct.SystemTasks.Pop();  // should be task 1.1, which can only perform at time 1, not time 0
+            Task task4 = programAct.SystemTasks.Pop();
 
 
             Stack<Access> targ1 = new Stack<Access>(1);
@@ -57,7 +57,9 @@ namespace HSFSchedulerUnitTest
             XmlNode ICNode = (XmlNode)XmlEnum.Current;
             //List<XmlNode> ICNodes = new List<XmlNode>();
             //ICNodes.Add(ICNode);
-            initialSched2.Add(SystemState.SetInitialSystemState(ICNode, programAct.AssetList[0]));
+            
+            initialSched2.SetInitialSystemState(ICNode, "majorKey");
+            //initialSched2.Add(SystemState.SetInitialSystemState(ICNode, programAct.AssetList[0]));
             SystemSchedule thirdSchedule = new SystemSchedule(initialSched2);
 
             SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
@@ -78,14 +80,14 @@ namespace HSFSchedulerUnitTest
 
         }
        
-        public Stack<Task> CheckerHelper(ref Program programAct)
+        public void CheckerHelper(ref Program programAct)
         {
 
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Checker.xml");
 
-            Stack<Task> systemTasks = programAct.LoadTargets();
+            programAct.LoadTargets();
             try
             {
                 programAct.LoadSubsystems();
@@ -94,19 +96,7 @@ namespace HSFSchedulerUnitTest
             {
                 programAct.log.Info("LoadSubsystems Failed the Unit test");
                 Assert.Fail();
-                return systemTasks;
             }
-            try
-            {
-                programAct.LoadDependencies();
-            }
-            catch
-            {
-                programAct.log.Info("LoadDepenedencies Failed the Unit test");
-                Assert.Fail();
-                return systemTasks;
-            }
-            return systemTasks;
         }
     }
 }

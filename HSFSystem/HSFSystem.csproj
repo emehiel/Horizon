@@ -95,7 +95,6 @@
     <Compile Include="IMU.cs" />
     <Compile Include="SingleConstraint.cs" />
     <Compile Include="EOSensor.cs" />
-    <Compile Include="ISubsystem.cs" />
     <Compile Include="Power.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScriptedSubsystem.cs" />

@@ -8,14 +8,14 @@ using HSFUniverse;
 using HSFSystem;
 using MissionElements;
 using System.Xml;
-using System.Runtime.CompilerServices;
 
 namespace HSFSubsystem
 {
     [Serializable]
-    public abstract class Subsystem : ISubsystem {
+    public abstract class Subsystem {
         #region Attributes
-        public virtual bool IsEvaluated { get; set; }
+        //public virtual bool IsEvaluated { get; set; }
+        public bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
         public virtual List<Subsystem> DependentSubsystems { get; set; } = new List<Subsystem>();
         public string Name { get; protected set; }
@@ -94,7 +94,12 @@ namespace HSFSubsystem
                 IsEvaluated = true;
                 _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
                 _newState = proposedEvent.State;
-                return this.CanPerform(proposedEvent, environment);
+                bool result = CanPerform(proposedEvent, environment);
+                //  Need to deal with this issue in next update
+                //double te = proposedEvent.GetTaskEnd(Asset);
+                //double ee = proposedEvent.GetEventEnd(Asset);
+                //proposedEvent.SetEventEnd(Asset, Math.Max(te, ee));
+                return result;
             }
             else
             {
@@ -109,6 +114,10 @@ namespace HSFSubsystem
                             _newState = proposedEvent.State;
                             if (!CanPerform(proposedEvent, environment))
                                 return false;
+                            //  Need to deal with this issue in next update
+                            //double te = proposedEvent.GetTaskEnd(Asset);
+                            //double ee = proposedEvent.GetEventEnd(Asset);
+                            //proposedEvent.SetEventEnd(Asset, Math.Max(te, ee));
                         }
                         else
                         {

@@ -54,11 +54,11 @@ namespace UserModel
 
             bool paramsLoaded = SchedParameters.LoadSchedParameters(schedParametersXMLNode);
 
-            foreach (XmlNode child in schedParametersXMLNode.ChildNodes)
-            {
-                if (child.Name.Equals("SCRIPTED_EVALUATOR"))
-                    Console.WriteLine("Scripted evaluators are loaded via the model input XML node!");
-            }
+            //foreach (XmlNode child in schedParametersXMLNode.ChildNodes)
+            //{
+            //    if (child.Name.Equals("SCRIPTED_EVALUATOR"))
+            //        Console.WriteLine("Scripted evaluators are loaded via the model input XML node!");
+            //}
         }
 
         /// <summary>

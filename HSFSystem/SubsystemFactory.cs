@@ -62,8 +62,9 @@ namespace HSFSubsystem
                 }
                 else if (type.Equals("subtest"))
                 {
+                    sub = new SubTest(SubsystemXmlNode);
                     //sub = new SubTest(SubsystemXmlNode, asset);
-                    throw new NotImplementedException("Removed after the great SubsystemFactory update.");
+                    //throw new NotImplementedException("Removed after the great SubsystemFactory update.");
                 }
                 else if (type.Equals("networked"))
                 {

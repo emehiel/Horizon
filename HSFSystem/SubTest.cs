@@ -16,14 +16,14 @@ namespace HSFSubsystem
 
         Dictionary<string, double> lookup;
         protected StateVariableKey<double> maj_Key;
-        Dictionary<string, int> Ilookup;
-        protected StateVariableKey<int> IKey;
-        Dictionary<string, bool> Blookup;
-        protected StateVariableKey<bool> BKey;
-        Dictionary<string, Quaternion> Qlookup;
-        protected StateVariableKey<Quaternion> QKey;
-        Dictionary<string, Matrix<double>> Mlookup;
-        protected StateVariableKey<double> MKey;
+        //Dictionary<string, int> Ilookup;
+        //protected StateVariableKey<int> IKey;
+        //Dictionary<string, bool> Blookup;
+        //protected StateVariableKey<bool> BKey;
+        //Dictionary<string, Quaternion> Qlookup;
+        //protected StateVariableKey<Quaternion> QKey;
+        //Dictionary<string, Matrix<double>> Mlookup;
+        //protected StateVariableKey<double> MKey;
 
 
         #endregion
@@ -34,51 +34,32 @@ namespace HSFSubsystem
         /// Defaults: delay: 5s
         /// </summary>
         /// <param name="TestXmlNode"></param>
-        /// <param name="asset"></param>
-        public SubTest(XmlNode TestXmlNode, Asset asset)
-        {
-            Asset = asset;
-            DependentSubsystems = new List<Subsystem>();
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
 
-            GetSubNameFromXmlNode(TestXmlNode);
-            if (this.Name == "asset1.subtest_crop")
-            {
-                lookup = getList(1);
-            }
-            else
-            {
-                lookup = getList();
-            }
-            maj_Key = new StateVariableKey<double>(Asset.Name + "." + "majorKey");
-            addKey(maj_Key);
-            IKey = new StateVariableKey<int>(Asset.Name + "." + "IKey");
-            addKey(IKey);
-            BKey = new StateVariableKey<bool>(Asset.Name + "." + "BKey");
-            addKey(BKey);
-            MKey = new StateVariableKey<Matrix<double>>(Asset.Name + "." + "MKey");
-            addKey(MKey);
-            QKey = new StateVariableKey<Quaternion>(Asset.Name + "." + "QKey");
-            addKey(QKey);
+        public SubTest(XmlNode TestXmlNode)
+        {
+
+            lookup = getList();
+
+            //maj_Key = new StateVariableKey<double>(Asset.Name + "." + "majorKey");
+            //addKey(maj_Key);
+            //IKey = new StateVariableKey<int>(Asset.Name + "." + "IKey");
+            //addKey(IKey);
+            //BKey = new StateVariableKey<bool>(Asset.Name + "." + "BKey");
+            //addKey(BKey);
+            //MKey = new StateVariableKey<Matrix<double>>(Asset.Name + "." + "MKey");
+            //addKey(MKey);
+            //QKey = new StateVariableKey<Quaternion>(Asset.Name + "." + "QKey");
+            //addKey(QKey);
         }
 
-        /// <summary>
-        /// Constructor for built in subsystems
-        /// Defaults: delay: 5s
-        /// </summary>
-        /// <param name="TestNode"></param>
-        /// <param name="asset"></param>
 
-        //public SubTest(XmlNode TestNode, Asset asset) : base(TestNode, asset)
-        //{
-        //    Asset = asset;
-        //}  
         #endregion Constructors
 
         #region Methods
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
             double es = proposedEvent.GetEventStart(Asset);
+            double ee = proposedEvent.GetEventEnd(Asset);
             double ts = proposedEvent.GetTaskStart(Asset);
             double te = proposedEvent.GetTaskEnd(Asset);
 
@@ -88,6 +69,10 @@ namespace HSFSubsystem
             lookup.TryGetValue(taskathand, out tasknum);
             if (tasknum == es)
             {
+                //if (taskathand == "target1")
+                //    proposedEvent.SetTaskEnd(Asset, ee + 0.25);
+                //else
+                //    proposedEvent.SetTaskEnd(Asset, ee - 0.25);
                 return true;
             }
             else
@@ -95,19 +80,7 @@ namespace HSFSubsystem
                 return false;
             }
         }
-        public override bool CanExtend(Event proposedEvent, Domain environment, double evalToTime)
-        {
-            //double es = proposedEvent.GetEventStart(Asset);
-            //double ts = proposedEvent.GetTaskStart(Asset);
-            //double te = proposedEvent.GetTaskEnd(Asset);
-            //if (es > delayend)
-            //{
-            //    return false;
-            //}
-            //return base.CanExtend(proposedEvent, environment, evalToTime);
-            return true;
 
-        }
         static Dictionary<string, double> getList() 
         {
             Dictionary<string, double> lookup = new Dictionary<string, double>();

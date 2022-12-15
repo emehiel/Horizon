@@ -30,16 +30,16 @@ namespace HSFSchedulerUnitTest
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
-            Stack<Task> systemTasks = SchedulerHelper(ref programAct);
+            SchedulerHelper(ref programAct);
 
-            XmlNode evalNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
+            //XmlNode evalNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
 
-            Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evalNode, programAct.Dependencies);
+            //Evaluator schedEvaluator = EvaluatorFactory.GetEvaluator(evalNode, programAct.Dependencies);
 
             programAct.SimSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
-            Scheduler scheduler = new Scheduler(schedEvaluator);
+            Scheduler scheduler = new Scheduler(programAct.SchedEvaluator);
 
-            List<SystemSchedule> schedules = scheduler.GenerateSchedules(programAct.SimSystem, systemTasks, programAct.InitialSysState);
+            List<SystemSchedule> schedules = scheduler.GenerateSchedules(programAct.SimSystem, programAct.SystemTasks, programAct.InitialSysState);
             schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
             schedules.Reverse();
 
@@ -60,11 +60,11 @@ namespace HSFSchedulerUnitTest
             Task target11 = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
             Task target0 = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
             //var vals = programAct.AssetList;
-            Task task3 = systemTasks.Pop();
-            Task task2 = systemTasks.Pop();
-            Task task11 = systemTasks.Pop();
-            Task task1 = systemTasks.Pop();
-            Task task0 = systemTasks.Pop();
+            Task task3 = programAct.SystemTasks.Pop();
+            Task task2 = programAct.SystemTasks.Pop();
+            Task task11 = programAct.SystemTasks.Pop();
+            Task task1 = programAct.SystemTasks.Pop();
+            Task task0 = programAct.SystemTasks.Pop();
 
             Assert.AreSame(target0, task0);
             Assert.AreEqual(target11, task11);
@@ -73,6 +73,56 @@ namespace HSFSchedulerUnitTest
 
             // check if equal means reference
         }
+
+        [Test]
+        public void GenerateSchedulesTwoAssestsUnitTest()
+        {
+
+            Program programAct = new Program();
+            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler.xml");
+            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TwoAssests.xml");
+
+            SchedulerHelper(ref programAct);
+
+            programAct.SimSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
+            Scheduler scheduler = new Scheduler(programAct.SchedEvaluator);
+
+            List<SystemSchedule> schedules = scheduler.GenerateSchedules(programAct.SimSystem, programAct.SystemTasks, programAct.InitialSysState);
+            schedules.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
+            schedules.Reverse();
+
+            //TEST SCHED COUNT
+            double schedCountExp = 24;
+            double schedCountAct = schedules.Count;
+            Assert.AreEqual(schedCountExp, schedCountAct);
+
+            //TEST SCHED SCORE & SORT
+            //Expect 24 schedules, [0] with score of 5 and [1-4] with score of 4
+            int diffExp = 1;
+            double diffAct = schedules[0].ScheduleValue - schedules[1].ScheduleValue;
+            Assert.AreEqual(diffExp, diffAct);
+
+            //Assert.AreEqual(highestValTargetExp, highestValTargetAct);
+            Task target3 = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target2 = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target11 = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            Task target0 = schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
+            //var vals = programAct.AssetList;
+            Task task3 = programAct.SystemTasks.Pop();
+            Task task2 = programAct.SystemTasks.Pop();
+            Task task11 = programAct.SystemTasks.Pop();
+            Task task1 = programAct.SystemTasks.Pop();
+            Task task0 = programAct.SystemTasks.Pop();
+
+            Assert.AreSame(target0, task0);
+            Assert.AreEqual(target11, task11);
+            Assert.AreEqual(target2, task2);
+            Assert.AreEqual(target3, task3);
+
+            // check if equal means reference
+        }
+
         [Test]
         public void cropSchedulesUnitTest()
         {
@@ -81,15 +131,15 @@ namespace HSFSchedulerUnitTest
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Checker.xml");
 
-            Stack<Task> systemTasks = SchedulerHelper(ref programAct);
-            programAct.CreateSchedules(systemTasks);
+            SchedulerHelper(ref programAct);
+            programAct.CreateSchedules();
 
             //TEST SCHED COUNT before crop,  if fail, then doesnt test the right scenario which is when the schedule count exceeds maxNumScheds
             double schedCountAct = programAct.Schedules.Count;
             Assert.IsTrue(schedCountAct > SchedParameters.MaxNumScheds);
 
             //Crop Schedules
-            Evaluator eval = new TargetValueEvaluator(programAct.Dependencies);
+            Evaluator eval = new TargetValueEvaluator();
             Scheduler scheduler = new Scheduler(eval);
             SystemSchedule empty = new SystemSchedule(programAct.Schedules[0].AllStates);
 
@@ -107,9 +157,10 @@ namespace HSFSchedulerUnitTest
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler.xml");
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub_DynamicECI.xml");
-            Stack<Task> systemTasks = SchedulerHelper(ref programAct);
+            
+            SchedulerHelper(ref programAct);
 
-            programAct.CreateSchedules(systemTasks);
+            programAct.CreateSchedules();
             programAct.EvaluateSchedules();
             //TEST SCHED COUNT
             double schedCountExp = 24;
@@ -129,11 +180,11 @@ namespace HSFSchedulerUnitTest
             Task target11 = programAct.Schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
             Task target0 = programAct.Schedules[0].AllStates.Events.Pop().Tasks[programAct.AssetList[0]];
 
-            Task task3 = systemTasks.Pop();
-            Task task2 = systemTasks.Pop();
-            Task task11 = systemTasks.Pop();
-            Task task1 = systemTasks.Pop();
-            Task task0 = systemTasks.Pop();
+            Task task3 = programAct.SystemTasks.Pop();
+            Task task2 = programAct.SystemTasks.Pop();
+            Task task11 = programAct.SystemTasks.Pop();
+            Task task1 = programAct.SystemTasks.Pop();
+            Task task0 = programAct.SystemTasks.Pop();
 
             Assert.AreEqual(target0, task0);
             Assert.AreEqual(target11, task11);
@@ -149,8 +200,8 @@ namespace HSFSchedulerUnitTest
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub_crop_DynamicECI.xml");
 
-            Stack<Task> systemTasks = SchedulerHelper(ref programAct);
-            programAct.CreateSchedules(systemTasks);
+            SchedulerHelper(ref programAct);
+            programAct.CreateSchedules();
 
             //TEST SCHED COUNT
             int schedCountExp = 8;
@@ -174,10 +225,11 @@ namespace HSFSchedulerUnitTest
             programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
-            Stack<Task> systemTasks = SchedulerHelper(ref programAct);
+            
+            SchedulerHelper(ref programAct);
 
             SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
-            Stack<Access> preGeneratedAccesses = Access.pregenerateAccessesByAsset(simSystem, systemTasks, 0, 1, 1);
+            Stack<Access> preGeneratedAccesses = Access.pregenerateAccessesByAsset(simSystem, programAct.SystemTasks, 0, 1, 1);
             Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
             scheduleCombos = Scheduler.GenerateExhaustiveSystemSchedules(preGeneratedAccesses, simSystem, 0);
 
@@ -193,10 +245,36 @@ namespace HSFSchedulerUnitTest
             Assert.AreEqual(expAccess2, actAccess2);
         }
 
-        public Stack<Task> SchedulerHelper(ref Program programAct)
+        public void SchedulerHelper(ref Program programAct)
         {
+            try
+            {
+                programAct.InitOutput();
+            }
+            catch
+            {
+                programAct.log.Info("InitOutputs Failed the unit test");
+                Assert.Fail();
+            }
 
-            Stack<Task> systemTasks = programAct.LoadTargets();
+            try
+            {
+                programAct.LoadScenario();
+            }
+            catch
+            {
+                programAct.log.Info("LoadScenario Failed the unit test");
+                Assert.Fail();
+            }
+            try
+            {
+                programAct.LoadTargets();
+            }
+            catch
+            {
+                programAct.log.Info("LoadTargets Failed the unit test");
+                Assert.Fail();
+            }
             try
             {
                 programAct.LoadSubsystems();
@@ -205,22 +283,18 @@ namespace HSFSchedulerUnitTest
             {
                 programAct.log.Info("LoadSubsystems Failed the Unit test");
                 Assert.Fail();
-                return systemTasks;
 
             }
             try
             {
-                programAct.LoadDependencies();
+                programAct.LoadEvaluator();
             }
             catch
             {
-                programAct.log.Info("LoadDepenedencies Failed the Unit test");
+                programAct.log.Info("LoadEvaluator Failed the Unit test");
                 Assert.Fail();
-                return systemTasks;
-
-
             }
-            return systemTasks;
+
         }
 
     }

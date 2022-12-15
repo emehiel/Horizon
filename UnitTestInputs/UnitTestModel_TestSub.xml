@@ -1,7 +1,4 @@
 <MODEL>
-	<PYTHON
-		enableScripting = "true">
-	</PYTHON>
 
 	<ASSET assetName="Asset1">
 		<DynamicState
@@ -11,9 +8,23 @@
 				EOMSType="orbital_EOMS">
 			</EOMS>
 		</DynamicState>
-		<SUBSYSTEM
-			Type="SubTest"
+		
+    <SUBSYSTEM
+			type="SubTest"
 			subsystemName = "SubTest">
-		</SUBSYSTEM>
+      <STATE
+				type ="Double"
+        key="majorKey"
+        value="0">
+        
+      </STATE>
+    </SUBSYSTEM>
 	</ASSET>
+  <EVALUATOR
+  type = "targetvalueevaluator"
+  src ="..\..\..\eval.py"
+  className ="eval">
+    
+  </EVALUATOR>
+
 </MODEL>

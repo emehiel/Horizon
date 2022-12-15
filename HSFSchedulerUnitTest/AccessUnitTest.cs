@@ -30,7 +30,7 @@ namespace HSFSchedulerUnitTest
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
-            Stack<Task> systemTasks = programAct.LoadTargets();
+            programAct.LoadTargets();
             try
             {
                 programAct.LoadSubsystems();
@@ -39,21 +39,13 @@ namespace HSFSchedulerUnitTest
             {
                 programAct.log.Info("LoadSubsystems Failed the Unit test");
             }
-            try
-            {
-                programAct.LoadDependencies();
-            }
-            catch
-            {
-                programAct.log.Info("LoadDepenedencies Failed the Unit test");
-            }
 
             //This is the only used constructor for the Access Class
-            Access A1 = new Access(programAct.AssetList[0], systemTasks.Peek());
+            Access A1 = new Access(programAct.AssetList[0], programAct.SystemTasks.Peek());
 
             Assert.IsInstanceOf(typeof(Access), A1);
 
-            Assert.AreSame(systemTasks.Peek(), A1.Task);
+            Assert.AreSame(programAct.SystemTasks.Peek(), A1.Task);
             Assert.AreSame(programAct.AssetList[0], A1.Asset);
 
 
@@ -67,7 +59,7 @@ namespace HSFSchedulerUnitTest
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
-            Stack<Task> systemTasks = programAct.LoadTargets();
+            programAct.LoadTargets();
             try
             {
                 programAct.LoadSubsystems();
@@ -77,8 +69,8 @@ namespace HSFSchedulerUnitTest
                 programAct.log.Info("LoadSubsystems Failed the Unit test");
             }
 
-            Access A1 = new Access(programAct.AssetList[0], systemTasks.Pop());
-            Access A2 = new Access(programAct.AssetList[0], systemTasks.Pop());
+            Access A1 = new Access(programAct.AssetList[0], programAct.SystemTasks.Pop());
+            Access A2 = new Access(programAct.AssetList[0], programAct.SystemTasks.Pop());
             Stack<Access> accesses = new Stack<Access>();
             accesses.Push(A2);
             accesses.Push(A1);
@@ -95,7 +87,7 @@ namespace HSFSchedulerUnitTest
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub_accessmultiasset.xml");
 
-            Stack<Task> systemTasks = programAct.LoadTargets();
+            programAct.LoadTargets();
             try
             {
                 programAct.LoadSubsystems();
@@ -105,8 +97,8 @@ namespace HSFSchedulerUnitTest
                 programAct.log.Info("LoadSubsystems Failed the Unit test");
             }
 
-            Access A1 = new Access(programAct.AssetList[0], systemTasks.Pop());
-            Access A2 = new Access(programAct.AssetList[1], systemTasks.Pop());
+            Access A1 = new Access(programAct.AssetList[0], programAct.SystemTasks.Pop());
+            Access A2 = new Access(programAct.AssetList[1], programAct.SystemTasks.Pop());
             Stack<Access> accesses = new Stack<Access>();
             Stack<Access> empty = new Stack<Access>();
             accesses.Push(A2);
@@ -129,7 +121,7 @@ namespace HSFSchedulerUnitTest
             programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
             programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
 
-            Stack<Task> systemTasks = programAct.LoadTargets();
+            programAct.LoadTargets();
             try
             {
                 programAct.LoadSubsystems();
@@ -138,28 +130,20 @@ namespace HSFSchedulerUnitTest
             {
                 programAct.log.Info("LoadSubsystems Failed the Unit test");
             }
-            try
-            {
-                programAct.LoadDependencies();
-            }
-            catch
-            {
-                programAct.log.Info("LoadDepenedencies Failed the Unit test");
-            }
 
             SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
 
-            Stack<Access> pregenAccess = Access.pregenerateAccessesByAsset(simSystem, systemTasks, 0, 1, 1);
+            Stack<Access> pregenAccess = Access.pregenerateAccessesByAsset(simSystem, programAct.SystemTasks, 0, 1, 1);
 
             Stack<Access> AccessAct = Access.getCurrentAccesses(pregenAccess, 0);
 
 
-            systemTasks.Pop(); //No access to last task, task4 so ot expected access
-            Access Task3 = new Access(programAct.AssetList[0], systemTasks.Pop());
+            programAct.SystemTasks.Pop(); //No access to last task, task4 so ot expected access
+            Access Task3 = new Access(programAct.AssetList[0], programAct.SystemTasks.Pop());
             Task3.AccessEnd = 2;
-            Access Task2 = new Access(programAct.AssetList[0], systemTasks.Pop());
-            Access Task1 = new Access(programAct.AssetList[0], systemTasks.Pop());
-            Access Task0 = new Access(programAct.AssetList[0], systemTasks.Pop());
+            Access Task2 = new Access(programAct.AssetList[0], programAct.SystemTasks.Pop());
+            Access Task1 = new Access(programAct.AssetList[0], programAct.SystemTasks.Pop());
+            Access Task0 = new Access(programAct.AssetList[0], programAct.SystemTasks.Pop());
 
 
             Access ExpTask3 = AccessAct.Pop();

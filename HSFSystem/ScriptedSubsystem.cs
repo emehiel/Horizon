@@ -33,11 +33,11 @@ namespace HSFSubsystem
             set { _pythonInstance.SubsystemDependencyFunctions = (Dictionary<string, Delegate>)value; }
         }
 
-        public override bool IsEvaluated
-        {
-            get { return (bool)_pythonInstance.IsEvaluated; }
-            set { _pythonInstance.IsEvaluated = (bool)value; }
-        }
+        //public override bool IsEvaluated
+        //{
+        //    get { return (bool)_pythonInstance.IsEvaluated; }
+        //    set { _pythonInstance.IsEvaluated = (bool)value; }
+        //}
 
         public override SystemState _newState {
             get { return (SystemState)_pythonInstance._newState; }

@@ -49,9 +49,11 @@ namespace Horizon
         public SystemState InitialSysState { get; set; } = new SystemState();
 
         //XmlNode _evaluatorNode; //Depreciated (?)
-        Evaluator _schedEvaluator;
+        public Evaluator SchedEvaluator;
         public List<SystemSchedule> Schedules { get; set; }
         public SystemClass SimSystem { get; set; }
+        public string OutputPath { get; set; }
+        public Stack<Task> SystemTasks { get; set; } = new Stack<Task>();
 
         public static int Main(string[] args) //
         {
@@ -60,32 +62,30 @@ namespace Horizon
             program.log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             program.log.Info("STARTING HSF RUN"); //Do not delete
             program.InitInput(args);
-            string outputPath = program.InitOutput();
+            program.InitOutput();
             program.LoadScenario();
-            Stack<Task> systemTasks = program.LoadTargets();
+            program.LoadTargets();
             program.LoadSubsystems();
             program.LoadEvaluator();
-            program.CreateSchedules(systemTasks);
+            program.CreateSchedules();
             double maxSched = program.EvaluateSchedules();
 
             int i = 0;
             //Morgan's Way
-            using (StreamWriter sw = File.CreateText(outputPath))
+            StreamWriter sw = File.CreateText(program.OutputPath);
+            foreach (SystemSchedule sched in program.Schedules)
             {
-                foreach (SystemSchedule sched in program.Schedules)
+                sw.WriteLine("Schedule Number: " + i + "Schedule Value: " + program.Schedules[i].ScheduleValue);
+                foreach (var eit in sched.AllStates.Events)
                 {
-                    sw.WriteLine("Schedule Number: " + i + "Schedule Value: " + program.Schedules[i].ScheduleValue);
-                    foreach (var eit in sched.AllStates.Events)
+                    if (i < 5)//just compare the first 5 schedules for now
                     {
-                        if (i < 5)//just compare the first 5 schedules for now
-                        {
-                            sw.WriteLine(eit.ToString());
-                        }
+                        sw.WriteLine(eit.ToString());
                     }
-                    i++;
                 }
-                program.log.Info("Max Schedule Value: " + maxSched);
+                i++;
             }
+            program.log.Info("Max Schedule Value: " + maxSched);
 
             // Mehiel's way
             string stateDataFilePath = @"C:\HorizonLog\Scratch";// + string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}", DateTime.Now);
@@ -107,10 +107,10 @@ namespace Horizon
             // Set Defaults
             SimulationInputFilePath = @"..\..\..\SimulationInput.xml";
             TargetDeckFilePath = @"..\..\..\v2.2-300targets.xml";
-            ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_Scripted.xml"; // Asset 1 Scripted, Asset 2 C#
+            //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_Scripted.xml"; // Asset 1 Scripted, Asset 2 C#
             //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod_PartialScripted.xml"; // Asset 1 mix Scripted/C#, Asset 2 C#
 
-            //ModelInputFilePath = @"..\..\..\DSAC_Static_Mod.xml"; // Asset 1 C#, Asset 2 C#
+            ModelInputFilePath = @"..\..\..\DSAC_Static_Mod.xml"; // Asset 1 C#, Asset 2 C#
             bool simulationSet = false, targetSet = false, modelSet = false;
 
             // Get the input filenames
@@ -159,7 +159,7 @@ namespace Horizon
             }
 
         }
-        public string InitOutput()
+        public void InitOutput()
         {
             // Initialize Output File
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
@@ -176,7 +176,7 @@ namespace Horizon
             number++;
             outputFileName = outputFileName.Remove(outputFileName.Length - 1) + number;
             outputPath += outputFileName + txt;
-            return outputPath;
+            this.OutputPath = outputPath;
         }
 
         public void LoadScenario()
@@ -184,17 +184,14 @@ namespace Horizon
             // Find the main input node from the XML input files
             XmlParser.ParseSimulationInput(SimulationInputFilePath);
         }
-        public Stack<Task> LoadTargets()
+        public void LoadTargets()
         {
             // Load the target deck into the targets list from the XML target deck input file
-            Stack<Task> systemTasks = new Stack<Task>();
-            bool targetsLoaded = Task.loadTargetsIntoTaskList(XmlParser.GetTargetNode(TargetDeckFilePath), systemTasks);
+            bool targetsLoaded = Task.loadTargetsIntoTaskList(XmlParser.GetTargetNode(TargetDeckFilePath), SystemTasks);
             if (!targetsLoaded)
             {
                 throw new Exception("Targets were not loaded.");
             }
-
-            return systemTasks;
 
         }
         public void LoadSubsystems()
@@ -288,27 +285,27 @@ namespace Horizon
             }
             else
             {
-                _schedEvaluator = EvaluatorFactory.GetEvaluator(evalNodes[0],SubList);
+                SchedEvaluator = EvaluatorFactory.GetEvaluator(evalNodes[0],SubList);
                 Console.WriteLine("Evaluator Loaded");
                 log.Info("Evaluator Loaded");
             }
         }
-        public void CreateSchedules(Stack<Task> systemTasks)
+        public void CreateSchedules()
         {
             SimSystem = new SystemClass(AssetList, SubList, ConstraintsList, SystemUniverse);
 
             if (SimSystem.CheckForCircularDependencies())
                 throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
 
-            Scheduler _scheduler = new Scheduler(_schedEvaluator);
-            Schedules = _scheduler.GenerateSchedules(SimSystem, systemTasks, InitialSysState);
+            Scheduler _scheduler = new Scheduler(SchedEvaluator);
+            Schedules = _scheduler.GenerateSchedules(SimSystem, SystemTasks, InitialSysState);
         }
         public double EvaluateSchedules()
         {
             // Evaluate the schedules and set their values
             foreach (SystemSchedule systemSchedule in Schedules)
             {
-                systemSchedule.ScheduleValue = _schedEvaluator.Evaluate(systemSchedule);
+                systemSchedule.ScheduleValue = SchedEvaluator.Evaluate(systemSchedule);
                 bool canExtendUntilEnd = true;
                 // Extend the subsystem states to the end of the simulation 
                 foreach (var subsystem in SimSystem.Subsystems)

@@ -182,19 +182,19 @@ namespace HSFSchedulerUnitTest
         {
             if (!eventMaker_Switch) 
             { //ensures it only runs once over this class's test suite to save computation time
-            string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
-            string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            var simulationInputNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
-            var modelInputNode = XmlParser.GetModelNode(ModelInputFilePath);
-            DynamicState dynState = new DynamicState((DynamicStateType)Enum.Parse(typeof(DynamicStateType), "STATIC_LLA"), new OrbitalEOMS(), new Utilities.Vector("[33.47; -70.65; 0]"));
-            SystemState sysState = new SystemState();
-            Target targ = new Target("dummy", "LocationTarget", dynState, 1);
-            task = new Task("IMAGING", targ, 10);
-            Dictionary<Asset, Task> taskdic = new Dictionary<Asset, Task>();
-            asset = new Asset(modelInputNode.ChildNodes[1]);
-            taskdic.Add(asset, task);
-            vent = new Event(taskdic, sysState);
-            eventMaker_Switch = true; //now do nothing
+                string ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_TestSub.xml");
+                string SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+                //var simulationInputNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);
+                var modelInputNode = XmlParser.GetModelNode(ModelInputFilePath);
+                DynamicState dynState = new DynamicState((DynamicStateType)Enum.Parse(typeof(DynamicStateType), "STATIC_LLA"), new OrbitalEOMS(), new Utilities.Vector("[33.47; -70.65; 0]"));
+                SystemState sysState = new SystemState();
+                Target targ = new Target("dummy", "LocationTarget", dynState, 1);
+                task = new Task("IMAGING", targ, 10);
+                Dictionary<Asset, Task> taskdic = new Dictionary<Asset, Task>();
+                asset = new Asset(modelInputNode.ChildNodes[1]);
+                taskdic.Add(asset, task);
+                vent = new Event(taskdic, sysState);
+                eventMaker_Switch = true; //now do nothing
              }
             else
             {//do nothing

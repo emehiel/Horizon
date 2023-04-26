@@ -258,7 +258,7 @@ def fprime(f, x, k):
     f0 = f(x, k)
     f1 = f(x+h, k)
     fprime = (f1 - f0) / h
-    return (fprime, f0)
+    return (fprime, f0) # TODO - refactor to central diff
 
 def secantMinimizer(x0, x1, f, k, tol):
     '''
@@ -324,7 +324,7 @@ def bisectionMinimizer(a, b, f, k, tol):
     '''
     Perform bisection method to find minimum between a0 and b1
     f is the function to evaluate, k is extra parameters
-    h used for fprime(), tol dictates the stopping criteria
+    tol dictates the stopping criteria
     '''
     x = (a + b) / 2
     (fprimeX, fX) = fprime(f, x, k)
@@ -357,7 +357,7 @@ def solveForMinDV_Bisect(RV0, RVf, n, KOZ, gridPts, nBracks, tol):
 
     for bb in range(0, nBracks):
         # construct bracket
-        brackIdx = bracketPairs[bb]
+        brackIdx = bracketPairs[bb] # TODO - don't use bracketPairs, just use ALL!
         rawA     = singular_nt_array[brackIdx[0]]
         rawB     = singular_nt_array[brackIdx[1]]
         rawWidth = rawB - rawA

@@ -131,7 +131,7 @@
 		</CONSTRAINT>
 	</ASSET>
 
-	<ASSET assetName = "Mothership">
+	<ASSET assetName = "Watchdog">
 		<IsPassive/>
 		<DynamicState
 			DynamicStateType = "NULL_STATE"

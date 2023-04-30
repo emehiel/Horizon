@@ -2,6 +2,7 @@ import sys
 import clr
 import System.Collections.Generic
 import System
+
 clr.AddReference('System.Core')
 clr.AddReference('IronPython')
 clr.AddReference('System.Xml')
@@ -32,32 +33,30 @@ from IronPython.Compiler import CallTarget0
 from math import sin, cos
 import math
 
-##
 # Units are seconds, meters, kilograms, and radians
-##
 
-##
 # Constants
-##
 singular_nt_array = [
+   0,
    3.141592653589793,
    6.283185307179586,
-   8.838742844152041,
+   8.838742844152041, # [3, 4] bracket is small but worth evaluating
    9.424777960769379,
   12.566370614359172,
-  15.364261290786979,
+  15.364261290786979, # [6, 7] bracket too small
   15.707963267948966,
   18.849555921538759,
-  21.747123605878745,
+  21.747123605878745, # [9, 10] bracket too small
   21.991148575128552,
   25.132741228718345,
-  28.085001796594980,
+  28.085001796594980, # [12, 13] bracket too small
   28.274333882308138,
   31.415926535897931
-] # first several nt that produce singularities in the cost function
+] # the 15 singular values of nt in the cost function for first 5 orbits, anything past that is "too slow"
 
-bracketPairs = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [6, 7], [7, 8], [9, 10], [10, 11], [12, 13]]
-# first 10 meaningful indice pairs to examine, skip the tiny brackets
+# compile brackets, skip the tiny brackets starting at 6, 9, and 12
+bracketPairs = [[idx, idx+1] for idx in range(len(singular_nt_array)-1) if (idx not in (6, 9, 12))]
+
 maxIters = 100
 
 R_inx = Utilities.MatrixIndex(1, 3)
@@ -105,7 +104,6 @@ def constantBurnHoldFuelCost(R0_m, tHold_sec, n, mass0_kg, Isp_sec):
 
 ## 
 # CW Functions
-# TODO split CW stuff off to other file
 ##
 
 def phiRR(n, t):
@@ -242,10 +240,8 @@ def solveTwoImp(RV0, RVf, n, dt):
 
 
 ##
-# Solver Functions
-# TODO Split off solvers to other file
+# Unconstrained Optimization Functions
 ##
-
 def fprime(f, x, k):
     '''
     Forward Difference Approximate fdot(x)
@@ -253,44 +249,12 @@ def fprime(f, x, k):
     finite difference step size is sqrt(eps) (Source: MathWorks)
     '''
     epsVal = 7.0/3.0 - 4.0/3.0 - 1.0
-    h = math.sqrt(epsVal)
+    h = x * math.sqrt(epsVal) # source: Mathworks fmincon, saur txtbook, math stack exchange
 
     f0 = f(x, k)
     f1 = f(x+h, k)
     fprime = (f1 - f0) / h
-    return (fprime, f0) # TODO - refactor to central diff
-
-def secantMinimizer(x0, x1, f, k, tol):
-    '''
-    Secant Method single variable minimization
-    '''
-    (g_n_minus_1, f_n_minus_1) = fprime(f, x0, k)
-    (g_n, f_n) = fprime(f, x1, k)
-    
-    magFprime = min(abs(g_n), abs(g_n_minus_1))
-    errX = abs(g_n - g_n_minus_1)
-    err = min(magFprime, errX)
-
-    x_n_minus_1 = x0
-    x_n = x1
-
-    ii = 0
-    while (err > tol):
-        # compute next step
-        x_n_plus_1 = x_n - g_n * (x_n - x_n_minus_1) / (g_n - g_n_minus_1)
-
-        # update variables
-        x_n_minus_1 = x_n
-        x_n = x_n_plus_1
-        g_n_minus_1 = g_n
-        (g_n, f_n) = fprime(f, x_n, k)
-
-        magFprime = abs(g_n)
-        errX = abs(g_n - g_n_minus_1)
-        err = min(magFprime, errX)
-        ii += 1
-
-    return (x_n, ii, f_n, magFprime, errX)
+    return (fprime, f0)
 
 def impCost(x, k):
     '''
@@ -305,22 +269,7 @@ def impCost(x, k):
     (RV0_plus, DV1_vec, DV2_vec, DVtot) = solveTwoImp(RV0, RVf, n, dt)
     return DVtot
 
-def solveForMinDV_Secant(RV0, RVf, n, tol):
-    '''
-    generate initial guess and call secant method
-    '''
-
-    # Initial Guess is n*t = pi/2
-    t0 = math.pi / (n * 2)
-    t1 = t0 * 1.01
-
-    k = (RV0, RVf, n) # tuple of constants
-    (tStar, numIts, cost, magDeriv, magStep) = secantMinimizer(t0, t1, impCost, k, tol)
-    tPiRatio = tStar * n / math.pi
-    # print('\ttStar = ' + str(tStar) + ' (' + str(tPiRatio) + '*pi), ' + str(numIts) + ' iterations, cost (f) = ' + str(cost) + ', fprime = ' + str(magDeriv) + ', final step size = ' + str(magStep))
-    return tStar
-
-def bisectionMinimizer(a, b, f, k, tol):
+def unconstrainedBisection(a, b, f, k, tol):
     '''
     Perform bisection method to find minimum between a0 and b1
     f is the function to evaluate, k is extra parameters
@@ -339,58 +288,14 @@ def bisectionMinimizer(a, b, f, k, tol):
         ii += 1
     
     if (ii >= maxIters):
-        print('Exited bisectionMinimizer due to iterations exceeding maximum')
-
+        print('Exited unconstrainedBisection due to iterations exceeding maximum')
 
     return (x, ii, fX, fprimeX, b - a)
 
-def solveForMinDV_Bisect(RV0, RVf, n, KOZ, gridPts, nBracks, tol):
-    '''
-    check nBrack brackets via bisect method
-    return global minimum found
-    '''
-    tStarArr      = []
-    numItsArr     = []
-    costArr       = []
-    magDerivArr   = []
-    brackWidthArr = []
 
-    for bb in range(0, nBracks):
-        # construct bracket
-        brackIdx = bracketPairs[bb] # TODO - don't use bracketPairs, just use ALL!
-        rawA     = singular_nt_array[brackIdx[0]]
-        rawB     = singular_nt_array[brackIdx[1]]
-        rawWidth = rawB - rawA
-        a0       = (rawA + (0.01 * rawWidth)) / n
-        b0       = (rawB - (0.01 * rawWidth)) / n
-
-        # solve for local bracket solution
-        k = (RV0, RVf, n, KOZ, gridPts) # tuple of constants
-        #(tStar, numIts, cost, magDeriv, brackWidth) = bisectionMinimizer(a0, b0, impCost, k, tol)
-        (validBracket, tStar, numIts, cost, magDeriv, brackWidth) = modifiedBisectionMinimizer(a0, b0, impCost, isValidTOF, k, tol)
-        
-        # print('unconstrained bisection arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
-        # print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
-        # print('')
-
-        if validBracket:
-            tStarArr.append(tStar)
-            numItsArr.append(numIts)
-            costArr.append(cost)
-            magDerivArr.append(magDeriv)
-            brackWidthArr.append(brackWidth)
-            tPiRatio = tStar * n / math.pi
-        # print('\t\tSol ' + str(bb) + ' tStar = ' + str(tStar) + ' (' + str(tPiRatio) + '*pi), ' + str(numIts) + ' iterations, cost (f) = ' + str(cost) + ', fprime = '  + str(magDeriv) + ', bracket width = ' + str(brackWidth))    
-    
-    if costArr == []:
-        print('No Valid Trajectory Found!!')
-        return(False, 0)
-
-    (globalMinCost, solIdx) = myMin(costArr)    
-    globalTstar = tStarArr[solIdx]
-    # print('\tGlobal tStar = ' + str(globalTstar) + ', Cost = ' + str(globalMinCost))
-    return (True, globalTstar)
-
+##
+# Constraint Functions
+##
 def __isRwithinKOZ(R, KOZ):
     '''
     Evaluate if a given state (R) is within constraint volume (KOZ)
@@ -432,9 +337,13 @@ def isValidTOF(x, k):
     RV0plus = [float(stateStr) for stateStr in strMatrix[1:-1].split(';')]
     return __isValidTrajectory(RV0plus, n, KOZ, tof, gridPts)
 
+
+##
+# Tie it all together
+##
 def modifiedBisectionMinimizer(a, b, f, c, k, tol):
     '''
-    Modified Bisection Method to "handle" constraint
+    Modified Bisection Method to handle constraint
     a, b is the initial bracket
     f is the (Scalar) cost function handle
     c is the (Boolean) constraint function handle
@@ -445,27 +354,13 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
     upperLim = b
 
     # Solve Unconstrained First
-    # Know that at the start fprime(b) > 0 and fprime(a) < 0
-    x = (a + b) / 2
-    (fprimeX, fX) = fprime(f, x, k)
-    ii = 0
-    while ((abs(fprimeX) > tol) and (ii < maxIters)):
-        if (fprimeX > 0):
-            b = x
-        else:
-            a = x
-        x = (a + b) / 2
-        (fprimeX, fX) = fprime(f, x, k)
-        ii += 1
-
-    if (ii >= maxIters):
-        print('Exited modifiedBisectionMinimizer unconstrained minimizer due to iterations exceeding maximum, stuck at fprimeX = ' + str(fprimeX))
+    (x, ii, fX, fprimeX, brackWidth) = unconstrainedBisection(a, b, f, k, tol)
     
     # If Fails Constraint, Walk "Up" with increasing TOF
     isXvalid = c(x, k)
     if isXvalid:
         # Minimum solution already satisfies constraint
-        return (True, x, ii, fX, fprimeX, b - a)
+        return (True, x, ii, fX, fprimeX, brackWidth)
     else:
         # Find Next Closest Interval
         dT = (upperLim - x) / 8.0 # Hardcoded to 8 regions out of fear that bisect will miss things!
@@ -501,6 +396,57 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
         else:
             # No Valid Solution Found!
             return (False, 0, 0, 0, 0, 0)
+
+def solveForMinDV_Bisect(RV0, RVf, n, KOZ, gridPts, nBracks, tol):
+    '''
+    check nBrack brackets via bisect method
+    return global minimum found
+    '''
+    tStarArr      = []
+    numItsArr     = []
+    costArr       = []
+    magDerivArr   = []
+    brackWidthArr = []
+
+    for bb in range(0, nBracks):
+        # make sure not accessing a non-existent bracket, only 11 valid brackets
+        if bb > (len(bracketPairs)-1):
+            print('NOTICE: Bracket Number ' + str(bb) + ' Does NOT Exist!')
+            continue
+
+        # construct bracket
+        brackIdx = bracketPairs[bb]
+        rawA     = singular_nt_array[brackIdx[0]]
+        rawB     = singular_nt_array[brackIdx[1]]
+        rawWidth = rawB - rawA
+        a0       = (rawA + (0.01 * rawWidth)) / n
+        b0       = (rawB - (0.01 * rawWidth)) / n
+
+        # solve for local bracket solution
+        k = (RV0, RVf, n, KOZ, gridPts) # tuple of constants
+        (validBracket, tStar, numIts, cost, magDeriv, brackWidth) = modifiedBisectionMinimizer(a0, b0, impCost, isValidTOF, k, tol)
+        
+        # print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
+
+        if validBracket:
+            tStarArr.append(tStar)
+            numItsArr.append(numIts)
+            costArr.append(cost)
+            magDerivArr.append(magDeriv)
+            brackWidthArr.append(brackWidth)
+            tPiRatio = tStar * n / math.pi
+        # print('\t\tSol ' + str(bb) + ' tStar = ' + str(tStar) + ' (' + str(tPiRatio) + '*pi), ' + str(numIts) + ' iterations, cost (f) = ' + str(cost) + ', fprime = '  + str(magDeriv) + ', bracket width = ' + str(brackWidth))    
+    
+    if costArr == []:
+        print('No Valid Trajectory Found!!')
+        return(False, 0)
+
+    (globalMinCost, solIdx) = myMin(costArr)    
+    globalTstar = tStarArr[solIdx]
+    # print('\tGlobal tStar = ' + str(globalTstar) + ', Cost = ' + str(globalMinCost))
+    return (True, globalTstar)
+
+
 
 ##
 # Class Definition

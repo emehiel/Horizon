@@ -21,6 +21,7 @@
 			dryMassKg     = "80.0"
 			Isp           = "200.0"
 			KOZ           = "[5, 10, 2]"
+			Number_Brackets = "11"
 			Grid_Points   = "100">
 			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
@@ -65,6 +66,7 @@
 			dryMassKg     = "80.0"
 			Isp           = "200.0"
 			KOZ           = "[5, 10, 2]"
+			Number_Brackets = "11"
 			Grid_Points   = "100">
 			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
@@ -109,6 +111,7 @@
 			dryMassKg     = "80.0"
 			Isp           = "200.0"
 			KOZ           = "[5, 10, 2]"
+			Number_Brackets = "11"
 			Grid_Points   = "100">
 			<IC type="Matrix" key="ric_state" value="[20.0; -12.0; 19.0; 0.01; -0.05; 0.09]"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>

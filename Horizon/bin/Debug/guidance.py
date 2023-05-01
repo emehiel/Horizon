@@ -240,7 +240,7 @@ def solveTwoImp(RV0, RVf, n, dt):
 
 
 ##
-# Unconstrained Optimization Functions
+# Optimization Functions
 ##
 def fprime(f, x, k):
     '''
@@ -292,6 +292,14 @@ def unconstrainedBisection(a, b, f, k, tol):
 
     return (x, ii, fX, fprimeX, b - a)
 
+def multiObjCostFun(t, k, w):
+    '''
+    Return multi-objective cost function
+    J = dV + w*t
+    '''
+    dV_mps = impCost(t, k)
+    J = dV_mps + w*t
+    return J
 
 ##
 # Constraint Functions

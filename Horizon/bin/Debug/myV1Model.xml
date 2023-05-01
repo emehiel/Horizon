@@ -22,6 +22,7 @@
 			Isp           = "200.0"
 			KOZ           = "[5, 10, 2]"
 			Number_Brackets = "11"
+			TOF_Weight    = "0.00000001"
 			Grid_Points   = "100">
 			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
@@ -67,6 +68,7 @@
 			Isp           = "200.0"
 			KOZ           = "[5, 10, 2]"
 			Number_Brackets = "11"
+			TOF_Weight    = "0.00000001"
 			Grid_Points   = "100">
 			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
@@ -112,6 +114,7 @@
 			Isp           = "200.0"
 			KOZ           = "[5, 10, 2]"
 			Number_Brackets = "11"
+			TOF_Weight    = "0.00000001"
 			Grid_Points   = "100">
 			<IC type="Matrix" key="ric_state" value="[20.0; -12.0; 19.0; 0.01; -0.05; 0.09]"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
@@ -141,11 +144,11 @@
 			ICs = "[0]">
 		</DynamicState>
 		<SUBSYSTEM
-			subsystemName = "collision_avoidance"
+			subsystemName = "collisionAvoidance"
 			Type          = "scripted"
-			src           = "collision_avoidance.py"
+			src           = "collisionAvoidance.py"
 			MinSpacing    = "25.0"
-			className     = "collision_avoidance">
+			className     = "collisionAvoidance">
 		</SUBSYSTEM>
 	</ASSET>
 </MODEL>

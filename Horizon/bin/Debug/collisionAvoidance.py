@@ -232,7 +232,7 @@ def getStates(event, assetNames, tNow_sec, n_radps):
 #
 ## Class Definition
 #
-class collision_avoidance(HSFSubsystem.Subsystem):
+class collisionAvoidance(HSFSubsystem.Subsystem):
     def __new__(cls, node, asset):
         instance       = HSFSubsystem.Subsystem.__new__(cls)
         instance.Asset = asset
@@ -366,7 +366,6 @@ class collision_avoidance(HSFSubsystem.Subsystem):
 
     def CanExtend(self, event, universe, extendTo):
         return True
-
 
     def DependencyCollector(self, currentEvent):
         return super(collision_avoidance, self).DependencyCollector(currentEvent)

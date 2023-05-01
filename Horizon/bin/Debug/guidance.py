@@ -288,17 +288,19 @@ def unconstrainedBisection(a, b, f, k, tol):
         ii += 1
     
     if (ii >= maxIters):
-        print('Exited unconstrainedBisection due to iterations exceeding maximum')
+        print('Exited unconstrainedBisection due to iterations exceeding maximum, stuck on fprimeX = ' + str(fprimeX))
 
     return (x, ii, fX, fprimeX, b - a)
 
-def multiObjCostFun(t, k, w):
+def multiObjCostFun(t, k):
     '''
     Return multi-objective cost function
     J = dV + w*t
     '''
+    w = k[5]
     dV_mps = impCost(t, k)
     J = dV_mps + w*t
+    #print('dV_mps = ' + str(dV_mps) + ', t = ' + str(t) + ' w = ' + str(w) + ', J = ' + str(J))
     return J
 
 ##
@@ -405,7 +407,7 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
             # No Valid Solution Found!
             return (False, 0, 0, 0, 0, 0)
 
-def solveForMinDV_Bisect(RV0, RVf, n, KOZ, gridPts, nBracks, tol):
+def solveForMinDV_Bisect(RV0, RVf, n, w, KOZ, gridPts, nBracks, tol):
     '''
     check nBrack brackets via bisect method
     return global minimum found
@@ -431,8 +433,8 @@ def solveForMinDV_Bisect(RV0, RVf, n, KOZ, gridPts, nBracks, tol):
         b0       = (rawB - (0.01 * rawWidth)) / n
 
         # solve for local bracket solution
-        k = (RV0, RVf, n, KOZ, gridPts) # tuple of constants
-        (validBracket, tStar, numIts, cost, magDeriv, brackWidth) = modifiedBisectionMinimizer(a0, b0, impCost, isValidTOF, k, tol)
+        k = (RV0, RVf, n, KOZ, gridPts, w) # tuple of constants
+        (validBracket, tStar, numIts, cost, magDeriv, brackWidth) = modifiedBisectionMinimizer(a0, b0, multiObjCostFun, isValidTOF, k, tol)
         
         # print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
 
@@ -486,6 +488,10 @@ class guidance(HSFSubsystem.Subsystem):
         # Define Constants
         instance.dryMass_kg = float(node.Attributes['dryMassKg'].Value)
         instance.Isp_sec    = float(node.Attributes['Isp'].Value)
+
+        instance.tofWeight = 0
+        if (node.Attributes['TOF_Weight'] != None):
+            instance.tofWeight = float(node.Attributes['TOF_Weight'].Value)
 
         instance.mean_motion = 7.2e-5 # hardcoded, roughly GEO
         if (node.Attributes['Mean_Motion'] != None):
@@ -569,7 +575,7 @@ class guidance(HSFSubsystem.Subsystem):
         # print('RV of Tgt = ' + RVtgt.ToString())
 
         optTol = 1e-4
-        (isValid, tStarBisect) = solveForMinDV_Bisect(RV1, RVtgt, n, self.KOZ, self.gridPts, self.numBracks, optTol)
+        (isValid, tStarBisect) = solveForMinDV_Bisect(RV1, RVtgt, n, self.tofWeight, self.KOZ, self.gridPts, self.numBracks, optTol)
         if not isValid:
             # Cannot Perform Transfer with any TOF brackets explored!
             return False

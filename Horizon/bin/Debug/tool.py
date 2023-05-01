@@ -29,6 +29,20 @@ from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
+def myStr2Dict(strDict):
+    '''
+    convert string-dictionary to dictionary with Python2.7 syntax
+    '''
+    listWise = strDict[1:-1].split(',') # remove {} and split by commas
+    theDict = {}
+    for el in listWise:
+        (kk, vv) = el.split(':')
+        kk = kk.strip().lower() # strip whitespace, make lowercase to match HSF behavior
+        vv = float(vv) # convert to float
+        theDict[kk] = vv
+
+    return theDict
+
 
 class tool(HSFSubsystem.Subsystem):
     def __new__(cls, node, asset):
@@ -36,8 +50,7 @@ class tool(HSFSubsystem.Subsystem):
         instance.Asset = asset
         instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
 
-        instance.toolType = node.Attributes['toolType'].Value.ToString()       # TODO make this a list!
-        instance.servicingTime = float(node.Attributes['servicingTime'].Value) # TODO make this a dictionary where tool type dictates time!
+        instance.tooling = myStr2Dict(node.Attributes['tooling'].Value.ToString())
 
         instance.SERVICING_TIME_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'servicing_time')
         instance.addKey(instance.SERVICING_TIME_KEY)
@@ -56,10 +69,11 @@ class tool(HSFSubsystem.Subsystem):
         tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
         if (tgtName == 'EmptyTarget'):
             return True
-
-        if (self._task.Type == self.toolType.ToLower()):
-            event.State.AddValue(self.SERVICING_TIME_KEY, Utilities.HSFProfile[System.Double](event.GetTaskStart(self.Asset), self.servicingTime))
-            # TODO - improve this by using a dictionary, the tool type maps to a task time, not same-same for all tools!
+        
+        taskType = self._task.Type
+        if taskType in self.tooling.keys():
+            #print('TaskType of ' + taskType + ' is within self.tooling, servicing time is ' + str(self.tooling[taskType]))
+            event.State.AddValue(self.SERVICING_TIME_KEY, Utilities.HSFProfile[System.Double](event.GetTaskStart(self.Asset), self.tooling[taskType]))
             return True
         else:
             return False

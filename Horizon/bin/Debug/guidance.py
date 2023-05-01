@@ -250,6 +250,7 @@ def fprime(f, x, k):
     '''
     epsVal = 7.0/3.0 - 4.0/3.0 - 1.0
     h = x * math.sqrt(epsVal) # source: Mathworks fmincon, saur txtbook, math stack exchange
+    # TODO - take a second look at if x belongs here in this, could be mucking things up bcuz of how its so steep in places but flat in others, and when we get to a super small bracket but the step size is big, what will happen?
 
     f0 = f(x, k)
     f1 = f(x+h, k)

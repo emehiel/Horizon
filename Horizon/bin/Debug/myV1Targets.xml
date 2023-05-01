@@ -43,7 +43,7 @@
 		TargetName = "serviceTgt4"
 		TargetType = "Servicing"
 		Value = "6"
-		TaskType = "A"
+		TaskType = "B"
 		MaxTimes = "1"
 	>
 		<DynamicState

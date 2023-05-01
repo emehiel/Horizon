@@ -9,8 +9,7 @@
 			Type          = "scripted"
 			src           = "tool.py"
 			className     = "tool"
-			toolType      = "A"
-			servicingTime = "600.0">
+			tooling       = "{A : 600.0, B : 600.0, C : 450.0}">
 			<IC type="Double" key="consumable" value="10.0"></IC>
 		</SUBSYSTEM>
 		<SUBSYSTEM
@@ -55,8 +54,7 @@
 			Type          = "scripted"
 			src           = "tool.py"
 			className     = "tool"
-			toolType      = "A"
-			servicingTime = "600.0">
+			tooling       = "{A : 600.0, B : 600.0, C : 450.0}">
 			<IC type="Double" key="consumable" value="10.0"></IC>
 		</SUBSYSTEM>
 		<SUBSYSTEM
@@ -101,8 +99,7 @@
 			Type          = "scripted"
 			src           = "tool.py"
 			className     = "tool"
-			toolType      = "A"
-			servicingTime = "600.0">
+			tooling       = "{A : 600.0, C : 450.0}">
 			<IC type="Double" key="consumable" value="10.0"></IC>
 		</SUBSYSTEM>
 		<SUBSYSTEM

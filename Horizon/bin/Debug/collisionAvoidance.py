@@ -30,30 +30,15 @@ from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
 from math import sin, cos, sqrt
+import math
 
-#
 ## Constants
-#
 R_inx = Utilities.MatrixIndex(1, 3)
 V_inx = Utilities.MatrixIndex(4, 6)
 
-# 
+
 ## CW Functions
-#
-
-### REPLACE MATRIX EQUATIONS WITH SIMPLE x,y,z components
-# Don't need to propagate Velocity!
-# Analytical soln to minimum distance?
-# consider delX = x1(t) - x2(t)
-#           delXprime = vx1(t) - vx2(t)
-#           delXprime = 0 when vx1(t) = v2x(t)
-#           ... is this useful? type it up in latex?
-# norm of distance is ugly, but maybe by looking at when components (xyz) each reach a minimum we can get some pts of interest?
-#   but this could miss the times when none are at a minimum, but the total distance is!
-#   BUT, we don't care about minimum in an optimization sense, just about if obj's are within minDistance!
-#   so we can find when each component is less than minDist away, and this gives pts of interest?!
-#   study the inequality for delX < minDist... anything easy/analytical come out of it?
-
+# TODO - consider replacing matrix CW eqns w/ x,y,z component eqns, bcuz we don't need to propagate velocity!
 def phiRR(n, t):
     '''
     Define phiRR CW Matrix, used to calculate R1 from R0
@@ -128,10 +113,7 @@ def propCW(R0, V0, n, t):
     return RV1
 
 
-#
 ## Collision Functions
-#
-
 def hsfMatNorm(R):
     '''
     Return 2-Norm of R, expressed as an HSF Matrix Object, which is 1-indexed
@@ -185,10 +167,7 @@ def checkCollisions(allRV, minDistance):
 
     return True
 
-#
 ## Extraction Functions
-#
-
 def getActives(event, activeAssets, tNow_sec):
     '''
     Return updated list of active assets
@@ -200,9 +179,9 @@ def getActives(event, activeAssets, tNow_sec):
         serviceKey     = Utilities.StateVarKey[System.Boolean](asset + '.' + 'is_servicing')
         isTransferring = event.State.GetValueAtTime(transferKey, tNow_sec).Value
         isServicing    = event.State.GetValueAtTime(serviceKey, tNow_sec).Value
-        if  (isTransferring or isServicing):
+        if (isTransferring or isServicing):
             stillActiveAssets.append(asset)
-        else:
+        else: # Must be idling or drifting - not active!
             continue
     return (stillActiveAssets)
 
@@ -212,7 +191,7 @@ def getStates(event, assetNames, tNow_sec, n_radps):
     '''
     allStates = []
     for assetName in assetNames:
-        # Extract last defined state - either RV1plus or RVTgt or RVTgt
+        # Extract last defined state - either RV1plus or RVTgt
         stateKey      = Utilities.StateVarKey[Utilities.Matrix[System.Double]](assetName + '.' + 'ric_state')
         assetRV0State = event.State.GetValueAtTime(stateKey, tNow_sec).Value
         assetT0       = event.State.GetValueAtTime(stateKey, tNow_sec).Key
@@ -220,8 +199,9 @@ def getStates(event, assetNames, tNow_sec, n_radps):
         # Propagate forward unless it is servicing
         isServicingKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_servicing')
         isServicing = event.State.GetValueAtTime(isServicingKey, tNow_sec).Value
-        if (not isServicing):
-            # asset is drifting if its not servicing
+        isIdlingKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_idling')
+        isIdling = event.State.GetValueAtTime(isIdlingKey, tNow_sec).Value
+        if not (isServicing or isIdling): # is on transfer or NMC drift if not servicing/idling
             assetRVState = propCW(assetRV0State[R_inx, ":"], assetRV0State[V_inx, ":"], n_radps, tNow_sec - assetT0)
             allStates.append(assetRVState)
         else:
@@ -229,9 +209,8 @@ def getStates(event, assetNames, tNow_sec, n_radps):
 
     return allStates
 
-#
+
 ## Class Definition
-#
 class collisionAvoidance(HSFSubsystem.Subsystem):
     def __new__(cls, node, asset):
         instance       = HSFSubsystem.Subsystem.__new__(cls)
@@ -263,39 +242,35 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         return System.Func[MissionElements.Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
 
     def CanPerform(self, event, universe):
-        ##
-        # Check for double-tasking
-        ##
+        ## Check for double-tasking
         taskCheckisGood = checkTasks(event)
         if (not taskCheckisGood):
             return False
 
-        ##
-        # Check for collisions
-        ##
 
+        ## Check for collisions
         # Extract global timing information
-        t0_sec   = event.GetEventStart(self.Asset)
-        tf_sec   = event.GetEventEnd(self.Asset)
-        dt_sec   = (tf_sec - t0_sec) / self.gridPts
+        t0_sec = event.GetEventStart(self.Asset)
+        tf_sec = event.GetEventEnd(self.Asset)
+        fundTimeStep_sec = tf_sec - t0_sec
+        dt_sec = fundTimeStep_sec / self.gridPts
 
         # Extract all servicer assets and their task end times
         tasksCdict = event.Tasks # this is a C# object
-        allAssetData = {}
+        allTaskEndTimes = []
+        allAssetNames = []
         for assetTask in tasksCdict:
             assetName  = assetTask.Key.Name.ToString()
             #targetName = assetTask.Value.Target.Name.ToString()
-            if (assetName == self.Asset.Name.ToString()):
-                continue # skip asset if its this mothership
-            else:
-                allAssetData[assetName] = {
-                    'taskEndTime' : event.GetTaskEnd(assetTask.Key)
-                }
-        # TODO - NOTE - HACK - what is the "tasks" if something is busy because of canExtend()????
-        #    Hopefully it is the correct tasks as set from the prior timestep, but I don't really know.....
+            if (assetName != self.Asset.Name.ToString()): # skip asset if its the Watchdog itself
+                allAssetNames.append(assetName)
+                allTaskEndTimes.append(event.GetTaskEnd(assetTask.Key))
+        # TODO - NOTE - HACK - what if the "task" of something is busy because of canExtend()????
+        #    Hopefully it is the correct tasks as set from the prior timestep, but I don't really know...
+        # TODO - a good deal of debug printouts to make sure this whole thing is working correctly...
     
         # Check for collisions among initial states
-        allStates = getStates(event, allAssetData.keys(), t0_sec, self.meanMotion_radps)
+        allStates = getStates(event, allAssetNames, t0_sec, self.meanMotion_radps)
         isSafe = checkCollisions(allStates, self.MinSpacing)
         if (not isSafe):
             return False
@@ -303,63 +278,36 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
 
         # Find all mode change times
         allModeChangeTimes = []
-        for assetName in allAssetData.keys():
-            allAssetData[assetName]['modeChangeTimes'] = []
-
-            # isServicing mode changes
-            isServicingKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_servicing')
-            isServicingCdict = event.State.GetProfile(isServicingKey).Data # this is a C# Sorted Dictionary
-            for cKey in isServicingCdict.Keys:
-                allAssetData[assetName]['modeChangeTimes'].append(cKey)
-                allModeChangeTimes.append(cKey)
-            
-            # isTransferring mode changes
+        for assetName in allAssetNames:
+            # only care about when it starts/stops transferring, it is on Drift or constant hold for all other times
             isTransferringKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_transferring')
             isTransferringCdict = event.State.GetProfile(isTransferringKey).Data # this is a C# Sorted Dictionary
             for cKey in isTransferringCdict.Keys:
-                allAssetData[assetName]['modeChangeTimes'].append(cKey)
                 allModeChangeTimes.append(cKey)
             
-        # Filter mode changes based on if they happen before/after the end of the nominal event (fundamental time step)
-        nominalModeChangeTimes = filter(lambda t_sec : t_sec > t0_sec and t_sec < tf_sec, allModeChangeTimes)
-        lateModeChangeTimes = filter(lambda t_sec : t_sec > tf_sec, allModeChangeTimes)
+        # check if first fundamental timestep with ALL assets is safe
+        isFirstStepSafe = self.evaluateTimeStep(event, allAssetNames, allModeChangeTimes, t0_sec, fundTimeStep_sec) # for first timestep
+        if not isFirstStepSafe:
+            return False
 
-        # put these in with nominal timesteps to ensure nominal steps and mode changes are all evaluated
-        tVec_sec = [t0_sec + dt_sec]
-        for _ in range(1, self.gridPts):
-            tVec_sec.append(tVec_sec[-1] + dt_sec)
-        
-        tVec_sec.extend(nominalModeChangeTimes)
-        tVec_sec = list(set(tVec_sec))
-        tVec_sec.sort()
+        # determine how many extra fundamental timesteps require evaluation as well
+        allTaskEndTimes = allTaskEndTimes.sort()
+        secondLastEndTime = allTaskEndTimes[-2] # second-to-last end time, the last timestep needed to evaluate thru
+        numStepsToEval = math.ceil((secondLastEndTime - t0_sec)/ fundTimeStep_sec)
+        print('last eval epoch is ' + str(secondLastEndTime) + ', t0 is' + str(t0_sec), ' fund dt = ' + fundTimeStep_sec, ' so eval an extra ' + str(numStepsToEval) + ' steps')
 
-        # Check for collisions in the nominal event timeframe
-        for tNow_sec in tVec_sec:
-            allStates = getStates(event, allAssetData.keys(), tNow_sec, self.meanMotion_radps) # NOTE - this repeats the get/check/propagate process, quicker to stepCW dT unless mode change happened...
-            isSafe    = checkCollisions(allStates, self.MinSpacing)
-            if (not isSafe):
+        # end now if no extra steps needed
+        if numStepsToEval == 1:
+            return True
+
+        # evaluate all extra fundamental timesteps
+        for idx in range(1, int(numStepsToEval) + 1):
+            stepStartTime_sec = t0_sec + idx * fundTimeStep_sec
+            print('evaluating at bonus step idx ' + str(idx) + ', which starts at t=' + str(stepStartTime_sec))
+            activeAssets = getActives(event, allAssetNames, stepStartTime_sec)
+            isSafe = self.evaluateTimeStep(event, activeAssets, allModeChangeTimes, stepStartTime_sec, fundTimeStep_sec)
+            if not isSafe:
                 return False
-        
-        # Check all remaining active servicers until no more are active
-        activeAssets = getActives(event, allAssetData.keys(), tNow_sec)
-        lateModeChangeTimes = list(set(lateModeChangeTimes))
-        lateModeChangeTimes.sort()
-        while (len(activeAssets) > 1):
-            # Step forward dt_sec or to the next mode change if one occurs mid-step
-            if ((tNow_sec + dt_sec) > lateModeChangeTimes[0]):
-                tNow_sec = lateModeChangeTimes[0]
-                del lateModeChangeTimes[0]
-            else:
-                tNow_sec += dt_sec
-            
-            # check 'em
-            allStates = getStates(event, activeAssets, tNow_sec, self.meanMotion_radps) # NOTE - this repeats the get/check/propagate process, quicker to stepCW dT unless mode change happened...
-            isSafe    = checkCollisions(allStates, self.MinSpacing)
-            if (not isSafe):
-                return False
-            
-            # redefine activeAssets
-            activeAssets = getActives(event, activeAssets, tNow_sec)
 
         # Return True if all checks have passed!
         return True
@@ -369,3 +317,40 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
 
     def DependencyCollector(self, currentEvent):
         return super(collision_avoidance, self).DependencyCollector(currentEvent)
+
+    def evaluateTimeStep(self, event, theActiveAssets, allModeChangeTimes, startTime_sec, fundTimeStep_sec):
+        '''
+        Evaluate a given fundamental time step for collisions, given:
+        event - the HSF Event object...
+        theActiveAssets    - name of all active assets for this fundamental time step
+        allModeChangeTimes - big list of all mode change times, need to filter down
+        startTime_sec      - start time (from epoch0) of the given fundamental time step
+        fundTimeStep_sec   - length of the fundamental time step (a global constant)
+        '''
+        dt_sec = fundTimeStep_sec / self.gridPts
+
+        # base grid pts
+        np = int(math.floor(fundTimeStep_sec / dt_sec))
+        tVec_sec = [startTime_sec]
+        for _ in range(1, np + 1):
+            tVec_sec.append(tVec_sec[-1] + dt_sec)
+
+        endTime_sec = startTime_sec + fundTimeStep_sec
+        theModeChanges = filter(lambda t_sec : t_sec >= startTime_sec and t_sec < endTime_sec, allModeChangeTimes)
+
+        # put these in with nominal grid points to ensure grid pts and mode changes are all evaluated    
+        tVec_sec.extend(theModeChanges)
+        tVec_sec = list(set(tVec_sec))
+        tVec_sec.sort()
+
+        print('for t0 = ' + str(startTime_sec) + ', tf = ' + str(endTime_sec) + ', dt = ' + str(dt_sec) + ', modeChanges = ' + str(allModeChangeTimes) + ', the tVec = ' + str(tVec_sec))
+
+        # Check for collisions in the nominal event timeframe
+        for tNow_sec in tVec_sec:
+            theStates = getStates(event, theActiveAssets, tNow_sec, self.meanMotion_radps) # NOTE - this repeats the get/check/propagate process, might be quicker to stepCW dT unless mode change happened...
+            isSafe = checkCollisions(theStates, self.MinSpacing)
+            if (not isSafe):
+                return False
+        
+        # return True if all good
+        return True

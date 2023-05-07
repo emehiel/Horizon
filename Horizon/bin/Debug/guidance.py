@@ -64,7 +64,6 @@ V_inx = Utilities.MatrixIndex(4, 6)
 
 ##
 # Utility Functions
-# TODO splitoff
 ##
 
 def myMin(ls):
@@ -310,7 +309,7 @@ def multiObjCostFun(t, k):
 def __isRwithinKOZ(R, KOZ):
     '''
     Evaluate if a given state (R) is within constraint volume (KOZ)
-    KOZ = [x, y, z] definig semi-*-axis in LVLH/RIC
+    KOZ = [x, y, z] definig semi-*-axis in RIC
     '''
     normalizedDistance = (R[0] / KOZ[0])**2 + (R[1] / KOZ[1])**2 + (R[2] / KOZ[2])**2
     if (normalizedDistance < 1.0):
@@ -477,14 +476,17 @@ class guidance(HSFSubsystem.Subsystem):
         instance.DELTAV_2_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'deltaV_f')
         instance.addKey(instance.DELTAV_2_KEY)
 
-        instance.DELTAV_nmc_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'deltaV_nmc')
-        instance.addKey(instance.DELTAV_nmc_KEY)
-
         instance.PROPELLANT_MASS_KEY = Utilities.StateVarKey[System.Double](instance.Asset.Name + '.' + 'propellant_mass_kg')
         instance.addKey(instance.PROPELLANT_MASS_KEY)
 
-        instance.TRANSFER_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_transferring')
-        instance.SERVICE_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_servicing')
+        instance.TRANSFER_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_transferring') # init in XML to FALSE
+        instance.SERVICE_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_servicing') # init in XML to FALSE
+        instance.IDLE_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_idling') # init in XML to FALSE
+        instance.addKey(instance.TRANSFER_MODE_KEY)
+        instance.addKey(instance.SERVICE_MODE_KEY)
+        instance.addKey(instance.IDLE_MODE_KEY)
+
+        instance.isDrifting = True
 
         # Define Constants
         instance.dryMass_kg = float(node.Attributes['dryMassKg'].Value)
@@ -498,7 +500,7 @@ class guidance(HSFSubsystem.Subsystem):
         if (node.Attributes['Mean_Motion'] != None):
             instance.mean_motion = float(node.Attributes['Mean_Motion'].Value)
 
-        instance.KOZ = [50, 100, 20] # Defines semi-axis in LVLH/RIC x, y, z (radial, in track, cross track)
+        instance.KOZ = [50, 100, 20] # Defines semi-axis in RIC x, y, z (radial, in-track, cross-track)
         if (node.Attributes['KOZ'] != None):
             kozStr = node.Attributes['KOZ'].Value
             instance.KOZ = [float(koz) for koz in kozStr[1:-1].split(',')]
@@ -520,50 +522,62 @@ class guidance(HSFSubsystem.Subsystem):
         return System.Func[MissionElements.Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
 
     def CanPerform(self, event, universe):
-        # check for empty target
-        tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
-        if (tgtName == 'EmptyTarget'):
-            return True
-
-        n = self.mean_motion
-
         # Extract Timing Information
         es = event.GetEventStart(self.Asset)
         ee = event.GetEventEnd(self.Asset)
         ts = event.GetTaskStart(self.Asset)
         te = event.GetTaskEnd(self.Asset)
+
+        fundamentalTimeStep_sec = te - ts
+        t2_check = ee - es
+        errSec = fundamentalTimeStep_sec - t2_check # TODO - remove printout and calculations that aren't needed...
+        print('TimeStep Length = ' + str(fundamentalTimeStep_sec) + ', task vs event err = ' + str(errSec))
         # print('    Event Start: ' + es.ToString() + ' Event End (default): '+ ee.ToString() + ' Task Start: ' + ts.ToString() + ' Task End (default): ' + te.ToString())
 
+        n = self.mean_motion
+
+        # check for empty target
+        tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
+        if (tgtName == 'EmptyTarget'):
+            if not self.isDrifting: # add fuel cost for idle/hold during fundamentalTimeStep_sec
+                RV0 = event.State.GetLastValue(self.STATEVEC_KEY).Value # Returns HSF Matrix Object
+                R0_m = RV0[R_inx, ":"]
+
+                fuelMass_kg = event.State.GetLastValue(self.PROPELLANT_MASS_KEY).Value
+
+                m0_kg = self.dryMass_kg + fuelMassLeft_kg
+                fuelBurned_kg = constantBurnHoldFuelCost(R0_m, fundamentalTimeStep_sec, n, m0_kg, self.Isp_sec)
+                fuelMassLeft_kg = fuelMass_kg - fuelBurned_kg
+                event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + fundamentalTimeStep_sec, fuelMassLeft_kg))
+            return True
+
         # Extract Last State Data
-        lastState = event.State.GetLastValue(self.STATEVEC_KEY) # Returns HSF Matrix Object
-        lastTime  = lastState.Key
-        RV0       = lastState.Value
-        R0        = RV0[R_inx, ":"]
-        V0        = RV0[V_inx, ":"]
-        #print('Pulled off R0 = ' + str(R0) + ', V0 = ' + str(V0) + ' at time = ' + str(lastTime))
+        lastState = event.State.GetLastValue(self.STATEVEC_KEY)
+        RV0 = lastState.Value # Returns HSF Matrix Object
 
-        # Free-Flight Propagate Forwards to Current Time Step
-        dt1 = ts - lastTime
-        if (dt1 > 0):
-            RV1 = Utilities.Matrix[System.Double](6,1)
-            phiRR_matrix = phiRR(n, dt1)
-            phiRV_matrix = phiRV(n, dt1)
-            phiVR_matrix = phiVR(n, dt1)
-            phiVV_matrix = phiVV(n, dt1)
+        # If on initial NMC drift, free-flight propagate to current time
+        if self.isDrifting:
+            lastTime  = lastState.Key
+            R0  = RV0[R_inx, ":"]
+            V0  = RV0[V_inx, ":"]
+            #print('Pulled off R0 = ' + str(R0) + ', V0 = ' + str(V0) + ' at time = ' + str(lastTime))
+            dt1 = ts - lastTime
+            if (dt1 > 0):
+                RV1 = Utilities.Matrix[System.Double](6,1)
+                phiRR_matrix = phiRR(n, dt1)
+                phiRV_matrix = phiRV(n, dt1)
+                phiVR_matrix = phiVR(n, dt1)
+                phiVV_matrix = phiVV(n, dt1)
 
-            R1 = phiRR_matrix * R0 + phiRV_matrix * V0
-            V1 = phiVR_matrix * R0 + phiVV_matrix * V0
-            RV1 = Utilities.Matrix[System.Double].Vertcat(R1, V1)
-        elif (dt1 == 0):
-            # R1 = 'no dt, no R1'
-            # V1 = 'no dt, no V1'
-            RV1 = RV0
+                R1 = phiRR_matrix * R0 + phiRV_matrix * V0
+                V1 = phiVR_matrix * R0 + phiVV_matrix * V0
+                RV1 = Utilities.Matrix[System.Double].Vertcat(R1, V1)
+            elif (dt1 == 0):
+                RV1 = RV0
+            else:
+                print('ERROR: State is defined in the future, something went wrong!')
         else:
-            print('ERROR: State is defined in the future, something went wrong!')
-        
-        #print('Propagated state to current epoch thru dt = ' + str(dt1) + ' to R1 = ' + str(R1) + ', V1 = ' + str(V1))
-
-        # print("Last State: " + RV0.ToString() + " New State: " + RV1.ToString())
+            RV1 = RV0
 
         # Perform Optimal 2-Impulse Rendezvous With Static Target
         Rtgt_dyn = event.GetAssetTask(self.Asset).Target.DynamicState.DynamicStateECI(ts)
@@ -577,8 +591,7 @@ class guidance(HSFSubsystem.Subsystem):
 
         optTol = 1e-4
         (isValid, tStarBisect) = solveForMinDV_Bisect(RV1, RVtgt, n, self.tofWeight, self.KOZ, self.gridPts, self.numBracks, optTol)
-        if not isValid:
-            # Cannot Perform Transfer with any TOF brackets explored!
+        if not isValid: # Cannot Perform Transfer with any TOF brackets explored! canPerform is False
             return False
         
         # Reconstruct
@@ -598,31 +611,35 @@ class guidance(HSFSubsystem.Subsystem):
         fuelMassLeft_kg = fuelMass0_kg - fuelBurned_kg
         event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + tStarBisect, fuelMassLeft_kg))
 
-        # Log "mode" to define when transfering and when servicing
+        # Log "mode" to define when idling, transferring, and servicing
+        event.State.AddValue(self.IDLE_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts, False)) # no longer idling
         event.State.AddValue(self.TRANSFER_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts, True))
         event.State.AddValue(self.TRANSFER_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect, False))
-        
         event.State.AddValue(self.SERVICE_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect, True))
+
 
         # Extract Servicing time from tool.py
         stateKey     = Utilities.StateVarKey[System.Double](self.Asset.Name.ToString() + '.' + 'servicing_time')
         tService_sec = event.State.GetLastValue(stateKey).Value
         event.State.AddValue(self.SERVICE_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect + tService_sec, False))
+        event.State.AddValue(self.IDLE_MODE_KEY, Utilities.HSFProfile[System.Boolean](ts + tStarBisect + tService_sec, True))
 
 
-        # Compute fuel cost to hold position while serivicing, TODO - consider just leaving as "latched on"
+        # Compute fuel cost to hold position while serivicing & idling
+        idleTime_sec    = fundamentalTimeStep_sec - ((tStarBisect + tService_sec) % fundamentalTimeStep_sec)
         m0_kg           = self.dryMass_kg + fuelMassLeft_kg
-        fuelBurned_kg   = constantBurnHoldFuelCost(Rtgt, tService_sec, n, m0_kg, self.Isp_sec)
+        fuelBurned_kg   = constantBurnHoldFuelCost(Rtgt, tService_sec + idleTime_sec, n, m0_kg, self.Isp_sec)
         fuelMassLeft_kg = fuelMassLeft_kg - fuelBurned_kg
         event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + tStarBisect + tService_sec, fuelMassLeft_kg))
 
-        # TODO plan/compute exit strategy (dV(s) to NMC, hop to Vbar, or hold), this currently assumes assets drift away after servicing
 
         # Log final state
         event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect, RVtgt))
-        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect + tService_sec, RVtgt))
+        event.State.AddValue(self.STATEVEC_KEY, Utilities.HSFProfile[Utilities.Matrix[System.Double]](ts + tStarBisect + tService_sec, RVtgt)) # and will stay until next RV1Plus
         event.SetTaskEnd(self.Asset, ts + tStarBisect + tService_sec)
         event.SetEventEnd(self.Asset, ts + tStarBisect + tService_sec)
+
+        self.isDrifting = False # no longer on drift ever again!
         return True
 
     def CanExtend(self, event, universe, extendTo):

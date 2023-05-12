@@ -232,6 +232,11 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         if (node.Attributes['GridPoints'] != None):
             instance.gridPts = int(node.Attributes['GridPoints'].Value)
         
+        # Set Short-Circuit
+        instance.shortCircuit = False
+        if (node.Attributes['DoShortCircuit'] != None):
+            instance.shortCircuit = True
+
         return instance
 
     def GetDependencyDictionary(self):
@@ -247,6 +252,9 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         if (not taskCheckisGood):
             return False
 
+        # Short-Circuit here if customized to ONLY do task checking
+        if self.shortCircuit:
+            return True
 
         ## Check for collisions
         # Extract global timing information

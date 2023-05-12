@@ -178,11 +178,11 @@ namespace MissionElements
         public override string ToString()
         {
             string eventString = "";
-            foreach(var assetTask in Tasks)
+            foreach(var assetTask in Tasks)// TODO - can we iterate bwds? it prints out bwds...
             {
                 eventString += assetTask.Key.Name + ":\t" + assetTask.Value.Target.ToString()+ "\t";
                 eventString += "Task Start:\t" + GetTaskStart(assetTask.Key) + "\tEvent Start:\t" + GetEventStart(assetTask.Key) + "\t"; 
-                eventString+= "Task End:\t" + GetTaskEnd(assetTask.Key) + "\tEvent End:\t" + GetEventEnd(assetTask.Key);
+                eventString += "Task End:\t" + GetTaskEnd(assetTask.Key) + "\tEvent End:\t" + GetEventEnd(assetTask.Key) + "\t";
             }
 
             return eventString;

@@ -242,6 +242,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         return System.Func[MissionElements.Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
 
     def CanPerform(self, event, universe):
+        #print('\nattempting CA for event = \n' + event.ToString())
         ## Check for double-tasking
         taskCheckisGood = checkTasks(event)
         if (not taskCheckisGood):
@@ -251,7 +252,8 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         ## Check for collisions
         # Extract global timing information
         t0_sec = event.GetEventStart(self.Asset)
-        tf_sec = event.GetEventEnd(self.Asset)
+        tf_sec = event.GetEventEnd(self.Asset) # I think this is wrong! TODO
+        #print('t0_sec = ' + str(t0_sec) + ', tf_sec = ' + str(tf_sec))
         fundTimeStep_sec = tf_sec - t0_sec
         dt_sec = fundTimeStep_sec / self.gridPts
 
@@ -268,6 +270,9 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         # TODO - NOTE - HACK - what if the "task" of something is busy because of canExtend()????
         #    Hopefully it is the correct tasks as set from the prior timestep, but I don't really know...
         # TODO - a good deal of debug printouts to make sure this whole thing is working correctly...
+        if len(allAssetNames) < 2:
+            print('NOTICE: NO Collision Avoidance to perform for single asset!')
+            return True
     
         # Check for collisions among initial states
         allStates = getStates(event, allAssetNames, t0_sec, self.meanMotion_radps)
@@ -290,20 +295,26 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         if not isFirstStepSafe:
             return False
 
-        # determine how many extra fundamental timesteps require evaluation as well
-        allTaskEndTimes = allTaskEndTimes.sort()
-        secondLastEndTime = allTaskEndTimes[-2] # second-to-last end time, the last timestep needed to evaluate thru
-        numStepsToEval = math.ceil((secondLastEndTime - t0_sec)/ fundTimeStep_sec)
-        print('last eval epoch is ' + str(secondLastEndTime) + ', t0 is' + str(t0_sec), ' fund dt = ' + fundTimeStep_sec, ' so eval an extra ' + str(numStepsToEval) + ' steps')
-
-        # end now if no extra steps needed
-        if numStepsToEval == 1:
+        # determine how many extra fundamental timesteps require evaluation as well, if any
+        if max(allTaskEndTimes) < (t0_sec + fundTimeStep_sec): # no further steps needed
             return True
+
+        #print('did fundamental time steps, now trying the extension... allTaskEndTimes = ' + str(allTaskEndTimes))
+        allTaskEndTimes.sort()
+        secondLastEndTime = allTaskEndTimes[-2] # second-to-last end time, the last timestep needed to evaluate thru
+        #print('uhh, secondLastEndTime = ' + str(secondLastEndTime) + ', t0_sec = ' + str(t0_sec) + ', fundTimeStep_sec = ' + str(fundTimeStep_sec))
+        numStepsToEval = math.ceil((secondLastEndTime - t0_sec)/ fundTimeStep_sec)
+        #print('last eval epoch is ' + str(secondLastEndTime) + ', t0 is' + str(t0_sec), ' fund dt = ' + str(fundTimeStep_sec), ' so eval an extra ' + str(numStepsToEval) + ' steps')
+
+        if secondLastEndTime < (t0_sec + fundTimeStep_sec): # no further steps needed
+            #print('\nonly 1 object rolls over to the next timestep, no CA for this step...\n')
+            return True
+
 
         # evaluate all extra fundamental timesteps
         for idx in range(1, int(numStepsToEval) + 1):
             stepStartTime_sec = t0_sec + idx * fundTimeStep_sec
-            print('evaluating at bonus step idx ' + str(idx) + ', which starts at t=' + str(stepStartTime_sec))
+            #print('evaluating at bonus step idx ' + str(idx) + ', which starts at t=' + str(stepStartTime_sec))
             activeAssets = getActives(event, allAssetNames, stepStartTime_sec)
             isSafe = self.evaluateTimeStep(event, activeAssets, allModeChangeTimes, stepStartTime_sec, fundTimeStep_sec)
             if not isSafe:
@@ -316,7 +327,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         return True
 
     def DependencyCollector(self, currentEvent):
-        return super(collision_avoidance, self).DependencyCollector(currentEvent)
+        return super(collisionAvoidance, self).DependencyCollector(currentEvent)
 
     def evaluateTimeStep(self, event, theActiveAssets, allModeChangeTimes, startTime_sec, fundTimeStep_sec):
         '''
@@ -343,14 +354,15 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         tVec_sec = list(set(tVec_sec))
         tVec_sec.sort()
 
-        print('for t0 = ' + str(startTime_sec) + ', tf = ' + str(endTime_sec) + ', dt = ' + str(dt_sec) + ', modeChanges = ' + str(allModeChangeTimes) + ', the tVec = ' + str(tVec_sec))
+        #print('for t0 = ' + str(startTime_sec) + ', tf = ' + str(endTime_sec) + ', dt = ' + str(dt_sec) + ', modeChanges = ' + str(allModeChangeTimes) + ', the tVec = ' + str(tVec_sec))
 
-        # Check for collisions in the nominal event timeframe
+        # Check for collisions in the current fundamental time step
         for tNow_sec in tVec_sec:
+            #print('trying the getStates() call with event = ' + event.ToString() + ', active assets = ' + str(theActiveAssets) + ', tNow = ' + str(tNow_sec) + ', n = ' + str(self.meanMotion_radps))
             theStates = getStates(event, theActiveAssets, tNow_sec, self.meanMotion_radps) # NOTE - this repeats the get/check/propagate process, might be quicker to stepCW dT unless mode change happened...
             isSafe = checkCollisions(theStates, self.MinSpacing)
             if (not isSafe):
+                #print('\nFound a collision! event = ' + event.ToString() + ', tNow_sec = ' + str(tNow_sec) + '\n')
                 return False
         
-        # return True if all good
         return True

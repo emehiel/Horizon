@@ -528,11 +528,9 @@ class guidance(HSFSubsystem.Subsystem):
         ts = event.GetTaskStart(self.Asset)
         te = event.GetTaskEnd(self.Asset)
 
-        fundamentalTimeStep_sec = te - ts
-        t2_check = ee - es
-        errSec = fundamentalTimeStep_sec - t2_check # TODO - remove printout and calculations that aren't needed...
-        print('TimeStep Length = ' + str(fundamentalTimeStep_sec) + ', task vs event err = ' + str(errSec))
-        # print('    Event Start: ' + es.ToString() + ' Event End (default): '+ ee.ToString() + ' Task Start: ' + ts.ToString() + ' Task End (default): ' + te.ToString())
+        fundamentalTimeStep_sec = ee - es
+        # TODO - remove or comment out debug printouts... here and in tool.py and collisionAvoidance.py
+        #print('TimeStep Length = ' + str(fundamentalTimeStep_sec) + ', Event Start: ' + es.ToString() + ', Event End (default): '+ ee.ToString() + ', Task Start: ' + ts.ToString() + ', Task End (default): ' + te.ToString())
 
         n = self.mean_motion
 
@@ -545,7 +543,7 @@ class guidance(HSFSubsystem.Subsystem):
 
                 fuelMass_kg = event.State.GetLastValue(self.PROPELLANT_MASS_KEY).Value
 
-                m0_kg = self.dryMass_kg + fuelMassLeft_kg
+                m0_kg = self.dryMass_kg + fuelMass_kg
                 fuelBurned_kg = constantBurnHoldFuelCost(R0_m, fundamentalTimeStep_sec, n, m0_kg, self.Isp_sec)
                 fuelMassLeft_kg = fuelMass_kg - fuelBurned_kg
                 event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + fundamentalTimeStep_sec, fuelMassLeft_kg))
@@ -575,7 +573,7 @@ class guidance(HSFSubsystem.Subsystem):
             elif (dt1 == 0):
                 RV1 = RV0
             else:
-                print('ERROR: State is defined in the future, something went wrong!')
+                print('ERROR: State is defined in the future already, something went wrong!')
         else:
             RV1 = RV0
 
@@ -644,7 +642,6 @@ class guidance(HSFSubsystem.Subsystem):
 
     def CanExtend(self, event, universe, extendTo):
         return True
-
 
     def DependencyCollector(self, currentEvent):
         #return {}

@@ -1,0 +1,48 @@
+<MODEL>
+	<ASSET assetName = "Servicer1">
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "tool"
+			Type          = "scripted"
+			src           = "tool.py"
+			className     = "tool"
+			tooling       = "{A : 600.0}">
+			<IC type="Double" key="consumable" value="10.0"></IC>
+		</SUBSYSTEM>
+	</ASSET>
+
+	<ASSET assetName = "Servicer2">
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "tool"
+			Type          = "scripted"
+			src           = "tool.py"
+			className     = "tool"
+			tooling       = "{B : 400.0}">
+			<IC type="Double" key="consumable" value="10.0"></IC>
+		</SUBSYSTEM>
+
+	</ASSET>
+
+		<ASSET assetName = "Watchdog">
+		<IsPassive/>
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "collisionAvoidance"
+			Type          = "scripted"
+			src           = "collisionAvoidance.py"
+			MinSpacing    = "25.0"
+			DoShortCircuit = "LetsDoIt"
+			className     = "collisionAvoidance">
+		</SUBSYSTEM>
+	</ASSET>
+</MODEL>

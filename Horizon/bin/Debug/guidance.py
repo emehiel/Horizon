@@ -310,7 +310,7 @@ def __isRwithinKOZ(R, KOZ):
     '''
     Evaluate if a given state (R) is within constraint volume (KOZ)
     KOZ = [x, y, z] definig semi-*-axis in RIC
-    '''
+    '''        
     normalizedDistance = (R[0] / KOZ[0])**2 + (R[1] / KOZ[1])**2 + (R[2] / KOZ[2])**2
     if (normalizedDistance < 1.0):
         return True
@@ -321,6 +321,9 @@ def __isValidTrajectory(RV0, n, KOZ, tof, gridPts):
     ''''
     Evaluate if a given trajectory (RV0) is within the constraint volume (KOZ) at any point (gridPts) in the transfer (tof)
     '''
+    if any([kz == 0 for kz in KOZ]):
+        print('flat/zero KOZ detected, no KOZ constraint to check!')
+        return True
     dT = tof / gridPts
     for ii in range(1, gridPts):
         RV = stepCW(RV0, n, dT * ii)
@@ -339,7 +342,7 @@ def isValidTOF(x, k):
     n       = k[2]
     KOZ     = k[3]
     gridPts = k[4]
-    (RV1plus, DV1_vec, DV2_vec, DVtot)  = solveTwoImp(RV0, RVtgt, n, tof)
+    (RV1plus, DV1_vec, DV2_vec, DVtot) = solveTwoImp(RV0, RVtgt, n, tof)
 
     # Convert HSF Matrix into list
     RV0plus = []
@@ -365,6 +368,7 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
 
     # Solve Unconstrained First
     (x, ii, fX, fprimeX, brackWidth) = unconstrainedBisection(a, b, f, k, tol)
+    print('did unconstrained bisection, tStar = ' + str(x) + ', dV = ' + str(fX) + ', fprime = ' + str(fprimeX) + ', iters = ' + str(ii) + ', tol = ' + str(tol))
     
     # If Fails Constraint, Walk "Up" with increasing TOF
     isXvalid = c(x, k)
@@ -429,14 +433,13 @@ def solveForMinDV_Bisect(RV0, RVf, n, w, KOZ, gridPts, nBracks, tol):
         rawA     = singular_nt_array[brackIdx[0]]
         rawB     = singular_nt_array[brackIdx[1]]
         rawWidth = rawB - rawA
-        a0       = (rawA + (0.01 * rawWidth)) / n
-        b0       = (rawB - (0.01 * rawWidth)) / n
+        a0       = (rawA + (0.001 * rawWidth)) / n
+        b0       = (rawB - (0.001 * rawWidth)) / n
 
         # solve for local bracket solution
         k = (RV0, RVf, n, KOZ, gridPts, w) # tuple of constants
         (validBracket, tStar, numIts, cost, magDeriv, brackWidth) = modifiedBisectionMinimizer(a0, b0, multiObjCostFun, isValidTOF, k, tol)
-        
-        # print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
+        print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
 
         if validBracket:
             tStarArr.append(tStar)
@@ -587,7 +590,8 @@ class guidance(HSFSubsystem.Subsystem):
         RVtgt    = Utilities.Matrix[System.Double].Vertcat(Rtgt, Vtgt)
         # print('RV of Tgt = ' + RVtgt.ToString())
 
-        optTol = 1e-4
+        print('Attempting DV Minimization, RV1 = ' + RV1.ToString() + ', RVTgt = ' + RVtgt.ToString())
+        optTol = 1e-10
         (isValid, tStarBisect) = solveForMinDV_Bisect(RV1, RVtgt, n, self.tofWeight, self.KOZ, self.gridPts, self.numBracks, optTol)
         if not isValid: # Cannot Perform Transfer with any TOF brackets explored! canPerform is False
             return False

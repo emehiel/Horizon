@@ -12,6 +12,13 @@
 			tooling       = "{A : 600.0}">
 			<IC type="Double" key="consumable" value="10.0"></IC>
 		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "tool"
+			type          = "FAIL_IF_LOWER"
+			name          = "consumable_constraint">
+			<STATEVAR type="Double" key="consumable"></STATEVAR>
+		</CONSTRAINT>
 	</ASSET>
 
 	<ASSET assetName = "Servicer2">
@@ -27,6 +34,13 @@
 			tooling       = "{B : 400.0}">
 			<IC type="Double" key="consumable" value="10.0"></IC>
 		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "tool"
+			type          = "FAIL_IF_LOWER"
+			name          = "consumable_constraint">
+			<STATEVAR type="Double" key="consumable"></STATEVAR>
+		</CONSTRAINT>
 
 	</ASSET>
 

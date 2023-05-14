@@ -29,6 +29,20 @@
 			<IC type="Bool" key="is_idling" value="False"></IC>
 			<IC type="Matrix" key="ric_state" value="[40.0; 0.0; 2.0; 0; -0.00576; 0.000108]"></IC>
 		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "tool"
+			type          = "FAIL_IF_LOWER"
+			name          = "consumable_constraint">
+			<STATEVAR type="Double" key="consumable"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "guidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "propellant_constraint">
+			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
+		</CONSTRAINT>
 	</ASSET>
 
 	<ASSET assetName = "Servicer2">
@@ -60,7 +74,21 @@
 			<IC type="Bool" key="is_servicing" value="False"></IC>
 			<IC type="Bool" key="is_idling" value="False"></IC>
 			<IC type="Matrix" key="ric_state" value="[-20.0; 69.282032302755056; -2.299038105676658; 0.002494153162899; 0.002880000000000; 0.000070707658145]"></IC>
-		</SUBSYSTEM>
+		</SUBSYSTEM>		
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "tool"
+			type          = "FAIL_IF_LOWER"
+			name          = "consumable_constraint">
+			<STATEVAR type="Double" key="consumable"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "guidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "propellant_constraint">
+			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
+		</CONSTRAINT>
 	</ASSET>
 
 		<ASSET assetName = "Watchdog">

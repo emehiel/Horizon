@@ -264,6 +264,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         #print('t0_sec = ' + str(t0_sec) + ', tf_sec = ' + str(tf_sec))
         fundTimeStep_sec = tf_sec - t0_sec
         dt_sec = fundTimeStep_sec / self.gridPts
+        print('Found trajectories, now in CA, did task checking...\n')
 
         # Extract all servicer assets and their task end times
         tasksCdict = event.Tasks # this is a C# object

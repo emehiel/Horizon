@@ -1,0 +1,27 @@
+<TARGETDECK>
+	<TARGET
+		TargetName = "serviceTgt1"
+		TargetType = "Servicing"
+		Value = "7"
+		TaskType = "A"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[12; 13; 0.5]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "serviceTgt2"
+		TargetType = "Servicing"
+		Value = "11"
+		TaskType = "B"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "10; 8; 1.5]">
+		</DynamicState>
+	</TARGET>
+</TARGETDECK>

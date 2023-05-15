@@ -182,7 +182,8 @@ namespace HSFScheduler
                 systemCanPerformList.Clear();
 
                 // Print completion percentage in command window
-                Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+                //Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+                Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * (currentTime + _stepLength) / _endTime, systemSchedules.Count);
             }
             return systemSchedules;
         }

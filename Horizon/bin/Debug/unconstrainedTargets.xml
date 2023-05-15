@@ -21,7 +21,7 @@
 	>
 		<DynamicState
 			DynamicStateType = "STATIC_LVLH"
-			ICs = "10; 8; 1.5]">
+			ICs = "[0; 8; 1.5]">
 		</DynamicState>
 	</TARGET>
 </TARGETDECK>

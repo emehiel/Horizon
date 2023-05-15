@@ -322,7 +322,7 @@ def __isValidTrajectory(RV0, n, KOZ, tof, gridPts):
     Evaluate if a given trajectory (RV0) is within the constraint volume (KOZ) at any point (gridPts) in the transfer (tof)
     '''
     if any([kz == 0 for kz in KOZ]):
-        print('flat/zero KOZ detected, no KOZ constraint to check!')
+        #print('flat/zero KOZ detected, no KOZ constraint to check!')
         return True
     dT = tof / gridPts
     for ii in range(1, gridPts):
@@ -368,7 +368,7 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
 
     # Solve Unconstrained First
     (x, ii, fX, fprimeX, brackWidth) = unconstrainedBisection(a, b, f, k, tol)
-    print('did unconstrained bisection, tStar = ' + str(x) + ', dV = ' + str(fX) + ', fprime = ' + str(fprimeX) + ', iters = ' + str(ii) + ', tol = ' + str(tol))
+    #print('did unconstrained bisection, tStar = ' + str(x) + ', dV = ' + str(fX) + ', fprime = ' + str(fprimeX) + ', iters = ' + str(ii) + ', tol = ' + str(tol))
     
     # If Fails Constraint, Walk "Up" with increasing TOF
     isXvalid = c(x, k)
@@ -439,7 +439,7 @@ def solveForMinDV_Bisect(RV0, RVf, n, w, KOZ, gridPts, nBracks, tol):
         # solve for local bracket solution
         k = (RV0, RVf, n, KOZ, gridPts, w) # tuple of constants
         (validBracket, tStar, numIts, cost, magDeriv, brackWidth) = modifiedBisectionMinimizer(a0, b0, multiObjCostFun, isValidTOF, k, tol)
-        print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
+        #print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
 
         if validBracket:
             tStarArr.append(tStar)
@@ -485,15 +485,15 @@ class guidance(HSFSubsystem.Subsystem):
         instance.TRANSFER_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_transferring') # init in XML to FALSE
         instance.SERVICE_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_servicing') # init in XML to FALSE
         instance.IDLE_MODE_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_idling') # init in XML to FALSE
+        instance.DRIFT_KEY = Utilities.StateVarKey[System.Boolean](instance.Asset.Name + '.' + 'is_drifting') # init in XML to TRUE
         instance.addKey(instance.TRANSFER_MODE_KEY)
         instance.addKey(instance.SERVICE_MODE_KEY)
         instance.addKey(instance.IDLE_MODE_KEY)
-
-        instance.isDrifting = True
+        instance.addKey(instance.DRIFT_KEY)
 
         # Define Constants
         instance.dryMass_kg = float(node.Attributes['dryMassKg'].Value)
-        instance.Isp_sec    = float(node.Attributes['Isp'].Value)
+        instance.Isp_sec = float(node.Attributes['Isp'].Value)
 
         instance.tofWeight = 0
         if (node.Attributes['TOF_Weight'] != None):
@@ -536,11 +536,12 @@ class guidance(HSFSubsystem.Subsystem):
         #print('TimeStep Length = ' + str(fundamentalTimeStep_sec) + ', Event Start: ' + es.ToString() + ', Event End (default): '+ ee.ToString() + ', Task Start: ' + ts.ToString() + ', Task End (default): ' + te.ToString())
 
         n = self.mean_motion
+        isDrifting = event.State.GetLastValue(self.DRIFT_KEY).Value # NOTE - doesn't work as member variable, TODO - discuss this with Dr. M, what about init variables from XML, can I really customize per asset?
 
         # check for empty target
         tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
         if (tgtName == 'EmptyTarget'):
-            if not self.isDrifting: # add fuel cost for idle/hold during fundamentalTimeStep_sec
+            if isDrifting: # add fuel cost for idle/hold during fundamentalTimeStep_sec
                 RV0 = event.State.GetLastValue(self.STATEVEC_KEY).Value # Returns HSF Matrix Object
                 R0_m = RV0[R_inx, ":"]
 
@@ -557,11 +558,10 @@ class guidance(HSFSubsystem.Subsystem):
         RV0 = lastState.Value # Returns HSF Matrix Object
 
         # If on initial NMC drift, free-flight propagate to current time
-        if self.isDrifting:
-            lastTime  = lastState.Key
-            R0  = RV0[R_inx, ":"]
-            V0  = RV0[V_inx, ":"]
-            #print('Pulled off R0 = ' + str(R0) + ', V0 = ' + str(V0) + ' at time = ' + str(lastTime))
+        if isDrifting:
+            lastTime = lastState.Key
+            R0 = RV0[R_inx, ":"]
+            V0 = RV0[V_inx, ":"]
             dt1 = ts - lastTime
             if (dt1 > 0):
                 RV1 = Utilities.Matrix[System.Double](6,1)
@@ -590,7 +590,7 @@ class guidance(HSFSubsystem.Subsystem):
         RVtgt    = Utilities.Matrix[System.Double].Vertcat(Rtgt, Vtgt)
         # print('RV of Tgt = ' + RVtgt.ToString())
 
-        print('Attempting DV Minimization, RV1 = ' + RV1.ToString() + ', RVTgt = ' + RVtgt.ToString())
+        #print('Attempting DV Minimization, RV1 = ' + RV1.ToString() + ', RVTgt = ' + RVtgt.ToString())
         optTol = 1e-10
         (isValid, tStarBisect) = solveForMinDV_Bisect(RV1, RVtgt, n, self.tofWeight, self.KOZ, self.gridPts, self.numBracks, optTol)
         if not isValid: # Cannot Perform Transfer with any TOF brackets explored! canPerform is False
@@ -641,7 +641,8 @@ class guidance(HSFSubsystem.Subsystem):
         event.SetTaskEnd(self.Asset, ts + tStarBisect + tService_sec)
         event.SetEventEnd(self.Asset, ts + tStarBisect + tService_sec)
 
-        self.isDrifting = False # no longer on drift ever again!
+        event.State.AddValue(self.DRIFT_KEY, Utilities.HSFProfile[System.Boolean](ts, False)) # no longer on initial drift (e.g., NMC) ever again!
+
         return True
 
     def CanExtend(self, event, universe, extendTo):

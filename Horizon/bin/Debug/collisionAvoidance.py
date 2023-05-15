@@ -162,7 +162,10 @@ def checkCollisions(allRV, minDistance):
         for idx2 in range(idx1 + 1, len(allRV)):
             RV2 = allRV[idx2]
             R2 = RV2[R_inx, ":"]
-            if (hsfMatNorm(R2 - R1) < minDistance):
+            dist = hsfMatNorm(R2 - R1)
+            #print('dist = ' + str(dist))
+            if (dist < minDistance):
+                print('failing CA, dist = ' + str(dist) + ' while minDist = ' + str(minDistance))
                 return False
 
     return True
@@ -202,6 +205,7 @@ def getStates(event, assetNames, tNow_sec, n_radps):
         isIdlingKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_idling')
         isIdling = event.State.GetValueAtTime(isIdlingKey, tNow_sec).Value
         if not (isServicing or isIdling): # is on transfer or NMC drift if not servicing/idling
+            #print('propagating within CW from RV0 = ' + assetRV0State.ToString() + ' from t0 = ' + str(assetT0) + ' to t1 = ' + str(tNow_sec))
             assetRVState = propCW(assetRV0State[R_inx, ":"], assetRV0State[V_inx, ":"], n_radps, tNow_sec - assetT0)
             allStates.append(assetRVState)
         else:
@@ -264,7 +268,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         #print('t0_sec = ' + str(t0_sec) + ', tf_sec = ' + str(tf_sec))
         fundTimeStep_sec = tf_sec - t0_sec
         dt_sec = fundTimeStep_sec / self.gridPts
-        print('Found trajectories, now in CA, did task checking...\n')
+        print('Found trajectories, now in CA, did task checking... see t0 = ' + str(t0_sec) + ', tf = ' + str(tf_sec) + '  based on event start/end...\n')
 
         # Extract all servicer assets and their task end times
         tasksCdict = event.Tasks # this is a C# object
@@ -289,7 +293,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         if (not isSafe):
             return False
 
-
+        print('got thru that, now finding mode changes...')
         # Find all mode change times
         allModeChangeTimes = []
         for assetName in allAssetNames:
@@ -300,6 +304,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
                 allModeChangeTimes.append(cKey)
             
         # check if first fundamental timestep with ALL assets is safe
+        print('checking first time step...')
         isFirstStepSafe = self.evaluateTimeStep(event, allAssetNames, allModeChangeTimes, t0_sec, fundTimeStep_sec) # for first timestep
         if not isFirstStepSafe:
             return False
@@ -309,6 +314,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
             return True
 
         #print('did fundamental time steps, now trying the extension... allTaskEndTimes = ' + str(allTaskEndTimes))
+        print('checking future time steps...')
         allTaskEndTimes.sort()
         secondLastEndTime = allTaskEndTimes[-2] # second-to-last end time, the last timestep needed to evaluate thru
         #print('uhh, secondLastEndTime = ' + str(secondLastEndTime) + ', t0_sec = ' + str(t0_sec) + ', fundTimeStep_sec = ' + str(fundTimeStep_sec))
@@ -327,6 +333,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
             activeAssets = getActives(event, allAssetNames, stepStartTime_sec)
             isSafe = self.evaluateTimeStep(event, activeAssets, allModeChangeTimes, stepStartTime_sec, fundTimeStep_sec)
             if not isSafe:
+                print('failed CA for event = ' + event.ToString())
                 return False
 
         # Return True if all checks have passed!

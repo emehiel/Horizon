@@ -26,7 +26,8 @@
 			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
 			<IC type="Bool" key="is_servicing" value="False"></IC>
-			<IC type="Bool" key="is_idling" value="False"></IC>
+			<IC type="Bool" key="is_idling" value="False"></IC>		
+			<IC type="Bool" key="is_drifting" value="True"></IC>
 			<IC type="Matrix" key="ric_state" value="[40.0; 0.0; 2.0; 0; -0.00576; 0.000108]"></IC>
 		</SUBSYSTEM>
 		<CONSTRAINT
@@ -73,6 +74,7 @@
 			<IC type="Bool" key="is_transferring" value="False"></IC>
 			<IC type="Bool" key="is_servicing" value="False"></IC>
 			<IC type="Bool" key="is_idling" value="False"></IC>
+			<IC type="Bool" key="is_drifting" value="True"></IC>
 			<IC type="Matrix" key="ric_state" value="[-20.0; 69.282032302755056; -2.299038105676658; 0.002494153162899; 0.002880000000000; 0.000070707658145]"></IC>
 		</SUBSYSTEM>		
 		<CONSTRAINT
@@ -101,7 +103,8 @@
 			subsystemName = "collisionAvoidance"
 			Type          = "scripted"
 			src           = "collisionAvoidance.py"
-			MinSpacing    = "0.0"
+			MinSpacing    = "7"
+			GridPoints    = "50"
 			className     = "collisionAvoidance">
 		</SUBSYSTEM>
 	</ASSET>

@@ -158,7 +158,6 @@ namespace HSFScheduler
                             potentialSystemSchedules.Add(new SystemSchedule(CopySchedule, newAccessStack, currentTime));
                             // oldSched = new SystemSchedule(CopySchedule);
                         }
-
                     }
                 }
 
@@ -168,6 +167,10 @@ namespace HSFScheduler
                     if (Checker.CheckSchedule(system, potentialSchedule)) {
                         systemCanPerformList.Add(potentialSchedule);
                         numSched++;
+                    }
+                    else
+                    {
+                        int pausePoint = 0; // TODO - is it NOT proposing the ones where it did half of the first stuff? what's going on...
                     }
                 }
                 foreach (SystemSchedule systemSchedule in systemCanPerformList)

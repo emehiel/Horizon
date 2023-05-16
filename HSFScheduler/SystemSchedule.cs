@@ -99,18 +99,23 @@ namespace HSFScheduler
 
 	        foreach(var access in newAccessList)
             {
+                if ((access.Task == null) || (access.Task.Type == "empty"))
+                {
+                    continue;
+                }
+
                 if (!AllStates.isEmpty(access.Asset))
                 {
                     if (AllStates.GetLastEvent().GetEventEnd(access.Asset) > newTaskStartTime)
                         return false;
                 }
 
-		        if((access.Task != null) && (access.Task.Type != "empty"))
+		        if ((access.Task != null) && (access.Task.Type != "empty"))
                 {
-				    count += AllStates.timesCompletedTask(access.Task);
-			        if(count >= access.Task.MaxTimesToPerform)
-				        return false;
-		        }
+				    count += AllStates.timesCompletedTask(access.Task); // TODO - this seems to mean it would reject an event if ALL the tasks done before (not just this task) added up to more than this one task allows?!
+			        if (count >= access.Task.MaxTimesToPerform) // TODO - instead do if (AllStates.timesCompletedTask(access.Task) >= access.Task.MaxTimesToPerform) to stop per-task
+				        return false; 
+		        } // TODO - OK for me bcuz max is 1x for everything, but anything that allows repeats is broken here! Also, doesn't properly block events with dual-tasking that surpasses limit, could not as deficiency...
 	        }
 	        return true;
         }

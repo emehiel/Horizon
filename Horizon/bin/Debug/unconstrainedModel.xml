@@ -104,7 +104,7 @@
 			Type          = "scripted"
 			src           = "collisionAvoidance.py"
 			MinSpacing    = "7"
-			GridPoints    = "50"
+			GridPoints    = "3"
 			className     = "collisionAvoidance">
 		</SUBSYSTEM>
 	</ASSET>

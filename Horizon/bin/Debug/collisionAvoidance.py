@@ -205,7 +205,7 @@ def getStates(event, assetNames, tNow_sec, n_radps):
         isIdlingKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_idling')
         isIdling = event.State.GetValueAtTime(isIdlingKey, tNow_sec).Value
         if not (isServicing or isIdling): # is on transfer or NMC drift if not servicing/idling
-            #print('propagating within CW from RV0 = ' + assetRV0State.ToString() + ' from t0 = ' + str(assetT0) + ' to t1 = ' + str(tNow_sec))
+            #print('propagating asset ' + assetName + ' with CW from RV0 = ' + assetRV0State.ToString() + ' @ t0 = ' + str(assetT0) + ' to t1 = ' + str(tNow_sec))
             assetRVState = propCW(assetRV0State[R_inx, ":"], assetRV0State[V_inx, ":"], n_radps, tNow_sec - assetT0)
             allStates.append(assetRVState)
         else:
@@ -217,9 +217,9 @@ def getStates(event, assetNames, tNow_sec, n_radps):
 ## Class Definition
 class collisionAvoidance(HSFSubsystem.Subsystem):
     def __new__(cls, node, asset):
-        instance       = HSFSubsystem.Subsystem.__new__(cls)
+        instance = HSFSubsystem.Subsystem.__new__(cls)
         instance.Asset = asset
-        instance.Name  = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
+        instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
 
         # Set Mean Motion
         instance.meanMotion_radps = 7.2e-5 # hardcoded, roughly GEO
@@ -268,32 +268,41 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         #print('t0_sec = ' + str(t0_sec) + ', tf_sec = ' + str(tf_sec))
         fundTimeStep_sec = tf_sec - t0_sec
         dt_sec = fundTimeStep_sec / self.gridPts
-        print('Found trajectories, now in CA, did task checking... see t0 = ' + str(t0_sec) + ', tf = ' + str(tf_sec) + '  based on event start/end...\n')
 
         # Extract all servicer assets and their task end times
         tasksCdict = event.Tasks # this is a C# object
         allTaskEndTimes = []
         allAssetNames = []
+        allTargetNames = []
         for assetTask in tasksCdict:
             assetName  = assetTask.Key.Name.ToString()
-            #targetName = assetTask.Value.Target.Name.ToString()
+            targetName = assetTask.Value.Target.Name.ToString()
             if (assetName != self.Asset.Name.ToString()): # skip asset if its the Watchdog itself
                 allAssetNames.append(assetName)
-                allTaskEndTimes.append(event.GetTaskEnd(assetTask.Key))
+                allTargetNames.append(targetName)
+
+                # get end time from RIC state bulletin board, this is maintained and doesn't depend on an emptyTarget
+                stateKey = Utilities.StateVarKey[Utilities.Matrix[System.Double]](assetName + '.' + 'ric_state')
+                stateProfile = event.State.GetProfile(stateKey).Data
+                stateTimes = []
+                for cKey in stateProfile.Keys:
+                    stateTimes.append(cKey)
+                taskEndTime = max(stateTimes)
+                allTaskEndTimes.append(taskEndTime)
+
         # TODO - NOTE - HACK - what if the "task" of something is busy because of canExtend()????
         #    Hopefully it is the correct tasks as set from the prior timestep, but I don't really know...
         # TODO - a good deal of debug printouts to make sure this whole thing is working correctly...
         if len(allAssetNames) < 2:
             print('NOTICE: NO Collision Avoidance to perform for single asset!')
             return True
-    
+
         # Check for collisions among initial states
         allStates = getStates(event, allAssetNames, t0_sec, self.meanMotion_radps)
         isSafe = checkCollisions(allStates, self.MinSpacing)
         if (not isSafe):
             return False
 
-        print('got thru that, now finding mode changes...')
         # Find all mode change times
         allModeChangeTimes = []
         for assetName in allAssetNames:
@@ -303,8 +312,9 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
             for cKey in isTransferringCdict.Keys:
                 allModeChangeTimes.append(cKey)
             
+        #print('\nNow in CA, t0 = ' + str(t0_sec) + ', tf = ' + str(tf_sec) + ', Asset/Target Pairings = ' + str(allAssetNames) + ' : ' + str(allTargetNames) + ' end times are ' + str(allTaskEndTimes))
+
         # check if first fundamental timestep with ALL assets is safe
-        print('checking first time step...')
         isFirstStepSafe = self.evaluateTimeStep(event, allAssetNames, allModeChangeTimes, t0_sec, fundTimeStep_sec) # for first timestep
         if not isFirstStepSafe:
             return False
@@ -314,15 +324,15 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
             return True
 
         #print('did fundamental time steps, now trying the extension... allTaskEndTimes = ' + str(allTaskEndTimes))
-        print('checking future time steps...')
+        #print('checking future time steps...') # TODO - this isn't seem to be working!
         allTaskEndTimes.sort()
         secondLastEndTime = allTaskEndTimes[-2] # second-to-last end time, the last timestep needed to evaluate thru
         #print('uhh, secondLastEndTime = ' + str(secondLastEndTime) + ', t0_sec = ' + str(t0_sec) + ', fundTimeStep_sec = ' + str(fundTimeStep_sec))
         numStepsToEval = math.ceil((secondLastEndTime - t0_sec)/ fundTimeStep_sec)
-        #print('last eval epoch is ' + str(secondLastEndTime) + ', t0 is' + str(t0_sec), ' fund dt = ' + str(fundTimeStep_sec), ' so eval an extra ' + str(numStepsToEval) + ' steps')
+        #print('second to last eval epoch is ' + str(secondLastEndTime) + ', t0 is' + str(t0_sec), ' fund dt = ' + str(fundTimeStep_sec), ' so eval an extra ' + str(numStepsToEval) + ' steps')
 
         if secondLastEndTime < (t0_sec + fundTimeStep_sec): # no further steps needed
-            #print('\nonly 1 object rolls over to the next timestep, no CA for this step...\n')
+            #print('only 1 object rolls over to the next timestep, no CA for this step...\n')
             return True
 
 

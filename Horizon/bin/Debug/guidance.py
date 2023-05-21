@@ -536,7 +536,7 @@ class guidance(HSFSubsystem.Subsystem):
         #print('TimeStep Length = ' + str(fundamentalTimeStep_sec) + ', Event Start: ' + es.ToString() + ', Event End (default): '+ ee.ToString() + ', Task Start: ' + ts.ToString() + ', Task End (default): ' + te.ToString())
 
         n = self.mean_motion
-        isDrifting = event.State.GetLastValue(self.DRIFT_KEY).Value # NOTE - doesn't work as member variable, TODO - discuss this with Dr. M, what about init variables from XML, can I really customize per asset?
+        isDrifting = event.State.GetLastValue(self.DRIFT_KEY).Value
 
         # check for empty target
         tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
@@ -552,7 +552,7 @@ class guidance(HSFSubsystem.Subsystem):
                 fuelMassLeft_kg = fuelMass_kg - fuelBurned_kg
                 event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + fundamentalTimeStep_sec, fuelMassLeft_kg))
             return True
-
+ 
         # Extract Last State Data
         lastState = event.State.GetLastValue(self.STATEVEC_KEY)
         RV0 = lastState.Value # Returns HSF Matrix Object

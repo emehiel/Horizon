@@ -1,0 +1,205 @@
+<MODEL>
+	<ASSET assetName = "Servicer1">
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "tool"
+			Type          = "scripted"
+			src           = "tool.py"
+			className     = "tool"
+			tooling       = "{A : 1200.0, B : 3600.0}">
+			<IC type="Double" key="consumable" value="10.0"></IC>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			subsystemName = "guidance"
+			Type          = "scripted"
+			src           = "guidance.py"
+			className     = "guidance"
+			dryMassKg     = "180.0"
+			Isp           = "200.0"
+			KOZ           = "[70, 120, 50]"
+			Number_Brackets = "11"
+			TOF_Weight    = "0.00000001"
+			Grid_Points   = "100">
+			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
+			<IC type="Bool" key="is_transferring" value="False"></IC>
+			<IC type="Bool" key="is_servicing" value="False"></IC>
+			<IC type="Bool" key="is_idling" value="False"></IC>		
+			<IC type="Bool" key="is_drifting" value="True"></IC>
+			<IC type="Matrix" key="ric_state" value="[100.0; 0.0; 10.0; 0.0; -0.0144; 0.00108]"></IC>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "tool"
+			type          = "FAIL_IF_LOWER"
+			name          = "consumable_constraint">
+			<STATEVAR type="Double" key="consumable"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "guidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "propellant_constraint">
+			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+
+	<ASSET assetName = "Servicer2">
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "tool"
+			Type          = "scripted"
+			src           = "tool.py"
+			className     = "tool"
+			tooling       = "{A : 1200.0, C : 1800.0}">
+			<IC type="Double" key="consumable" value="10.0"></IC>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			subsystemName = "guidance"
+			Type          = "scripted"
+			src           = "guidance.py"
+			className     = "guidance"
+			dryMassKg     = "180.0"
+			Isp           = "200.0"
+			KOZ           = "[70, 120, 50]"
+			Number_Brackets = "11"
+			TOF_Weight    = "0.00000001"
+			Grid_Points   = "100">
+			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
+			<IC type="Bool" key="is_transferring" value="False"></IC>
+			<IC type="Bool" key="is_servicing" value="False"></IC>
+			<IC type="Bool" key="is_idling" value="False"></IC>		
+			<IC type="Bool" key="is_drifting" value="True"></IC>
+			<IC type="Matrix" key="ric_state" value="[0.0; -200.0; 15.0; -0.0072; 0.0; -0.00072]"></IC>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "tool"
+			type          = "FAIL_IF_LOWER"
+			name          = "consumable_constraint">
+			<STATEVAR type="Double" key="consumable"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "guidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "propellant_constraint">
+			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+
+	<ASSET assetName = "Servicer3">
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "tool"
+			Type          = "scripted"
+			src           = "tool.py"
+			className     = "tool"
+			tooling       = "{B : 3600.0, C : 1800.0}">
+			<IC type="Double" key="consumable" value="10.0"></IC>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			subsystemName = "guidance"
+			Type          = "scripted"
+			src           = "guidance.py"
+			className     = "guidance"
+			dryMassKg     = "180.0"
+			Isp           = "200.0"
+			KOZ           = "[70, 120, 50]"
+			Number_Brackets = "11"
+			TOF_Weight    = "0.00000001"
+			Grid_Points   = "100">
+			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
+			<IC type="Bool" key="is_transferring" value="False"></IC>
+			<IC type="Bool" key="is_servicing" value="False"></IC>
+			<IC type="Bool" key="is_idling" value="False"></IC>		
+			<IC type="Bool" key="is_drifting" value="True"></IC>
+			<IC type="Matrix" key="ric_state" value="[-100.0; 0.0; -10.0; 0.0; 0.0144; -0.00108]"></IC>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "tool"
+			type          = "FAIL_IF_LOWER"
+			name          = "consumable_constraint">
+			<STATEVAR type="Double" key="consumable"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "guidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "propellant_constraint">
+			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+
+	<ASSET assetName = "Servicer4">
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "tool"
+			Type          = "scripted"
+			src           = "tool.py"
+			className     = "tool"
+			tooling       = "{A : 1200.0, B : 3600.0, C : 1800.0}">
+			<IC type="Double" key="consumable" value="10.0"></IC>
+		</SUBSYSTEM>
+		<SUBSYSTEM
+			subsystemName = "guidance"
+			Type          = "scripted"
+			src           = "guidance.py"
+			className     = "guidance"
+			dryMassKg     = "180.0"
+			Isp           = "200.0"
+			KOZ           = "[70, 120, 50]"
+			Number_Brackets = "11"
+			TOF_Weight    = "0.00000001"
+			Grid_Points   = "100">
+			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
+			<IC type="Bool" key="is_transferring" value="False"></IC>
+			<IC type="Bool" key="is_servicing" value="False"></IC>
+			<IC type="Bool" key="is_idling" value="False"></IC>		
+			<IC type="Bool" key="is_drifting" value="True"></IC>
+			<IC type="Matrix" key="ric_state" value="[0.0; 200.0; -15.0; 0.0072; 0.0; 0.00072]"></IC>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "tool"
+			type          = "FAIL_IF_LOWER"
+			name          = "consumable_constraint">
+			<STATEVAR type="Double" key="consumable"></STATEVAR>
+		</CONSTRAINT>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "guidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "propellant_constraint">
+			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+
+
+	<ASSET assetName = "Watchdog">
+		<IsPassive/>
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "collisionAvoidance"
+			Type          = "scripted"
+			src           = "collisionAvoidance.py"
+			MinSpacing    = "25.0"
+			className     = "collisionAvoidance">
+		</SUBSYSTEM>
+	</ASSET>
+</MODEL>

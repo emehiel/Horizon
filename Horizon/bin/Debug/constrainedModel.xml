@@ -19,10 +19,11 @@
 			className     = "guidance"
 			dryMassKg     = "80.0"
 			Isp           = "200.0"
-			KOZ           = "[10, 10, 20]"
+			KOZ           = "[5, 7, 5]"
+			tmpKOZNOTES   = "[10, 10, 20], tof weight is 0.0000015, without the 5 might work with KOZ too"
 			Number_Brackets = "1"
-			TOF_Weight    = "0"
-			Grid_Points   = "100">
+			TOF_Weight    = "0.0000015"
+			Grid_Points   = "500">
 			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
 			<IC type="Bool" key="is_servicing" value="False"></IC>

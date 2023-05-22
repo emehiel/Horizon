@@ -198,7 +198,7 @@
 			subsystemName = "collisionAvoidance"
 			Type          = "scripted"
 			src           = "collisionAvoidance.py"
-			MinSpacing    = "25.0"
+			MinSpacing    = "12.0"
 			className     = "collisionAvoidance">
 		</SUBSYSTEM>
 	</ASSET>

@@ -2,7 +2,7 @@
 	<TARGET
 		TargetName = "tgt1"
 		TargetType = "Servicing"
-		Value = "7"
+		Value = "8"
 		TaskType = "A"
 		MaxTimes = "1"
 	>
@@ -16,7 +16,7 @@
 		TargetName = "tgt2"
 		TargetType = "Servicing"
 		Value = "11"
-		TaskType = "A"
+		TaskType = "B"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -29,7 +29,7 @@
 		TargetName = "tgt3"
 		TargetType = "Servicing"
 		Value = "7"
-		TaskType = "A"
+		TaskType = "C"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -54,8 +54,8 @@
 	<TARGET
 		TargetName = "tgt5"
 		TargetType = "Servicing"
-		Value = "7"
-		TaskType = "A"
+		Value = "12"
+		TaskType = "B"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -67,8 +67,8 @@
     <TARGET
 		TargetName = "tgt6"
 		TargetType = "Servicing"
-		Value = "11"
-		TaskType = "A"
+		Value = "9"
+		TaskType = "C"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -94,7 +94,7 @@
 		TargetName = "tgt8"
 		TargetType = "Servicing"
 		Value = "11"
-		TaskType = "A"
+		TaskType = "B"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -106,8 +106,8 @@
 	<TARGET
 		TargetName = "tgt9"
 		TargetType = "Servicing"
-		Value = "7"
-		TaskType = "A"
+		Value = "10"
+		TaskType = "C"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -119,7 +119,7 @@
     <TARGET
 		TargetName = "tgt10"
 		TargetType = "Servicing"
-		Value = "11"
+		Value = "13"
 		TaskType = "A"
 		MaxTimes = "1"
 	>
@@ -132,8 +132,8 @@
 	<TARGET
 		TargetName = "tgt11"
 		TargetType = "Servicing"
-		Value = "7"
-		TaskType = "A"
+		Value = "8"
+		TaskType = "B"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -145,8 +145,8 @@
     <TARGET
 		TargetName = "tgt12"
 		TargetType = "Servicing"
-		Value = "11"
-		TaskType = "A"
+		Value = "10"
+		TaskType = "C"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -171,8 +171,8 @@
     <TARGET
 		TargetName = "tgt14"
 		TargetType = "Servicing"
-		Value = "11"
-		TaskType = "A"
+		Value = "10"
+		TaskType = "B"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -185,7 +185,7 @@
 		TargetName = "tgt15"
 		TargetType = "Servicing"
 		Value = "7"
-		TaskType = "A"
+		TaskType = "C"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -197,7 +197,7 @@
     <TARGET
 		TargetName = "tgt16"
 		TargetType = "Servicing"
-		Value = "11"
+		Value = "9"
 		TaskType = "A"
 		MaxTimes = "1"
 	>
@@ -210,8 +210,8 @@
 	<TARGET
 		TargetName = "tgt17"
 		TargetType = "Servicing"
-		Value = "7"
-		TaskType = "A"
+		Value = "12"
+		TaskType = "B"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -224,7 +224,7 @@
 		TargetName = "tgt18"
 		TargetType = "Servicing"
 		Value = "11"
-		TaskType = "A"
+		TaskType = "C"
 		MaxTimes = "1"
 	>
 		<DynamicState
@@ -236,7 +236,7 @@
 	<TARGET
 		TargetName = "tgt19"
 		TargetType = "Servicing"
-		Value = "7"
+		Value = "8"
 		TaskType = "A"
 		MaxTimes = "1"
 	>
@@ -249,8 +249,8 @@
     <TARGET
 		TargetName = "tgt20"
 		TargetType = "Servicing"
-		Value = "11"
-		TaskType = "A"
+		Value = "13"
+		TaskType = "B"
 		MaxTimes = "1"
 	>
 		<DynamicState

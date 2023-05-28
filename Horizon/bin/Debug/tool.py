@@ -69,7 +69,7 @@ class tool(HSFSubsystem.Subsystem):
         tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
         if (tgtName == 'EmptyTarget'):
             return True
-        
+
         taskType = self._task.Type
         if taskType in self.tooling.keys():
             #print('TaskType of ' + taskType + ' is within self.tooling, servicing time is ' + str(self.tooling[taskType]))

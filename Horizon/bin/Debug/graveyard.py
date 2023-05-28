@@ -7,7 +7,7 @@ def secantMinimizer(x0, x1, f, k, tol):
     '''
     (g_n_minus_1, f_n_minus_1) = fprime(f, x0, k)
     (g_n, f_n) = fprime(f, x1, k)
-    
+
     magFprime = min(abs(g_n), abs(g_n_minus_1))
     errX = abs(g_n - g_n_minus_1)
     err = min(magFprime, errX)

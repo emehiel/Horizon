@@ -6,8 +6,8 @@
     </SIMULATION_PARAMETERS>
 
     <SCHEDULER_PARAMETERS
-		maxNumSchedules = "400"
-		numSchedCropTo  = "200"
+		maxNumSchedules = "1200"
+		numSchedCropTo  = "1200"
 		simStepSeconds  = "10000">
     </SCHEDULER_PARAMETERS>
 </SCENARIO>

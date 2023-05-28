@@ -87,7 +87,7 @@ def calcFuelCost(deltaV_mps, mass0_kg, Isp_sec):
     '''
     Use rocket equation to determine fuel mass used for a given deltaV
     Assume units of kg, m/s
-    '''    
+    '''
     return mass0_kg * (1 - math.exp(-1 * deltaV_mps / (Isp_sec * 9.81)))
 
 def constantBurnHoldFuelCost(R0_m, tHold_sec, n, mass0_kg, Isp_sec):
@@ -97,11 +97,11 @@ def constantBurnHoldFuelCost(R0_m, tHold_sec, n, mass0_kg, Isp_sec):
 
     NOTE - R0_m is HSF Matrix
     '''
-    deltaV_mps = tHold_sec * n**2 * (3 * R0_m[1] + R0_m[3]) # 1-based index becasue this is a HSF Matrix
+    deltaV_mps = tHold_sec * n**2 * (3 * abs(R0_m[1]) + abs(R0_m[3])) # 1-based index becasue this is a HSF Matrix
     return calcFuelCost(deltaV_mps, mass0_kg, Isp_sec)
 
 
-## 
+##
 # CW Functions
 ##
 
@@ -286,7 +286,7 @@ def unconstrainedBisection(a, b, f, k, tol):
         x = (a + b) / 2
         (fprimeX, fX) = fprime(f, x, k)
         ii += 1
-    
+
     if (ii >= maxIters):
         print('Exited unconstrainedBisection due to iterations exceeding maximum, stuck on fprimeX = ' + str(fprimeX))
 
@@ -300,7 +300,6 @@ def multiObjCostFun(t, k):
     w = k[5]
     dV_mps = impCost(t, k)
     J = dV_mps + w*t
-    #print('dV_mps = ' + str(dV_mps) + ', t = ' + str(t) + ' w = ' + str(w) + ', J = ' + str(J))
     return J
 
 ##
@@ -310,7 +309,7 @@ def __isRwithinKOZ(R, KOZ):
     '''
     Evaluate if a given state (R) is within constraint volume (KOZ)
     KOZ = [x, y, z] definig semi-*-axis in RIC
-    '''        
+    '''
     normalizedDistance = (R[0] / KOZ[0])**2 + (R[1] / KOZ[1])**2 + (R[2] / KOZ[2])**2
     if (normalizedDistance < 1.0):
         return True
@@ -322,8 +321,7 @@ def __isValidTrajectory(RV0, n, KOZ, tof, gridPts):
     Evaluate if a given trajectory (RV0) is within the constraint volume (KOZ) at any point (gridPts) in the transfer (tof)
     '''
     if any([kz == 0 for kz in KOZ]):
-        #print('flat/zero KOZ detected, no KOZ constraint to check!')
-        return True
+        return True # if KOZ is flat/zero, no KOZ constraint to check, avoid a divide by zero
     dT = tof / gridPts
     for ii in range(1, gridPts):
         RV = stepCW(RV0, n, dT * ii)
@@ -368,8 +366,7 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
 
     # Solve Unconstrained First
     (x, ii, fX, fprimeX, brackWidth) = unconstrainedBisection(a, b, f, k, tol)
-    #print('did unconstrained bisection, tStar = ' + str(x) + ', dV = ' + str(fX) + ', fprime = ' + str(fprimeX) + ', iters = ' + str(ii) + ', tol = ' + str(tol))
-    
+
     # If Fails Constraint, Walk "Up" with increasing TOF
     isXvalid = c(x, k)
     if isXvalid:
@@ -406,7 +403,7 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
             validX = b # know the upper boundary is valid
             (fprimeX, fX) = fprime(f, validX, k)
             return (True, validX, ii, fX, fprimeX, b - a)
-        
+
         else:
             # No Valid Solution Found!
             return (False, 0, 0, 0, 0, 0)
@@ -439,7 +436,6 @@ def solveForMinDV_Bisect(RV0, RVf, n, w, KOZ, gridPts, nBracks, tol):
         # solve for local bracket solution
         k = (RV0, RVf, n, KOZ, gridPts, w) # tuple of constants
         (validBracket, tStar, numIts, cost, magDeriv, brackWidth) = modifiedBisectionMinimizer(a0, b0, multiObjCostFun, isValidTOF, k, tol)
-        #print('modifiedBisectionMinimizer arrived at tStar = ' + str(tStar) + ' after ' + str(numIts) + ' iterations, cost = ' + str(cost))
 
         if validBracket:
             tStarArr.append(tStar)
@@ -448,15 +444,13 @@ def solveForMinDV_Bisect(RV0, RVf, n, w, KOZ, gridPts, nBracks, tol):
             magDerivArr.append(magDeriv)
             brackWidthArr.append(brackWidth)
             tPiRatio = tStar * n / math.pi
-        # print('\t\tSol ' + str(bb) + ' tStar = ' + str(tStar) + ' (' + str(tPiRatio) + '*pi), ' + str(numIts) + ' iterations, cost (f) = ' + str(cost) + ', fprime = '  + str(magDeriv) + ', bracket width = ' + str(brackWidth))    
-    
+
     if costArr == []:
         print('No Valid Trajectory Found!!')
         return(False, 0)
 
-    (globalMinCost, solIdx) = myMin(costArr)    
+    (globalMinCost, solIdx) = myMin(costArr)
     globalTstar = tStarArr[solIdx]
-    # print('\tGlobal tStar = ' + str(globalTstar) + ', Cost = ' + str(globalMinCost))
     return (True, globalTstar)
 
 
@@ -507,7 +501,7 @@ class guidance(HSFSubsystem.Subsystem):
         if (node.Attributes['KOZ'] != None):
             kozStr = node.Attributes['KOZ'].Value
             instance.KOZ = [float(koz) for koz in kozStr[1:-1].split(',')]
-        
+
         instance.gridPts = 100
         if (node.Attributes['Grid_Points'] != None):
             instance.gridPts = int(node.Attributes['Grid_Points'].Value)
@@ -532,16 +526,13 @@ class guidance(HSFSubsystem.Subsystem):
         te = event.GetTaskEnd(self.Asset)
 
         fundamentalTimeStep_sec = ee - es
-        # TODO - remove or comment out debug printouts... here and in tool.py and collisionAvoidance.py
-        #print('TimeStep Length = ' + str(fundamentalTimeStep_sec) + ', Event Start: ' + es.ToString() + ', Event End (default): '+ ee.ToString() + ', Task Start: ' + ts.ToString() + ', Task End (default): ' + te.ToString())
-
         n = self.mean_motion
         isDrifting = event.State.GetLastValue(self.DRIFT_KEY).Value
 
         # check for empty target
         tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
         if (tgtName == 'EmptyTarget'):
-            if isDrifting: # add fuel cost for idle/hold during fundamentalTimeStep_sec
+            if not isDrifting: # add fuel cost for idle/hold during fundamentalTimeStep_sec
                 RV0 = event.State.GetLastValue(self.STATEVEC_KEY).Value # Returns HSF Matrix Object
                 R0_m = RV0[R_inx, ":"]
 
@@ -549,10 +540,11 @@ class guidance(HSFSubsystem.Subsystem):
 
                 m0_kg = self.dryMass_kg + fuelMass_kg
                 fuelBurned_kg = constantBurnHoldFuelCost(R0_m, fundamentalTimeStep_sec, n, m0_kg, self.Isp_sec)
+                print('idle cost is ' + str(fuelBurned_kg) + 'kg of fuel, as positive number')
                 fuelMassLeft_kg = fuelMass_kg - fuelBurned_kg
                 event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + fundamentalTimeStep_sec, fuelMassLeft_kg))
             return True
- 
+
         # Extract Last State Data
         lastState = event.State.GetLastValue(self.STATEVEC_KEY)
         RV0 = lastState.Value # Returns HSF Matrix Object
@@ -588,14 +580,12 @@ class guidance(HSFSubsystem.Subsystem):
         Rtgt[3]  = Rtgt_dyn[3]
         Vtgt     = Utilities.Matrix[System.Double](3,1) # Zero velocity for static target
         RVtgt    = Utilities.Matrix[System.Double].Vertcat(Rtgt, Vtgt)
-        # print('RV of Tgt = ' + RVtgt.ToString())
 
-        #print('Attempting DV Minimization, RV1 = ' + RV1.ToString() + ', RVTgt = ' + RVtgt.ToString())
         optTol = 1e-10
         (isValid, tStarBisect) = solveForMinDV_Bisect(RV1, RVtgt, n, self.tofWeight, self.KOZ, self.gridPts, self.numBracks, optTol)
         if not isValid: # Cannot Perform Transfer with any TOF brackets explored! canPerform is False
             return False
-        
+
         # Reconstruct
         (RV1plus, DV1_vec, DV2_vec, DVtot) = solveTwoImp(RV1, RVtgt, n, tStarBisect)
 

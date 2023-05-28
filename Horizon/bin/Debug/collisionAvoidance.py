@@ -109,7 +109,7 @@ def propCW(R0, V0, n, t):
     R1 = phiRR_matrix * R0 + phiRV_matrix * V0
     V1 = phiVR_matrix * R0 + phiVV_matrix * V0
     RV1 = Utilities.Matrix[System.Double].Vertcat(R1, V1)
-    
+
     return RV1
 
 
@@ -123,7 +123,7 @@ def hsfMatNorm(R):
 def checkTasks(event):
     '''
     Check for colliding tasks (2+ assets attempting to service a single target)
-    Scheduler enforces that target can be serviced on 1 time step, 
+    Scheduler enforces that target can be serviced on 1 time step,
       but does not enforce multiple assets servicing it on common timestep
     '''
     tasksCdict = event.Tasks
@@ -145,7 +145,7 @@ def checkTasks(event):
 def checkCollisions(allRV, minDistance):
     '''
     Check for collisions in allRV (poor man's conjunction analysis)
-    
+
     INPUTS
         allRV       - list of all active asset's RV expressed as HSF Matrix Objects
         minDistance - float of minimum safe spacing, effectively assuming all
@@ -163,9 +163,7 @@ def checkCollisions(allRV, minDistance):
             RV2 = allRV[idx2]
             R2 = RV2[R_inx, ":"]
             dist = hsfMatNorm(R2 - R1)
-            #print('dist = ' + str(dist))
             if (dist < minDistance):
-                print('failing CA, dist = ' + str(dist) + ' while minDist = ' + str(minDistance))
                 return False
 
     return True
@@ -205,7 +203,6 @@ def getStates(event, assetNames, tNow_sec, n_radps):
         isIdlingKey = Utilities.StateVarKey[System.Boolean](assetName + '.' + 'is_idling')
         isIdling = event.State.GetValueAtTime(isIdlingKey, tNow_sec).Value
         if not (isServicing or isIdling): # is on transfer or NMC drift if not servicing/idling
-            #print('propagating asset ' + assetName + ' with CW from RV0 = ' + assetRV0State.ToString() + ' @ t0 = ' + str(assetT0) + ' to t1 = ' + str(tNow_sec))
             assetRVState = propCW(assetRV0State[R_inx, ":"], assetRV0State[V_inx, ":"], n_radps, tNow_sec - assetT0)
             allStates.append(assetRVState)
         else:
@@ -235,7 +232,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         instance.gridPts = 100
         if (node.Attributes['GridPoints'] != None):
             instance.gridPts = int(node.Attributes['GridPoints'].Value)
-        
+
         # Set Short-Circuit
         instance.shortCircuit = False
         if (node.Attributes['DoShortCircuit'] != None):
@@ -251,7 +248,6 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         return System.Func[MissionElements.Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
 
     def CanPerform(self, event, universe):
-        #print('\nattempting CA for event = \n' + event.ToString())
         ## Check for double-tasking
         taskCheckisGood = checkTasks(event)
         if (not taskCheckisGood):
@@ -264,10 +260,8 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         ## Check for collisions
         # Extract global timing information
         t0_sec = event.GetEventStart(self.Asset)
-        tf_sec = event.GetEventEnd(self.Asset) # I think this is wrong! TODO
-        #print('t0_sec = ' + str(t0_sec) + ', tf_sec = ' + str(tf_sec))
+        tf_sec = event.GetEventEnd(self.Asset)
         fundTimeStep_sec = tf_sec - t0_sec
-        dt_sec = fundTimeStep_sec / self.gridPts
 
         # Extract all servicer assets and their task end times
         tasksCdict = event.Tasks # this is a C# object
@@ -290,9 +284,6 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
                 taskEndTime = max(stateTimes)
                 allTaskEndTimes.append(taskEndTime)
 
-        # TODO - NOTE - HACK - what if the "task" of something is busy because of canExtend()????
-        #    Hopefully it is the correct tasks as set from the prior timestep, but I don't really know...
-        # TODO - a good deal of debug printouts to make sure this whole thing is working correctly...
         if len(allAssetNames) < 2:
             print('NOTICE: NO Collision Avoidance to perform for single asset!')
             return True
@@ -311,8 +302,6 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
             isTransferringCdict = event.State.GetProfile(isTransferringKey).Data # this is a C# Sorted Dictionary
             for cKey in isTransferringCdict.Keys:
                 allModeChangeTimes.append(cKey)
-            
-        #print('\nNow in CA, t0 = ' + str(t0_sec) + ', tf = ' + str(tf_sec) + ', Asset/Target Pairings = ' + str(allAssetNames) + ' : ' + str(allTargetNames) + ' end times are ' + str(allTaskEndTimes))
 
         # check if first fundamental timestep with ALL assets is safe
         isFirstStepSafe = self.evaluateTimeStep(event, allAssetNames, allModeChangeTimes, t0_sec, fundTimeStep_sec) # for first timestep
@@ -323,27 +312,20 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         if max(allTaskEndTimes) < (t0_sec + fundTimeStep_sec): # no further steps needed
             return True
 
-        #print('did fundamental time steps, now trying the extension... allTaskEndTimes = ' + str(allTaskEndTimes))
-        #print('checking future time steps...') # TODO - this isn't seem to be working!
         allTaskEndTimes.sort()
         secondLastEndTime = allTaskEndTimes[-2] # second-to-last end time, the last timestep needed to evaluate thru
-        #print('uhh, secondLastEndTime = ' + str(secondLastEndTime) + ', t0_sec = ' + str(t0_sec) + ', fundTimeStep_sec = ' + str(fundTimeStep_sec))
         numStepsToEval = math.ceil((secondLastEndTime - t0_sec)/ fundTimeStep_sec)
-        #print('second to last eval epoch is ' + str(secondLastEndTime) + ', t0 is' + str(t0_sec), ' fund dt = ' + str(fundTimeStep_sec), ' so eval an extra ' + str(numStepsToEval) + ' steps')
 
         if secondLastEndTime < (t0_sec + fundTimeStep_sec): # no further steps needed
-            #print('only 1 object rolls over to the next timestep, no CA for this step...\n')
             return True
 
 
         # evaluate all extra fundamental timesteps
         for idx in range(1, int(numStepsToEval) + 1):
             stepStartTime_sec = t0_sec + idx * fundTimeStep_sec
-            #print('evaluating at bonus step idx ' + str(idx) + ', which starts at t=' + str(stepStartTime_sec))
             activeAssets = getActives(event, allAssetNames, stepStartTime_sec)
             isSafe = self.evaluateTimeStep(event, activeAssets, allModeChangeTimes, stepStartTime_sec, fundTimeStep_sec)
             if not isSafe:
-                print('failed CA for event = ' + event.ToString())
                 return False
 
         # Return True if all checks have passed!
@@ -375,20 +357,17 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         endTime_sec = startTime_sec + fundTimeStep_sec
         theModeChanges = filter(lambda t_sec : t_sec >= startTime_sec and t_sec < endTime_sec, allModeChangeTimes)
 
-        # put these in with nominal grid points to ensure grid pts and mode changes are all evaluated    
+        # put these in with nominal grid points to ensure grid pts and mode changes are all evaluated
         tVec_sec.extend(theModeChanges)
         tVec_sec = list(set(tVec_sec))
         tVec_sec.sort()
 
-        #print('for t0 = ' + str(startTime_sec) + ', tf = ' + str(endTime_sec) + ', dt = ' + str(dt_sec) + ', modeChanges = ' + str(allModeChangeTimes) + ', the tVec = ' + str(tVec_sec))
 
         # Check for collisions in the current fundamental time step
         for tNow_sec in tVec_sec:
-            #print('trying the getStates() call with event = ' + event.ToString() + ', active assets = ' + str(theActiveAssets) + ', tNow = ' + str(tNow_sec) + ', n = ' + str(self.meanMotion_radps))
             theStates = getStates(event, theActiveAssets, tNow_sec, self.meanMotion_radps) # NOTE - this repeats the get/check/propagate process, might be quicker to stepCW dT unless mode change happened...
             isSafe = checkCollisions(theStates, self.MinSpacing)
             if (not isSafe):
-                #print('\nFound a collision! event = ' + event.ToString() + ', tNow_sec = ' + str(tNow_sec) + '\n')
                 return False
-        
+
         return True

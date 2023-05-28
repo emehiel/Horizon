@@ -22,7 +22,7 @@
 		</CONSTRAINT>
 	</ASSET>
 
-	<ASSET assetName = "Servicer1">
+	<ASSET assetName = "Servicer_A">
 		<DynamicState
 			DynamicStateType = "NULL_STATE"
 			ICs = "[0]">
@@ -69,7 +69,7 @@
 		</CONSTRAINT>
 	</ASSET>
 
-	<ASSET assetName = "Servicer2">
+	<ASSET assetName = "Servicer_B">
 		<DynamicState
 			DynamicStateType = "NULL_STATE"
 			ICs = "[0]">
@@ -116,7 +116,7 @@
 		</CONSTRAINT>
 	</ASSET>
 
-	<ASSET assetName = "Servicer3">
+	<ASSET assetName = "Servicer_C">
 		<DynamicState
 			DynamicStateType = "NULL_STATE"
 			ICs = "[0]">
@@ -163,7 +163,7 @@
 		</CONSTRAINT>
 	</ASSET>
 
-	<ASSET assetName = "Servicer4">
+	<ASSET assetName = "Servicer_D">
 		<DynamicState
 			DynamicStateType = "NULL_STATE"
 			ICs = "[0]">

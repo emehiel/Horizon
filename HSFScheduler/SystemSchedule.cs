@@ -19,7 +19,7 @@ namespace HSFScheduler
         #endregion
 
         #region Constructors
-        public SystemSchedule(SystemState initialstates) 
+        public SystemSchedule(SystemState initialstates)
         {
             ScheduleValue = 0;
             AllStates = new StateHistory(initialstates);
@@ -86,7 +86,7 @@ namespace HSFScheduler
             AllStates = new StateHistory(oldStates, eventToAdd);
         }
         #endregion
-        
+
         /// <summary>
         /// Determine if a task can be added to a schedule at the new start time
         /// </summary>
@@ -97,7 +97,7 @@ namespace HSFScheduler
         {
             int count = 0;
 
-	        foreach(var access in newAccessList)
+            foreach (var access in newAccessList)
             {
                 if ((access.Task == null) || (access.Task.Type == "empty"))
                 {
@@ -106,17 +106,35 @@ namespace HSFScheduler
 
                 if (!AllStates.isEmpty(access.Asset))
                 {
-                    if (AllStates.GetLastEvent().GetEventEnd(access.Asset) > newTaskStartTime)
-                        return false;
+                    // check if the last non-empty event is still on-going
+
+                    int numEvents = AllStates.Events.Count;
+                    Event theLastEvent = AllStates.GetLastEvent();
+                    Boolean isEmptyTask = (theLastEvent.GetAssetTask(access.Asset) == null) || (theLastEvent.GetAssetTask(access.Asset).Type == "empty");
+                    Boolean hadEmpty = isEmptyTask; // track if this empty-task exploration was necessary or not
+                    int numEventsChecked = 1; // start counter
+
+                    while ((isEmptyTask) && (numEventsChecked < numEvents))
+                    {
+                        theLastEvent = AllStates.Events.Skip(numEventsChecked).First(); // reach back numEventsChecked times to get the previous Event
+                        isEmptyTask = (theLastEvent.GetAssetTask(access.Asset) == null) || (theLastEvent.GetAssetTask(access.Asset).Type == "empty");
+                        numEventsChecked++;
+                    }
+
+                    if ((hadEmpty) && (numEventsChecked == numEvents))
+                        continue; // all events for this asset are empty, so it can be tasked now
+
+                    else if (theLastEvent.GetEventEnd(access.Asset) > newTaskStartTime)
+                        return false; // theLastEvent is still on-going
                 }
 
-		        if ((access.Task != null) && (access.Task.Type != "empty"))
+                if ((access.Task != null) && (access.Task.Type != "empty"))
                 {
-				    count += AllStates.timesCompletedTask(access.Task); // TODO - this seems to mean it would reject an event if ALL the tasks done before (not just this task) added up to more than this one task allows?!
-			        if (count >= access.Task.MaxTimesToPerform) // TODO - instead do if (AllStates.timesCompletedTask(access.Task) >= access.Task.MaxTimesToPerform) to stop per-task
-				        return false; 
-		        } // TODO - OK for me bcuz max is 1x for everything, but anything that allows repeats is broken here! Also, doesn't properly block events with dual-tasking that surpasses limit, could not as deficiency...
-	        }
+                    count += AllStates.timesCompletedTask(access.Task); // TODO - this seems to mean it would reject an event if ALL the tasks done before (not just this task) added up to more than this one task allows?!
+                    if (count >= access.Task.MaxTimesToPerform) // TODO - instead do if (AllStates.timesCompletedTask(access.Task) >= access.Task.MaxTimesToPerform) to stop per-task
+                        return false;
+                }
+            }
 	        return true;
         }
 
@@ -155,7 +173,7 @@ namespace HSFScheduler
         {
             return AllStates.GetLastState();
         }
-        #endregion 
+        #endregion
 
         /// <summary>
         /// Determine if the first schedule value is greater than the second
@@ -186,7 +204,7 @@ namespace HSFScheduler
             csv.Clear();
             SystemState sysState = schedule.AllStates.Events.Peek().State;
 
-            while(sysState != null) { 
+            while(sysState != null) {
                 foreach (var kvpDoubleProfile in sysState.Ddata)
                     foreach (var data in kvpDoubleProfile.Value.Data)
                         if (!stateTimeDData.ContainsKey(kvpDoubleProfile.Key))
@@ -261,7 +279,7 @@ namespace HSFScheduler
             foreach (var list in stateTimeQData)
                 writeStateVariable(list, scheduleWritePath);
         }
-        
+
         /// <summary>
         /// Write out all the state variables in the schedule to file
         /// </summary>

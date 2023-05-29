@@ -160,6 +160,7 @@ namespace HSFScheduler
                         }
                     }
                 }
+                Console.WriteLine("Evaluating {0} potential System Schedules...", potentialSystemSchedules.Count);
 
                 int numSched = 0;
                 foreach (var potentialSchedule in potentialSystemSchedules)
@@ -167,10 +168,6 @@ namespace HSFScheduler
                     if (Checker.CheckSchedule(system, potentialSchedule)) {
                         systemCanPerformList.Add(potentialSchedule);
                         numSched++;
-                    }
-                    else
-                    {
-                        int pausePoint = 0; // TODO - is it NOT proposing the ones where it did half of the first stuff? what's going on...
                     }
                 }
                 foreach (SystemSchedule systemSchedule in systemCanPerformList)
@@ -184,8 +181,7 @@ namespace HSFScheduler
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
 
-                // Print completion percentage in command window
-                //Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+                // Print completion percentage and number of generated schedules in command window
                 Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * (currentTime + _stepLength) / _endTime, systemSchedules.Count);
             }
             return systemSchedules;

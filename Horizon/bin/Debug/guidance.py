@@ -287,8 +287,8 @@ def unconstrainedBisection(a, b, f, k, tol):
         (fprimeX, fX) = fprime(f, x, k)
         ii += 1
 
-    if (ii >= maxIters):
-        print('Exited unconstrainedBisection due to iterations exceeding maximum, stuck on fprimeX = ' + str(fprimeX))
+    # if (ii >= maxIters):
+    #     print('Exited unconstrainedBisection due to iterations exceeding maximum, stuck on fprimeX = ' + str(fprimeX))
 
     return (x, ii, fX, fprimeX, b - a)
 
@@ -365,6 +365,7 @@ def modifiedBisectionMinimizer(a, b, f, c, k, tol):
     upperLim = b
 
     # Solve Unconstrained First
+    # TODO - consider solving constraint before optima, could be faster but would require re-work...
     (x, ii, fX, fprimeX, brackWidth) = unconstrainedBisection(a, b, f, k, tol)
 
     # If Fails Constraint, Walk "Up" with increasing TOF
@@ -540,7 +541,6 @@ class guidance(HSFSubsystem.Subsystem):
 
                 m0_kg = self.dryMass_kg + fuelMass_kg
                 fuelBurned_kg = constantBurnHoldFuelCost(R0_m, fundamentalTimeStep_sec, n, m0_kg, self.Isp_sec)
-                print('idle cost is ' + str(fuelBurned_kg) + 'kg of fuel, as positive number')
                 fuelMassLeft_kg = fuelMass_kg - fuelBurned_kg
                 event.State.AddValue(self.PROPELLANT_MASS_KEY, Utilities.HSFProfile[System.Double](ts + fundamentalTimeStep_sec, fuelMassLeft_kg))
             return True

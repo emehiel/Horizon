@@ -271,7 +271,7 @@ class collisionAvoidance(HSFSubsystem.Subsystem):
         for assetTask in tasksCdict:
             assetName  = assetTask.Key.Name.ToString()
             targetName = assetTask.Value.Target.Name.ToString()
-            if (assetName != self.Asset.Name.ToString()) and (assetName != "taskcollsionchecker"): # skip asset if its the Watchdog itself
+            if (assetName != self.Asset.Name.ToString()) and (assetName != "taskcollisionchecker"): # skip asset if its the Watchdog itself
                 allAssetNames.append(assetName)
                 allTargetNames.append(targetName)
 

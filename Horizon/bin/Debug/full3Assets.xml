@@ -1,4 +1,27 @@
 <MODEL>
+	<ASSET assetName = "TaskCollisionChecker">
+		<IsPassive/>
+		<DynamicState
+			DynamicStateType = "NULL_STATE"
+			ICs = "[0]">
+		</DynamicState>
+		<SUBSYSTEM
+			subsystemName = "collisionAvoidance"
+			Type          = "scripted"
+			src           = "collisionAvoidance.py"
+			DoShortCircuit = "Yes Please"
+			className     = "collisionAvoidance">
+			<IC type="Double" key="taskConsumable" value="10.0"></IC>
+		</SUBSYSTEM>
+		<CONSTRAINT
+			value         = "0.0"
+			subsystemName = "collisionAvoidance"
+			type          = "FAIL_IF_LOWER"
+			name          = "task_constraint">
+			<STATEVAR type="Double" key="taskConsumable"></STATEVAR>
+		</CONSTRAINT>
+	</ASSET>
+
 	<ASSET assetName = "Servicer1">
 		<DynamicState
 			DynamicStateType = "NULL_STATE"
@@ -9,7 +32,7 @@
 			Type          = "scripted"
 			src           = "tool.py"
 			className     = "tool"
-			tooling       = "{A : 600.0, B : 600.0, C : 450.0}">
+			tooling       = "{A : 1200.0, B : 3600.0}">
 			<IC type="Double" key="consumable" value="10.0"></IC>
 		</SUBSYSTEM>
 		<SUBSYSTEM
@@ -17,18 +40,18 @@
 			Type          = "scripted"
 			src           = "guidance.py"
 			className     = "guidance"
-			dryMassKg     = "80.0"
+			dryMassKg     = "180.0"
 			Isp           = "200.0"
-			KOZ           = "[5, 10, 2]"
-			Number_Brackets = "11"
-			TOF_Weight    = "0.00000001"
+			KOZ           = "[70, 120, 50]"
+			Number_Brackets = "1"
+			TOF_Weight    = "0.01"
 			Grid_Points   = "100">
 			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
 			<IC type="Bool" key="is_servicing" value="False"></IC>
-			<IC type="Bool" key="is_idling" value="False"></IC>		
+			<IC type="Bool" key="is_idling" value="False"></IC>
 			<IC type="Bool" key="is_drifting" value="True"></IC>
-			<IC type="Matrix" key="ric_state" value="[10.0; 20.0; 30.0; 0.01; 0.02; -0.05]"></IC>
+			<IC type="Matrix" key="ric_state" value="[100.0; 0.0; 10.0; 0.0; -0.0144; 0.00108]"></IC>
 		</SUBSYSTEM>
 		<CONSTRAINT
 			value         = "0.0"
@@ -56,7 +79,7 @@
 			Type          = "scripted"
 			src           = "tool.py"
 			className     = "tool"
-			tooling       = "{A : 600.0, B : 600.0, C : 450.0}">
+			tooling       = "{A : 1200.0, C : 1800.0}">
 			<IC type="Double" key="consumable" value="10.0"></IC>
 		</SUBSYSTEM>
 		<SUBSYSTEM
@@ -64,18 +87,18 @@
 			Type          = "scripted"
 			src           = "guidance.py"
 			className     = "guidance"
-			dryMassKg     = "80.0"
+			dryMassKg     = "180.0"
 			Isp           = "200.0"
-			KOZ           = "[5, 10, 2]"
-			Number_Brackets = "11"
-			TOF_Weight    = "0.00000001"
+			KOZ           = "[70, 120, 50]"
+			Number_Brackets = "1"
+			TOF_Weight    = "0.01"
 			Grid_Points   = "100">
 			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
 			<IC type="Bool" key="is_servicing" value="False"></IC>
-			<IC type="Bool" key="is_idling" value="False"></IC>		
+			<IC type="Bool" key="is_idling" value="False"></IC>
 			<IC type="Bool" key="is_drifting" value="True"></IC>
-			<IC type="Matrix" key="ric_state" value="[-10.0; 20.0; 13.0; -0.02; 0.05; -0.03]"></IC>
+			<IC type="Matrix" key="ric_state" value="[-50.0; -173.2050807; 7.99038; -0.00623538291; 0.0072; -0.00116353829]"></IC>
 		</SUBSYSTEM>
 		<CONSTRAINT
 			value         = "0.0"
@@ -92,7 +115,7 @@
 			<STATEVAR type="Double" key="Propellant_Mass_kg"></STATEVAR>
 		</CONSTRAINT>
 	</ASSET>
-	
+
 	<ASSET assetName = "Servicer3">
 		<DynamicState
 			DynamicStateType = "NULL_STATE"
@@ -103,7 +126,7 @@
 			Type          = "scripted"
 			src           = "tool.py"
 			className     = "tool"
-			tooling       = "{A : 600.0, C : 450.0}">
+			tooling       = "{B : 3600.0, C : 1800.0}">
 			<IC type="Double" key="consumable" value="10.0"></IC>
 		</SUBSYSTEM>
 		<SUBSYSTEM
@@ -111,18 +134,18 @@
 			Type          = "scripted"
 			src           = "guidance.py"
 			className     = "guidance"
-			dryMassKg     = "80.0"
+			dryMassKg     = "180.0"
 			Isp           = "200.0"
-			KOZ           = "[5, 10, 2]"
-			Number_Brackets = "11"
-			TOF_Weight    = "0.00000001"
+			KOZ           = "[70, 120, 50]"
+			Number_Brackets = "1"
+			TOF_Weight    = "0.01"
 			Grid_Points   = "100">
-			<IC type="Matrix" key="ric_state" value="[20.0; -12.0; 19.0; 0.01; -0.05; 0.09]"></IC>
+			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
 			<IC type="Bool" key="is_transferring" value="False"></IC>
 			<IC type="Bool" key="is_servicing" value="False"></IC>
-			<IC type="Bool" key="is_idling" value="False"></IC>		
+			<IC type="Bool" key="is_idling" value="False"></IC>
 			<IC type="Bool" key="is_drifting" value="True"></IC>
-			<IC type="Double" key="Propellant_Mass_kg" value="20.0"></IC>
+			<IC type="Matrix" key="ric_state" value="[-50.0; 173.2050807; -17.990381; 0.00623538291; 0.0072; 0.000083538291]"></IC>
 		</SUBSYSTEM>
 		<CONSTRAINT
 			value         = "0.0"
@@ -150,7 +173,7 @@
 			subsystemName = "collisionAvoidance"
 			Type          = "scripted"
 			src           = "collisionAvoidance.py"
-			MinSpacing    = "25.0"
+			MinSpacing    = "12.0"
 			className     = "collisionAvoidance">
 		</SUBSYSTEM>
 	</ASSET>

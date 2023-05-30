@@ -1,0 +1,157 @@
+<TARGETDECK>
+	<TARGET
+		TargetName = "tgt1"
+		TargetType = "Servicing"
+		Value = "10"
+		TaskType = "A"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[4.0530; -117.383; -16.229]">
+		</DynamicState>
+	</TARGET>
+
+    <TARGET
+		TargetName = "tgt2"
+		TargetType = "Servicing"
+		Value = "11"
+		TaskType = "B"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[-4.3130; -75.243; 42.327]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "tgt3"
+		TargetType = "Servicing"
+		Value = "9"
+		TaskType = "C"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[-42.887; -23.671; 43.636]">
+		</DynamicState>
+	</TARGET>
+
+    <TARGET
+		TargetName = "tgt4"
+		TargetType = "Servicing"
+		Value = "11"
+		TaskType = "A"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[-67.326; -37.557; -16.378]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "tgt5"
+		TargetType = "Servicing"
+		Value = "12"
+		TaskType = "B"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[-4.4070; 10.194; -53.271]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "tgt6"
+		TargetType = "Servicing"
+		Value = "12"
+		TaskType = "C"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[0.125; -73.613; -43.785]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "tgt7"
+		TargetType = "Servicing"
+		Value = "8"
+		TaskType = "A"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[-68.457; 36.774; -16.234]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "tgt8"
+		TargetType = "Servicing"
+		Value = "9"
+		TaskType = "B"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[68.680; -36.891; 16.225]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "tgt9"
+		TargetType = "Servicing"
+		Value = "12"
+		TaskType = "C"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[42.571; 95.463; 16.188]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "tgt10"
+		TargetType = "Servicing"
+		Value = "10"
+		TaskType = "A"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[27.197; 58.746; -42.438]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "tgt11"
+		TargetType = "Servicing"
+		Value = "11"
+		TaskType = "B"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[-28.424; 62.822; 42.095]">
+		</DynamicState>
+	</TARGET>
+
+	<TARGET
+		TargetName = "tgt12"
+		TargetType = "Servicing"
+		Value = "9"
+		TaskType = "C"
+		MaxTimes = "1"
+	>
+		<DynamicState
+			DynamicStateType = "STATIC_LVLH"
+			ICs = "[-40.684; 95.864 ;-16.337]">
+		</DynamicState>
+	</TARGET>
+</TARGETDECK>

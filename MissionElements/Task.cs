@@ -46,7 +46,7 @@ namespace MissionElements
         /// <param name="targetDeckXMLNode"></param>
         /// <param name="tasks"></param>
         /// <returns></returns>
-        public static bool loadTargetsIntoTaskList(XmlNode targetDeckXMLNode, Stack<Task> tasks)
+        public static bool loadTargetsIntoTaskList(XmlNode targetDeckXMLNode, List<Task> tasks)
         {
             if (targetDeckXMLNode == null)
                 return false;
@@ -66,10 +66,10 @@ namespace MissionElements
                 if (targetNode.Attributes["MaxTimes"] != null)
                 {
                     Int32.TryParse(targetNode.Attributes["MaxTimes"].Value.ToString(), out maxTimesPerform);
-                    tasks.Push(new Task(taskType, new Target(targetNode), maxTimesPerform));
+                    tasks.Add(new Task(taskType, new Target(targetNode), maxTimesPerform));
                 }
                 else
-                    tasks.Push(new Task(taskType, new Target(targetNode), maxTimesPerform));
+                    tasks.Add(new Task(taskType, new Target(targetNode), maxTimesPerform));
             }
             log.Info("Number of Targets Loaded: "+ tasks.Count);
 

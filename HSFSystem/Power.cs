@@ -134,7 +134,8 @@ namespace HSFSubsystem
             }
 
             // get the old DOD
-            double olddod = _newState.GetLastValue(Dkeys.First()).Item2;
+            //double olddod = _newState.GetLastValue(Dkeys.First()).Item2;
+            double olddod = proposedEvent.State.GetLastValue(Dkeys.First()).Item2;
 
             // collect power profile out
             Delegate DepCollector;
@@ -143,7 +144,8 @@ namespace HSFSubsystem
             powerOut = powerOut + powerSubPowerOut;
             // collect power profile in
             DynamicState position = Asset.AssetDynamicState;
-            HSFProfile<double> powerIn = CalcSolarPanelPowerProfile(es, te, _newState, position, universe);
+            //HSFProfile<double> powerIn = CalcSolarPanelPowerProfile(es, te, _newState, position, universe);
+            HSFProfile<double> powerIn = CalcSolarPanelPowerProfile(es, te, proposedEvent.State, position, universe);
             // calculate dod rate
             HSFProfile<double> dodrateofchange = ((powerOut - powerIn) / _batterySize);
 
@@ -151,8 +153,9 @@ namespace HSFSubsystem
             double freq = 1.0;
             HSFProfile<double> dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, ref exceeded, 0, olddod);
             //why is exceeded not checked anywhere??
-           
-            _newState.AddValues(DOD_KEY, dodProf);
+
+            //_newState.AddValues(DOD_KEY, dodProf);
+            proposedEvent.State.AddValues(DOD_KEY, dodProf);
             return true;
         }
 

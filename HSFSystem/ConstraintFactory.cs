@@ -22,7 +22,7 @@ namespace HSFSystem
         public static Constraint GetConstraint(XmlNode constraintXmlNode, List<Subsystem> subList, Asset asset)
         {
             Subsystem constrainedSub = null;
-            string subName = Subsystem.parseNameFromXmlNode(constraintXmlNode, asset.Name);
+            string subName = Subsystem.ParseNameFromXmlNode(constraintXmlNode, asset.Name);
             constrainedSub = subList.Find(s => s.Name == subName);
             if (constrainedSub == null)
                 throw new MissingMemberException("Missing Subsystem Name in Constraint");

@@ -39,10 +39,10 @@ namespace HSFSubsystem
         //    set { _pythonInstance.IsEvaluated = (bool)value; }
         //}
 
-        public override SystemState _newState {
-            get { return (SystemState)_pythonInstance._newState; }
-            set { _pythonInstance._newState = value; }
-        }
+        //public override SystemState _newState {
+        //    get { return (SystemState)_pythonInstance._newState; }
+        //    set { _pythonInstance._newState = value; }
+        //}
 
         public override Task _task {
             get { return (Task)_pythonInstance._task; }

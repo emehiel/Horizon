@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2016 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Xml;
 using HSFSystem;
 using MissionElements;
@@ -19,7 +21,7 @@ namespace HSFScheduler
     {
         #region Attributes
         public Asset Asset { get; private set; }
-        public Task Task { get; private set; }
+        public Task Task { get; set; }
         public double AccessStart { get; set; }
         public double AccessEnd { get; set; }
         #endregion
@@ -45,10 +47,15 @@ namespace HSFScheduler
         /// <param name="asset"></param>
         /// <param name="currentTime"></param>
         /// <returns></returns>
-        public static Stack<Access> getCurrentAccessesForAsset(Stack<Access> accesses, Asset asset, double currentTime)
+        public static List<Access> getCurrentAccessesForAsset(List<Access> accesses, Asset asset, double currentTime)
         {
-            Stack<Access> allAccesses = Access.getCurrentAccesses(accesses, currentTime);
-            return new Stack<Access>(allAccesses.Where(item => item.Asset == asset)); //what is important to test from this line?
+            // CASE 1:  returns the access that start before the current time and end after the current time
+            //Stack<Access> allAccesses = Access.getCurrentAccesses(accesses, currentTime);
+
+            // CASE 2:  this version will return all the access that were generated at the current timestep.
+            // In case 1, the following will not get through - ES = 0, TS = 7, EE = TE = 30
+            List<Access> allAccesses = accesses;
+            return new List<Access>(allAccesses.Where(item => item.Asset == asset)); //what is important to test from this line?
         }
 
         /// <summary>
@@ -71,7 +78,7 @@ namespace HSFScheduler
         /// <param name="startTime"></param>
         /// <param name="endTime"></param>
         /// <param name="stepTime"></param>
-        public static Stack<Access> pregenerateAccessesByAsset(SystemClass system, Stack<Task> tasks, double startTime, double endTime, double stepTime)
+        public static Stack<Access> PregenerateAccessesByAsset(SystemClass system, Stack<Task> tasks, double startTime, double endTime, double stepTime)
         {
             Stack<Access> accessesByAsset = new Stack<Access>();
             // For all assets...
@@ -108,6 +115,55 @@ namespace HSFScheduler
             return accessesByAsset;
         }
 
+        public static List<Access> AccessesByAsset(SystemClass system, List<Task> tasks, double startTime, double endTime, double stepTIme)
+        {
+            List<Access> accessesByAsset = new List<Access>();
+            // For all assets...
+            foreach (Asset asset in system.Assets)
+            {
+                // ...for all tasks...
+                foreach (Task task in tasks)
+                {
+                    // ...for all time....
+                    Access newAccess = new Access(asset, task);
+                    bool existingAccess = false;
+                    for (double accessTime = startTime; accessTime <= endTime; accessTime += stepTIme)//SchedParameters.SimStepSeconds)
+                    {
+                        // create a new access, or extend the access endTime if this is an update to an existing access
+                        bool hasAccess = Utilities.GeometryUtilities.hasLOS(asset.AssetDynamicState.PositionECI(accessTime), task.Target.DynamicState.PositionECI(accessTime));
+                        if (hasAccess)
+                        {
+                            if (!existingAccess)
+                            {
+                                newAccess.AccessStart = accessTime;
+                                existingAccess = true;
+                                accessesByAsset.Add(newAccess);
+                            }
+                            else
+                                newAccess.AccessEnd = accessTime;
+                            //bool isNewAccess;
+                            //if (accessesByAsset.Count == 0 || accessTime == SimParameters.SimStartSeconds || accessesByAsset[0].Task.Target.Name != task.Target.Name)
+                            //    isNewAccess = true;
+                            //else
+                            //    isNewAccess = (accessTime - accessesByAsset[0].AccessEnd) > SchedParameters.SimStepSeconds;
+                            //if (isNewAccess)
+                            //{
+                            //    Access newAccess = new Access(asset, task);
+                            //    newAccess.AccessStart = accessTime;
+                            //    newAccess.AccessEnd = accessTime;
+                            //    accessesByAsset.Add(newAccess);
+                            //    //accessesByAsset.Push(newAccess);
+                            //}
+                            //else  // extend the access
+                            //    accessesByAsset[0].AccessEnd = accessTime;
+                            //    //accessesByAsset.Peek().AccessEnd = accessTime;
+                        }
+                    }
+                    
+                }
+            }
+            return accessesByAsset;
+        }
         /// <summary>
         /// Override of the too string method
         /// </summary>

@@ -133,7 +133,7 @@ namespace HSFSchedulerUnitTest
 
             SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
 
-            Stack<Access> pregenAccess = Access.pregenerateAccessesByAsset(simSystem, programAct.SystemTasks, 0, 1, 1);
+            Stack<Access> pregenAccess = Access.PregenerateAccessesByAsset(simSystem, programAct.SystemTasks, 0, 1, 1);
 
             Stack<Access> AccessAct = Access.getCurrentAccesses(pregenAccess, 0);
 

@@ -229,9 +229,9 @@ namespace HSFSchedulerUnitTest
             SchedulerHelper(ref programAct);
 
             SystemClass simSystem = new SystemClass(programAct.AssetList, programAct.SubList, programAct.ConstraintsList, programAct.SystemUniverse);
-            Stack<Access> preGeneratedAccesses = Access.pregenerateAccessesByAsset(simSystem, programAct.SystemTasks, 0, 1, 1);
+            Stack<Access> preGeneratedAccesses = Access.PregenerateAccessesByAsset(simSystem, programAct.SystemTasks, 0, 1, 1);
             Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
-            scheduleCombos = Scheduler.GenerateExhaustiveSystemSchedules(preGeneratedAccesses, simSystem, 0);
+            scheduleCombos = Scheduler.GenerateAccesCombinations(preGeneratedAccesses, simSystem, 0);
 
 
             string actAccess1 = scheduleCombos.Pop().Pop().ToString();

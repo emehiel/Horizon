@@ -14,6 +14,7 @@ using HSFSubsystem;
 using HSFSystem;
 using log4net;
 using Utilities;
+using System.Linq;
 
 namespace Horizon
 {
@@ -53,7 +54,7 @@ namespace Horizon
         public List<SystemSchedule> Schedules { get; set; }
         public SystemClass SimSystem { get; set; }
         public string OutputPath { get; set; }
-        public Stack<Task> SystemTasks { get; set; } = new Stack<Task>();
+        public List<Task> SystemTasks { get; set; } = new List<Task>();
 
         public static int Main(string[] args) //
         {
@@ -68,7 +69,9 @@ namespace Horizon
             program.LoadSubsystems();
             program.LoadEvaluator();
             program.CreateSchedules();
-            double maxSched = program.EvaluateSchedules();
+            // Schedules are already evaluated and sorted when they are generated in CreateSchedules().  This method
+            // also runs the CanExtend() method which I think we want to eliminate...
+            //double maxSched = program.EvaluateSchedules();
 
             int i = 0;
             //Morgan's Way
@@ -85,7 +88,8 @@ namespace Horizon
                 }
                 i++;
             }
-            program.log.Info("Max Schedule Value: " + maxSched);
+            var maxValue = program.Schedules.Max(s => s.ScheduleValue);
+            program.log.Info("Max Schedule Value: " + maxValue);
 
             // Mehiel's way
             string stateDataFilePath = @"C:\HorizonLog\Scratch";// + string.Format("output-{0:yyyy-MM-dd-hh-mm-ss}", DateTime.Now);
@@ -297,8 +301,8 @@ namespace Horizon
             if (SimSystem.CheckForCircularDependencies())
                 throw new NotFiniteNumberException("System has circular dependencies! Please correct then try again.");
 
-            Scheduler _scheduler = new Scheduler(SchedEvaluator);
-            Schedules = _scheduler.GenerateSchedules(SimSystem, SystemTasks, InitialSysState);
+            Scheduler _scheduler = new Scheduler(SchedEvaluator, new SystemSchedule(InitialSysState));
+            Schedules = _scheduler.GenerateSchedules(SimSystem, SystemTasks);
         }
         public double EvaluateSchedules()
         {
@@ -310,6 +314,10 @@ namespace Horizon
                 // Extend the subsystem states to the end of the simulation 
                 foreach (var subsystem in SimSystem.Subsystems)
                 {
+                    // THERE IS A SCHEDULE IN THE LIST THAT IS OF THE FIRST EVENT ONLY,
+                    // WHEN THAT SCHEDULE PASSES THROUGH THIS LOOP, THE EVENT END TIME IS
+                    // EXTENDED TO THE END OF THE SIMULATION.
+                    // SINCE ALL EVENTS IN A SCHEDULE ARE REFERENCES, THE EVENT IN THE [0] ALSO CHANGES.
                     if (systemSchedule.AllStates.Events.Count > 0)
                             if (!subsystem.CanExtend(systemSchedule.AllStates.Events.Peek(), (Domain)SimSystem.Environment, SimParameters.SimEndSeconds))
                             log.Error("Cannot Extend " + subsystem.Name + " to end of simulation");

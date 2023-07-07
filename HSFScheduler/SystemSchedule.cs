@@ -36,8 +36,9 @@ namespace HSFScheduler
             AllStates.Events.Push(emptyEvent);
         }
 
-        public SystemSchedule(StateHistory oldStates, Stack<Access> newAccessList, double newEventStartTime)
+        public SystemSchedule(StateHistory oldStates, List<Access> newAccessList, double newEventStartTime)
         {
+            // Do we want to get rid of much of this and set taskStarts to AccessStarts, etc.?
             Dictionary<Asset, Task> tasks = new Dictionary<Asset, Task>();
             Dictionary<Asset, double> taskStarts = new Dictionary<Asset, double>();
             Dictionary<Asset, double> taskEnds = new Dictionary<Asset, double>();
@@ -48,35 +49,42 @@ namespace HSFScheduler
             {
                 if (access.Task != null)
                 {
-                    //  Access Starts before Event Start && Event Start is before the Access End
-                    if (access.AccessStart <= newEventStartTime && newEventStartTime <= access.AccessEnd)
-                        taskStarts.Add(access.Asset, newEventStartTime);
-                    //  Access starts after Event Start && Access Starts before Step Size
-                    else if (access.AccessStart >= newEventStartTime && access.AccessStart <= newEventStartTime + SchedParameters.SimStepSeconds)
-                        taskStarts.Add(access.Asset, access.AccessStart);
-                    //  Set Task Start to Event Start Time
-                    else
-                    {
-                        //Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart + " AccessEnd: " + access.AccessEnd);
-                        taskStarts.Add(access.Asset, newEventStartTime);
-                    }
                     tasks.Add(access.Asset, access.Task);
-
-                    //  Access Ends after the Simulation End Time - Set Task End time to Sim End Time
-                    if (access.AccessEnd > SimParameters.SimEndSeconds)
-                        taskEnds.Add(access.Asset, SimParameters.SimEndSeconds);
-                    // Set, set Task End time to Access End Time
-                    else
-                        taskEnds.Add(access.Asset, access.AccessEnd);
-
+                    taskStarts.Add(access.Asset, access.AccessStart);
+                    taskEnds.Add(access.Asset, access.AccessEnd);
                     eventStarts.Add(access.Asset, newEventStartTime);
-                    
-                    //  If Event Start + Step Size > Sim End Time - Set Event End time to Sim End Time
-                    if (newEventStartTime + SchedParameters.SimStepSeconds > SimParameters.SimEndSeconds)
-                        eventEnds.Add(access.Asset, SchedParameters.SimStepSeconds);
-                    //  Else, set Event End time to Event Start Time + Sim Step
-                    else
-                        eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+                    eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+
+                    ////  Access Starts before Event Start && Event Start is before the Access End
+                    //if (access.AccessStart <= newEventStartTime && newEventStartTime <= access.AccessEnd)
+                    //    taskStarts.Add(access.Asset, newEventStartTime);
+                    ////  Access starts after Event Start && Access Starts before Step Size
+                    //else if (access.AccessStart >= newEventStartTime && access.AccessStart <= newEventStartTime + SchedParameters.SimStepSeconds)
+                    //    taskStarts.Add(access.Asset, access.AccessStart);
+                    ////  Set Task Start to Event Start Time
+                    //else
+                    //{
+                    //    //Console.WriteLine("Event Start: " + newEventStartTime + " AccesStart: " + access.AccessStart + " AccessEnd: " + access.AccessEnd);
+                    //    taskStarts.Add(access.Asset, newEventStartTime);
+                    //}
+                    //tasks.Add(access.Asset, access.Task);
+
+                    ////  Access Ends after the Simulation End Time - Set Task End time to Sim End Time
+                    //if (access.AccessEnd > SimParameters.SimEndSeconds)
+                    //    taskEnds.Add(access.Asset, SimParameters.SimEndSeconds);
+                    //// Set, set Task End time to Access End Time
+                    //else
+                    //    taskEnds.Add(access.Asset, access.AccessEnd);
+
+                    //eventStarts.Add(access.Asset, newEventStartTime);
+
+                    ////  If Event Start + Step Size > Sim End Time - Set Event End time to Sim End Time
+                    //if (newEventStartTime + SchedParameters.SimStepSeconds > SimParameters.SimEndSeconds)
+                    //    eventEnds.Add(access.Asset, SchedParameters.SimStepSeconds);
+                    ////  Else, set Event End time to Event Start Time + Sim Step
+                    //else
+                    //    eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+
                 }
                 else
                 {
@@ -89,10 +97,10 @@ namespace HSFScheduler
 
             }
             Event eventToAdd = new Event(tasks, new SystemState(oldStates.GetLastState())); //all references
-            eventToAdd.SetEventEnd(eventEnds);
-            eventToAdd.SetTaskEnd(taskEnds);
-            eventToAdd.SetEventStart(eventStarts);
-            eventToAdd.SetTaskStart(taskStarts);
+            eventToAdd.EventEnds = eventEnds;
+            eventToAdd.EventStarts = eventStarts;
+            eventToAdd.TaskEnds = taskEnds;
+            eventToAdd.TaskStarts = taskStarts;
             AllStates = new StateHistory(oldStates, eventToAdd);
         }
         #endregion
@@ -103,18 +111,33 @@ namespace HSFScheduler
         /// <param name="newAccessList"></param>
         /// <param name="newTaskStartTime"></param>
         /// <returns></returns>
-        public bool CanAddTasks(Stack<Access> newAccessList, double newTaskStartTime)
+        public bool CanAddTasks(List<Access> newAccessList, double newTaskStartTime)
         {
             int count = 0;
 
+            // Foreach access in current accesses
 	        foreach(var access in newAccessList)
             {
+                // if the current asset is NOT scheduled
                 if (!AllStates.isEmpty(access.Asset))
                 {
-                    if (AllStates.GetLastEvent().GetEventEnd(access.Asset) > newTaskStartTime)
-                        return false;
+                    // check if the current task ends after the possbile start time
+                    var eventEndTime = AllStates.Events.Last().EventEnds[access.Asset];
+                    var taskEndTime = AllStates.Events.Last().TaskEnds[access.Asset];
+                    //var eventEndTime = AllStates.GetLastEvent().GetEventEnd(access.Asset);
+                    if (eventEndTime > newTaskStartTime)
+                    {
+                        // replace the access to add to an 'empty' access
+                        // need to set the event start/end and task start/end valuse appropriately
+                        access.Task = new Task("Empty", new Target("Empty", "Empty", null, 0), 1000);
+                        access.AccessStart = eventEndTime;
+                        //newAccessList.Remove(access);
+                        //return false;
+                        return true;
+                    }
                 }
 
+                // Leave this in for now, but do we want to have a flag for some selection for this?
 		        if(access.Task != null)
                 {
 				    count += AllStates.timesCompletedTask(access.Task);

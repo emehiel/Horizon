@@ -65,7 +65,8 @@ namespace HSFSubsystem
                 double ts = proposedEvent.GetTaskStart(Asset);
                 double te = proposedEvent.GetTaskEnd(Asset);
 
-                double oldbufferratio = _newState.GetLastValue(DATABUFFERRATIO_KEY).Value;
+                //double oldbufferratio = _newState.GetLastValue(DATABUFFERRATIO_KEY).Value;
+                double oldbufferratio = proposedEvent.State.GetLastValue(DATABUFFERRATIO_KEY).Value;
 
                 //Delegate DepCollector;
                 //SubsystemDependencyFunctions.TryGetValue("DepCollector", out DepCollector);
@@ -79,7 +80,8 @@ namespace HSFSubsystem
                 HSFProfile<double> newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 1, 1, ref exceeded, 0, oldbufferratio);
                 if (!exceeded)
                 {
-                    _newState.AddValues(DATABUFFERRATIO_KEY, newdataratio);
+                    //_newState.AddValues(DATABUFFERRATIO_KEY, newdataratio);
+                    proposedEvent.State.AddValues(DATABUFFERRATIO_KEY, newdataratio);
                     return true;
                 }
 
@@ -90,17 +92,24 @@ namespace HSFSubsystem
             else if (_task.Type == "comm")
             {
                 double ts = proposedEvent.GetTaskStart(Asset);
-                proposedEvent.SetTaskEnd(Asset, ts + 60.0);
+                // Task End should be set to min(EventEnd, ts + maxDataOut) - maxDataOut = maximum data that can be pushed out before event end
+                proposedEvent.SetTaskEnd(Asset, proposedEvent.GetTaskEnd(Asset));
+                //proposedEvent.SetTaskEnd(Asset, ts + 60.0);
+                
                 double te = proposedEvent.GetTaskEnd(Asset);
 
-                double data = _bufferSize * _newState.GetLastValue(Dkeys.First()).Value;
+                //double data = _bufferSize * _newState.GetLastValue(Dkeys.First()).Value;
+                double data = _bufferSize * proposedEvent.State.GetLastValue(Dkeys.First()).Value;
                 double dataqueout = data / 2 > 50 ? data / 2 : data;
 
                 if (data - dataqueout < 0)
                     dataqueout = data;
 
                 if (dataqueout > 0)
-                    _newState.AddValue(DATABUFFERRATIO_KEY, te, (data - dataqueout) / _bufferSize);
+                    proposedEvent.State.AddValue(DATABUFFERRATIO_KEY, te, (data - dataqueout) / _bufferSize);
+                    //_newState.AddValue(DATABUFFERRATIO_KEY, te, (data - dataqueout) / _bufferSize);
+
+
                 return true;
             }
             return true;

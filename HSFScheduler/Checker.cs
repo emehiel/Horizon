@@ -7,6 +7,7 @@ using HSFSystem;
 using HSFSubsystem;
 using HSFUniverse;
 using Logging;
+using System.Linq;
 
 namespace HSFScheduler
 {
@@ -41,6 +42,15 @@ namespace HSFScheduler
             if (!checkSubs(system.Subsystems, proposedSchedule, system.Environment))
                 return false;
 
+            // SET EVENT END TIME HERE, after full state of system has been determined and is set to be scheduled!!!
+            // should we add a check here for last state variable change as an upper limit of event end time?
+            var lastEvent = proposedSchedule.AllStates.Events.Last();
+            foreach (var te in lastEvent.TaskEnds)
+            {
+                var teTime = te.Value;
+                var leTime = lastEvent.EventEnds[te.Key];
+                lastEvent.EventEnds[te.Key] = Math.Max(teTime, leTime);
+            }
             return true;
         }
 
@@ -58,12 +68,6 @@ namespace HSFScheduler
 
             var events = proposedSchedule.AllStates.Events;
             
-            //if (events.Count != 0)
-            //{
-                //if (events.Count > 1)
-                //    subsystem._oldState = events.ElementAt(events.Count - 2).State;
-                //else
-                //    subsystem._oldState = null;
                 try
                 {
                     return subsystem.CheckDependentSubsystems(events.Peek(), environment);
@@ -72,21 +76,8 @@ namespace HSFScheduler
                 {
                     throw new Exception("Empty set of events on proposed schedule");
                 }
-                //if (!subsystem.CheckDependentSubsystems(events.Peek(), environment))
-                //{
-                //    return false;
-                //}
-
-                //if (!subsystem.CanPerform(events.Peek(), environment))
-                //{
-                //    return false;
-                //}
-                //events.Peek().TimesEvaluated += 1;
-
-                //}
-                //return true;
-            //}
         }
+
         /// <summary>
         /// See if all the subsystems can perform the most recent task that was added to the schedule
         /// </summary>

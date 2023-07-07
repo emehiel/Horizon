@@ -8,6 +8,7 @@ using HSFUniverse;
 using HSFSystem;
 using MissionElements;
 using System.Xml;
+using IronPython.Compiler.Ast;
 
 namespace HSFSubsystem
 {
@@ -27,7 +28,7 @@ namespace HSFSubsystem
         public List<StateVariableKey<Matrix<double>>> Mkeys { get; protected set; } = new List<StateVariableKey<Matrix<double>>>();
         public List<StateVariableKey<Quaternion>> Qkeys { get; protected set; } = new List<StateVariableKey<Quaternion>>();
         public List<StateVariableKey<Vector>> Vkeys { get; protected set; } = new List<StateVariableKey<Vector>>();
-        public virtual SystemState _newState { get; set; }
+        //public virtual SystemState _newState { get; set; }
         public virtual Task _task { get; set; }
         #endregion Attributes
 
@@ -89,35 +90,28 @@ namespace HSFSubsystem
         /// <returns></returns>
         public bool CheckDependentSubsystems(Event proposedEvent, Domain environment)
         {
+            bool result = true;
             if (DependentSubsystems.Count == 0)
             {
                 IsEvaluated = true;
-                _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
-                _newState = proposedEvent.State;
-                bool result = CanPerform(proposedEvent, environment);
-                //  Need to deal with this issue in next update
-                //double te = proposedEvent.GetTaskEnd(Asset);
-                //double ee = proposedEvent.GetEventEnd(Asset);
-                //proposedEvent.SetEventEnd(Asset, Math.Max(te, ee));
+                _task = proposedEvent.GetAssetTask(Asset);
+                result = CanPerform(proposedEvent, environment);
                 return result;
             }
             else
             {
                 foreach (var sub in DependentSubsystems)
                 {
-                    if (!sub.IsEvaluated)// && !sub.GetType().Equals(typeof(ScriptedSubsystem)))
+                    if (!sub.IsEvaluated)
                     {
                         if (sub.CheckDependentSubsystems(proposedEvent, environment))
                         {
                             IsEvaluated = true;
                             _task = proposedEvent.GetAssetTask(Asset); //Find the correct task for the subsystem
-                            _newState = proposedEvent.State;
                             if (!CanPerform(proposedEvent, environment))
+                            {
                                 return false;
-                            //  Need to deal with this issue in next update
-                            //double te = proposedEvent.GetTaskEnd(Asset);
-                            //double ee = proposedEvent.GetEventEnd(Asset);
-                            //proposedEvent.SetEventEnd(Asset, Math.Max(te, ee));
+                            }
                         }
                         else
                         {
@@ -127,7 +121,6 @@ namespace HSFSubsystem
                 }
                 return true;
             }
-
         }
         /// <summary>
         /// The default canExtend function. May be over written for additional functionality.
@@ -203,7 +196,7 @@ namespace HSFSubsystem
         /// <param name="subXmlNode"></param>
         /// <param name="assetName"></param>
         /// <returns></returns>
-        public static string parseNameFromXmlNode(XmlNode subXmlNode, string assetName)
+        public static string ParseNameFromXmlNode(XmlNode subXmlNode, string assetName)
         {
             string Name;
             if (subXmlNode.Attributes["subsystemName"] != null)

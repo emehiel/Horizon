@@ -101,7 +101,9 @@ namespace HSFSubsystem
             // set state data
             //var POINTVEC_KEY = this.Mkeys[0];
             //_newState.SetProfile(POINTVEC_KEY, new HSFProfile<Matrix<double>>(ts, m_pv));
-            _newState.AddValue(POINTVEC_KEY, ts, m_pv);
+
+            //_newState.AddValue(POINTVEC_KEY, ts, m_pv);
+            proposedEvent.State.AddValue(POINTVEC_KEY, ts, m_pv);
             proposedEvent.SetTaskStart(Asset, ts);
             return true;
         }

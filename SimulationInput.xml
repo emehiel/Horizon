@@ -7,7 +7,7 @@
 
 	<SCHEDULER_PARAMETERS
 		maxNumSchedules="10"
-		numSchedCropTo="5"
+		numSchedCropTo="6"
 		simStepSeconds="30">
 	</SCHEDULER_PARAMETERS>
 </SCENARIO>

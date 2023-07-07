@@ -25,6 +25,7 @@ namespace HSFScheduler
         private double _endTime;
         private int _maxNumSchedules;
         private int _numSchedCropTo;
+        public SystemSchedule EmptySchedule { get; private set; }
 
         public double TotalTime { get; }
         public double PregenTime { get; }
@@ -39,9 +40,10 @@ namespace HSFScheduler
         /// Creates a scheduler for the given system and simulation scenario
         /// </summary>
         /// <param name="scheduleEvaluator"></param>
-        public Scheduler(Evaluator scheduleEvaluator)
+        public Scheduler(Evaluator scheduleEvaluator, SystemSchedule emptySchedule)
         {
             ScheduleEvaluator = scheduleEvaluator;
+            EmptySchedule = emptySchedule;
             _startTime = SimParameters.SimStartSeconds;
             _endTime = SimParameters.SimEndSeconds;
             _stepLength = SchedParameters.SimStepSeconds;
@@ -57,13 +59,12 @@ namespace HSFScheduler
         /// <param name="tasks"></param>
         /// <param name="initialStateList"></param>
         /// <returns></returns>
-        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, Stack<MissionElements.Task> tasks, SystemState initialStateList)
+        public virtual List<SystemSchedule> GenerateSchedules(SystemClass system, List<MissionElements.Task> tasks)
         {
             log.Info("SIMULATING... ");
             // Create empty systemSchedule with initial state set
-            SystemSchedule emptySchedule = new SystemSchedule(initialStateList);
             List<SystemSchedule> systemSchedules = new List<SystemSchedule>();
-            systemSchedules.Add(emptySchedule);
+            systemSchedules.Add(EmptySchedule);
 
             // if all asset position types are not dynamic types, can pregenerate accesses for the simulation
             bool canPregenAccess = true;
@@ -76,27 +77,66 @@ namespace HSFScheduler
                     canPregenAccess = false;
             }
 
-            // if accesses can be pregenerated, do it now
-            Stack<Access> preGeneratedAccesses = new Stack<Access>();
-            Stack<Stack<Access>> scheduleCombos = new Stack<Stack<Access>>();
+            // REMOVED PREGEN ACCESS CODE IN FAVOR OF EVENT GENERATOR INSIDE TIME LOOP
+
+            // TODO: Delete (or never create in the first place) schedules with inconsistent asset tasks (because of asset dependencies) - Not sure what to do with this -EAM-6/27/23
+
+
+            List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
+            List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
+            for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
+            {
+                /* THIS IS A TEST OF A PROPOSED EVENT GENERATOR */
+                potentialSystemSchedules = ProposedScheduleGenerator(system, tasks, systemSchedules, canPregenAccess, currentTime);
+
+                // Check each proposed schedule by calling the Checker=->CanPerform() of each Subsystem
+                int numSched = 0;
+                foreach (var potentialSchedule in potentialSystemSchedules)
+                {
+                    
+                    if (Checker.CheckSchedule(system, potentialSchedule))
+                    {
+                        systemCanPerformList.Add(potentialSchedule);
+                        numSched++;
+                    }
+                }
+                
+                // Evaluate Each Schedule
+                foreach (SystemSchedule systemSchedule in systemCanPerformList)
+                    systemSchedule.ScheduleValue = ScheduleEvaluator.Evaluate(systemSchedule);
+
+                systemCanPerformList.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
+                systemCanPerformList.Reverse();
+
+                // Merge old and new oldSchedules - MAKE SURE THIS CREATING A DEEP COPY?
+                var oldSystemCanPerfrom = new List<SystemSchedule>(systemCanPerformList);
+                systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedule doubling stuff up
+                potentialSystemSchedules.Clear();
+                systemCanPerformList.Clear();
+
+                // Print completion percentage in command window
+                Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+            }
+            return systemSchedules;
+        }
+
+        private List<SystemSchedule> ProposedScheduleGenerator(SystemClass system, List<MissionElements.Task> tasks, List<SystemSchedule> oldSchedules, bool canPregenAccess, double currentTime)
+        {
+            List<List<Access>> accessCombos = new List<List<Access>>();
 
             if (canPregenAccess)
             {
-                log.Info("Pregenerating Accesses...");
-                //DWORD startPregenTickCount = GetTickCount();
-
-                preGeneratedAccesses = Access.pregenerateAccessesByAsset(system, tasks, _startTime, _endTime, _stepLength);
-                //DWORD endPregenTickCount = GetTickCount();
-                //pregenTimeMs = endPregenTickCount - startPregenTickCount;
-                Access.writeAccessReport(preGeneratedAccesses); //- TODO:  Finish this code - EAM
-                log.Info("Done pregenerating accesses. There are " + preGeneratedAccesses.Count + " accesses.");
+                // Reshape accesses (by assest) for the engeration of access combinations
+                List<Access> Accessess = Access.AccessesByAsset(system, tasks, currentTime, currentTime + _stepLength, 1);//_stepLength);
+                // if accesses are pregenerated, look up the access information and update assetTaskList
+                accessCombos = GenerateAccesCombinations(Accessess, system, currentTime);
             }
-            // otherwise generate an exhaustive list of possibilities for assetTaskList,
+            // generate accessess based on some other algorithm (lines 97-119) - NEED TO TEST THIS APPROACH
             else
             {
-                log.Info("Generating Exhaustive Task Combinations... ");
+
+                log.Info("Generating Exhaustive Task Combinations for non-geometric case... ");
                 Stack<Stack<Access>> exhaustive = new Stack<Stack<Access>>();
-                //Stack<Access> allAccesses = new Stack<Access>(tasks.Count);
 
                 foreach (var asset in system.Assets)
                 {
@@ -112,81 +152,42 @@ namespace HSFScheduler
 
                 foreach (var accessStack in allScheduleCombos)
                 {
-                    Stack<Access> someOfThem = new Stack<Access>(accessStack);
-                    scheduleCombos.Push(someOfThem);
+                    List<Access> someOfThem = new List<Access>(accessStack);
+                    accessCombos.Add(someOfThem);
                 }
 
                 log.Info("Done generating exhaustive task combinations");
             }
-
-            /// TODO: Delete (or never create in the first place) schedules with inconsistent asset tasks (because of asset dependencies)
-
-            // Find the next timestep for the simulation
-            //DWORD startSchedTickCount = GetTickCount();
-            // int i = 1;
-            List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
-            List<SystemSchedule> systemCanPerformList = new List<SystemSchedule>();
-            for (double currentTime = _startTime; currentTime < _endTime; currentTime += _stepLength)
+            // Check if it's necessary to crop the systemSchedule list to a more managable number
+            if (oldSchedules.Count > _maxNumSchedules)
             {
-                log.Info("Simulation Time " + currentTime);
-                // if accesses are pregenerated, look up the access information and update assetTaskList
-                if (canPregenAccess)
-                    scheduleCombos = GenerateExhaustiveSystemSchedules(preGeneratedAccesses, system, currentTime);
-
-                // Check if it's necessary to crop the systemSchedule list to a more managable number
-                if (systemSchedules.Count > _maxNumSchedules)
-                {
-                    log.Info("Cropping " + systemSchedules.Count + " Schedules.");
-                    CropSchedules(systemSchedules, ScheduleEvaluator, emptySchedule);
-                    systemSchedules.Add(emptySchedule);
-                }
-
-                // Generate an exhaustive list of new tasks possible from the combinations of Assets and Tasks
-                //TODO: Parallelize this.
-                int k = 0;
-
-                //Parallel.ForEach(systemSchedules, (oldSystemSchedule) =>
-                foreach(var oldSystemSchedule in systemSchedules)
-                {
-                    //potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
-                    foreach (var newAccessStack in scheduleCombos)
-                    {
-                        k++;
-                        if (oldSystemSchedule.CanAddTasks(newAccessStack, currentTime))
-                        {
-                            var CopySchedule = new StateHistory(oldSystemSchedule.AllStates);
-                            potentialSystemSchedules.Add(new SystemSchedule(CopySchedule, newAccessStack, currentTime));
-                            // oldSched = new SystemSchedule(CopySchedule);
-                        }
-
-                    }
-                }
-
-                int numSched = 0;
-                foreach (var potentialSchedule in potentialSystemSchedules)
-                {
-
-
-                    if (Checker.CheckSchedule(system, potentialSchedule)) {
-                        systemCanPerformList.Add(potentialSchedule);
-                        numSched++;
-                    }
-                }
-                foreach (SystemSchedule systemSchedule in systemCanPerformList)
-                    systemSchedule.ScheduleValue = ScheduleEvaluator.Evaluate(systemSchedule);
-
-                systemCanPerformList.Sort((x, y) => x.ScheduleValue.CompareTo(y.ScheduleValue));
-                systemCanPerformList.Reverse();
-                // Merge old and new systemSchedules
-                var oldSystemCanPerfrom = new List<SystemSchedule>(systemCanPerformList);
-                systemSchedules.InsertRange(0, oldSystemCanPerfrom);//<--This was potentialSystemSchedule doubling stuff up
-                potentialSystemSchedules.Clear();
-                systemCanPerformList.Clear();
-
-                // Print completion percentage in command window
-                Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+                log.Info("Cropping " + oldSchedules.Count + " Schedules.");
+                CropSchedules(oldSchedules, ScheduleEvaluator, EmptySchedule);
+                oldSchedules.Add(EmptySchedule);
             }
-            return systemSchedules;
+
+            // Generate an exhaustive list of new possible schedules from the combinations of Old Schedules and AccessCombos(Asset+Tasks)
+            //TODO: Parallelize this.
+            //Parallel.ForEach(oldSchedules, (oldSystemSchedule) =>
+            List<SystemSchedule> potentialSystemSchedules = new List<SystemSchedule>();
+            foreach (var oss in oldSchedules)
+            {
+                //potentialSystemSchedules.Add(new SystemSchedule( new StateHistory(oldSystemSchedule.AllStates)));
+                foreach (var cac in accessCombos)
+                {
+                    if (oss.CanAddTasks(cac, currentTime))
+                    {
+                        // NOT A DEEP COPY OF THE STATES
+                        StateHistory AllStates = new StateHistory(oss.AllStates);
+                        // NOT a deep copy of the previous 
+                        potentialSystemSchedules.Add(new SystemSchedule(AllStates, cac, currentTime));
+                        // oldSched = new SystemSchedule(CopySchedule);
+                    }
+
+                }
+            }
+            // END OF PROPOSED EVENT GENERATOR - RETURN potentialSystemSchedules
+            return potentialSystemSchedules;
         }
 
         /// <summary>
@@ -221,22 +222,23 @@ namespace HSFScheduler
         /// <param name="system"></param>
         /// <param name="currentTime"></param>
         /// <returns></returns>
-        public static Stack<Stack<Access>> GenerateExhaustiveSystemSchedules(Stack<Access> currentAccessForAllAssets, SystemClass system, double currentTime)
+        public static List<List<Access>> GenerateAccesCombinations(List<Access> currentAccessForAllAssets, SystemClass system, double currentTime)
         {
             // A stack of accesses stacked by asset
-            Stack<Stack<Access>> currentAccessesByAsset = new Stack<Stack<Access>>();
+            List<List<Access>> currentAccessesByAsset = new List<List<Access>>();
             foreach (Asset asset in system.Assets)
-                currentAccessesByAsset.Push(Access.getCurrentAccessesForAsset(currentAccessForAllAssets, asset, currentTime));
+                currentAccessesByAsset.Add(Access.getCurrentAccessesForAsset(currentAccessForAllAssets, asset, currentTime));
+                //currentAccessesByAsset.Push(Access.getCurrentAccessesForAsset(currentAccessForAllAssets, asset, currentTime));
 
             IEnumerable<IEnumerable<Access>> allScheduleCombos = currentAccessesByAsset.CartesianProduct();
 
-            Stack<Stack<Access>> allOfThem = new Stack<Stack<Access>>();
+            // Use this code to cast allScheduleCombos to Stack<Stack<Access>>.  Explicit cast does not seem to work...
+            List<List<Access>> allOfThem = new List<List<Access>>();
             foreach (var accessStack in allScheduleCombos)
             {
-                Stack<Access> someOfThem = new Stack<Access>(accessStack);
-                allOfThem.Push(someOfThem);
+                List<Access> someOfThem = new List<Access>(accessStack);
+                allOfThem.Add(someOfThem);
             }
-
             return allOfThem;
         }
     }

@@ -146,7 +146,8 @@ namespace HSFSystem
             Matrix<double> measure = new Matrix<double>(1, 6);
             measure[1,new MatrixIndex(1, 3)] = acc;
             measure[1,new MatrixIndex(4,6)] = gyr;
-            _newState.AddValue(MEASURE_KEY, ts, measure);
+            //_newState.AddValue(MEASURE_KEY, ts, measure);
+            proposedEvent.State.AddValue(MEASURE_KEY, ts, measure);
             //_newState.AddValue(MEASURE_KEY, new HSFProfile<Matrix<double>>(ts, measure));
             return true;
         }

@@ -126,14 +126,23 @@ namespace HSFSubsystem
                 double incidenceang = 90 - 180 / Math.PI * Math.Acos(Matrix<double>.Dot(pos_norm, pv_norm));
 
                 // set state data
-                _newState.AddValue(INCIDENCE_KEY, timage, incidenceang);
-                _newState.AddValue(INCIDENCE_KEY, timage + 1, 0.0);
+                proposedEvent.State.AddValue(INCIDENCE_KEY, timage, incidenceang);
+                proposedEvent.State.AddValue(INCIDENCE_KEY, timage + 1, 0.0);
 
-                _newState.AddValue(PIXELS_KEY, timage, pixels);
-                _newState.AddValue(PIXELS_KEY, timage + 1, 0.0);
+                proposedEvent.State.AddValue(PIXELS_KEY, timage, pixels);
+                proposedEvent.State.AddValue(PIXELS_KEY, timage + 1, 0.0);
 
-                _newState.AddValue(EOON_KEY, ts, true);
-                _newState.AddValue(EOON_KEY, te, false);
+                proposedEvent.State.AddValue(EOON_KEY, ts, true);
+                proposedEvent.State.AddValue(EOON_KEY, te, false);
+
+                //_newState.AddValue(INCIDENCE_KEY, timage, incidenceang);
+                //_newState.AddValue(INCIDENCE_KEY, timage + 1, 0.0);
+
+                //_newState.AddValue(PIXELS_KEY, timage, pixels);
+                //_newState.AddValue(PIXELS_KEY, timage + 1, 0.0);
+
+                //_newState.AddValue(EOON_KEY, ts, true);
+                //_newState.AddValue(EOON_KEY, te, false);
             }
                 return true;
             

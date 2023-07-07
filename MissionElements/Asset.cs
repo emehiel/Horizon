@@ -63,6 +63,12 @@ namespace MissionElements
         {
             return base.GetHashCode();
         }
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
         #endregion
     }
 }

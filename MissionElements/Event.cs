@@ -20,12 +20,12 @@ namespace MissionElements
         /// <summary>
         /// The time history of the State during the current Event. 
         /// </summary>
-        public SystemState State { get; private set; }
+        public SystemState State { get; set; }
 
         /// <summary>
         /// The start of the event associated with this State 
         /// </summary>
-        public Dictionary<Asset, double> EventStarts { get; private set; }
+        public Dictionary<Asset, double> EventStarts { get; set; }
 
         /// <summary>
         /// The start of the task associated with this State 

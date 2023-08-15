@@ -8,7 +8,7 @@ using HSFUniverse;
 using MissionElements;
 using Utilities;
 
-namespace HSFSubsystem
+namespace HSFSystem
 {
     public class AccessSub : Subsystem
     {

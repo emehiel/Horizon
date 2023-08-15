@@ -10,10 +10,9 @@ using Utilities;
 using HSFUniverse;
 using MissionElements;
 using UserModel;
-using HSFSystem;
 using System.Diagnostics.CodeAnalysis;
 
-namespace HSFSubsystem
+namespace HSFSystem
 {
     //[ExcludeFromCodeCoverage]
     public class Power : Subsystem

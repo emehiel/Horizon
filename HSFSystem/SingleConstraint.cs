@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using MissionElements;
 using Utilities;
 using System.Xml;
-using HSFSubsystem;
 
 namespace HSFSystem
 {

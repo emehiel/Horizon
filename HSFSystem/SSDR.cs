@@ -8,11 +8,10 @@ using System.Xml;
 using HSFUniverse;
 using MissionElements;
 using Utilities;
-using HSFSystem;
 using log4net;
 using System.Diagnostics.CodeAnalysis;
 
-namespace HSFSubsystem
+namespace HSFSystem
 {
     //[ExcludeFromCodeCoverage]
     public class SSDR : Subsystem

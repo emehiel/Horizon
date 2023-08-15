@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using IronPython.Hosting;
-using HSFSystem;
 using MissionElements;
 using UserModel;
 using HSFUniverse;
@@ -12,7 +11,7 @@ using System.Xml;
 using System.IO;
 using System.Reflection;
 
-namespace HSFSubsystem
+namespace HSFSystem
 {
     public class ScriptedSubsystem : Subsystem
     {

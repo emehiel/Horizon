@@ -6,11 +6,10 @@ using System.Collections.Generic;
 using HSFUniverse;
 using MissionElements;
 using System.Xml;
-using HSFSystem;
 using Utilities;
 using System.Diagnostics.CodeAnalysis;
 
-namespace HSFSubsystem
+namespace HSFSystem
 {
     //[ExcludeFromCodeCoverage]
     public class EOSensor : Subsystem

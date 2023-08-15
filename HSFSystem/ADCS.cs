@@ -7,11 +7,10 @@ using Utilities;
 using System.Xml;
 using MissionElements;
 using HSFUniverse;
-using HSFSystem;
 using System.Diagnostics.CodeAnalysis;
 //using Logging;
 
-namespace HSFSubsystem
+namespace HSFSystem
 {
     //[ExcludeFromCodeCoverage]
     public class ADCS : Subsystem

@@ -20,7 +20,7 @@ namespace HSFScheduler
         /// </summary>
         /// <param name="evalNode"></param>
         /// <returns></returns>
-        public static Evaluator GetEvaluator(XmlNode evalNode, List <HSFSubsystem.Subsystem> subList)
+        public static Evaluator GetEvaluator(XmlNode evalNode, List <Subsystem> subList)
         {
             string evalType = evalNode.Attributes["type"].Value.ToString().ToLower();
             Evaluator schedEvaluator = null;    
@@ -53,7 +53,7 @@ namespace HSFScheduler
             return schedEvaluator;
         }
 
-        private List<dynamic> BuildKeychain (XmlNodeList keyRequests, List<HSFSubsystem.Subsystem> subList)
+        private List<dynamic> BuildKeychain (XmlNodeList keyRequests, List<Subsystem> subList)
         {
             //List<StateVariableKey<dynamic>> keychain = new List<StateVariableKey<dynamic>>(); // lets see if dynamic works here??? Nope.
             List<dynamic> keychain = new List<dynamic>(); // Here!
@@ -72,7 +72,7 @@ namespace HSFScheduler
                 //    Console.WriteLine("Key index requested is not Int32!");
                 //    throw new ArgumentException("Key index requested is not Int32!");
                 //}
-                HSFSubsystem.Subsystem subRequested = subList.Find(s => s.Name == InputAsset + "." + InputSub);
+                Subsystem subRequested = subList.Find(s => s.Name == InputAsset + "." + InputSub);
 
                 if (subRequested == null)
                 {

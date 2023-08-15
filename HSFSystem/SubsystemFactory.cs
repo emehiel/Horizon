@@ -4,13 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using HSFSystem;
 using MissionElements;
 using log4net;
 using System.Reflection;
 using Utilities;
 
-namespace HSFSubsystem
+namespace HSFSystem
 {
     public class SubsystemFactory
     {
@@ -119,7 +118,7 @@ namespace HSFSubsystem
                 else // If depFn lives in C# subsystem
                 {
                     // Find method that matches name via reflection & add to sub's dep fns
-                    var TypeIn = Type.GetType("HSFSubsystem." + depSubName).GetMethod(depFnName);
+                    var TypeIn = Type.GetType("HSFSystem." + depSubName).GetMethod(depFnName);
                     Delegate fnc = Delegate.CreateDelegate(typeof(Func<Event, HSFProfile<double>>), depSub, TypeIn);
                     sub.SubsystemDependencyFunctions.Add(depFnName, fnc);
                 }

@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using HSFSubsystem;
 using Utilities;
 using MissionElements;
 

@@ -245,17 +245,42 @@ namespace Utilities
         /// <returns>string</returns>
         public override string ToString()
         {
-            string s = "[";
+            //string s = "[";
 
-            foreach(List<T> row in _elements)
+            //foreach(List<T> row in _elements)
+            //{
+            //    foreach (T element in row)
+            //        s += element.ToString() + "," + " ";
+            //    s = s.Substring(0, s.Length - 2) + "; ";
+            //}
+
+            //s = s.Substring(0, s.Length - 2);
+            //s += "]";
+
+            //return s;
+
+            string s = "";
+
+            foreach (List<T> row in _elements)
+            {
+                foreach (T element in row)
+                    s += element.ToString() + ",";
+                s = s.Substring(0, s.Length - 1) + "\n";
+            }
+
+            return s;
+        }
+
+        public string ToCSV()
+        {
+            string s = "";
+
+            foreach (List<T> row in _elements)
             {
                 foreach (T element in row)
                     s += element.ToString() + "," + " ";
                 s = s.Substring(0, s.Length - 2) + "; ";
             }
-
-            s = s.Substring(0, s.Length - 2);
-            s += "]";
 
             return s;
         }

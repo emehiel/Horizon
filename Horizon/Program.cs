@@ -10,7 +10,7 @@ using HSFScheduler;
 using MissionElements;
 using UserModel;
 using HSFUniverse;
-using HSFSubsystem;
+//using HSFSubsystem;
 using HSFSystem;
 using log4net;
 using Utilities;
@@ -59,6 +59,9 @@ namespace Horizon
         {
             Program program = new Program();
             // Begin the Logger
+
+            var M = new Matrix<double>(3, 1, 0);
+            Console.WriteLine(M);
             program.log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             program.log.Info("STARTING HSF RUN"); //Do not delete
             program.InitInput(args);

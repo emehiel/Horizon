@@ -5,11 +5,10 @@ using System;
 using System.Collections.Generic;
 using Utilities;
 using HSFUniverse;
-using HSFSystem;
 using MissionElements;
 using System.Xml;
 
-namespace HSFSubsystem
+namespace HSFSystem
 {
     [Serializable]
     public abstract class Subsystem {

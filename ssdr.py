@@ -13,7 +13,6 @@ clr.AddReferenceByName('HSFSystem')
 
 import System.Xml
 import HSFSystem
-import HSFSubsystem
 import MissionElements
 import Utilities
 import HSFUniverse
@@ -28,9 +27,9 @@ from System import Func, Delegate
 from System.Collections.Generic import *
 from IronPython.Compiler import CallTarget0
 
-class ssdr(HSFSubsystem.Subsystem):
+class ssdr(HSFSystem.Subsystem):
     def __new__(cls, node, asset):
-        instance = HSFSubsystem.Subsystem.__new__(cls)
+        instance = HSFSystem.Subsystem.__new__(cls)
         instance.Asset = asset
         instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
 

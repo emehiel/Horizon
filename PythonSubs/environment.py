@@ -13,7 +13,6 @@ clr.AddReferenceByName('HSFSystem')
 
 import System.Xml
 import HSFSystem
-import HSFSubsystem
 import MissionElements
 import Utilities
 import HSFUniverse

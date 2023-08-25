@@ -13,7 +13,6 @@ clr.AddReferenceByName('HSFSystem')
 
 import System.Xml
 import HSFSystem
-import HSFSubsystem
 import MissionElements
 import Utilities
 import HSFUniverse
@@ -29,7 +28,7 @@ from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
-class GenericSubsystem(Subsystem):
+class GenericSubsystem(HSFSystem.Subsystem):
     def __init__(self, node, asset):
         pass
     def GetDependencyDictionary(self):

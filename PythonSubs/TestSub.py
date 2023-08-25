@@ -13,7 +13,6 @@ clr.AddReferenceByName('HSFSystem')
 
 import System.Xml
 import HSFSystem
-import HSFSubsystem
 import MissionElements
 import Utilities
 import HSFUniverse
@@ -28,9 +27,9 @@ from System import Func, Delegate
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
-class adcs(HSFSubsystem.Subsystem):
+class adcs(HSFsystem.Subsystem):
     def __new__(cls, node, asset):
-        instance = HSFSubsystem.Subsystem.__new__(cls)
+        instance = HSFSystem.Subsystem.__new__(cls)
         instance.Asset = asset
 
         instance.POINTVEC_KEY = Utilities.StateVarKey[Utilities.Matrix[System.Double]](instance.Asset.Name + '.' + 'eci_pointing_vector(xyz)')

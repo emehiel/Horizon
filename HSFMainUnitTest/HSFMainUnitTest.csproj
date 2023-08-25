@@ -49,7 +49,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
@@ -75,36 +75,12 @@
       <Project>{6e6d45ba-6e13-4117-839e-469a59eef191}</Project>
       <Name>Horizon</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HSFScheduler\HSFScheduler.csproj">
-      <Project>{241171AB-18B2-45A0-848A-62B2EF751644}</Project>
-      <Name>HSFScheduler</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HSFSystem\HSFSystem.csproj">
-      <Project>{72FA2884-1D92-4088-9FAC-60564F9971F8}</Project>
-      <Name>HSFSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\HSFUniverse\HSFUniverse.csproj">
-      <Project>{23695C61-1557-4BB3-AC04-98DB5701872A}</Project>
-      <Name>HSFUniverse</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MissionElements\MissionElements.csproj">
-      <Project>{982DCCE0-925A-4139-9BE7-7A99542D6240}</Project>
-      <Name>MissionElements</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UserModel\UserModel.csproj">
-      <Project>{C180B6BA-D68A-4AC8-B1EB-4E38F7F42AB7}</Project>
-      <Name>UserModel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Utilities\Utilities.csproj">
-      <Project>{EDA938FC-7A34-4506-81F8-D4D940D6ED84}</Project>
-      <Name>Utilities</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

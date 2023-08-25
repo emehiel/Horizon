@@ -13,12 +13,10 @@ clr.AddReferenceByName('HSFSystem')
 #clr.AddReferenceByName('SystemState')
 import System.Xml
 import HSFSystem
-import HSFSubsystem
 import MissionElements
 import Utilities
 import HSFUniverse
 import UserModel
-# from MissionElements import SystemState
 from HSFSystem import *
 from System.Xml import XmlNode
 from Utilities import *
@@ -29,9 +27,9 @@ from System import Func, Delegate, Math
 from System.Collections.Generic import Dictionary, KeyValuePair
 from IronPython.Compiler import CallTarget0
 
-class eosensor(HSFSubsystem.Subsystem):
+class eosensor(HSFSystem.Subsystem):
     def __new__(cls, node, asset):
-        instance = HSFSubsystem.Subsystem.__new__(cls)
+        instance = HSFSystem.Subsystem.__new__(cls)
         instance.Asset = asset
         instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
 

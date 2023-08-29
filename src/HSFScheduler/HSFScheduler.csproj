@@ -130,7 +130,6 @@
     <None Include="..\Horizon\Horizon2.licenseheader">
       <Link>Horizon2.licenseheader</Link>
     </None>
-    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

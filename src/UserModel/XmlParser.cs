@@ -38,11 +38,10 @@ namespace UserModel
         {
             var XmlDoc = new XmlDocument();
             XmlDoc.Load(simulationInputFilePath);
-            XmlNodeList simulationInputXMLNodeList = XmlDoc.GetElementsByTagName("SCENARIO");
-            var XmlEnum = simulationInputXMLNodeList.GetEnumerator();
-            XmlEnum.MoveNext();
-            var simulationInputXMLNode = (XmlNode)XmlEnum.Current;
-            var scenarioName = simulationInputXMLNode.Attributes["scenarioName"].InnerXml;
+
+            // Load the scenario parameters forom the XML simulation input file
+            XmlNode simulationInputXMLNode = XmlDoc.GetElementsByTagName("SCENARIO")[0];
+            var scenarioName = simulationInputXMLNode.Attributes["scenarioName"].Value;
             log.Info("EXECUITING SCENARIO: "+ scenarioName);
 
             // Load the simulation parameters from the XML simulation input file
@@ -51,14 +50,7 @@ namespace UserModel
 
             // Load the scheduler parameters defined in the XML simulation input file
             XmlNode schedParametersXMLNode = simulationInputXMLNode["SCHEDULER_PARAMETERS"];
-
             bool paramsLoaded = SchedParameters.LoadSchedParameters(schedParametersXMLNode);
-
-            //foreach (XmlNode child in schedParametersXMLNode.ChildNodes)
-            //{
-            //    if (child.Name.Equals("SCRIPTED_EVALUATOR"))
-            //        Console.WriteLine("Scripted evaluators are loaded via the model input XML node!");
-            //}
         }
 
         /// <summary>

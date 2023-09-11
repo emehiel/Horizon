@@ -1,9 +1,4 @@
 <MODEL>
-  <!--
-	<PYTHON
-		enableScripting = "true">
-	</PYTHON>
-  -->
 
 	<ASSET assetName="Asset1">
 		<DynamicState
@@ -18,24 +13,11 @@
 			type="Access"
 			subsystemName = "Access">
 		</SUBSYSTEM>
-
-
-		<SUBSYSTEM
-			type="ADCS"
-			subsystemName = "ADCS"
-			slewRate = "5">
-			<STATE
-				type="Matrix"
-				key="ECI_Pointing_Vector(XYZ)"
-				value="[0.0; 0.0; 0.0]">
-			</STATE>
-		</SUBSYSTEM>
 		
-		<!--
 		<SUBSYSTEM
 			type="scripted"
 			subsystemName = "ADCS"
-			src="..\..\..\adcs.py"
+			src="..\..\..\..\samples\Aeolus\pythonScripts\adcs.py"
 			className="adcs">
 			<STATE
 				type="Matrix"
@@ -43,39 +25,11 @@
 				value="[0.0; 0.0; 0.0]">
 			</STATE>
 		</SUBSYSTEM>
-		-->
 		
-		<SUBSYSTEM
-			type="EOSensor"
-			subsystemName = "EOSensor"
-			lowQualityNumPixels="5000"
-			midQualityNumPixels="10000"
-			highQualityNumPixels="15000"
-			lowQualityCaptureTime="3"
-			midQualityCaptureTime="5"
-			highQualityCaptureTime="7">
-			<STATE
-				type="Double"
-				key="numPixels"
-				value="0.0">
-			</STATE>
-			<STATE
-				type="Double"
-				key="IncidenceAngle"
-				value="0.0">
-			</STATE>
-			<STATE
-				type="Bool"
-				key="EOSensorOn"
-				value="0.0">
-			</STATE>
-		</SUBSYSTEM>
-		
-		<!--
 		<SUBSYSTEM
 			type="scripted"
 			subsystemName = "EOSensor"
-			src = "..\..\..\eosensor.py"
+			src = "..\..\..\..\samples\Aeolus\pythonScripts\eosensor.py"
 			className = "eosensor"
 			lowQualityNumPixels="5000"
 			midQualityNumPixels="10000"
@@ -99,24 +53,11 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
-		-->
-		
-		<SUBSYSTEM
-			type="Ssdr"
-			subsystemName = "SSDR"
-			bufferSize = "5000">
-			<STATE
-				type="Double" 
-				key="DataBufferFillRatio" 
-				value="0.0">
-			</STATE>
-		</SUBSYSTEM>
-		
-		<!--
+
 		<SUBSYSTEM
 			type="scripted"
 			subsystemName = "SSDR"
-			src = "..\..\..\ssdr.py"
+			src = "..\..\..\..\samples\Aeolus\pythonScripts\ssdr.py"
 			className = "ssdr"
 			bufferSize = "5000">
 			<STATE
@@ -125,23 +66,11 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
-		-->
 		
-		<SUBSYSTEM
-			type="Comm"
-			subsystemName = "Comm">
-			<STATE
-				type="Double"
-				key="DataRate(MB/s)"
-				value="0.0">
-			</STATE>
-		</SUBSYSTEM>
-		
-		<!--
 		<SUBSYSTEM
 			type="scripted"
 			subsystemName = "Comm"
-			src="..\..\..\comm.py"
+			src="..\..\..\..\samples\Aeolus\pythonScripts\comm.py"
 			className="comm">
 			<STATE
 				type="Double"
@@ -149,31 +78,11 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
-		-->
-		
-		<SUBSYSTEM
-			type="Power"
-			subsystemName = "Power"
-			batterySize="1000000"
-			fullSolarPower="150"
-			penumbraSolarPower="75">
-			<STATE
-				type="Double"
-				key="DepthofDischarge"
-				value="0.0">
-			</STATE>
-			<STATE
-				type="Double"
-				key="SolarPanelPowerIn"
-				value="0.0">
-			</STATE>
-		</SUBSYSTEM>
-		
-		<!--
+
 		<SUBSYSTEM
 			type="scripted"
 			subsystemName = "Power"
-			src = "..\..\..\power.py"
+			src = "..\..\..\..\samples\Aeolus\pythonScripts\power.py"
 			className = "power"
 			batterySize="1000000"
 			fullSolarPower="150"
@@ -189,7 +98,7 @@
 				value="0.0">
 			</STATE>
 		</SUBSYSTEM>
-		-->
+		
 		<CONSTRAINT
 			value="0.25"
 			subsystemName = "Power"
@@ -398,6 +307,7 @@
 		depSubsystemName = "SSDR"
 		depAssetName = "Asset2"
 		fcnName="Comm_asset1_from_SSDR_asset1">
+		<!--<DEPENDENCY subsystemName="SSDR" fcnName="Asset1.CommfromSSDR"></DEPENDENCY>-->
 	</DEPENDENCY>
 	<DEPENDENCY
 		subsystemName = "Power"
@@ -430,7 +340,7 @@
 	<!-- Evaluator -->
 	<EVALUATOR
 		type = "targetvalueevaluator"
-		src ="..\..\..\eval.py"
+		src ="..\..\..\samples\Aeolus\pythonScripts\eval.py"
 		className ="eval">
 		<KEYREQUEST
 			keyAsset = "Asset1"

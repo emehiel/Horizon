@@ -1,13 +1,9 @@
 ﻿using System;
 using NUnit.Framework;
 using Horizon;
-using System.Xml;
 using HSFUniverse;
 using MissionElements;
 using System.Collections.Generic;
-using HSFSystem;
-using HSFScheduler;
-using HSFMainUnitTest;
 using System.IO;
 
 namespace HSFMainUnitTest

@@ -83,13 +83,21 @@
     <Compile Include="UniverseFactoryUnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Horizon\Horizon.csproj">
-      <Project>{6E6D45BA-6E13-4117-839E-469A59EEF191}</Project>
+    <ProjectReference Include="..\..\src\Horizon\Horizon.csproj">
+      <Project>{6e6d45ba-6e13-4117-839e-469a59eef191}</Project>
       <Name>Horizon</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\src\HSFUniverse\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
       <Name>HSFUniverse</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\MissionElements\MissionElements.csproj">
+      <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
+      <Name>MissionElements</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\src\UserModel\UserModel.csproj">
+      <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
+      <Name>UserModel</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Src\Utilities\Utilities.csproj">
       <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>

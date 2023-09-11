@@ -1,0 +1,20 @@
+<SCENARIO
+  scenarioName="Aeolus"
+  src="C:\Users\emehiel\source\repos\Horizon\samples\Aeolus\"
+  modelSrc="DSAC_Static_Mod_Scripted.xml"
+  targetSrc="v2.2-300targets.xml"
+  pythonSrc="pythonScripts\"
+  outputPath="none"
+  version="1.0">
+	<SIMULATION_PARAMETERS
+		SimStartJD="2454680.0"
+		SimStartSeconds="0.0"
+		SimEndSeconds="60">
+	</SIMULATION_PARAMETERS>
+
+	<SCHEDULER_PARAMETERS
+		maxNumSchedules="10"
+		numSchedCropTo="5"
+		simStepSeconds="30">
+	</SCHEDULER_PARAMETERS>
+</SCENARIO>

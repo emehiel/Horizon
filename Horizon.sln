@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horizon", "Horizon\Horizon.csproj", "{6E6D45BA-6E13-4117-839E-469A59EEF191}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Utilities", "Src\Utilities\Utilities.csproj", "{EDA938FC-7A34-4506-81F8-D4D940D6ED84}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFScheduler", "src\HSFScheduler\HSFScheduler.csproj", "{241171AB-18B2-45A0-848A-62B2EF751644}"
@@ -19,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFSystem", "src\HSFSystem\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFMainUnitTest", "test\HSFMainUnitTest\HSFMainUnitTest.csproj", "{20099F21-A99C-4F8A-9C10-AE3C3102F320}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFSchedulerUnitTest", "test\HSFSchedulerUnitTest\HSFSchedulerUnitTest.csproj", "{7411839B-05D5-4651-B8CA-C0B459FCFE5B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFSystemUnitTest", "test\HSFSystemUnitTest\HSFSystemUnitTest.csproj", "{62B089DB-EE40-4015-B44F-63EC60F811DA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFUniverseUnitTest", "test\HSFUniverseUnitTest\HSFUniverseUnitTest.csproj", "{596FA71B-12FA-40E5-89B6-DE19547A2A0F}"
@@ -30,6 +26,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilitiesUnitTest", "test\UtilitiesUnitTest\UtilitiesUnitTest.csproj", "{89680083-21CD-4FE8-A477-1F6884AD2E0E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MissionElementsUnitTest", "test\MissionElementsUnitTest\MissionElementsUnitTest.csproj", "{29CAA65F-B807-4845-B04D-AA0526A3F8FA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Horizon", "src\Horizon\Horizon.csproj", "{6E6D45BA-6E13-4117-839E-469A59EEF191}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HSFSchedulerUnitTest", "test\HSFSchedulerUnitTest\HSFSchedulerUnitTest.csproj", "{7411839B-05D5-4651-B8CA-C0B459FCFE5B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,18 +41,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Debug|x86.Build.0 = Debug|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Realease Fast|Any CPU.ActiveCfg = Realease Fast|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Realease Fast|Any CPU.Build.0 = Realease Fast|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Realease Fast|x86.ActiveCfg = Realease Fast|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Realease Fast|x86.Build.0 = Realease Fast|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Release|x86.ActiveCfg = Release|Any CPU
-		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Release|x86.Build.0 = Release|Any CPU
 		{EDA938FC-7A34-4506-81F8-D4D940D6ED84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EDA938FC-7A34-4506-81F8-D4D940D6ED84}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EDA938FC-7A34-4506-81F8-D4D940D6ED84}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -137,18 +125,6 @@ Global
 		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Release|Any CPU.Build.0 = Release|Any CPU
 		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Release|x86.ActiveCfg = Release|Any CPU
 		{20099F21-A99C-4F8A-9C10-AE3C3102F320}.Release|x86.Build.0 = Release|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Debug|x86.Build.0 = Debug|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Realease Fast|Any CPU.ActiveCfg = Realease Fast|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Realease Fast|Any CPU.Build.0 = Realease Fast|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Realease Fast|x86.ActiveCfg = Realease Fast|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Realease Fast|x86.Build.0 = Realease Fast|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Release|x86.ActiveCfg = Release|Any CPU
-		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Release|x86.Build.0 = Release|Any CPU
 		{62B089DB-EE40-4015-B44F-63EC60F811DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{62B089DB-EE40-4015-B44F-63EC60F811DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{62B089DB-EE40-4015-B44F-63EC60F811DA}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -209,6 +185,30 @@ Global
 		{29CAA65F-B807-4845-B04D-AA0526A3F8FA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{29CAA65F-B807-4845-B04D-AA0526A3F8FA}.Release|x86.ActiveCfg = Release|Any CPU
 		{29CAA65F-B807-4845-B04D-AA0526A3F8FA}.Release|x86.Build.0 = Release|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Debug|x86.Build.0 = Debug|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Realease Fast|Any CPU.ActiveCfg = Realease Fast|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Realease Fast|Any CPU.Build.0 = Realease Fast|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Realease Fast|x86.ActiveCfg = Realease Fast|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Realease Fast|x86.Build.0 = Realease Fast|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Release|x86.ActiveCfg = Release|Any CPU
+		{6E6D45BA-6E13-4117-839E-469A59EEF191}.Release|x86.Build.0 = Release|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Debug|x86.Build.0 = Debug|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Realease Fast|Any CPU.ActiveCfg = Realease Fast|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Realease Fast|Any CPU.Build.0 = Realease Fast|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Realease Fast|x86.ActiveCfg = Realease Fast|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Realease Fast|x86.Build.0 = Realease Fast|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Release|x86.ActiveCfg = Release|Any CPU
+		{7411839B-05D5-4651-B8CA-C0B459FCFE5B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

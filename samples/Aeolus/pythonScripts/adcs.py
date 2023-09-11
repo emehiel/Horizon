@@ -33,7 +33,7 @@ from IronPython.Compiler import CallTarget0
 
 class adcs(HSFSystem.Subsystem):
     def __new__(cls, node, asset):
-        print("Calling __new__()")
+        print("Calling adcs __new__()")
         instance = HSFSystem.Subsystem.__new__(cls)
         instance.Asset = asset
         instance.POINTVEC_KEY = Utilities.StateVariableKey[Utilities.Matrix[System.Double]](instance.Asset.Name + '.' + 'eci_pointing_vector(xyz)')

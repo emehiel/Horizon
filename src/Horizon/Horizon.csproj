@@ -133,27 +133,27 @@
     <Folder Include="obj\Debug\TempPE\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\src\HSFScheduler\HSFScheduler.csproj">
+    <ProjectReference Include="..\HSFScheduler\HSFScheduler.csproj">
       <Project>{241171ab-18b2-45a0-848a-62b2ef751644}</Project>
       <Name>HSFScheduler</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\HSFSystem\HSFSystem.csproj">
+    <ProjectReference Include="..\HSFSystem\HSFSystem.csproj">
       <Project>{72fa2884-1d92-4088-9fac-60564f9971f8}</Project>
       <Name>HSFSystem</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\HSFUniverse\HSFUniverse.csproj">
+    <ProjectReference Include="..\HSFUniverse\HSFUniverse.csproj">
       <Project>{23695c61-1557-4bb3-ac04-98db5701872a}</Project>
       <Name>HSFUniverse</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\MissionElements\MissionElements.csproj">
+    <ProjectReference Include="..\MissionElements\MissionElements.csproj">
       <Project>{982dcce0-925a-4139-9be7-7a99542d6240}</Project>
       <Name>MissionElements</Name>
     </ProjectReference>
-    <ProjectReference Include="..\src\UserModel\UserModel.csproj">
+    <ProjectReference Include="..\UserModel\UserModel.csproj">
       <Project>{c180b6ba-d68a-4ac8-b1eb-4e38f7f42ab7}</Project>
       <Name>UserModel</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Src\Utilities\Utilities.csproj">
+    <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{eda938fc-7a34-4506-81f8-d4d940d6ed84}</Project>
       <Name>Utilities</Name>
     </ProjectReference>

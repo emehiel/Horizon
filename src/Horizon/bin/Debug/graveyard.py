@@ -1,5 +1,7 @@
-# Scott's code graveyard for code that is no longer used
+# Copyright (c) 2022-2023 Scott Plantenga
 
+
+# code graveyard for code that is no longer used, but may be useful later
 
 def secantMinimizer(x0, x1, f, k, tol):
     '''

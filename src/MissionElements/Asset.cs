@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2016 California Polytechnic State University
-// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+﻿// Copyright (c) 2016-2023 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu) Scott Plantenga (splantenga@hotmail.com)
 
 using HSFUniverse;
 using System.Xml;
 using System;
-using Utilities; 
+using Utilities;
 
 namespace MissionElements
 {
@@ -14,8 +14,7 @@ namespace MissionElements
         #region Attributes
         public DynamicState AssetDynamicState{ get; private set; } //was protected, why?
         public string Name { get; private set; }
-        //TODO:make isTaskable mean something
-        public bool IsTaskable{ get; private set; }//was protected, why? do we need this?
+        public bool IsTaskable{ get; private set; }
         #endregion
 
         #region Constructors
@@ -27,7 +26,7 @@ namespace MissionElements
         {
             Name = name;
             AssetDynamicState = dynamicState;
-            IsTaskable = false;
+            IsTaskable = true; // default as True
         }
 
         public Asset(XmlNode assetXMLNode)
@@ -38,7 +37,9 @@ namespace MissionElements
                 throw new MissingMemberException("Missing name for Asset!");
             if (assetXMLNode["DynamicState"] != null)
                 AssetDynamicState = new DynamicState(assetXMLNode["DynamicState"]);
-            IsTaskable = false;
+            IsTaskable = true; // default as True
+            if (assetXMLNode["IsPassive"] != null)
+                IsTaskable = false;
         }
         #endregion
 
@@ -52,7 +53,7 @@ namespace MissionElements
         {
             if (obj == null || GetType() != obj.GetType())
                 return false;
-            return Name.Equals(((Asset)obj).Name);  
+            return Name.Equals(((Asset)obj).Name);
         }
 
         /// <summary>

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 California Polytechnic State University
-// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+﻿// Copyright (c) 2016-2023 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu) Scott Plantenga (splantenga@hotmail.com)
 
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace MissionElements
         // the type of task being performed (will always be converted to a lowercase string in the constructor
          public string Type { get; private set; }
 
-        // the target associated with the task 
+        // the target associated with the task
         public Target Target { get; private set; }
 
         // The maximum number of times the task should be performed by the ENTIRE SYSTEM (all assets count towards this)
@@ -71,6 +71,13 @@ namespace MissionElements
                 else
                     tasks.Push(new Task(taskType, new Target(targetNode), maxTimesPerform));
             }
+
+            // Include Empty Task
+            DynamicStateType Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), "NULL_STATE");
+            DynamicState emptyDS = new DynamicState(Type, new OrbitalEOMS(), new Utilities.Vector("[0]"));
+            Target emptyTgt = new Target("EmptyTarget", "EMPTY", emptyDS, 0);
+            tasks.Push(new Task("EMPTY", emptyTgt, 0));
+
             log.Info("Number of Targets Loaded: "+ tasks.Count);
 
             return allLoaded;
@@ -91,5 +98,5 @@ namespace MissionElements
     // The three types of tasks supported by Horizon
     //public enum TaskType { EMPTY, COMM, IMAGING, FLYALONG, RECOVERY }
 
-  
+
 }

@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 California Polytechnic State University
-// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+﻿// Copyright (c) 2016-2023 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu) Scott Plantenga (splantenga@hotmail.com)
 
 using System;
 using System.Collections.Generic;
@@ -40,8 +40,8 @@ namespace Horizon
 
         public List<KeyValuePair<string, string>> DependencyList { get; set; } = new List<KeyValuePair<string, string>>();
         public List<KeyValuePair<string, string>> DependencyFcnList { get; set; } = new List<KeyValuePair<string, string>>();
-        
-        // Create Constraint list 
+
+        // Create Constraint list
         public List<Constraint> ConstraintsList { get; set; } = new List<Constraint>();
 
         //Create Lists to hold all the dependency nodes to be parsed later
@@ -113,7 +113,7 @@ namespace Horizon
             ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod_Scripted.xml"; // Asset 1 Scripted, Asset 2 C#
             //ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod_PartialScripted.xml"; // Asset 1 mix Scripted/C#, Asset 2 C#
             //ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod.xml"; // Asset 1 C#, Asset 2 C#
-            
+
             bool simulationSet = false, targetSet = false, modelSet = false;
 
             // Get the input filenames
@@ -212,7 +212,7 @@ namespace Horizon
                 Console.WriteLine("Default Space Environment Loaded");
                 log.Info("Default Space Environment Loaded");
             }
-            
+
             // Load Environments
             foreach (XmlNode environmentNode in environments)
             {
@@ -230,7 +230,10 @@ namespace Horizon
             foreach(XmlNode assetNode in assets)
             {
                 Asset asset = new Asset(assetNode);
-                asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+                if (asset.AssetDynamicState.Eoms != null)
+                {
+                    asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+                }
                 AssetList.Add(asset);
 
                 // Load Subsystems
@@ -248,7 +251,7 @@ namespace Horizon
                     {
                         // Parse state node for key name and state type, add the key to the subsys's list of keys, return the key name
                         string keyName = SubsystemFactory.SetStateKeys(StateNode, subsys);
-                        // Use key name and state type to set initial conditions 
+                        // Use key name and state type to set initial conditions
                         InitialSysState.SetInitialSystemState(StateNode, keyName);
                     }
                 }
@@ -310,7 +313,7 @@ namespace Horizon
             {
                 systemSchedule.ScheduleValue = SchedEvaluator.Evaluate(systemSchedule);
                 bool canExtendUntilEnd = true;
-                // Extend the subsystem states to the end of the simulation 
+                // Extend the subsystem states to the end of the simulation
                 foreach (var subsystem in SimSystem.Subsystems)
                 {
                     if (systemSchedule.AllStates.Events.Count > 0)

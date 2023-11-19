@@ -1,6 +1,9 @@
 ﻿// Copyright (c) 2016 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
 
+
+// TODO - harder diff bcuz I deleted then rewrote... need to track back history better...
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -40,7 +43,7 @@ namespace MissionElements
 
         #region Constructors
         /// <summary>
-        /// Creates an initial state   
+        /// Creates an initial state
         /// </summary>
         public SystemState()
         {
@@ -443,7 +446,7 @@ namespace MissionElements
         //        return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
         //    return valueOut; //return empty profile
         //}
-        
+
         ///// <summary>
         ///// Returns the integer Profile for this state and all previous states merged into one Profile
         ///// </summary>

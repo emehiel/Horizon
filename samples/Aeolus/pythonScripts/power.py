@@ -43,7 +43,7 @@ class power(HSFSystem.Subsystem):
         instance._fullSolarPanelPower = 150
         instance._penumbraSolarPanelPower = 75
 
-        # values read from the xml file		
+        # values read from the xml file
         if (node.Attributes['batterySize'] != None):
             instance._batterySize = float(node.Attributes['batterySize'].Value)
         if (node.Attributes['fullSolarPower'] != None):
@@ -55,6 +55,11 @@ class power(HSFSystem.Subsystem):
 
     def CanPerform(self, event, universe):
         #print("Entry of Power CanPreform")
+        # shorcut check for empty target
+        tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
+        if (tgtName == 'EmptyTarget'):
+            return True
+
         es = event.GetEventStart(self.Asset)
         te = event.GetTaskEnd(self.Asset)
         ee = event.GetEventEnd(self.Asset)

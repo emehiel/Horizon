@@ -40,6 +40,11 @@ class ssdr(HSFSystem.Subsystem):
         return instance
 
     def CanPerform(self, event, universe):
+        # shorcut check for empty target
+        tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
+        if (tgtName == 'EmptyTarget'):
+            return True
+
         #print(self._task.Type)
         if (self._task.Type == "imaging"):
             ts = event.GetTaskStart(self.Asset)

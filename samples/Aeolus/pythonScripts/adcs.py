@@ -42,6 +42,11 @@ class adcs(HSFSystem.Subsystem):
         return instance
 
     def CanPerform(self, event, universe):
+        # shorcut check for empty target
+        tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
+        if (tgtName == 'EmptyTarget'):
+            return True
+
         timetoslew = 10
         es = event.GetEventStart(self.Asset)
         ts = event.GetTaskStart(self.Asset)

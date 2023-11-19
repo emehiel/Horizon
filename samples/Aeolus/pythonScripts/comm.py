@@ -42,6 +42,12 @@ class comm(HSFSystem.Subsystem):
     def CanPerform(self, event, universe):
         #print("Entry of Comm CanPreform")
         #print(self._task.Type)
+
+        # shorcut check for empty target
+        tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
+        if (tgtName == 'EmptyTarget'):
+            return True
+
         if self._task.Type == "comm":
             newProf = self.DependencyCollector(event)
             if (newProf.Empty() == False):

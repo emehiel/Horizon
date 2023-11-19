@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 California Polytechnic State University
+﻿// Copyright (c) 2016-2023 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
 
 using System;

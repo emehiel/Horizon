@@ -1,11 +1,11 @@
-﻿// Copyright (c) 2016 California Polytechnic State University
-// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+﻿// Copyright (c) 2016-2023 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu) Scott Plantenga (splantenga@hotmail.com)
 
 using System;
 using System.Collections.Generic;
 using HSFSystem;
 using HSFUniverse;
-//using Logging;
+using MissionElements;
 
 namespace HSFScheduler
 {
@@ -19,6 +19,15 @@ namespace HSFScheduler
         /// <returns></returns>
         public static bool CheckSchedule(SystemClass system, SystemSchedule proposedSchedule)
         {
+            // First check that any Assets with IsTaskable = false is only tasked to EmptyTarget
+            foreach (KeyValuePair<Asset, Task> taskDict in proposedSchedule.AllStates.Events.Peek().Tasks)
+            {
+                if ((!taskDict.Key.IsTaskable) && (taskDict.Value.Type != "empty"))
+                {
+                    return false;
+                }
+            }
+
             // Iterate through Subsystem Nodes and set that they havent run
             foreach (var subsystem in system.Subsystems)
                 subsystem.IsEvaluated = false;
@@ -56,7 +65,7 @@ namespace HSFScheduler
                 return true;
 
             var events = proposedSchedule.AllStates.Events;
-            
+
             //if (events.Count != 0)
             //{
                 //if (events.Count > 1)

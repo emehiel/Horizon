@@ -1,5 +1,5 @@
-﻿// Copyright (c) 2016 California Polytechnic State University
-// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
+﻿// Copyright (c) 2016-2023 California Polytechnic State University
+// Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu) Scott Plantenga (splantenga@hotmail.com)
 
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ namespace HSFScheduler
         #endregion
 
         #region Constructors
-        public SystemSchedule(SystemState initialstates) 
+        public SystemSchedule(SystemState initialstates)
         {
             ScheduleValue = 0;
             AllStates = new StateHistory(initialstates);
@@ -70,7 +70,7 @@ namespace HSFScheduler
                         taskEnds.Add(access.Asset, access.AccessEnd);
 
                     eventStarts.Add(access.Asset, newEventStartTime);
-                    
+
                     //  If Event Start + Step Size > Sim End Time - Set Event End time to Sim End Time
                     if (newEventStartTime + SchedParameters.SimStepSeconds > SimParameters.SimEndSeconds)
                         eventEnds.Add(access.Asset, SchedParameters.SimStepSeconds);
@@ -96,7 +96,7 @@ namespace HSFScheduler
             AllStates = new StateHistory(oldStates, eventToAdd);
         }
         #endregion
-        
+
         /// <summary>
         /// Determine if a task can be added to a schedule at the new start time
         /// </summary>
@@ -107,20 +107,45 @@ namespace HSFScheduler
         {
             int count = 0;
 
-	        foreach(var access in newAccessList)
+	        foreach (var access in newAccessList)
             {
-                if (!AllStates.isEmpty(access.Asset))
+                // short-circuit empty tasks
+                if ((access.Task == null) || (access.Task.Type == "empty"))
                 {
-                    if (AllStates.GetLastEvent().GetEventEnd(access.Asset) > newTaskStartTime)
-                        return false;
+                    continue;
                 }
 
-		        if(access.Task != null)
+                // check if the last non-empty event is still on-going
+                if (!AllStates.isEmpty(access.Asset))
                 {
-				    count += AllStates.timesCompletedTask(access.Task);
-			        if(count >= access.Task.MaxTimesToPerform)
-				        return false;
-		        }
+                    int numEvents = AllStates.Events.Count;
+                    Event theLastEvent = AllStates.GetLastEvent();
+                    Boolean isEmptyTask = (theLastEvent.GetAssetTask(access.Asset) == null) || (theLastEvent.GetAssetTask(access.Asset).Type == "empty");
+                    Boolean hadEmpty = isEmptyTask; // track if this empty-task exploration was necessary or not
+                    int numEventsChecked = 1; // start counter
+
+                    while ((isEmptyTask) && (numEventsChecked < numEvents))
+                    {
+                        theLastEvent = AllStates.Events.Skip(numEventsChecked).First(); // reach back numEventsChecked times to get the previous Event
+                        isEmptyTask = (theLastEvent.GetAssetTask(access.Asset) == null) || (theLastEvent.GetAssetTask(access.Asset).Type == "empty");
+                        numEventsChecked++;
+                    }
+
+                    if ((hadEmpty) && (numEventsChecked == numEvents))
+                        continue; // all events for this asset are empty, so it can be tasked now
+
+                    else if (theLastEvent.GetEventEnd(access.Asset) > newTaskStartTime)
+                        return false; // theLastEvent is still on-going
+                }
+
+                // check if count is more than allowed
+                count += AllStates.timesCompletedTask(access.Task);
+                if (count >= access.Task.MaxTimesToPerform)
+                    return false;
+
+                // Scott: TODO/NOTE @Dr M this seems to mean it would reject the event if this count for ALL tasks exceeds this per-task limit?
+                // perhaps if (AllStates.timesCompletedTask(access.Task) >= access.Task.MaxTimesToPerform) is better, but doesn't check if several tasks on this event push it over the limit together
+                // for my thesis this works OK bcuz max=1 for all tasks, but if we care more about maxTimesToPerform this gets trickier...
 	        }
 	        return true;
         }
@@ -160,7 +185,7 @@ namespace HSFScheduler
         {
             return AllStates.GetLastState();
         }
-        #endregion 
+        #endregion
 
         /// <summary>
         /// Determine if the first schedule value is greater than the second
@@ -195,9 +220,9 @@ namespace HSFScheduler
             {
                 sysState = schedule.AllStates.Events.Peek().State;
             }
-            
 
-            while(sysState != null) { 
+
+            while(sysState != null) {
                 foreach (var kvpDoubleProfile in sysState.Ddata)
                     foreach (var data in kvpDoubleProfile.Value.Data)
                         if (!stateTimeDData.ContainsKey(kvpDoubleProfile.Key))
@@ -272,7 +297,7 @@ namespace HSFScheduler
             foreach (var list in stateTimeQData)
                 writeStateVariable(list, scheduleWritePath);
         }
-        
+
         /// <summary>
         /// Write out all the state variables in the schedule to file
         /// </summary>

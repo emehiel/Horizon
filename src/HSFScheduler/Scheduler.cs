@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 California Polytechnic State University
+﻿// Copyright (c) 2016-2023 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
 
 using System;
@@ -158,15 +158,12 @@ namespace HSFScheduler
                             potentialSystemSchedules.Add(new SystemSchedule(CopySchedule, newAccessStack, currentTime));
                             // oldSched = new SystemSchedule(CopySchedule);
                         }
-
                     }
                 }
 
                 int numSched = 0;
                 foreach (var potentialSchedule in potentialSystemSchedules)
                 {
-
-
                     if (Checker.CheckSchedule(system, potentialSchedule)) {
                         systemCanPerformList.Add(potentialSchedule);
                         numSched++;
@@ -183,8 +180,8 @@ namespace HSFScheduler
                 potentialSystemSchedules.Clear();
                 systemCanPerformList.Clear();
 
-                // Print completion percentage in command window
-                Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * currentTime / _endTime, systemSchedules.Count);
+                // Print completion percentage and number of generated schedules in command window
+                Console.WriteLine("Scheduler Status: {0:F}% done; {1} schedules generated.", 100 * (currentTime + _stepLength) / _endTime, systemSchedules.Count);
             }
             return systemSchedules;
         }

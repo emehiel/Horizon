@@ -62,7 +62,12 @@ class eosensor(HSFSystem.Subsystem):
         return instance
 
     def CanPerform(self, event, universe):
-         if (self._task.Type == "imaging"):
+        # shorcut check for empty target
+        tgtName = event.GetAssetTask(self.Asset).Target.Name.ToString()
+        if (tgtName == 'EmptyTarget'):
+            return True
+
+        if (self._task.Type == "imaging"):
              value = self._task.Target.Value
              pixels = self._lowQualityPixels
              timetocapture = self._lowQualityTime

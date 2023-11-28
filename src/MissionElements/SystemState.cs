@@ -40,7 +40,7 @@ namespace MissionElements
 
         #region Constructors
         /// <summary>
-        /// Creates an initial state   
+        /// Creates an initial state
         /// </summary>
         public SystemState()
         {
@@ -443,7 +443,7 @@ namespace MissionElements
         //        return PreviousState.GetFullProfile(key); // If no data, return profile from previous states
         //    return valueOut; //return empty profile
         //}
-        
+
         ///// <summary>
         ///// Returns the integer Profile for this state and all previous states merged into one Profile
         ///// </summary>

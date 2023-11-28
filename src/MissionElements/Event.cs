@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2016 California Polytechnic State University
+﻿// Copyright (c) 2016-2023 California Polytechnic State University
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
 
 using System;
@@ -18,27 +18,27 @@ namespace MissionElements
         public Dictionary<Asset, Task> Tasks { get; private set; }
 
         /// <summary>
-        /// The time history of the State during the current Event. 
+        /// The time history of the State during the current Event.
         /// </summary>
         public SystemState State { get; private set; }
 
         /// <summary>
-        /// The start of the event associated with this State 
+        /// The start of the event associated with this State
         /// </summary>
         public Dictionary<Asset, double> EventStarts { get; private set; }
 
         /// <summary>
-        /// The start of the task associated with this State 
+        /// The start of the task associated with this State
         /// </summary>
         public Dictionary<Asset, double> TaskStarts { get; set; }
 
         /// <summary>
-        ///The end of the task associated with this State 
+        ///The end of the task associated with this State
         /// </summary>
         public Dictionary<Asset, double> TaskEnds { get; set; }
 
         /// <summary>
-        /// The end of the event associated with this State 
+        /// The end of the event associated with this State
         /// </summary>
         public Dictionary<Asset, double> EventEnds { get; set; }
 
@@ -47,7 +47,7 @@ namespace MissionElements
 
         #region Constructors
         /// <summary>
-        ///  Creates an Event, in which the Task was performed by an Asset, and the time history 
+        ///  Creates an Event, in which the Task was performed by an Asset, and the time history
         /// of the pertinent State information was saved.
         /// </summary>
         /// <param name="task"></param>
@@ -102,7 +102,7 @@ namespace MissionElements
         public double GetEventStart(Asset asset)
         {
             double time;
-                
+
             EventStarts.TryGetValue(asset, out time);
             return time;
         }
@@ -181,8 +181,8 @@ namespace MissionElements
             foreach(var assetTask in Tasks)
             {
                 eventString += assetTask.Key.Name + ":\t" + assetTask.Value.Target.ToString()+ "\t";
-                eventString += "Task Start:\t" + GetTaskStart(assetTask.Key) + "\tEvent Start:\t" + GetEventStart(assetTask.Key) + "\t"; 
-                eventString+= "Task End:\t" + GetTaskEnd(assetTask.Key) + "\tEvent End:\t" + GetEventEnd(assetTask.Key);
+                eventString += "Task Start:\t" + GetTaskStart(assetTask.Key) + "\tEvent Start:\t" + GetEventStart(assetTask.Key) + "\t";
+                eventString += "Task End:\t" + GetTaskEnd(assetTask.Key) + "\tEvent End:\t" + GetEventEnd(assetTask.Key) + "\t";
             }
 
             return eventString;

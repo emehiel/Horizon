@@ -89,39 +89,42 @@ class power(HSFSystem.Subsystem):
         #print("Power CanPreform, DoD")
         #print(dodProf[0])
         return True
-
+    
     def CanExtend(self, event, universe, extendTo):
-        ee = event.GetEventEnd(self.Asset)
-        if (ee > SimParameters.SimEndSeconds):
-            return False
+            return super(power, self).CanExtend(event, universe, extendTo)
 
-        sun = universe.Sun
-        print(event.State.GetLastValue(self.DOD_KEY))
-        te = event.State.GetLastValue(self.DOD_KEY).Item1
-        if (event.GetEventEnd(self.Asset) < extendTo):
-            event.SetEventEnd(self.Asset, extendTo)
-        # get the dod initial conditions
-        olddod = event.State.GetValueAtTime(self.DOD_KEY, te).Item2
-        # collect power profile out
-        powerOut = self.DependencyCollector(event)
-        # collect power profile in
-        position = self.Asset.AssetDynamicState
-        powerIn = self.CalcSolarPanelPowerProfile(te, ee, event.State, position, universe)
-        # calculated dod rate
-        dodrateofchange = ((powerOut - powerIn) / self._batterySize)
+    # def CanExtend(self, event, universe, extendTo):
+    #     ee = event.GetEventEnd(self.Asset)
+    #     if (ee > SimParameters.SimEndSeconds):
+    #         return False
 
-        exceeded_lower = False
-        exceeded_upper = False
-        freq = 1.0
-        dodProf = dodrateofchange.limitIntegrateToProf(te, ee, freq, 0.0, 1.0, exceeded_lower, exceeded_upper, 0, olddod)
-        # dodProf is a tuple where the [0] element contains the HSFProfile[System.Double]() object desired
-        dodProf = dodProf[0]
-        if (exceeded_upper):
-            return False
-        if (dodProf.LastTime() != ee and ee == SimParameters.SimEndSeconds):
-            dodProf[ee] = dodProf.LastValue()
-        event.State.AddValues(self.DOD_KEY, dodProf)
-        return True
+    #     sun = universe.Sun
+    #     print(event.State.GetLastValue(self.DOD_KEY))
+    #     te = event.State.GetLastValue(self.DOD_KEY).Item1
+    #     if (event.GetEventEnd(self.Asset) < extendTo):
+    #         event.SetEventEnd(self.Asset, extendTo)
+    #     # get the dod initial conditions
+    #     olddod = event.State.GetValueAtTime(self.DOD_KEY, te).Item2
+    #     # collect power profile out
+    #     powerOut = self.DependencyCollector(event)
+    #     # collect power profile in
+    #     position = self.Asset.AssetDynamicState
+    #     powerIn = self.CalcSolarPanelPowerProfile(te, ee, event.State, position, universe)
+    #     # calculated dod rate
+    #     dodrateofchange = ((powerOut - powerIn) / self._batterySize)
+
+    #     exceeded_lower = False
+    #     exceeded_upper = False
+    #     freq = 1.0
+    #     dodProf = dodrateofchange.limitIntegrateToProf(te, ee, freq, 0.0, 1.0, exceeded_lower, exceeded_upper, 0, olddod)
+    #     # dodProf is a tuple where the [0] element contains the HSFProfile[System.Double]() object desired
+    #     dodProf = dodProf[0]
+    #     if (exceeded_upper):
+    #         return False
+    #     if (dodProf.LastTime() != ee and ee == SimParameters.SimEndSeconds):
+    #         dodProf[ee] = dodProf.LastValue()
+    #     event.State.AddValues(self.DOD_KEY, dodProf)
+    #     return True
 
     def GetSolarPanelPower(self, shadow):
         if (str(shadow) == 'UMBRA'):

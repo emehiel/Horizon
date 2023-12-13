@@ -258,16 +258,28 @@ namespace Utilities
             //s += "]";
 
             //return s;
-
             string s = "";
 
-            foreach (List<T> row in _elements)
+            if (this.IsColumnVector())
             {
-                foreach (T element in row)
-                    s += element.ToString() + ",";
-                s = s.Substring(0, s.Length - 1) + "\n";
-            }
+                foreach (List<T> list in _elements)
+                {
+                    s += list[0].ToString() + ",";
+                }
 
+                s = s.Substring(0, s.Length - 1);
+            }
+            else
+            {
+                foreach (List<T> row in _elements)
+                {
+                    foreach (T element in row)
+                        s += element.ToString() + ",";
+                    s = s.Substring(0, s.Length - 1);
+                }
+
+            }
+            
             return s;
         }
 

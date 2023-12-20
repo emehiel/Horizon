@@ -94,6 +94,7 @@
     <None Include="..\Horizon\Horizon2.licenseheader">
       <Link>Horizon2.licenseheader</Link>
     </None>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

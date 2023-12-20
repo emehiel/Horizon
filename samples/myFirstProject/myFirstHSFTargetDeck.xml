@@ -7,29 +7,106 @@
     MaxTimes = "10">
     <DynamicState
   		DynamicStateType = "STATIC_LLA"
-  		ICs = "[39.2945; -71.1559; 0]">
+  		ICs = "[1; 2; 0]">
   	</DynamicState>
   </TARGET>
-    <TARGET
+  <TARGET
     TargetName = "imagetarget2"
     TargetType = "LocationTarget"
-    Value = "3"
+    Value = "2"
     TaskType = "IMAGING"
     MaxTimes = "10">
     <DynamicState
   		DynamicStateType = "STATIC_LLA"
-  		ICs = "[39.2945; -71.1559; 0]">
+  		ICs = "[2; 4; 0]">
   	</DynamicState>
   </TARGET>
-    <TARGET
+  <TARGET
     TargetName = "imagetarget3"
     TargetType = "LocationTarget"
-    Value = "3"
+    Value = "1"
     TaskType = "IMAGING"
     MaxTimes = "10">
     <DynamicState
   		DynamicStateType = "STATIC_LLA"
-  		ICs = "[39.2945; -71.1559; 0]">
+  		ICs = "[3; 6; 0]">
+  	</DynamicState>
+  </TARGET>
+  <TARGET
+    TargetName = "imagetarget4"
+    TargetType = "LocationTarget"
+    Value = "13"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[4; 8; 0]">
+  	</DynamicState>
+  </TARGET>
+  <TARGET
+    TargetName = "imagetarget5"
+    TargetType = "LocationTarget"
+    Value = "10"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[5; 10; 0]">
+  	</DynamicState>
+  </TARGET>
+  <TARGET
+    TargetName = "imagetarget6"
+    TargetType = "LocationTarget"
+    Value = "7"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[6; 12; 0]">
+  	</DynamicState>
+  </TARGET>
+  <TARGET
+    TargetName = "imagetarget7"
+    TargetType = "LocationTarget"
+    Value = "8"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[7; 14; 0]">
+  	</DynamicState>
+  </TARGET>
+  <TARGET
+    TargetName = "imagetarget8"
+    TargetType = "LocationTarget"
+    Value = "5"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[8; 16; 0]">
+  	</DynamicState>
+  </TARGET>
+  <TARGET
+    TargetName = "imagetarget9"
+    TargetType = "LocationTarget"
+    Value = "9"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[9; 18; 0]">
+  	</DynamicState>
+  </TARGET>
+  <TARGET
+    TargetName = "imagetarget10"
+    TargetType = "LocationTarget"
+    Value = "14"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[10; 20; 0]">
   	</DynamicState>
   </TARGET>
 </TARGETDECK>

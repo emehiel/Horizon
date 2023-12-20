@@ -1,0 +1,35 @@
+<TARGETDECK>
+  <TARGET
+    TargetName = "imagetarget1"
+    TargetType = "LocationTarget"
+    Value = "3"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[39.2945; -71.1559; 0]">
+  	</DynamicState>
+  </TARGET>
+    <TARGET
+    TargetName = "imagetarget2"
+    TargetType = "LocationTarget"
+    Value = "3"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[39.2945; -71.1559; 0]">
+  	</DynamicState>
+  </TARGET>
+    <TARGET
+    TargetName = "imagetarget3"
+    TargetType = "LocationTarget"
+    Value = "3"
+    TaskType = "IMAGING"
+    MaxTimes = "10">
+    <DynamicState
+  		DynamicStateType = "STATIC_LLA"
+  		ICs = "[39.2945; -71.1559; 0]">
+  	</DynamicState>
+  </TARGET>
+</TARGETDECK>

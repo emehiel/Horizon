@@ -78,6 +78,7 @@ namespace HSFSystem
             var p = engine.GetSearchPaths();
             p.Add(AppDomain.CurrentDomain.BaseDirectory + @"..\..\..\PythonSubs");
             p.Add(AppDomain.CurrentDomain.BaseDirectory + @"..\..\..\");
+            p.Add(AppDomain.CurrentDomain.BaseDirectory + @"..\..\..\samples\Aeolus\pythonScripts");
 
             // Trying to use these so we can call numpy, etc...  Does not seem to work 8/31/23
             p.Add(@"C:\Python310\Lib\site-packages\");

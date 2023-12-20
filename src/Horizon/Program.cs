@@ -14,6 +14,7 @@ using HSFUniverse;
 using HSFSystem;
 using log4net;
 using Utilities;
+using Microsoft.Scripting.Actions.Calls;
 
 namespace Horizon
 {
@@ -107,13 +108,24 @@ namespace Horizon
         }
         public void InitInput(string[] args)
         {
-            // Set Defaults
-            SimulationInputFilePath = @"..\..\..\..\samples\Aeolus\AeolusSimulationInput.xml";
-            TargetDeckFilePath = @"..\..\..\..\samples\Aeolus\v2.2-300targets.xml";
-            ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod_Scripted.xml"; // Asset 1 Scripted, Asset 2 C#
-            //ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod_PartialScripted.xml"; // Asset 1 mix Scripted/C#, Asset 2 C#
-            //ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod.xml"; // Asset 1 C#, Asset 2 C#
-            
+            bool simAeolus = false;
+            if (simAeolus)
+            {
+                // Set Defaults
+                SimulationInputFilePath = @"..\..\..\..\samples\Aeolus\AeolusSimulationInput.xml";
+                TargetDeckFilePath = @"..\..\..\..\samples\Aeolus\v2.2-300targets.xml";
+                ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod_Scripted.xml"; // Asset 1 Scripted, Asset 2 C#
+                //ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod_PartialScripted.xml"; // Asset 1 mix Scripted/C#, Asset 2 C#
+                //ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod.xml"; // Asset 1 C#, Asset 2 C#
+            }
+            else
+            {
+                // Set myFirstHSFProject file paths
+                SimulationInputFilePath = @"..\..\..\..\samples\myFirstHSFProject\myFirstHSFScenario.xml";
+                TargetDeckFilePath = @"..\..\..\..\samples\myFirstHSFProject\myFirstHSFTargetDeck.xml";
+                ModelInputFilePath = @"..\..\..\..\samples\myFirstHSFProject\myFirstHSFSystem.xml";
+            }
+
             bool simulationSet = false, targetSet = false, modelSet = false;
 
             // Get the input filenames
@@ -123,7 +135,7 @@ namespace Horizon
                 i++;
                 switch (input)
                 {
-                    case "-s":
+                    case " - s":
                         SimulationInputFilePath = args[i];
                         simulationSet = true;
                         Console.WriteLine("Using custom simulation file: " + SimulationInputFilePath);
@@ -147,18 +159,18 @@ namespace Horizon
 
             if (!simulationSet)
             {
-                Console.WriteLine("Using Default Simulation File");
-                log.Info("Using Default Simulation File");
+                Console.WriteLine("Using Default Scenario File");
+                log.Info("Using Default Scenario File");
             }
 
             if (!targetSet)
             {
-                log.Info("Using Default Simulation File");
+                log.Info("Using Default Target File");
             }
 
             if (!modelSet)
             {
-                log.Info("Using Default Simulation File");
+                log.Info("Using Default Model File");
             }
 
         }
@@ -282,9 +294,9 @@ namespace Horizon
             var evalNodes = modelInputXMLNode.SelectNodes("EVALUATOR");
             if (evalNodes.Count > 1)
             {
-                throw new NotImplementedException("Too many evaluators in XML input!");
-                Console.WriteLine("Too many evaluators in XML input");
-                log.Info("Too many evaluators in XML input");
+                throw new NotImplementedException("Too many evaluators in input!");
+                Console.WriteLine("Too many evaluators in input");
+                log.Info("Too many evaluators in input");
             }
             else
             {

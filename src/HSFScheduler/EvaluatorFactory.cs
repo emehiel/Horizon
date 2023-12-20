@@ -22,33 +22,43 @@ namespace HSFScheduler
         /// <returns></returns>
         public static Evaluator GetEvaluator(XmlNode evalNode, List <Subsystem> subList)
         {
-            string evalType = evalNode.Attributes["type"].Value.ToString().ToLower();
-            Evaluator schedEvaluator = null;    
-            if (evalType != null)
+            Evaluator schedEvaluator = null;
+            if (evalNode == null) // If no evaluator node is provided,
             {
-                if (evalType.Equals("scripted"))
-                {
-                    EvaluatorFactory EvaluatorFactory = new EvaluatorFactory(); // is this correct??
-                    List<dynamic> keychain = EvaluatorFactory.BuildKeychain(evalNode.SelectNodes("KEYREQUEST"), subList);
-                    schedEvaluator = new ScriptedEvaluator(evalNode, keychain);
-                    Console.WriteLine("Scripted Evaluator Loaded");
-                }
-                else if (evalType.Equals("targetvalueevaluator"))
-                {
-                    EvaluatorFactory EvaluatorFactory = new EvaluatorFactory(); // is this correct??
-                    List<dynamic> keychain = EvaluatorFactory.BuildKeychain(evalNode.SelectNodes("KEYREQUEST"), subList);
-                    schedEvaluator = new TargetValueEvaluator(keychain);
-                    Console.WriteLine("Target Value Evaluator Loaded");
-                }
-            }
-            if (schedEvaluator == null)
-            {
-                if(evalType != null)
-                {
-                    Console.WriteLine("Attempt to load input evaluator failed, loading Default Evaluator...");
-                }
                 schedEvaluator = new DefaultEvaluator(); // ensures at least default is used
                 Console.WriteLine("Default Evaluator Loaded");
+            }
+            else // try to get the right evaluator
+            {
+
+                string evalType = evalNode.Attributes["type"].Value.ToString().ToLower();
+
+                if (evalType != null)
+                {
+                    if (evalType.Equals("scripted"))
+                    {
+                        EvaluatorFactory EvaluatorFactory = new EvaluatorFactory(); // is this correct??
+                        List<dynamic> keychain = EvaluatorFactory.BuildKeychain(evalNode.SelectNodes("KEYREQUEST"), subList);
+                        schedEvaluator = new ScriptedEvaluator(evalNode, keychain);
+                        Console.WriteLine("Scripted Evaluator Loaded");
+                    }
+                    else if (evalType.Equals("targetvalueevaluator"))
+                    {
+                        EvaluatorFactory EvaluatorFactory = new EvaluatorFactory(); // is this correct??
+                        List<dynamic> keychain = EvaluatorFactory.BuildKeychain(evalNode.SelectNodes("KEYREQUEST"), subList);
+                        schedEvaluator = new TargetValueEvaluator(keychain);
+                        Console.WriteLine("Target Value Evaluator Loaded");
+                    }
+                }
+                if (schedEvaluator == null) // Last ditch, evaluator node is provided, but not built by the factory
+                {
+                    if (evalType != null)
+                    {
+                        Console.WriteLine("Attempt to load input evaluator failed, loading Default Evaluator...");
+                    }
+                    schedEvaluator = new DefaultEvaluator(); // ensures at least default is used
+                    Console.WriteLine("Default Evaluator Loaded");
+                }
             }
             return schedEvaluator;
         }

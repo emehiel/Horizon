@@ -1,0 +1,17 @@
+<MODEL>
+  <ASSET assetName="Asset1">
+    <DynamicState
+      DynamicStateType="PREDETERMINED_ECI"
+      ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866]">
+      <EOMS EOMSType="orbital_EOMS">
+      </EOMS>
+    </DynamicState>
+    <SUBSYSTE>
+      subsystemName = "Camera"
+      type="scripted"
+      src="Camera.py"
+      className="camera">
+      <IC type="Matrix" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"></IC>
+    </SUBSYSTEM>
+  </ASSET>
+</MODEL>

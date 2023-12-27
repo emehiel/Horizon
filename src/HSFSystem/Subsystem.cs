@@ -14,6 +14,7 @@ namespace HSFSystem
     public abstract class Subsystem {
         #region Attributes
         //public virtual bool IsEvaluated { get; set; }
+        public String Type { get; set; }
         public bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
         public virtual List<Subsystem> DependentSubsystems { get; set; } = new List<Subsystem>();

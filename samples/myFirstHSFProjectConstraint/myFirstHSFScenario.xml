@@ -1,0 +1,13 @@
+<SCENARIO scenarioName="myFirstHSFScenario">
+    <SIMULATION_PARAMETERS
+    	SimStartJD="2459295.0"
+    	SimStartSeconds="0.0"
+    	SimEndSeconds="5504">
+    </SIMULATION_PARAMETERS>
+
+    <SCHEDULER_PARAMETERS
+    	maxNumSchedules="10"
+    	numSchedCropTo="5"
+    	simStepSeconds="15">
+    </SCHEDULER_PARAMETERS>
+</SCENARIO>

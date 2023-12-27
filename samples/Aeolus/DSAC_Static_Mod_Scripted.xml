@@ -21,6 +21,7 @@
 			className="adcs">
 			<STATE
 				type="Matrix"
+        name="POINTVEC_KEY"
 				key="ECI_Pointing_Vector(XYZ)"
 				value="[0.0; 0.0; 0.0]">
 			</STATE>
@@ -30,25 +31,28 @@
 			type="scripted"
 			subsystemName = "EOSensor"
 			src = "..\..\..\..\samples\Aeolus\pythonScripts\eosensor.py"
-			className = "eosensor"
-			lowQualityNumPixels="5000"
-			midQualityNumPixels="10000"
-			highQualityNumPixels="15000"
-			lowQualityCaptureTime="3"
-			midQualityCaptureTime="5"
-			highQualityCaptureTime="7">
-			<STATE
+			className = "eosensor">
+      <PARAMETER name="lowQualityCaptureTime" type="double" value="3" />
+      <PARAMETER name="midQualityCaptureTime" type="double" value="5" />
+      <PARAMETER name="highQualityCaptureTime" type="double" value="7" />
+      <PARAMETER name="lowQualityNumPixels" type="double" value="5000" />
+      <PARAMETER name="midQualityNumPixels" type="double" value="10000" />
+      <PARAMETER name="highQualityNumPixels" type="double" value="15000" />
+      <STATE
 				type="Double" 
+        name="PIXELS_KEY"
 				key="numPixels" 
 				value="0.0">
 			</STATE>
 			<STATE
 				type="Double" 
+        name="INCIDENCE_KEY"
 				key="IncidenceAngle" 
 				value="0.0">
 			</STATE>
 			<STATE
 				type="Bool" 
+        name="EOON_KEY"
 				key="EOSensorOn" 
 				value="0.0">
 			</STATE>
@@ -58,10 +62,11 @@
 			type="scripted"
 			subsystemName = "SSDR"
 			src = "..\..\..\..\samples\Aeolus\pythonScripts\ssdr.py"
-			className = "ssdr"
-			bufferSize = "5000">
-			<STATE
+			className = "ssdr">
+      <PARAMETER name="bufferSize" type="double" value="5000" />
+      <STATE
 				type="Double"
+        name="DATABUFFERRATIO_KEY"
 				key="DataBufferFillRatio"
 				value="0.0">
 			</STATE>
@@ -74,6 +79,7 @@
 			className="comm">
 			<STATE
 				type="Double"
+        name="DATARATE_KEY"
 				key="DataRate(MB/s)"
 				value="0.0">
 			</STATE>
@@ -87,13 +93,18 @@
 			batterySize="1000000"
 			fullSolarPower="150"
 			penumbraSolarPower="75">
+      <PARAMETER name="batterySize" type="double" value="1000000" />
+      <PARAMETER name="fullSolarPower" type="double" value="150" />
+      <PARAMETER name="penumbraSolarPower" type="double" value="75" />
 			<STATE
 				type="Double"
+        name="DOD_KEY"
 				key="DepthofDischarge"
 				value="0.0">
 			</STATE>
 			<STATE
 				type="Double" 
+        name="POWIN_KEY"
 				key="SolarPanelPowerIn" 
 				value="0.0">
 			</STATE>
@@ -140,6 +151,7 @@
 			slewRate = "5">
 			<STATE
 				type="Matrix" 
+        name="POINTVEC_KEY"
 				key="ECI_Pointing_Vector(XYZ)" 
 				value="[0.0; 0.0; 0.0]">
 			</STATE>
@@ -155,16 +167,19 @@
 			highQualityCaptureTime="7">
 			<STATE
 				type="Double" 
+        name="PIXELS_KEY"
 				key="numPixels" 
 				value="0.0">
 			</STATE>
 			<STATE
 				type="Double" 
+        name="INCIDENCE_KEY"
 				key="IncidenceAngle" 
 				value="0.0">
 			</STATE>
 			<STATE
 				type="Bool" 
+        name="EOON_KEY"
 				key="EOSensorOn" 
 				value="0.0">
 			</STATE>
@@ -175,6 +190,7 @@
 			bufferSize = "5000">
 			<STATE
 				type="Double" 
+        name="DATABUFFERRATIO_KEY"
 				key="DataBufferFillRatio" 
 				value="0.0">
 			</STATE>
@@ -184,6 +200,7 @@
 			subsystemName = "Comm">
 			<STATE
 				type="Double" 
+        name="DATARATE_KEY"
 				key="DataRate(MB/s)" 
 				value="0.0">
 			</STATE>		
@@ -196,11 +213,13 @@
 			penumbraSolarPower="75">
 			<STATE
 				type="Double" 
+        name="DOD_KEY"
 				key="DepthofDischarge" 
 				value="0.0">
 			</STATE>
 			<STATE
 				type="Double" 
+        name="POWIN_KEY"
 				key="SolarPanelPowerIn" 
 				value="0.0">
 			</STATE>

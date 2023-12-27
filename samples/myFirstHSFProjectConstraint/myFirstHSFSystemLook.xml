@@ -6,12 +6,22 @@
       <EOMS EOMSType="orbital_EOMS"></EOMS>
     </DynamicState>
     <SUBSYSTEM
-      subsystemName = "Camera"
+      subsystemName = "CameraLook"
       type="scripted"
-      src="..\..\..\..\samples\myFirstHSFProject\Camera.py"
-      className="Camera">
+      src="..\..\..\..\samples\myFirstHSFProjectConstraint\CameraLook.py"
+      className="CameraLook">
       <PARAMETER name="imageCaptureTime" type="double" value="3" />
       <STATE type="Matrix" name="POINTVEC_KEY" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"/>
+      <STATE type="Double" name="LookAngle" key="Look_Angle(rad)" value="0.0"/>
     </SUBSYSTEM>
+    <CONSTRAINT
+      value="0.5"
+      subsystemName = "CameraLook"
+      type="FAIL_IF_HIGHER"
+      name="look_angle_constraint">
+      <STATEVAR
+          type = "Double"
+          key="Look_Angle(rad)"/>
+    </CONSTRAINT>
   </ASSET>
 </MODEL>

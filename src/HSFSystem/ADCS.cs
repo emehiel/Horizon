@@ -63,8 +63,8 @@ namespace HSFSystem
         /// <returns></returns>
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
-            var POINTVEC_KEY = Mkeys[0];
-            // Alternative method to get key: StateVarKey<Matrix<double>> POINTVEC_KEY = Mkeys.Find(S => S.VarName == "asset1.eci_pointing_vector(xyz)");
+            //  Not a fan of this, but will do for now.  Switching to Python....
+            var POINTVEC_KEY = Mkeys.Find(k => k.VariableName == Asset.Name + ".eci_pointing_vector(xyz)");
             
             double es = proposedEvent.GetEventStart(Asset);
             double ts = proposedEvent.GetTaskStart(Asset);

@@ -28,50 +28,18 @@ from System.Collections.Generic import Dictionary, KeyValuePair
 from IronPython.Compiler import CallTarget0
 
 class eosensor(HSFSystem.Subsystem):
-    def __new__(cls, node, asset):
-        instance = HSFSystem.Subsystem.__new__(cls)
-        instance.Asset = asset
-        instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
-
-        instance.PIXELS_KEY = Utilities.StateVariableKey[System.Double](instance.Asset.Name + '.' + 'numpixels')
-        instance.INCIDENCE_KEY = Utilities.StateVariableKey[System.Double](instance.Asset.Name + '.' + 'incidenceangle')
-        instance.EOON_KEY = Utilities.StateVariableKey[System.Boolean](instance.Asset.Name + '.' + 'eosensoron')
-        instance.addKey(instance.PIXELS_KEY)
-        instance.addKey(instance.INCIDENCE_KEY)
-        instance.addKey(instance.EOON_KEY)
-
-        instance._lowQualityPixels = 5000
-        instance._lowQualityTime = 3
-        instance._midQualityPixels = 10000
-        instance._midQualityTime = 5
-        instance._highQualityPixels = 15000
-        instance._highQualityTime = 7
-        if (node.Attributes['lowQualityPixels'] != None):
-            instance._lowQualityPixels = float(node.Attributes['lowQualityPixels'].Value.ToString())
-        if (node.Attributes['lowQualityTime'] != None):
-            instance._lowQualityTime = float(node.Attributes['lowQualityTime'].Value.ToString())
-        if (node.Attributes['midQualityPixels'] != None):
-            instance._midQualityPixels = float(node.Attributes['midQualityPixels'].Value.ToString())
-        if (node.Attributes['midQualityTime'] != None):
-            instance._midQualityTime = float(node.Attributes['midQualityTime'].Value.ToString())
-        if (node.Attributes['highQualityPixels'] != None):
-            instance._highQualityPixels = float(node.Attributes['highQualityPixels'].Value.ToString())
-        if (node.Attributes['highQualityTime'] != None):
-            instance._highQualityTime = float(node.Attributes['highQualityTime'].Value.ToString())
-
-        return instance
-
+    
     def CanPerform(self, event, universe):
          if (self._task.Type == "imaging"):
              value = self._task.Target.Value
-             pixels = self._lowQualityPixels
-             timetocapture = self._lowQualityTime
-             if (value <= self._highQualityTime and value >= self._midQualityTime):
-                    pixels = self._midQualityPixels
-                    timetocapture = self._midQualityTime
-             if (value > self._highQualityTime):
-                pixels = self._highQualityPixels
-                timetocapture = self._highQualityTime
+             pixels = self.lowQualityNumPixels
+             timetocapture = self.lowQualityCaptureTime
+             if (value <= self.highQualityCaptureTime and value >= self.midQualityCaptureTime):
+                    pixels = self.midQualityNumPixels
+                    timetocapture = self.midQualityCaptureTime
+             if (value > self.highQualityCaptureTime):
+                pixels = self.highQualityNumPixels
+                timetocapture = self.highQualityCaptureTime
 
              es = event.GetEventStart(self.Asset)
              ts = event.GetTaskStart(self.Asset)

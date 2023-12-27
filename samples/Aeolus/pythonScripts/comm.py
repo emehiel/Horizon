@@ -30,15 +30,7 @@ from IronPython.Compiler import CallTarget0
 
 
 class comm(HSFSystem.Subsystem):
-    def __new__(cls, node, asset):
-        instance = HSFSystem.Subsystem.__new__(cls)
-        instance.Asset = asset
-        instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
-
-        instance.DATARATE_KEY = Utilities.StateVariableKey[System.Double](instance.Asset.Name + '.' + 'datarate(mb/s)')
-        instance.addKey(instance.DATARATE_KEY)
-        return instance
-
+        
     def CanPerform(self, event, universe):
         #print("Entry of Comm CanPreform")
         #print(self._task.Type)

@@ -3,8 +3,6 @@ import clr
 import System.Collections.Generic
 import System
 
-#import numpy as np
-
 clr.AddReference('System.Core')
 clr.AddReference('IronPython')
 clr.AddReference('System.Xml')
@@ -32,15 +30,7 @@ from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
 class adcs(HSFSystem.Subsystem):
-    def __new__(cls, node, asset):
-        print("Calling adcs __new__()")
-        instance = HSFSystem.Subsystem.__new__(cls)
-        instance.Asset = asset
-        instance.POINTVEC_KEY = Utilities.StateVariableKey[Utilities.Matrix[System.Double]](instance.Asset.Name + '.' + 'eci_pointing_vector(xyz)')
-        instance.addKey(instance.POINTVEC_KEY)
-
-        return instance
-
+        
     def CanPerform(self, event, universe):
         timetoslew = 10
         es = event.GetEventStart(self.Asset)

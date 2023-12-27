@@ -8,12 +8,21 @@ using MissionElements;
 using log4net;
 using System.Reflection;
 using Utilities;
+using IronPython.Hosting;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices.WindowsRuntime;
 
 namespace HSFSystem
 {
     public class SubsystemFactory
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private static readonly ScriptedSubsystemHelper HSFHelper;
+        static SubsystemFactory()
+        {
+            HSFHelper = new ScriptedSubsystemHelper();
+        }
         /// <summary>
         /// A method to interpret the Xml file and create subsystems
         /// </summary>
@@ -27,6 +36,7 @@ namespace HSFSystem
             if (type.Equals("scripted"))
             {
                 sub = new ScriptedSubsystem(SubsystemXmlNode, asset);
+                sub.Type = type;
             }
             else // not scripted subsystem
             {
@@ -80,12 +90,13 @@ namespace HSFSystem
                 sub.Asset = asset;
                 sub.GetSubNameFromXmlNode(SubsystemXmlNode);
                 sub.AddDependencyCollector();
+                sub.Type = type;
                 //sub.inputType = SubsystemXmlNode.Attributes["type"].Value.ToString().ToLower();
             }
             return sub;
         }
 
-        public void SetDependencies(XmlNode DepNode, List<Subsystem> SubList) // was static to not req object
+        public static void SetDependencies(XmlNode DepNode, List<Subsystem> SubList) // was static to not req object
         {
             // Find names of asset, sub, dep asset, and dep sub
             string assetName = DepNode.Attributes["assetName"].Value.ToString().ToLower();
@@ -131,37 +142,83 @@ namespace HSFSystem
             string keyName = StateNode.Attributes["key"].Value.ToLower();
             string assetName = subsys.Asset.Name;
             string key = assetName + "." + keyName;
+            dynamic stateKey = null;
             if (type.Equals("int"))
             {
-                StateVariableKey<Int32> stateKey = new StateVariableKey<Int32>(key);
-                subsys.addKey(stateKey);
+                stateKey = new StateVariableKey<int>(key);
+                //subsys.addKey(stateKey);
             }
             else if (type.Equals("double"))
             {
-                StateVariableKey<Double> stateKey = new StateVariableKey<Double>(key);
-                subsys.addKey(stateKey);
+                stateKey = new StateVariableKey<double>(key);
+                //subsys.addKey(stateKey);
             }
             else if (type.Equals("bool"))
             {
-                StateVariableKey<bool> stateKey = new StateVariableKey<bool>(key);
-                subsys.addKey(stateKey);
+                stateKey = new StateVariableKey<bool>(key);
+                //subsys.addKey(stateKey);
             }
             else if (type.Equals("matrix"))
             {
-                StateVariableKey<Matrix<double>> stateKey = new StateVariableKey<Matrix<double>>(key);
-                subsys.addKey(stateKey);
+                stateKey = new StateVariableKey<Matrix<double>>(key);
             }
             else if (type.Equals("quat"))
             {
-                StateVariableKey<Quaternion> stateKey = new StateVariableKey<Quaternion>(key);
-                subsys.addKey(stateKey);
+                stateKey = new StateVariableKey<Quaternion>(key);
+                //subsys.addKey(stateKey);
             }
             else if (type.Equals("vector"))
             {
-                StateVariableKey<Vector> stateKey = new StateVariableKey<Vector>(key);
-                subsys.addKey(stateKey);
+                stateKey = new StateVariableKey<Vector>(key);
+                //subsys.addKey(stateKey);
             }
+
+            subsys.addKey(stateKey);
+            if (subsys.Type == "scripted")
+            {
+                string stateName = StateNode.Attributes["name"].Value.ToString();
+                ((ScriptedSubsystem)subsys).SetStateVariable(HSFHelper, stateName, stateKey);
+            }
+
             return key;
+        }
+
+        public static void SetParamenters(XmlNode ParameterNode, Subsystem subsys)
+        {
+            string name = ParameterNode.Attributes["name"].Value;
+            // TODO:  Check to make sure name is a valid python variable name
+            string value = ParameterNode.Attributes["value"].Value.ToLower();
+            string type = ParameterNode.Attributes["type"].Value.ToLower();
+
+            dynamic paramValue = null;
+
+            switch (type)
+            {
+                case ("double"):
+                    paramValue = Convert.ToDouble(value);
+                    break;
+                case ("int"):
+                    paramValue = Convert.ToInt32(value);
+                    break;
+                case ("string"):
+                    paramValue = Convert.ToString(value);
+                    break;
+                case ("bool"):
+                    paramValue = Convert.ToBoolean(value);
+                    break;
+                case ("matrix"):
+                    paramValue = new Matrix<double>(value);
+                    break;
+                case ("quaterion"):
+                    paramValue = new Quaternion(value);
+                    break;
+                case ("vector"):
+                    paramValue = new Vector(value);
+                    break;
+            }
+
+            ((ScriptedSubsystem)subsys).SetSubsystemParameter(HSFHelper, name, paramValue);
+
         }
     }
 }

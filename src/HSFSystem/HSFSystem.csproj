@@ -110,6 +110,7 @@
   <ItemGroup>
     <Compile Include="AccessSub.cs" />
     <Compile Include="ADCS.cs" />
+    <Compile Include="ScriptedSubsystemHelper.cs" />
     <Compile Include="SubTest.cs" />
     <Compile Include="Comm.cs" />
     <Compile Include="Constraint.cs" />

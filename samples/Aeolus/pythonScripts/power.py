@@ -28,31 +28,7 @@ from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
 class power(HSFSystem.Subsystem):
-    def __new__(cls, node, asset):
-        instance = HSFSystem.Subsystem.__new__(cls)
-        instance.Asset = asset
-        instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
-
-        instance.DOD_KEY = Utilities.StateVariableKey[System.Double](instance.Asset.Name + '.' + 'depthofdischarge')
-        instance.POWIN_KEY = Utilities.StateVariableKey[System.Double](instance.Asset.Name + '.' + 'solarpanelpowerin')
-        instance.addKey(instance.DOD_KEY)
-        instance.addKey(instance.POWIN_KEY)
-
-        # default values if variables not defined in xml file
-        instance._batterySize = 1000000
-        instance._fullSolarPanelPower = 150
-        instance._penumbraSolarPanelPower = 75
-
-        # values read from the xml file		
-        if (node.Attributes['batterySize'] != None):
-            instance._batterySize = float(node.Attributes['batterySize'].Value)
-        if (node.Attributes['fullSolarPower'] != None):
-            instance._fullSolarPanelPower = float(node.Attributes['fullSolarPower'].Value)
-        if (node.Attributes['penumbraSolarPower'] != None):
-            instance._penumbraSolarPanelPower = float(node.Attributes['penumbraSolarPower'].Value)
-
-        return instance
-
+ 
     def CanPerform(self, event, universe):
         #print("Entry of Power CanPreform")
         es = event.GetEventStart(self.Asset)
@@ -65,8 +41,8 @@ class power(HSFSystem.Subsystem):
             print("Power Returned via time out")
             return False
 
-        olddod = self._newState.GetLastValue(self.Dkeys[0]).Item2
-
+        olddod = self._newState.GetLastValue(self.DOD_KEY).Item2
+        
         # collect power profile out
         powerOut = self.DependencyCollector(event)
         powerOut = powerOut + powerSubPowerOut
@@ -78,7 +54,7 @@ class power(HSFSystem.Subsystem):
         #print(powerIn)
         # calculate dod rate
         dodrateofchange = HSFProfile[System.Double]()
-        dodrateofchange = ((powerOut - powerIn) / self._batterySize)
+        dodrateofchange = ((powerOut - powerIn) / self.batterySize)
 
         exceeded = False
         freq = 1.0
@@ -130,9 +106,9 @@ class power(HSFSystem.Subsystem):
         if (str(shadow) == 'UMBRA'):
             return 0
         elif (str(shadow) == 'PENUMBRA'):
-            return self._penumbraSolarPanelPower
+            return self.penumbraSolarPower
         else:
-            return self._fullSolarPanelPower
+            return self.fullSolarPower
 
     def CalcSolarPanelPowerProfile(self, start, end, state, position, universe):
         # create solar panel profile for this event

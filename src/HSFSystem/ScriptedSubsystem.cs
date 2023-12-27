@@ -10,6 +10,8 @@ using HSFUniverse;
 using System.Xml;
 using System.IO;
 using System.Reflection;
+using Utilities;
+using System.Security.Cryptography.X509Certificates;
 
 namespace HSFSystem
 {
@@ -57,6 +59,9 @@ namespace HSFSystem
         /// <param name="asset"></param>
         public ScriptedSubsystem(XmlNode scriptedSubXmlNode, Asset asset)
         {
+            // TO make sure, the asset, name, keys, and other properties are set for the C# instance and the python instance
+            // I'm not convinced about this.  I think either the ScriptedSubsystem needs to have the Keys and Data, or the
+            // python instance needs to have the Keys and Data, but not both.
             Asset = asset;
             GetSubNameFromXmlNode(scriptedSubXmlNode);
 
@@ -87,15 +92,33 @@ namespace HSFSystem
             engine.SetSearchPaths(p);
             engine.ExecuteFile(pythonFilePath, scope);
             var pythonType = scope.GetVariable(className);
-            _pythonInstance = ops.CreateInstance(pythonType, scriptedSubXmlNode, asset);
+            _pythonInstance = ops.CreateInstance(pythonType);//, scriptedSubXmlNode, asset);
             Delegate depCollector = _pythonInstance.GetDependencyCollector();
-            SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-            SubsystemDependencyFunctions.Add("DepCollector", depCollector);
+            SubsystemDependencyFunctions = new Dictionary<string, Delegate>
+            {
+                { "DepCollector", depCollector }
+            };
+
+            _pythonInstance.Asset = asset;
+            _pythonInstance.Name = this.Name;
             DependentSubsystems = new List<Subsystem>();
+
         }
         #endregion
 
         #region Methods
+
+        public void SetStateVariable<T>(ScriptedSubsystemHelper HSFHelper, string StateName, StateVariableKey<T> key)
+        {
+            HSFHelper.PythonInstance.SetStateVariable(_pythonInstance, StateName, key);
+
+        }
+
+        public void SetSubsystemParameter(ScriptedSubsystemHelper HSFHelper, string paramenterName, dynamic parameterValue)
+        {
+            HSFHelper.PythonInstance.SetStateVariable(_pythonInstance, paramenterName, parameterValue);
+        }
+
         public override bool CanPerform(Event proposedEvent, Domain environment)
         {
             //if (IsEvaluated)

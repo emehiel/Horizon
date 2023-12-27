@@ -28,25 +28,16 @@ from System.Collections.Generic import *
 from IronPython.Compiler import CallTarget0
 
 class ssdr(HSFSystem.Subsystem):
-    def __new__(cls, node, asset):
-        instance = HSFSystem.Subsystem.__new__(cls)
-        instance.Asset = asset
-        instance.Name = instance.Asset.Name + '.' + node.Attributes['subsystemName'].Value.ToString().ToLower()
-
-        if (node.Attributes['bufferSize'] != None):
-            instance._bufferSize = float(node.Attributes['bufferSize'].Value.ToString())
-        instance.DATABUFFERRATIO_KEY = Utilities.StateVariableKey[System.Double](instance.Asset.Name + '.' + 'databufferfillratio')
-        instance.addKey(instance.DATABUFFERRATIO_KEY)
-        return instance
 
     def CanPerform(self, event, universe):
         #print(self._task.Type)
         if (self._task.Type == "imaging"):
             ts = event.GetTaskStart(self.Asset)
             te = event.GetTaskEnd(self.Asset)
-            oldbufferratio = self._newState.GetLastValue(self.Dkeys[0]).Item2
+
+            oldbufferratio = self._newState.GetLastValue(self.DATABUFFERRATIO_KEY).Item2
             newdataratein = HSFProfile[System.Double]()
-            newdataratein = self.DependencyCollector(event) / self._bufferSize
+            newdataratein = self.DependencyCollector(event) / self.bufferSize
             exceeded = False
             newdataratio = HSFProfile[System.Double]()
             newdataratio = newdataratein.upperLimitIntegrateToProf(ts, te, 1, 1, exceeded, 0, oldbufferratio)
@@ -61,7 +52,7 @@ class ssdr(HSFSystem.Subsystem):
             ts = event.GetTaskStart(self.Asset)
             event.SetTaskEnd(self.Asset, ts + 60.0)
             te = event.GetTaskEnd(self.Asset)
-            data = self._bufferSize * self._newState.GetLastValue(self.Dkeys[0]).Item2
+            data = self.bufferSize * self._newState.GetLastValue(self.Dkeys[0]).Item2
             if( data / 2 > 50):
                 dataqueout = data/2
             else:

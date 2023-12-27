@@ -24,15 +24,14 @@ from Utilities import *
 from HSFUniverse import *
 from UserModel import *
 from MissionElements import *
-from System import Func, Delegate
+from System import Func, Delegate, Math
 from System.Collections.Generic import Dictionary
 from IronPython.Compiler import CallTarget0
 
-class Camera(HSFSystem.Subsystem):
-
+class CameraLook(HSFSystem.Subsystem):
+         
 
     def CanPerform(self, event, universe):
-        
         ts = event.GetTaskStart(self.Asset)
       
         position = self.Asset.AssetDynamicState
@@ -40,19 +39,25 @@ class Camera(HSFSystem.Subsystem):
         targetPositionECI = event.GetAssetTask(self.Asset).Target.DynamicState.PositionECI(ts)
         pointingVectorECI = targetPositionECI - scPositionECI
         
+        scPos_norm = -scPositionECI / Matrix[System.Double].Norm(-scPositionECI)
+        pv_norm = pointingVectorECI / Matrix[System.Double].Norm(pointingVectorECI)
+        lookAngle = Math.Acos(Matrix[System.Double].Dot(scPos_norm, pv_norm))
+        
+        event.State.AddValue(self.LookAngle, ts, lookAngle)
         event.State.AddValue(self.POINTVEC_KEY, ts, pointingVectorECI)
+        
         event.SetTaskStart(self.Asset, ts)
         event.SetTaskEnd(self.Asset, ts + self.imageCaptureTime)
       
         return True
     
     def CanExtend(self, event, universe, extendTo):
-        return super(Camera, self).CanExtend(event, universe, extendTo)
+        return super(CameraLook, self).CanExtend(event, universe, extendTo)
       
     def GetDependencyCollector(self):
         return Func[Event,  Utilities.HSFProfile[System.Double]](self.DependencyCollector)
   
     def DependencyCollector(self, currentEvent):
-        return super(Camera, self).DependencyCollector(currentEvent)
+        return super(CameraLook, self).DependencyCollector(currentEvent)
       
         

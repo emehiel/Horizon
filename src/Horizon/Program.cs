@@ -15,6 +15,7 @@ using HSFSystem;
 using log4net;
 using Utilities;
 using Microsoft.Scripting.Actions.Calls;
+using System.Net.Http.Headers;
 
 namespace Horizon
 {
@@ -108,22 +109,38 @@ namespace Horizon
         }
         public void InitInput(string[] args)
         {
-            bool simAeolus = false;
-            if (simAeolus)
+            string scenario = "myFirstHSFProjectLook";
+            string subpath = "";
+            switch(scenario)
             {
-                // Set Defaults
-                SimulationInputFilePath = @"..\..\..\..\samples\Aeolus\AeolusSimulationInput.xml";
-                TargetDeckFilePath = @"..\..\..\..\samples\Aeolus\v2.2-300targets.xml";
-                ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod_Scripted.xml"; // Asset 1 Scripted, Asset 2 C#
-                //ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod_PartialScripted.xml"; // Asset 1 mix Scripted/C#, Asset 2 C#
-                //ModelInputFilePath = @"..\..\..\..\samples\Aeolus\DSAC_Static_Mod.xml"; // Asset 1 C#, Asset 2 C#
-            }
-            else
-            {
-                // Set myFirstHSFProject file paths
-                SimulationInputFilePath = @"..\..\..\..\samples\myFirstHSFProject\myFirstHSFScenario.xml";
-                TargetDeckFilePath = @"..\..\..\..\samples\myFirstHSFProject\myFirstHSFTargetDeck.xml";
-                ModelInputFilePath = @"..\..\..\..\samples\myFirstHSFProject\myFirstHSFSystem.xml";
+                case "Aeolus":
+                    // Set Defaults
+                    subpath = @"..\..\..\..\samples\Aeolus\";
+                    SimulationInputFilePath = subpath + @"AeolusSimulationInput.xml";
+                    TargetDeckFilePath = subpath + @"v2.2-300targets.xml";
+                    // Asset 1 Scripted, Asset 2 C#
+                    ModelInputFilePath = subpath + @"DSAC_Static_Mod_Scripted.xml";
+                    // Asset 1 mix Scripted/C#, Asset 2 C#
+                    //ModelInputFilePath = subpath + @"DSAC_Static_Mod_PartialScripted.xml"; 
+                    // Asset 1 C#, Asset 2 C#
+                    //ModelInputFilePath = subpath + @"DSAC_Static_Mod.xml"; 
+                    break;
+
+                case "myFirstHSFProject":
+                    // Set myFirstHSFProject file paths
+                    subpath = @"..\..\..\..\samples\myFirstHSFProject\";
+                    SimulationInputFilePath = subpath + @"myFirstHSFScenario.xml";
+                    TargetDeckFilePath = subpath + @"myFirstHSFTargetDeck.xml";
+                    ModelInputFilePath = subpath + @"myFirstHSFSystem.xml";
+                    break;
+
+                case "myFirstHSFProjectLook":
+                    // Set myFirstHSFProject file paths
+                    subpath = @"..\..\..\..\samples\myFirstHSFProjectConstraint\";
+                    SimulationInputFilePath = subpath + @"myFirstHSFScenario.xml";
+                    TargetDeckFilePath = subpath + @"myFirstHSFTargetDeck.xml";
+                    ModelInputFilePath = subpath + @"myFirstHSFSystemLook.xml";
+                    break;
             }
 
             bool simulationSet = false, targetSet = false, modelSet = false;
@@ -263,6 +280,17 @@ namespace Horizon
                         // Use key name and state type to set initial conditions 
                         InitialSysState.SetInitialSystemState(StateNode, keyName);
                     }
+
+                    if (subsys.Type == "scripted")
+                    {
+                        // Load Subsystem Parameters
+                        var parameters = subsystemNode.SelectNodes("PARAMETER");
+
+                        foreach (XmlNode parameterNode in parameters)
+                        {
+                            SubsystemFactory.SetParamenters(parameterNode, subsys);
+                        }
+                    }
                 }
 
                 // Load Constraints
@@ -281,8 +309,8 @@ namespace Horizon
 
             foreach (XmlNode dependencyNode in dependencies)
             {
-                var SubFact = new SubsystemFactory();
-                SubFact.SetDependencies(dependencyNode, SubList);
+                //var SubFact = new SubsystemFactory();
+                SubsystemFactory.SetDependencies(dependencyNode, SubList);
             }
             Console.WriteLine("Dependencies Loaded");
             log.Info("Dependencies Loaded");

@@ -1,0 +1,30 @@
+{
+  "tasks": [
+    {
+      "target": {
+        "name": "imagetarget1",
+        "type": "FacilityTarget",
+        "value": 5,
+        "dynamicState": {
+          "type": "STATIC_LLA",
+          "ICs": [ 39.2945, -71.1559, 0 ]
+        }
+      },
+      "type": "image",
+      "maxTimes": 5
+    },
+    {
+      "target": {
+        "Name": "groundstation1",
+        "type": "location",
+        "value": 1000,
+        "dynamicState": {
+          "type": "STATIC_LLA",
+          "ICs": [ -33.47, -70.65, 0 ]
+        }
+      },
+      "type": "comm",
+      "maxTimes": 10
+    }
+  ]
+}

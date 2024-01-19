@@ -1,0 +1,43 @@
+<MODEL>
+  <ASSET assetName="Asset1">
+    <DynamicState
+      DynamicStateType="PREDETERMINED_ECI"
+      ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866]">
+      <EOMS EOMSType="orbital_EOMS"></EOMS>
+    </DynamicState>
+    <SUBSYSTEM
+      subsystemName = "CameraLook"
+      type="scripted"
+      src="..\..\..\..\samples\myFirstHSFProjectDependency\CameraLook.py"
+      className="CameraLook">
+      <PARAMETER name="imageCaptureTime" type="double" value="3" />
+      <STATE type="Matrix" name="POINTVEC_KEY" key="ECI_Pointing_Vector(XYZ)" value="[0.0; 0.0; 0.0]"/>
+      <STATE type="double" name="LookAngle" key="Look_Angle(rad)" value="0.0"/>
+    </SUBSYSTEM>
+    <SUBSYSTEM
+      subsystemName = "DataBuffer"
+      type = "scripted"
+      src = "..\..\..\..\samples\myFirstHSFProjectDependency\DataBuffer.py"
+      className = "DataBuffer">
+      <PARAMETER name ="bufferSize" type="double" value="500"/>
+      <STATE type="double" name="DataBufferRatio" key="dataBufferFillRatio" value="0.0"/>
+    </SUBSYSTEM>
+    <CONSTRAINT
+      value="0.5"
+      subsystemName = "CameraLook"
+      type="FAIL_IF_HIGHER"
+      name="look_angle_constraint">
+      <STATEVAR
+          type = "Double"
+          key="Look_Angle(rad)"/>
+    </CONSTRAINT>
+  </ASSET>
+
+  <DEPENDENCY
+    subsystemName = "DataBuffer"
+    assetName = "Asset1"
+    depSubsystemName = "CameraLook"
+    depAssetName = "Asset1"
+    fcnName="DataBuffer_asset1_from_CameraLook_asset1">
+  </DEPENDENCY>
+</MODEL>

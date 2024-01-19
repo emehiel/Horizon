@@ -109,7 +109,7 @@ namespace Horizon
         }
         public void InitInput(string[] args)
         {
-            string scenario = "myFirstHSFProjectLook";
+            string scenario = "myFirstHSFProjectDependency";
             string subpath = "";
             switch(scenario)
             {
@@ -135,11 +135,18 @@ namespace Horizon
                     break;
 
                 case "myFirstHSFProjectLook":
-                    // Set myFirstHSFProject file paths
+                    // Set myFirstHSFProjectConstraint file paths
                     subpath = @"..\..\..\..\samples\myFirstHSFProjectConstraint\";
                     SimulationInputFilePath = subpath + @"myFirstHSFScenario.xml";
                     TargetDeckFilePath = subpath + @"myFirstHSFTargetDeck.xml";
                     ModelInputFilePath = subpath + @"myFirstHSFSystemLook.xml";
+                    break;
+                case "myFirstHSFProjectDependency":
+                    // Set myFirstHSFProjectDependency file paths
+                    subpath = @"..\..\..\..\samples\myFirstHSFProjectDependency\";
+                    SimulationInputFilePath = subpath + @"myFirstHSFScenario.xml";
+                    TargetDeckFilePath = subpath + @"myFirstHSFTargetDeck.xml";
+                    ModelInputFilePath = subpath + @"myFirstHSFSystemDependency.xml";
                     break;
             }
 

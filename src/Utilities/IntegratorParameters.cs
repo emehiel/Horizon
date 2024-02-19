@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Utilities
 {
-    [Serializable]
-    //[ExcludeFromCodeCoverage]
+    // Class used to pass information (Parameters) to the integrator.
     public class IntegratorParameters
     {
         public ConcurrentDictionary<StateVariableKey<double>, double> Ddata;

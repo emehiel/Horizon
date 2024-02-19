@@ -192,10 +192,10 @@ namespace UniverseUnitTest
         {
             
             programAct = new Program();
-            programAct.ModelInputFilePath = Path.Combine(baselocation, modelInput) ;
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
-            var simulationInputNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
+            programAct.ModelFilePath = Path.Combine(baselocation, modelInput) ;
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelFilePath);
+            var simulationInputNode = XmlParser.ParseSimulationInput(programAct.SimulationFilePath);
 
             Domain SystemUniverse = new SpaceEnvironment();
 

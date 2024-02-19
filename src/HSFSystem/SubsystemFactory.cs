@@ -11,6 +11,10 @@ using Utilities;
 using IronPython.Hosting;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Newtonsoft.Json.Linq;
+using Microsoft.Scripting.Utils;
+using System.Runtime.InteropServices;
+using System.Linq;
 
 namespace HSFSystem
 {
@@ -26,43 +30,55 @@ namespace HSFSystem
         /// <summary>
         /// A method to interpret the Xml file and create subsystems
         /// </summary>
-        /// <param name="SubsystemXmlNode"></param>
+        /// <param name="SubsystemJson"></param>
         /// <param name="asset"></param>
         /// <returns></returns>
-        public static Subsystem GetSubsystem(XmlNode SubsystemXmlNode, Asset asset)
+        public static Subsystem GetSubsystem(JObject SubsystemJson, Asset asset)
         {
-            string type = SubsystemXmlNode.Attributes["type"].Value.ToString().ToLower();
-            Subsystem sub;
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+
+            string type = "";
+     
+            if(SubsystemJson.TryGetValue("type", stringCompare, out JToken typeJson))
+                type = typeJson.Value<string>().ToLower();
+            else
+                throw new ArgumentException($"Missing a subsystem 'type' attribute for subsystem in {asset.Name}");
+
+            string name = "";
+            //string type = SubsystemJson.Attributes["type"].Value.ToString().ToLower();
+            Subsystem subsystem;
             if (type.Equals("scripted"))
             {
-                sub = new ScriptedSubsystem(SubsystemXmlNode, asset);
-                sub.Type = type;
+                subsystem = new ScriptedSubsystem(SubsystemJson, asset)
+                {
+                    Type = type
+                };
             }
             else // not scripted subsystem
             {
                 if (type.Equals("access"))
                 {
-                    sub = new AccessSub(SubsystemXmlNode);
+                    subsystem = new AccessSub(SubsystemJson);
                 }
                 else if (type.Equals("adcs"))
                 {
-                    sub = new ADCS(SubsystemXmlNode);
+                    subsystem = new ADCS(SubsystemJson);
                 }
                 else if (type.Equals("power"))
                 {
-                    sub = new Power(SubsystemXmlNode);
+                    subsystem = new Power(SubsystemJson);
                 }
                 else if (type.Equals("eosensor"))
                 {
-                    sub = new EOSensor(SubsystemXmlNode);
+                    subsystem = new EOSensor(SubsystemJson);
                 }
                 else if (type.Equals("ssdr"))
                 {
-                    sub = new SSDR(SubsystemXmlNode);
+                    subsystem = new SSDR(SubsystemJson);
                 }
                 else if (type.Equals("comm"))
                 {
-                    sub = new Comm(SubsystemXmlNode);
+                    subsystem = new Comm(SubsystemJson);
                 }
                 else if (type.Equals("imu"))
                 {
@@ -71,7 +87,7 @@ namespace HSFSystem
                 }
                 else if (type.Equals("subtest"))
                 {
-                    sub = new SubTest(SubsystemXmlNode);
+                    subsystem = new SubTest(SubsystemJson);
                     //sub = new SubTest(SubsystemXmlNode, asset);
                     //throw new NotImplementedException("Removed after the great SubsystemFactory update.");
                 }
@@ -85,35 +101,42 @@ namespace HSFSystem
                     throw new MissingMemberException("Unknown Subsystem Type " + type);
                 }
                 // Below assignment should NOT happen when sub is scripted, that is handled in ScriptedSubsystem
-                sub.DependentSubsystems = new List<Subsystem>();
-                sub.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
-                sub.Asset = asset;
-                sub.GetSubNameFromXmlNode(SubsystemXmlNode);
-                sub.AddDependencyCollector();
-                sub.Type = type;
-                //sub.inputType = SubsystemXmlNode.Attributes["type"].Value.ToString().ToLower();
+                subsystem.DependentSubsystems = new List<Subsystem>();
+                subsystem.SubsystemDependencyFunctions = new Dictionary<string, Delegate>();
+                subsystem.AddDependencyCollector();
+                subsystem.Asset = asset;
+                subsystem.Name = name;
+                subsystem.Type = type;
             }
-            return sub;
+            return subsystem;
         }
 
-        public static void SetDependencies(XmlNode DepNode, List<Subsystem> SubList) // was static to not req object
+        public static void SetDependencies(JObject dependencyJson, List<Subsystem> SubsystemList)
         {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
             // Find names of asset, sub, dep asset, and dep sub
-            string assetName = DepNode.Attributes["assetName"].Value.ToString().ToLower();
-            string subName = DepNode.Attributes["subsystemName"].Value.ToString().ToLower();
-            string depSubName = DepNode.Attributes["depSubsystemName"].Value.ToString(); // NOT lowercase
-            string depAssetName = DepNode.Attributes["depAssetName"].Value.ToString().ToLower();
+
+            var name = dependencyJson.Select(text => dependencyJson.TryGetValue("assetName", stringCompare, out JToken asset) ?
+                new { ok = true, value = asset } : null)
+                .Where(t => t.ok)
+                .Select(t => t.value.ToString());
+
+
+            string assetName = dependencyJson.GetValue("assetName", stringCompare).ToString().ToLower();
+            string subName = dependencyJson.GetValue("subsystemName", stringCompare).ToString().ToLower();
+            string depSubName = dependencyJson.GetValue("depSubsystemName", stringCompare).ToString(); // NOT lowercase
+            string depAssetName = dependencyJson.GetValue("depAssetName", stringCompare).ToString().ToLower();
             //string depSubName = DepNode.Attributes["depSubsystemName"].Value.ToString().ToLower();
 
-            // Add dep sub to sub's list of dep subs
-            var sub = SubList.Find(s => s.Name == assetName + "." + subName);
-            var depSub = SubList.Find(s => s.Name == depAssetName + "." + depSubName.ToLower());
+            // Add dependent subsystem to subsystem's list of dep subs
+            var sub = SubsystemList.Find(s => s.Name == assetName + "." + subName);
+            var depSub = SubsystemList.Find(s => s.Name == depAssetName + "." + depSubName.ToLower());
             sub.DependentSubsystems.Add(depSub);
 
-            if (DepNode.Attributes["fcnName"] != null)
+            if (dependencyJson.TryGetValue("fcnName", stringCompare, out JToken depFncJToken ))
             {
                 // Get dep fn name
-                string depFnName = DepNode.Attributes["fcnName"].Value.ToString();
+                string depFncName = dependencyJson["fcnName"].ToString();
 
                 // Determine in what type of sub the depFn lives
                 Type depSubType = depSub.GetType();
@@ -123,23 +146,30 @@ namespace HSFSystem
                     // Cast depSub to Scripted so compiler does not get mad (it should be scripted to reach here?)
                     ScriptedSubsystem depSubCasted = (ScriptedSubsystem) depSub;
                     // Get method from python script & add to sub's dep fns
-                    Delegate fnc = depSubCasted.GetDepFn(depFnName, depSubCasted); 
-                    sub.SubsystemDependencyFunctions.Add(depFnName, fnc);
+                    Delegate fnc = depSubCasted.GetDepFn(depFncName, depSubCasted); 
+                    sub.SubsystemDependencyFunctions.Add(depFncName, fnc);
                 }
                 else // If depFn lives in C# subsystem
                 {
                     // Find method that matches name via reflection & add to sub's dep fns
-                    var TypeIn = Type.GetType("HSFSystem." + depSubName).GetMethod(depFnName);
+                    var TypeIn = Type.GetType("HSFSystem." + depSubName).GetMethod(depFncName);
                     Delegate fnc = Delegate.CreateDelegate(typeof(Func<Event, HSFProfile<double>>), depSub, TypeIn);
-                    sub.SubsystemDependencyFunctions.Add(depFnName, fnc);
+                    sub.SubsystemDependencyFunctions.Add(depFncName, fnc);
                 }
             }  
-            return;
         }
-        public static string SetStateKeys(XmlNode StateNode, Subsystem subsys)
+        public static string SetStateKeys(JObject StateNodeJson, Subsystem subsys)
         {
-            string type = StateNode.Attributes["type"].Value.ToLower();
-            string keyName = StateNode.Attributes["key"].Value.ToLower();
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+
+            string type = "";
+            if(StateNodeJson.TryGetValue("Type", stringCompare, out JToken typeJson))
+                type = typeJson.Value<string>().ToLower();
+
+            string keyName = "";
+            if (StateNodeJson.TryGetValue("Key", stringCompare, out JToken keyJson))
+                keyName = keyJson.Value<string>().ToLower();
+
             string assetName = subsys.Asset.Name;
             string key = assetName + "." + keyName;
             dynamic stateKey = null;
@@ -162,7 +192,7 @@ namespace HSFSystem
             {
                 stateKey = new StateVariableKey<Matrix<double>>(key);
             }
-            else if (type.Equals("quat"))
+            else if (type.Equals("quaternion"))
             {
                 stateKey = new StateVariableKey<Quaternion>(key);
                 //subsys.addKey(stateKey);
@@ -176,20 +206,39 @@ namespace HSFSystem
             subsys.addKey(stateKey);
             if (subsys.Type == "scripted")
             {
-                string stateName = StateNode.Attributes["name"].Value.ToString();
+                string stateName = "";
+                if (StateNodeJson.TryGetValue("Name", stringCompare, out JToken nameJson))
+                    stateName = nameJson.Value<string>().ToLower();
+
                 ((ScriptedSubsystem)subsys).SetStateVariable(HSFHelper, stateName, stateKey);
             }
 
             return key;
         }
 
-        public static void SetParamenters(XmlNode ParameterNode, Subsystem subsys)
+        public static void SetParameters(JObject parameterJson, Subsystem subsystem)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            string name = parameterJson.GetValue("name", stringCompare).ToString();
+            // TODO:  Check to make sure name is a valid python variable name
+            string value = parameterJson.GetValue("value", stringCompare).ToString();
+            string type = parameterJson.GetValue("type", stringCompare).ToString().ToLower();
+
+            SubsystemFactory.InitParameter(name, value, type, subsystem);
+
+        }
+
+        public static void SetParameters(XmlNode ParameterNode, Subsystem subsystem)
         {
             string name = ParameterNode.Attributes["name"].Value;
             // TODO:  Check to make sure name is a valid python variable name
             string value = ParameterNode.Attributes["value"].Value.ToLower();
             string type = ParameterNode.Attributes["type"].Value.ToLower();
+            SubsystemFactory.InitParameter(name, value, type, subsystem);
+        }
 
+        private static void InitParameter(string name, string value, string type, Subsystem subsystem)
+        { 
             dynamic paramValue = null;
 
             switch (type)
@@ -217,7 +266,7 @@ namespace HSFSystem
                     break;
             }
 
-            ((ScriptedSubsystem)subsys).SetSubsystemParameter(HSFHelper, name, paramValue);
+            ((ScriptedSubsystem)subsystem).SetSubsystemParameter(HSFHelper, name, paramValue);
 
         }
     }

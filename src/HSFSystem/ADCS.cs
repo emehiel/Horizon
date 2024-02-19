@@ -8,6 +8,7 @@ using System.Xml;
 using MissionElements;
 using HSFUniverse;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json.Linq;
 //using Logging;
 
 namespace HSFSystem
@@ -22,6 +23,13 @@ namespace HSFSystem
         #endregion Attributes
 
         #region Constructors
+        public ADCS() { }
+        public ADCS(JObject adcsJson)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            if (adcsJson.TryGetValue("slewRate", stringCompare, out JToken slewRateJson))
+                this._slewRate = slewRateJson.Value<double>();
+        }
         /// <summary>
         /// Constructor for built in subsystems
         /// Defaults: Slew time: 10s

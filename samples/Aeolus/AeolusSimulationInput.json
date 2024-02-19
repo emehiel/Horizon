@@ -1,21 +1,21 @@
 {
-    "Sources": {
-      "Name": "Aeolus",
-      "Base Source": "./samples/aeolus/",
-      "Model Source": "DSAC_Static_Mod_Scripted.xml",
-      "Target Source": "v2.2-300targets.xml",
-      "Python Source": "pythonScripts/",
-      "Output Path": "none",
-      "Version": 1.0
-    },
-    "Simulation Parameters": {
-      "Start JD": 2454680.0,
-      "Start Seconds": 0.0,
-      "End Seconds": 60.0,
-      "Primary Step Seconds": 30
-    },
-    "Scheduler Parameters": {
-      "Max Schedules": 10,
-      "Crop Ratio": 5
-    }
+  "name": "Aeolus",
+  "version": 1.0,
+  "dependencies": {
+    "baseSrc": "./samples/aeolus/",
+    "modelSrc": "DSAC_Static_Mod_Scripted.xml",
+    "targetSrc": "v2.2-300targets.xml",
+    "pythonSrc": "pythonScripts/",
+    "outputPath": "none"
+  },
+  "simulationParameters": {
+    "startJD": 2454680.0,
+    "startSeconds": 0.0,
+    "endSeconds": 90.0,
+    "stepSeconds": 30
+  },
+  "schedulerParameters": {
+    "maxSchedules": 10,
+    "cropTo": 5
+  }
 }

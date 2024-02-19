@@ -12,6 +12,7 @@ using System.IO;
 using System.Reflection;
 using Utilities;
 using System.Security.Cryptography.X509Certificates;
+using Newtonsoft.Json.Linq;
 
 namespace HSFSystem
 {
@@ -49,9 +50,49 @@ namespace HSFSystem
             get { return (Task)_pythonInstance._task; }
             set { _pythonInstance._task = value; }
         }
+
+        private readonly string src = "";
+        private readonly string className = "";
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Constructor to build ScriptedSubsystem from JSON input
+        /// </summary>
+        /// <param name="scriptedSubsystemJson"></param>
+        /// <param name="asset"></param>
+        /// <exception cref="ArgumentException"></exception>
+        public ScriptedSubsystem(JObject scriptedSubsystemJson, Asset asset)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+
+            this.Asset = asset;
+            if(scriptedSubsystemJson.TryGetValue("name", stringCompare, out JToken nameJason))
+                this.Name = this.Asset.Name.ToLower() + "." + nameJason.ToString().ToLower();
+            else
+            {
+                Console.WriteLine($"Error loading subsytem of type {this.Type}, missing Name attribute");
+                throw new ArgumentException($"Error loading subsytem of type {this.Type}, missing Name attribute\"");
+            }
+
+            if (scriptedSubsystemJson.TryGetValue("src", stringCompare, out JToken srcJason))
+                this.src = srcJason.ToString();
+            else
+            {
+                Console.WriteLine($"Error loading subsytem of type {this.Type}, missing Src attribute");
+                throw new ArgumentException($"Error loading subsytem of type {this.Type}, missing Src attribute");
+            }
+
+            if (scriptedSubsystemJson.TryGetValue("className", stringCompare, out JToken classNameJason))
+                this.className = classNameJason.ToString();
+            else
+            {
+                Console.WriteLine($"Error loading subsytem of type {this.Type}, missing ClassName attribute");
+                throw new ArgumentException($"Error loading subsytem of type {this.Type}, missing ClassName attribute");
+            }
+
+            InitSubsystem(scriptedSubsystemJson);
+        }
         /// <summary>
         /// Constructor to initialize the python subsystem
         /// </summary>
@@ -62,20 +103,17 @@ namespace HSFSystem
             // TO make sure, the asset, name, keys, and other properties are set for the C# instance and the python instance
             // I'm not convinced about this.  I think either the ScriptedSubsystem needs to have the Keys and Data, or the
             // python instance needs to have the Keys and Data, but not both.
-            Asset = asset;
+            this.Asset = asset;
             GetSubNameFromXmlNode(scriptedSubXmlNode);
 
-            string pythonFilePath ="", className = "";
-            XmlParser.ParseScriptedSrc(scriptedSubXmlNode, ref pythonFilePath, ref className);
+            //string pythonFilePath ="", className = "";
+            XmlParser.ParseScriptedSrc(scriptedSubXmlNode, ref src, ref className);
 
-            //  I believe this was added by Jack B. for unit testing.  Still need to sort out IO issues, but with this commented out
-            //  the execuitable will look for python files in the same directory as the .exe file is located.
-            //  Need to do better specifying the input and output paths.
-            //if (!pythonFilePath.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
-            //{
-            //    string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
-            //    pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
-            //}
+            InitSubsystem(scriptedSubXmlNode, asset);
+        }
+
+        private void InitSubsystem(params object[] parameters)
+        {
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
@@ -90,19 +128,19 @@ namespace HSFSystem
             p.Add(@"C:\Python310\Lib");
 
             engine.SetSearchPaths(p);
-            engine.ExecuteFile(pythonFilePath, scope);
+            engine.ExecuteFile(src, scope);
             var pythonType = scope.GetVariable(className);
-            _pythonInstance = ops.CreateInstance(pythonType);//, scriptedSubXmlNode, asset);
+            // Look into this, string matters - related to file name, I think
+            _pythonInstance = ops.CreateInstance(pythonType);//, parameters);
             Delegate depCollector = _pythonInstance.GetDependencyCollector();
             SubsystemDependencyFunctions = new Dictionary<string, Delegate>
             {
                 { "DepCollector", depCollector }
             };
 
-            _pythonInstance.Asset = asset;
+            _pythonInstance.Asset = this.Asset;
             _pythonInstance.Name = this.Name;
             DependentSubsystems = new List<Subsystem>();
-
         }
         #endregion
 

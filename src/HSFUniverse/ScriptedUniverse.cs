@@ -12,37 +12,46 @@ using System.Dynamic;
 using System.Xml;
 using UserModel;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace HSFUniverse
 {
-    [Serializable]
-    public class ScriptedUniverse : Domain
+        public class ScriptedUniverse : Domain
     {
         #region Attributes
-        [NonSerialized] private dynamic _pythonInstance;
-        #endregion
+        private dynamic _pythonInstance;
 
+        readonly string src;
+        readonly string className;
+        
+        #endregion
+        
         #region Constructors
+        public ScriptedUniverse(JObject scriptedUniverseJson)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            src = scriptedUniverseJson.GetValue("src", stringCompare).ToString();
+            className = scriptedUniverseJson.GetValue("className", stringCompare).ToString();
+            InitPython(scriptedUniverseJson);
+        }
         public ScriptedUniverse(XmlNode scriptedNode)
         {
-            string pythonFilePath = "", className = "";
-            XmlParser.ParseScriptedSrc(scriptedNode, ref pythonFilePath, ref className);
+            XmlParser.ParseScriptedSrc(scriptedNode, ref src, ref className);
+            InitPython(scriptedNode);
+        }
 
-            if (!pythonFilePath.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
-            {
-                string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
-                pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
-            }
-
+        private void InitPython(params object[] parameters)
+        { 
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
             var p = engine.GetSearchPaths();
+
             p.Add(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\PythonScripting");
             engine.SetSearchPaths(p);
-            engine.ExecuteFile(pythonFilePath, scope);
+            engine.ExecuteFile(src, scope);
             var pythonType = scope.GetVariable(className);
-            _pythonInstance = ops.CreateInstance(pythonType, scriptedNode);
+            _pythonInstance = ops.CreateInstance(pythonType, parameters);
         }
         #endregion
 

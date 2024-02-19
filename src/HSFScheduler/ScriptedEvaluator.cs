@@ -9,6 +9,7 @@ using UserModel;
 using System.IO;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace HSFScheduler
 {
@@ -30,21 +31,25 @@ namespace HSFScheduler
         /// <param name="scriptedNode"></param>
         /// <param name="deps"></param>
         //public ScriptedEvaluator(XmlNode scriptedNode, Dependency deps)
-        public ScriptedEvaluator(XmlNode scriptedNode, List<dynamic> keychain)
+        public ScriptedEvaluator(JObject scriptedJson, List<dynamic> keychain)
         {
-            string pythonFilePath = "", className = "";
-            XmlParser.ParseScriptedSrc(scriptedNode, ref pythonFilePath, ref className);
+            string src = "", className = "";
+            //XmlParser.ParseScriptedSrc(scriptedNode, ref src, ref className);
 
-            if (!pythonFilePath.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
+            JsonLoader<string>.TryGetValue("src", scriptedJson, out src);
+            JsonLoader<string>.TryGetValue("ClassName", scriptedJson, out className);
+
+
+            if (!src.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
             {
                 string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
-                pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
+                src = Path.Combine(baselocation, src);
             }
 
             var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
-            engine.ExecuteFile (pythonFilePath, scope);
+            engine.ExecuteFile (src, scope);
             var pythonType = scope.GetVariable(className);
             _pythonInstance = ops.CreateInstance(pythonType, keychain);
             //_pythonInstance = ops.CreateInstance(pythonType, deps);

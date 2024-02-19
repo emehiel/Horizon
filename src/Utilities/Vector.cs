@@ -5,13 +5,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Xml.Serialization;
-using System.Xml;
-using System.Linq;
+using Newtonsoft.Json;
 
 namespace Utilities
 {
-    [Serializable()]
     public class Vector : ISerializable, IEnumerable
     {
         #region Properties
@@ -20,7 +17,6 @@ namespace Utilities
         /// </summary>
         /// 
         
-        [XmlIgnore]
         public int Length { get; set; }
 
         #endregion
@@ -45,6 +41,16 @@ namespace Utilities
             _elements = new List<double>(new double[n]);
         }
 
+        [JsonConstructor]
+        public Vector(List<object> elements)
+        {
+            _elements = new List<double>();
+            Length = elements.Count;
+            foreach (var e in elements)
+            {
+                _elements.Add(Convert.ToDouble(e));
+            }
+        }
         public Vector(List<double> elements)
         {
             Length = elements.Count;
@@ -525,6 +531,15 @@ namespace Utilities
         public static implicit operator Vector(List<double> c)
         {
             return new Vector(c);
+        }
+
+        public static implicit operator List<double>(Vector v)
+        {
+            List<double> list = new List<double>();
+            foreach(double e in v)
+                list.Add(e);
+
+            return list;
         }
 
         public static explicit operator double(Vector m)

@@ -24,13 +24,13 @@ namespace UniverseUnitTest
         {
             //arrange
             Program programAct = new Program();
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_SysScheduler.xml");
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_SysScheduler.xml");
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
 
             Domain SystemUniverse = new SpaceEnvironment();
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
-            var simInputXMLNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
+            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelFilePath);
+            var simInputXMLNode = XmlParser.ParseSimulationInput(programAct.SimulationFilePath);
 
             Matrix<double> expVect = new Matrix<double>(3, 1, 0.0);
             expVect.SetValue(1, 1, -96543097.3);
@@ -56,13 +56,13 @@ namespace UniverseUnitTest
         {
             //arrange
             Program programAct = new Program();
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_SysScheduler.xml");
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_SysScheduler.xml");
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
 
             Domain SystemUniverse = new SpaceEnvironment();
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
-            var simInputXMLNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath);
+            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelFilePath);
+            var simInputXMLNode = XmlParser.ParseSimulationInput(programAct.SimulationFilePath);
 
             Sun s = new Sun();
 
@@ -80,8 +80,8 @@ namespace UniverseUnitTest
             // make another which iI IN shadow (UMBRA)
 
             //arrange
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Integrator.xml");
-            var modelInputXMLNode2 = XmlParser.GetModelNode(programAct.ModelInputFilePath);
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Integrator.xml");
+            var modelInputXMLNode2 = XmlParser.GetModelNode(programAct.ModelFilePath);
             DynamicState pos2 = new DynamicState(modelInputXMLNode2.FirstChild.FirstChild);
 
             ShadowState shadowExp2 = ShadowState.UMBRA;

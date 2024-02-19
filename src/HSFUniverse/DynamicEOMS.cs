@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Utilities;
+using Newtonsoft.Json;
 
 namespace HSFUniverse
 {
@@ -14,7 +15,6 @@ namespace HSFUniverse
 
         public DynamicEOMS()
         {
-            
         }
 
         /// <summary>

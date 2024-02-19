@@ -59,17 +59,17 @@ class eosensor(HSFSystem.Subsystem):
              pv_norm = m_pv / Matrix[System.Double].Norm(m_pv)
 
              incidenceang = 90 - 180 / Math.PI * Math.Acos(Matrix[System.Double].Dot(pos_norm, pv_norm))
-             self._newState.AddValue(self.INCIDENCE_KEY, timage, incidenceang)
-             self._newState.AddValue(self.INCIDENCE_KEY, timage + 1, 0.0)
-             self._newState.AddValue(self.PIXELS_KEY,timage, pixels)
-             self._newState.AddValue(self.PIXELS_KEY, timage + 1, 0.0)
-             self._newState.AddValue(self.EOON_KEY, ts, True)
-             self._newState.AddValue(self.EOON_KEY, te, False)
+             self._newState.AddValue(self.incidence_key, timage, incidenceang)
+             self._newState.AddValue(self.incidence_key, timage + 1, 0.0)
+             self._newState.AddValue(self.pixels_key,timage, pixels)
+             self._newState.AddValue(self.pixels_key, timage + 1, 0.0)
+             self._newState.AddValue(self.eoon_key, ts, True)
+             self._newState.AddValue(self.eoon_key, te, False)
              #print("EOSensor CanPreform, Imaging Task, IncidenceAng")
              #print(incidenceang)
              #print("EOSensor CanPreform, Imaging Task, Pixels")
              #print(pixels)
-             return True
+         return True
 
     def CanExtend(self, event, universe, extendTo):
         return super(eosensor, self).CanExtend(event, universe, extendTo)
@@ -77,13 +77,13 @@ class eosensor(HSFSystem.Subsystem):
     def Power_asset1_from_EOSensor_asset1(self, event):
         prof1 = HSFProfile[System.Double]()
         prof1[event.GetEventStart(self.Asset)] = 10
-        if (event.State.GetValueAtTime(self.EOON_KEY, event.GetTaskStart(self.Asset)).Item2):
+        if (event.State.GetValueAtTime(self.eoon_key, event.GetTaskStart(self.Asset)).Item2):
             prof1[event.GetTaskStart(self.Asset)] = 60
             prof1[event.GetTaskEnd(self.Asset)] = 10
         return prof1
 
     def SSDR_asset1_from_EOSensor_asset1(self, event):
-        return event.State.GetProfile(self.PIXELS_KEY) / 500
+        return event.State.GetProfile(self.pixels_key) / 500
 
     def DepFinder(self, depFnName):  # Search for method from string input
         fnc = getattr(self, depFnName)

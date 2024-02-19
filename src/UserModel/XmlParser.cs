@@ -15,13 +15,13 @@ namespace UserModel
         /// Parse scripted subsystem xml
         /// </summary>
         /// <param name="node"></param>
-        /// <param name="pythonFilePath"></param>
+        /// <param name="src"></param>
         /// <param name="className"></param>
-        public static void ParseScriptedSrc(XmlNode node, ref string pythonFilePath, ref string className)
+        public static void ParseScriptedSrc(XmlNode node, ref string src, ref string className)
         {
             if (node.Attributes["src"] == null)
                 throw new MissingFieldException("No source file location found in XmlNode");
-            pythonFilePath = node.Attributes["src"].Value.ToString();
+            src = node.Attributes["src"].Value.ToString();
             //if(scriptedSubXmlNode.Attributes["collectorType"] == null)
             //    CollectorType = Type.GetType(scriptedSubXmlNode.Attributes["CollectorType"].Value.ToString());
             if (node.Attributes["className"] == null)

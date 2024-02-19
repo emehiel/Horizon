@@ -4,11 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using Utilities;
 using UserModel;
 using log4net;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 
 namespace HSFUniverse
@@ -26,29 +27,57 @@ namespace HSFUniverse
     /// LLA refers to the geodetic latitude, longitude, and altitude above the planetary ellipsoid.
     /// Units are(Radians, Radians, Kilometers)
     /// </summary>
-    [Serializable]
+
     public class DynamicState
     {
         /// <summary>
         /// SortedList with time and the state data at that time stored in a double Matrix
         /// </summary>
+
+        // Do we want to change DynamicsStateType from ENUM to string?
         public DynamicStateType Type { get; private set; }
+        public IntegratorType IntegratorType { get; private set; }        
+        
         public DynamicEOMS Eoms { get; private set; }
-        public string Name { get; private set; }
+        
         public IntegratorParameters IntegratorParameters = new IntegratorParameters();
-        private PropagationType _propagatorType;
-        private IntegratorOptions _integratorOptions;
+
+        private IntegratorOptions IntegratorOptions = new IntegratorOptions();
+
+        private SortedList<double, Vector> StateData { get; set; }
+
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-        private SortedList<double, Vector> _stateData;
 
         #region Constructors
+
+        public DynamicState(JObject dynamicStateJson)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+
+            // Make this a string...
+            Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), dynamicStateJson.GetValue("type", stringCompare).ToString().ToUpper());
+            Vector ics = JsonConvert.DeserializeObject<Vector>(dynamicStateJson.GetValue("stateData", stringCompare).ToString());
+            StateData = new SortedList<double, Vector>
+            {
+                { SimParameters.SimStartSeconds, ics }
+            };
+            if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI || Type == DynamicStateType.STATIC_LVLH || Type == DynamicStateType.NULL_STATE))
+            {
+                Eoms = EOMFactory.GetEOMS(dynamicStateJson.GetValue("eoms", stringCompare));
+
+                // TODO Set IntegratorOptions to the default for each Integrator Type
+                if(dynamicStateJson.TryGetValue("integratorOptions", stringCompare, out JToken intOptsJson))
+                    IntegratorOptions = JsonConvert.DeserializeObject<IntegratorOptions>(intOptsJson.ToString());
+                else
+                    IntegratorOptions = new IntegratorOptions();
+            }
+            else
+                // TODO Set IntegratorOptions to the default for each Integrator Type
+                Eoms = null;
+        }
+
         public DynamicState(XmlNode dynamicStateXMLNode)
         {
-            if (dynamicStateXMLNode.ParentNode.Attributes["assetName"] != null)
-                Name = dynamicStateXMLNode.ParentNode.Attributes["assetName"].Value.ToString() + "." + "DynamicState";
-            else
-                Name = "Generic.DynamicState";
-
             // TODO add a line to pre-propagate to simEndTime if the type is predetermined
             // TODO catch exception if _type or initial conditions are not set from the XML file
             if (dynamicStateXMLNode.Attributes["DynamicStateType"] != null)
@@ -57,8 +86,8 @@ namespace HSFUniverse
                 Type = (DynamicStateType)Enum.Parse(typeof(DynamicStateType), typeString);
             }
             Vector ics = new Vector(dynamicStateXMLNode.Attributes["ICs"].Value.ToString());
-            _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds/SchedParameters.SimStepSeconds));
-            _stateData.Add(0.0, ics);
+            StateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds/SimParameters.SimStepSeconds));
+            StateData.Add(0.0, ics);
 
             if (!(Type == DynamicStateType.STATIC_LLA || Type == DynamicStateType.STATIC_ECI || Type == DynamicStateType.STATIC_LVLH || Type == DynamicStateType.NULL_STATE))
             {
@@ -67,32 +96,39 @@ namespace HSFUniverse
                 // Returns a null reference if INTEGRATOR is not set in XML
                 XmlNode integratorNode = dynamicStateXMLNode["INTEGRATOR"];
 
-                _integratorOptions = new IntegratorOptions();
+                IntegratorOptions = new IntegratorOptions();
 
                 if (integratorNode != null)
                 {
                     if (integratorNode.Attributes["h"] != null)
-                        _integratorOptions.h = Convert.ToDouble(integratorNode.Attributes["h"].Value);
+                        IntegratorOptions.h = Convert.ToDouble(integratorNode.Attributes["h"].Value);
                     if (integratorNode.Attributes["rtol"] != null)
-                        _integratorOptions.rtol = Convert.ToDouble(integratorNode.Attributes["rtol"].Value);
+                        IntegratorOptions.rtol = Convert.ToDouble(integratorNode.Attributes["rtol"].Value);
                     if (integratorNode.Attributes["atol"] != null)
-                        _integratorOptions.atol = Convert.ToDouble(integratorNode.Attributes["atol"].Value);
+                        IntegratorOptions.atol = Convert.ToDouble(integratorNode.Attributes["atol"].Value);
                     if (integratorNode.Attributes["eps"] != null)
-                        _integratorOptions.eps = Convert.ToDouble(integratorNode.Attributes["eps"].Value);
+                        IntegratorOptions.eps = Convert.ToDouble(integratorNode.Attributes["eps"].Value);
                 }
             }
             else
             {
                 Eoms = null;
-                //_stateDataTimeStep = 30.0;
             }
 
         }
 
+        /// <summary>
+        /// Test Constructor
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="eoms"></param>
+        /// <param name="initialConditions"></param>
         public DynamicState(DynamicStateType type, DynamicEOMS eoms, Vector initialConditions)
         {
-            _stateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds / SchedParameters.SimStepSeconds));
-            _stateData.Add(0.0, initialConditions);
+            StateData = new SortedList<double, Vector>((int)(SimParameters.SimEndSeconds / SimParameters.SimStepSeconds))
+            {
+                { 0.0, initialConditions }
+            };
             Type = type;
             Eoms = eoms;
             //_stateDataTimeStep = stateDataTimeStep;
@@ -102,12 +138,12 @@ namespace HSFUniverse
 
         public Vector InitialConditions()
         {
-            return _stateData.Values.Last();
+            return StateData.Values.Last();
         }
 
         public void Add(double simTime, Vector dynamicState)
         {
-            _stateData.Add(simTime, dynamicState);
+            StateData.Add(simTime, dynamicState);
         }
 
         public Vector DynamicStateECI(double simTime) //Should we be interpolating?
@@ -154,7 +190,7 @@ namespace HSFUniverse
         /// <returns></returns>
         public Matrix<double> Quaternions(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(7, 10)];
+            return StateData[simTime][new MatrixIndex(7, 10)];
         }
 
         /// <summary>
@@ -164,7 +200,7 @@ namespace HSFUniverse
         /// <returns></returns>
         public Matrix<double> EulerRates(double simTime)
         {
-            return _stateData[simTime][new MatrixIndex(11, 13)];
+            return StateData[simTime][new MatrixIndex(11, 13)];
         }
         #endregion
 
@@ -175,29 +211,29 @@ namespace HSFUniverse
         private void PropagateState(double simTime)
         {
             log.Info("Integrating and resampling dynamic state data to "+ simTime + "seconds...");
-            Matrix <double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
+            Matrix <double> tSpan = new Matrix<double>(new double[1, 2] { { StateData.Last().Key, simTime } });
             // Update the integrator parameters using the information in the XML Node
 
-            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions, IntegratorParameters);
+            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), IntegratorOptions, IntegratorParameters);
 
             for (int index = 1; index <= data.Length; index++)
-                _stateData[data[1, index]] = (Vector)data[new MatrixIndex(2, data.NumRows), index];
+                StateData[data[1, index]] = (Vector)data[new MatrixIndex(2, data.NumRows), index];
             log.Info("Done Integrating");
         }
 
         private void DynamicPropagateState()
         {
-            double simTime = _stateData.Last().Key + SchedParameters.SimStepSeconds;
+            double simTime = StateData.Last().Key + SimParameters.SimStepSeconds;
             if (simTime > SimParameters.SimEndSeconds)
                 simTime = SimParameters.SimEndSeconds;
 
-            Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { _stateData.Last().Key, simTime } });
+            Matrix<double> tSpan = new Matrix<double>(new double[1, 2] { { StateData.Last().Key, simTime } });
             // Update the integrator parameters using the information in the XML Node
 
-            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), _integratorOptions, IntegratorParameters);
+            Matrix<double> data = Integrator.RK45(Eoms, tSpan, InitialConditions(), IntegratorOptions, IntegratorParameters);
 
             for (int index = 1; index <= data.Length; index++)
-                _stateData[data[1, index]] = (Vector)data[new MatrixIndex(2, data.NumRows), index];
+                StateData[data[1, index]] = (Vector)data[new MatrixIndex(2, data.NumRows), index];
         }
         /// <summary>
         /// Gets and Sets the dynamic state of an asset in inertial coordinates at the given simulation time.
@@ -223,20 +259,20 @@ namespace HSFUniverse
                     return InitialConditions();
                 else if (Type == DynamicStateType.PREDETERMINED_ECI || Type == DynamicStateType.PREDETERMINED_LLA)
                 {
-                    bool hasNotPropagated = _stateData.Count() == 1;
+                    bool hasNotPropagated = StateData.Count() == 1;
                     if (hasNotPropagated)
                         PropagateState(SimParameters.SimEndSeconds);
 
                     Vector dynamicStateAtSimTime;
 
-                    if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
+                    if (!StateData.TryGetValue(simTime, out dynamicStateAtSimTime))
                     {
-                        int lowerIndex = _stateData.Keys.LowerBoundIndex(simTime);
+                        int lowerIndex = StateData.Keys.LowerBoundIndex(simTime);
                         int slopeInd = 1;
                         if (simTime >= SimParameters.SimEndSeconds)
                             slopeInd = -1;
-                        KeyValuePair<double, Vector> lowerData = _stateData.ElementAt(lowerIndex);
-                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
+                        KeyValuePair<double, Vector> lowerData = StateData.ElementAt(lowerIndex);
+                        KeyValuePair<double, Vector> upperData = StateData.ElementAt(lowerIndex + slopeInd);
 
                         double lowerTime = lowerData.Key;
                         Vector lowerState = lowerData.Value;
@@ -254,26 +290,26 @@ namespace HSFUniverse
                 }
                 else if (Type == DynamicStateType.DYNAMIC_ECI || Type == DynamicStateType.DYNAMIC_LLA)
                 {
-                    bool hasNotPropagated = _stateData.Last().Key <= simTime;
+                    bool hasNotPropagated = StateData.Last().Key <= simTime;
                     do
                     {
                         if (hasNotPropagated)
                         {
                             DynamicPropagateState();
-                            hasNotPropagated = _stateData.Last().Key < simTime;
+                            hasNotPropagated = StateData.Last().Key < simTime;
                         }
                     } while (hasNotPropagated);
 
                     Vector dynamicStateAtSimTime;
 
-                    if (!_stateData.TryGetValue(simTime, out dynamicStateAtSimTime))
+                    if (!StateData.TryGetValue(simTime, out dynamicStateAtSimTime))
                     {
-                        int lowerIndex = _stateData.Keys.LowerBoundIndex(simTime);
+                        int lowerIndex = StateData.Keys.LowerBoundIndex(simTime);
                         int slopeInd = 1;
                         if (simTime >= SimParameters.SimEndSeconds)
                             slopeInd = -1;
-                        KeyValuePair<double, Vector> lowerData = _stateData.ElementAt(lowerIndex);
-                        KeyValuePair<double, Vector> upperData = _stateData.ElementAt(lowerIndex + slopeInd);
+                        KeyValuePair<double, Vector> lowerData = StateData.ElementAt(lowerIndex);
+                        KeyValuePair<double, Vector> upperData = StateData.ElementAt(lowerIndex + slopeInd);
 
                         double lowerTime = lowerData.Key;
                         Vector lowerState = lowerData.Value;
@@ -293,7 +329,7 @@ namespace HSFUniverse
             }
             set
             {
-                _stateData[simTime] = value;
+                StateData[simTime] = value;
             }
         }
 
@@ -303,7 +339,7 @@ namespace HSFUniverse
         /// <param name="targetPositionECI"></param>
         /// <param name="simTime"></param>
         /// <returns></returns>
-        public bool hasLOSTo(Vector targetPositionECI, double simTime)
+        public bool HasLOSTo(Vector targetPositionECI, double simTime)
         {
             return GeometryUtilities.hasLOS(PositionECI(simTime), targetPositionECI);
         }
@@ -314,32 +350,38 @@ namespace HSFUniverse
         /// <returns></returns>
         public override string ToString()
         {
-            var csv = new StringBuilder();
-            string t = Name + "_time,";
-            string rx = Name + "_R_x,";
-            string ry = Name + "_R_y,";
-            string rz = Name + "_R_z,";
-            string vx = Name + "_V_x,";
-            string vy = Name + "_V_y,";
-            string vz = Name + "_V_z,";
-            // header
-            csv.AppendLine(t + rx + ry + rz + vx + vy + vz );
+            // Need to think about this.
+            // Should we also add a list to Dyanmic State that holds the names of each of the states?
+            //     Like StateNames = ['Latitude', 'Longitude', 'Altitude']
+            return Type.ToString();
+        //    var csv = new StringBuilder();
+        //    string t = Name + "_time,";
+        //    string rx = Name + "_R_x,";
+        //    string ry = Name + "_R_y,";
+        //    string rz = Name + "_R_z,";
+        //    string vx = Name + "_V_x,";
+        //    string vy = Name + "_V_y,";
+        //    string vz = Name + "_V_z,";
+        //    // header
+        //    csv.AppendLine(t + rx + ry + rz + vx + vy + vz );
 
-            // data
-            foreach (var d in _stateData)
-                csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6]);
+        //    // data
+        //    foreach (var d in _stateData)
+        //        csv.AppendLine(d.Key + "," + d.Value[1] + "," + d.Value[2] + "," + d.Value[3] + "," + d.Value[4] + "," + d.Value[5] + "," + d.Value[6]);
 
-            return csv.ToString();
+        //    return csv.ToString();
         }
+
         public IntegratorOptions getIntegratorOptions()
         {
-            return _integratorOptions;
+            return IntegratorOptions;
         }
     }
     
     // Dynamic states type supported by HSF
+    // Need to think about this and the alternative below.  This is an issue that Christian may have looked at.
     public enum DynamicStateType { STATIC_LLA, STATIC_ECI, PREDETERMINED_LLA, PREDETERMINED_ECI, DYNAMIC_LLA, DYNAMIC_ECI, STATIC_LVLH, NULL_STATE };
-
+    //public enum DynamicStateType { STATIC, DYNAMIC, PREDETERMINED, NULL };
     // Propagator types supported by HSF
-    public enum PropagationType { TRAPZ, RK4, RK45, SPG4 };
+    public enum IntegratorType { TRAPZ, RK4, RK45, SPG4, NONE };
 }

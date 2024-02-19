@@ -1,5 +1,6 @@
 ﻿using HSFUniverse;
 using MissionElements;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -28,12 +29,15 @@ namespace HSFSystem
         #endregion
 
         #region Constructors
+        public SubTest(JObject subtestJson)
+        {
+            lookup = getList();
+        }
         /// <summary>
         /// Constructor for built in subsystems
         /// Defaults: delay: 5s
         /// </summary>
         /// <param name="TestXmlNode"></param>
-
         public SubTest(XmlNode TestXmlNode)
         {
 

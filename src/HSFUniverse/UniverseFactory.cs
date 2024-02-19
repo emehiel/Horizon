@@ -1,4 +1,5 @@
 ﻿
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,31 @@ namespace HSFUniverse
 {
     public class UniverseFactory
     {
+        public static Domain GetUniverseClass(JObject environmentJson)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            Domain universe = null;
+            string type = environmentJson.GetValue("type", stringCompare).ToString().ToLower();
+
+            if (type.Equals("scripted"))
+            {
+                universe = (Domain)new ScriptedUniverse(environmentJson);
+            }
+            else if (type.Equals("spaceenvironment"))
+            {
+                universe = (Domain)new SpaceEnvironment(environmentJson);
+            }
+            else if (type.Equals("airborneenvironment"))
+            {
+                throw new NotImplementedException("Airborne Environment needs to be implemented!");
+            }
+            else
+            {
+                throw new ArgumentException("Evironment is not set to a HSF Environment type");
+            }
+
+            return universe;
+        }
         /// <summary>
         /// A method to interpret the Xml file and create a universe instance
         /// </summary>

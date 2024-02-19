@@ -35,7 +35,7 @@ namespace HSFSchedulerUnitTest
         {
             //arrange
             Program program = new Program();
-            program.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scripted.xml");
+            program.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scripted.xml");
             //Dependency dep = Dependency.Instance;
             program.LoadEvaluator();
 
@@ -61,13 +61,13 @@ namespace HSFSchedulerUnitTest
         {
             //arrange
             Program program1 = new Program();
-            program1.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scripted.xml");
+            program1.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scripted.xml");
             //Dependency dep = Dependency.Instance;
             //XmlNode simNode = XmlParser.ParseSimulationInput(SimulationInputFilePath);            
             program1.LoadEvaluator();
             
             Program program2 = new Program();
-            program2.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            program2.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
             //XmlNode simNode2 = XmlParser.ParseSimulationInput(SimulationInputFilePath2);
             program2.LoadEvaluator();
 

@@ -8,6 +8,7 @@ using System.Text;
 using Utilities;
 using System.Xml;
 using UserModel;
+using Newtonsoft.Json.Linq;
 
 namespace MissionElements
 {
@@ -926,7 +927,30 @@ namespace MissionElements
 
         #endregion
 
+        public void SetInitialSystemState(JObject stateJson, string keyName)
+        {
+            string type = "";
 
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            if (stateJson.TryGetValue("Type", stringCompare, out JToken typeJson))
+                type = typeJson.Value<string>().ToLower();
+
+            double time = SimParameters.SimStartSeconds;
+
+            // Need to set state value based on state type
+            if (stateJson.TryGetValue("Value", stringCompare, out JToken valueJson))
+                if (type.Equals("int") || type.Equals("integer"))
+                    AddValue(new StateVariableKey<int>(keyName), time, valueJson.Value<int>());
+                else if (type.Equals("matrix"))
+                    AddValue(new StateVariableKey<Matrix<double>>(keyName), time, new Matrix<double>(valueJson.ToString()));
+                else if (type.Equals("double"))
+                    AddValue(new StateVariableKey<double>(keyName), time, valueJson.Value<double>());
+                else if (type.Equals("bool"))
+                    AddValue(new StateVariableKey<bool>(keyName), time, valueJson.Value<bool>());
+                else if (type.Equals("quaternion"))
+                    AddValue(new StateVariableKey<Quaternion>(keyName), time, new Quaternion(valueJson.ToString()));
+
+        }
 
         public void SetInitialSystemState(XmlNode StateNode, string keyName)
         {

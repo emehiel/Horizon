@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using MissionElements;
 using Utilities;
 using System.Xml;
+using Newtonsoft.Json.Linq;
+using UserModel;
 
 namespace HSFSystem
 {
@@ -15,6 +17,26 @@ namespace HSFSystem
         private StateVariableKey<T> _key;
         public ConstraintType Type { get; private set; }
 
+        public SingleConstraint(JObject constraintJson, Subsystem sub)
+        {
+            Subsystems = new List<Subsystem> { sub };
+
+            if (!JsonLoader<string>.TryGetValue("name", constraintJson, out Name))
+                throw new ArgumentException($"Missing constraint name");
+
+            _key = new StateVariableKey<T>(sub.Asset.Name + "." + constraintJson["state"]["key"]);
+            if (!JsonLoader<double>.TryGetValue("value", constraintJson, out _value))
+                throw new ArgumentException($"Missing constraint value");
+
+            if (JsonLoader<string>.TryGetValue("type", constraintJson, out string type))
+            {
+                Enum.TryParse(type, out ConstraintType temp);
+                Type = temp;
+            }
+            else
+                throw new ArgumentException($"Missing constraint type");
+
+        }
         /// <summary>
         /// Constraint to check a single value of the state of a group or single subsystem
         /// </summary>
@@ -23,17 +45,25 @@ namespace HSFSystem
         public SingleConstraint(XmlNode constraintXmlNode, Subsystem sub)
         {
             Subsystems = new List<Subsystem>() { sub };
+
             if (constraintXmlNode.ChildNodes[0] == null)
                 throw new MissingMemberException("Missing StateVarKey for Constraint!");
+            
             _key = new StateVariableKey<T>(constraintXmlNode.ChildNodes[0], constraintXmlNode.ParentNode.Attributes["assetName"].Value.ToString());
+            
             if (constraintXmlNode.Attributes["value"] == null)
                 throw new MissingFieldException("Missing Value Field for Constraint!");
+            
             _value = (T)Convert.ChangeType(constraintXmlNode.Attributes["value"].Value, typeof(T));
+            
             if (constraintXmlNode.Attributes["type"] == null)
                 throw new MissingFieldException("Missing Type Field for Constraint!");
+            
             Type = (ConstraintType)Enum.Parse(typeof(ConstraintType), constraintXmlNode.Attributes["type"].Value);
+            
             if (constraintXmlNode.Attributes["subsystemName"] == null)
                 throw new MissingMemberException("Missing Constraint Name");
+            
             Name = constraintXmlNode.Attributes["subsystemName"].Value.ToLower();
         }
 

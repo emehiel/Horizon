@@ -41,7 +41,7 @@ class power(HSFSystem.Subsystem):
             print("Power Returned via time out")
             return False
 
-        olddod = self._newState.GetLastValue(self.DOD_KEY).Item2
+        olddod = self._newState.GetLastValue(self.dod_key).Item2
         
         # collect power profile out
         powerOut = self.DependencyCollector(event)
@@ -61,7 +61,7 @@ class power(HSFSystem.Subsystem):
         # function returns HSFProfile[System.Double]() object but python reads it as tuple with [0] element as
         # the desired object type
         dodProf = dodrateofchange.lowerLimitIntegrateToProf(es, te, freq, 0.0, exceeded, 0, olddod)
-        self._newState.AddValues(self.DOD_KEY, dodProf[0])
+        self._newState.AddValues(self.dod_key, dodProf[0])
         #print("Power CanPreform, DoD")
         #print(dodProf[0])
         return True
@@ -124,7 +124,7 @@ class power(HSFSystem.Subsystem):
                 solarPanelSolarProfile[time] = self.GetSolarPanelPower(shadow)
                 lastShadow = shadow
             time += freq
-        state.AddValues(self.POWIN_KEY, solarPanelSolarProfile)
+        state.AddValues(self.powin_key, solarPanelSolarProfile)
         return solarPanelSolarProfile
 
     def DepFinder(self, depFnName):  # Search for method from string input

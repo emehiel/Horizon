@@ -31,11 +31,11 @@ namespace HSFSchedulerUnitTest
             Program programAct = new Program();
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_EnviroRTA.xml");
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.ModelInputFilePath = modelInputFilePath;
-            programAct.SimulationInputFilePath = simulationInputFilePath;
+            programAct.ModelFilePath = modelInputFilePath;
+            programAct.SimulationFilePath = simulationInputFilePath;
 
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
-            programAct.LoadTargets();
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.LoadTasks();
 
             //XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
             //XmlNode modelNode = XmlParser.GetModelNode(modelInputFilePath);
@@ -84,11 +84,11 @@ namespace HSFSchedulerUnitTest
             Program programAct = new Program();
             string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_EnviroRTA.xml");
             string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.ModelInputFilePath = modelInputFilePath;
-            programAct.SimulationInputFilePath = simulationInputFilePath;
+            programAct.ModelFilePath = modelInputFilePath;
+            programAct.SimulationFilePath = simulationInputFilePath;
 
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
-            programAct.LoadTargets();
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.LoadTasks();
 
             //XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
             //XmlNode modelNode = XmlParser.GetModelNode(modelInputFilePath);
@@ -162,12 +162,12 @@ namespace HSFSchedulerUnitTest
         public void CanAddTasks()
         {
             Program programAct = new Program();
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_SysScheduler.xml");
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_EnviroRTA.xml");
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_SysScheduler.xml");
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_EnviroRTA.xml");
 
-            XmlNode modelNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
-            programAct.LoadTargets();
+            XmlNode modelNode = XmlParser.GetModelNode(programAct.ModelFilePath);
+            programAct.LoadTasks();
             Asset asset = new Asset(modelNode.ChildNodes[1]);
             SystemState systemState = new SystemState();
 
@@ -288,11 +288,11 @@ namespace HSFSchedulerUnitTest
                 Program programAct = new Program();
                 string modelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_EnviroRTA.xml");
                 string simulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-                programAct.ModelInputFilePath = modelInputFilePath;
-                programAct.SimulationInputFilePath = simulationInputFilePath;
+                programAct.ModelFilePath = modelInputFilePath;
+                programAct.SimulationFilePath = simulationInputFilePath;
 
-                programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
-                programAct.LoadTargets();
+                programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+                programAct.LoadTasks();
 
                 //XmlNode simNode = XmlParser.ParseSimulationInput(simulationInputFilePath);
                 //XmlNode modelNode = XmlParser.GetModelNode(modelInputFilePath);

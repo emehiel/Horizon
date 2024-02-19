@@ -11,6 +11,7 @@ using HSFUniverse;
 using MissionElements;
 using UserModel;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json.Linq;
 
 namespace HSFSystem
 {
@@ -28,6 +29,18 @@ namespace HSFSystem
         #endregion Attributes
 
         #region Constructors
+        public Power(JObject PowerJson)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            JToken paramJson;
+            if (PowerJson.TryGetValue("batterySize", stringCompare, out paramJson))
+                this._batterySize = paramJson.Value<double>();
+            if (PowerJson.TryGetValue("fullSolarPower", stringCompare, out paramJson))
+                this._fullSolarPanelPower = paramJson.Value<double>();
+            if (PowerJson.TryGetValue("penumbraSolarPower", stringCompare, out paramJson))
+                this._penumbraSolarPanelPower = paramJson.Value<double>();
+
+        }
         /// <summary>
         /// Constructor for built in subsystem
         /// Defaults: batterySize = 1000000, fullSolarPanelPower =150, penumbraSolarPanelPower = 75

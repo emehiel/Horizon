@@ -37,7 +37,7 @@ class comm(HSFSystem.Subsystem):
         if self._task.Type == "comm":
             newProf = self.DependencyCollector(event)
             if (newProf.Empty() == False):
-                event.State.SetProfile(self.DATARATE_KEY, newProf)
+                event.State.SetProfile(self.datarate_key, newProf)
                 print("Comm CanPreform, Datarate")
                 print(newProf[0])
         return True
@@ -47,7 +47,7 @@ class comm(HSFSystem.Subsystem):
 
     def Power_asset1_from_Comm_asset1(self, event):
         # print('In Python Dep Fn')
-        return event.State.GetProfile(self.DATARATE_KEY) * 20
+        return event.State.GetProfile(self.datarate_key) * 20
 
     def DepFinder(self, depFnName):  # Search for method from string input
         fnc = getattr(self, depFnName)

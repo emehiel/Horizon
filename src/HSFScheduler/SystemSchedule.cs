@@ -52,7 +52,7 @@ namespace HSFScheduler
                     if (access.AccessStart <= newEventStartTime && newEventStartTime <= access.AccessEnd)
                         taskStarts.Add(access.Asset, newEventStartTime);
                     //  Access starts after Event Start && Access Starts before Step Size
-                    else if (access.AccessStart >= newEventStartTime && access.AccessStart <= newEventStartTime + SchedParameters.SimStepSeconds)
+                    else if (access.AccessStart >= newEventStartTime && access.AccessStart <= newEventStartTime + SimParameters.SimStepSeconds)
                         taskStarts.Add(access.Asset, access.AccessStart);
                     //  Set Task Start to Event Start Time
                     else
@@ -72,11 +72,11 @@ namespace HSFScheduler
                     eventStarts.Add(access.Asset, newEventStartTime);
                     
                     //  If Event Start + Step Size > Sim End Time - Set Event End time to Sim End Time
-                    if (newEventStartTime + SchedParameters.SimStepSeconds > SimParameters.SimEndSeconds)
-                        eventEnds.Add(access.Asset, SchedParameters.SimStepSeconds);
+                    if (newEventStartTime + SimParameters.SimStepSeconds > SimParameters.SimEndSeconds)
+                        eventEnds.Add(access.Asset, SimParameters.SimStepSeconds);
                     //  Else, set Event End time to Event Start Time + Sim Step
                     else
-                        eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+                        eventEnds.Add(access.Asset, newEventStartTime + SimParameters.SimStepSeconds);
                 }
                 else
                 {
@@ -84,7 +84,7 @@ namespace HSFScheduler
                     taskEnds.Add(access.Asset, newEventStartTime);
                     tasks.Add(access.Asset, null);
                     eventStarts.Add(access.Asset, newEventStartTime);
-                    eventEnds.Add(access.Asset, newEventStartTime + SchedParameters.SimStepSeconds);
+                    eventEnds.Add(access.Asset, newEventStartTime + SimParameters.SimStepSeconds);
                 }
 
             }

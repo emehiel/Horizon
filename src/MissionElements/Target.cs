@@ -4,10 +4,11 @@
 using System;
 using System.Xml;
 using HSFUniverse;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace MissionElements
 {
-    [Serializable]
     public class Target
     {
         // The name of the target 
@@ -16,13 +17,35 @@ namespace MissionElements
         // The type of the target (will always be converted to a lowercase string in constructor
         public string Type { get; private set; }
 
-        // The position of the target 
+        // The dynamic state of the target
         public DynamicState DynamicState { get; private set; }
 
         // The value of the target 
         public int Value { get; private set; }
 
         #region Constructors
+        /// <summary>
+        /// Standard constructor.  Creates a Target from JSON data
+        /// </summary>
+        /// <param name="targetJson"></param>
+        public Target(JObject targetJson)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+
+            Name = (string)targetJson.GetValue("name", stringCompare);
+            Type = (string)targetJson.GetValue("type", stringCompare);
+            Value = (int)targetJson.GetValue("value", stringCompare);
+            JObject dynamicStateJson = (JObject)targetJson.GetValue("dynamicState", stringCompare);
+            DynamicState = new DynamicState(dynamicStateJson);
+        }
+
+        /// <summary>
+        /// Unit Test Constructor
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="type"></param>
+        /// <param name="dynamicState"></param>
+        /// <param name="value"></param>
         public Target(String name, string type, DynamicState dynamicState, int value)
         {
             Name = name;

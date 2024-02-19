@@ -21,12 +21,12 @@ namespace HSFSystemUnitTest
             //arrange
             Program programAct = new Program();
 
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelFilePath);
 
-            Stack<Task> systemTasks = programAct.LoadTargets();
+            Stack<Task> systemTasks = programAct.LoadTasks();
             try
             {
                 programAct.LoadSubsystems();
@@ -50,12 +50,12 @@ namespace HSFSystemUnitTest
             //arrange
             Program programAct = new Program();
 
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_access.xml");
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_access.xml");
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_access.xml");
+            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelFilePath);
 
-            Stack<Task> systemTasks = programAct.LoadTargets();
+            Stack<Task> systemTasks = programAct.LoadTasks();
             try
             {
                 programAct.LoadSubsystems();

@@ -4,16 +4,36 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using Utilities;
+using Newtonsoft.Json.Linq;
 
 
 namespace HSFUniverse
 {
     public class EOMFactory
     {
+        public static DynamicEOMS GetEOMS(JToken eomsJson)
+        {
+            string eomsType = ((string)eomsJson["type"]).ToLower();
+            if (eomsType == "scripted")
+            {
+                var eoms = (DynamicEOMS)(new ScriptedEOMS(eomsJson["EOMS"]));
+                return eoms;
+            }
+            else if (eomsType.ToLower() == "orbitaleoms")
+            {
+                DynamicEOMS Eoms = new OrbitalEOMS();
+                return Eoms;
+            }
+            else 
+            { 
+                return null;
+            }
+        }
         public static DynamicEOMS GetEomClass(XmlNode dynamicStateXMLNode)
         {
             string eomsType = dynamicStateXMLNode["EOMS"].GetAttribute("EOMSType");

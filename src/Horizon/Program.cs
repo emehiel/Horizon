@@ -64,14 +64,14 @@ namespace Horizon
             Program program = new Program();
             // Begin the Logger
 
-            List<String> argsList = args.ToList();
+            List<string> argsList = args.ToList();
 
             var M = new Matrix<double>(3, 1, 0);
             Console.WriteLine(M);
             program.log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             program.log.Info("STARTING HSF RUN"); //Do not delete
             program.InitInput(argsList);
-            program.InitOutput();
+            program.InitOutput(argsList);
             program.LoadScenario();
             program.LoadTargets();
             program.LoadSubsystems();
@@ -111,7 +111,7 @@ namespace Horizon
             //Console.ReadKey();
             return 0;
         }
-        public void InitInput(List<String> argsList)
+        public void InitInput(List<string> argsList)
         {
             // This would be in a config file
             string basePath = @"C:\Users\emehiel\Source\Repos\Horizon8\Horizon Working";
@@ -224,11 +224,20 @@ namespace Horizon
             }
 
         }
-        public void InitOutput()
+        public void InitOutput(List<string> argsList)
         {
             // Initialize Output File
             var outputFileName = string.Format("output-{0:yyyy-MM-dd}-*", DateTime.Now);
-            string outputPath = @"C:\HorizonLog\";
+            string outputPath = "";
+
+            if (argsList.Contains("-o"))
+            {
+                int indx = argsList.IndexOf("-o");
+                outputPath = argsList[indx + 1];
+            }
+            else
+                outputPath = @"C:\HorizonLog\";
+
             var txt = ".txt";
             string[] fileNames = System.IO.Directory.GetFiles(outputPath, outputFileName, System.IO.SearchOption.TopDirectoryOnly);
             double number = 0;

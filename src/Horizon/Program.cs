@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Text;
+using System.Linq;
 using HSFScheduler;
 using MissionElements;
 using UserModel;
@@ -32,6 +33,7 @@ namespace Horizon
         public string SimulationFilePath { get; set; }
         public string TaskDeckFilePath { get; set; }
         public string ModelFilePath { get; set; }
+        public string OutputPath { get; set; }
 
         // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
         public Domain SystemUniverse { get; set; }
@@ -60,7 +62,6 @@ namespace Horizon
         public Evaluator SchedEvaluator;
         public List<SystemSchedule> Schedules { get; set; }
         public SystemClass SimSystem { get; set; }
-        public string OutputPath { get; set; }
         public Stack<Task> SystemTasks { get; set; } = new Stack<Task>();
 
         public static int Main(string[] args) //
@@ -68,8 +69,6 @@ namespace Horizon
             Program program = new Program();
 
             // Begin the Logger
-            var M = new Matrix<double>(3, 1, 0);
-            Console.WriteLine(M);
             program.log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             program.log.Info("STARTING HSF RUN"); //Do not delete
             
@@ -116,21 +115,16 @@ namespace Horizon
             Console.ReadKey();
             return 0;
         }
-            // This would be in a config file
-            string basePath = @"C:\Users\emehiel\Source\Repos\Horizon\Horizon Working";
-
-            string developmentPath = @"..\..\..\..\";
+        public void InitInput(List<string> argsList)
+        {
+            // This would be in a config file - not used right now (4/26/24)
+            string basePath = @"C:\Users\emehiel\Source\Repos\Horizon8\";
             string subPath = "";
 
-            bool simulationSet = false, targetSet = false, modelSet = false, outputSet = false;
-
-            // Get the input filenames
-
-            // Can't use -scen with other args
             if (argsList.Contains("-scen"))
-            string subpath = "";
-                List<string> tags = new List<string>() { "-subpath", "-s", "-t", "-m"};
-                foreach(var tag in tags)
+            {
+                List<string> tags = new List<string>() { "-subpath", "-s", "-t", "-m", "-o" };
+                foreach (var tag in tags)
                 {
                     if (argsList.Contains(tag))
                     {
@@ -144,17 +138,22 @@ namespace Horizon
             if (argsList.Contains("-subpath"))
             {
                 int indx = argsList.IndexOf("-subpath");
-                subPath = argsList[indx + 1];
+                subPath = Path.Combine(basePath, argsList[indx + 1]);
             }
 
             if (argsList.Count == 0)
             {
                 argsList.Add("-scen");
                 // Set this to the default scenario you would like to run
-                string scenarioName = "myFirstHSFProject";
+                string scenarioName = "Aeolus";
                 argsList.Add(scenarioName);
+                // This is the path or "subpath" to the Horizon/samples/ directory where the simulation input files are stored.
+                subPath = Path.Combine(DevEnvironment.RepoDirectory, "samples");
             }
 
+            bool simulationSet = false, targetSet = false, modelSet = false; bool outputSet = false;
+
+            // Get the input filenames
             int i = 0;
             foreach (var input in argsList)
             {
@@ -166,11 +165,12 @@ namespace Horizon
                         {
                             case "Aeolus":
                                 // Set Defaults
-                                subPath = @"samples\Aeolus\";
-                                SimulationInputFilePath = developmentPath + subPath + @"AeolusSimulationInput.xml";
-                                TargetDeckFilePath = developmentPath + subPath + @"v2.2-300targets.xml";
+                                //subpath = @"..\..\..\..\samples\Aeolus\";
+                                subPath = Path.Combine(subPath, "Aeolus");
+                                SimulationFilePath = Path.Combine(subPath, "AeolusSimulationInput.json");
+                                TaskDeckFilePath = Path.Combine(subPath, "AeolusTasks.json");
                                 // Asset 1 Scripted, Asset 2 C#
-                                ModelInputFilePath = developmentPath + subPath + @"DSAC_Static_Mod_Scripted.xml";
+                                ModelFilePath = Path.Combine(subPath, "DSAC_Static_Scripted.json");
                                 // Asset 1 mix Scripted/C#, Asset 2 C#
                                 //ModelInputFilePath = subpath + @"DSAC_Static_Mod_PartialScripted.xml"; 
                                 // Asset 1 C#, Asset 2 C#
@@ -181,30 +181,33 @@ namespace Horizon
                                 break;
                             case "myFirstHSFProject":
                                 // Set myFirstHSFProject file paths
-                                subPath = @"samples\myFirstHSFProject\";
-                                SimulationInputFilePath = developmentPath + subPath + @"myFirstHSFScenario.xml";
-                                TargetDeckFilePath = developmentPath + subPath + @"myFirstHSFTargetDeck.xml";
-                                ModelInputFilePath = developmentPath + subPath + @"myFirstHSFSystem.xml";
+                                //subpath = @"..\..\..\..\samples\myFirstHSFProject\";
+                                subPath = Path.Combine(subPath, "myFirstHSFProject");
+                                SimulationFilePath = Path.Combine(subPath, "myFirstHSFScenario.json");
+                                TaskDeckFilePath = Path.Combine(subPath, "myFirstHSFTargetDeck.json");
+                                ModelFilePath = Path.Combine(subPath, "myFirstHSFSystem.json");
                                 simulationSet = true;
                                 targetSet = true;
                                 modelSet = true;
                                 break;
-                            case "myFirstHSFProjectLook":
+                            case "myFirstHSFProjectConstraint":
                                 // Set myFirstHSFProjectConstraint file paths
-                                subPath = @"samples\myFirstHSFProjectConstraint\";
-                                SimulationInputFilePath = developmentPath + subPath + @"myFirstHSFScenario.xml";
-                                TargetDeckFilePath = developmentPath + subPath + @"myFirstHSFTargetDeck.xml";
-                                ModelInputFilePath = developmentPath + subPath + @"myFirstHSFSystemLook.xml";
+                                //subpath = @"..\..\..\..\samples\myFirstHSFProjectConstraint\";
+                                subPath = Path.Combine(subPath, "myFirstHSFProjectConstraint");
+                                SimulationFilePath = Path.Combine(subPath, "myFirstHSFScenario.json");
+                                TaskDeckFilePath = Path.Combine(subPath, "myFirstHSFTargetDeck.json");
+                                ModelFilePath = Path.Combine(subPath, "myFirstHSFSystemLook.json");
                                 simulationSet = true;
                                 targetSet = true;
                                 modelSet = true;
                                 break;
                             case "myFirstHSFProjectDependency":
                                 // Set myFirstHSFProjectDependency file paths
-                                subPath = @"samples\myFirstHSFProjectDependency\";
-                                SimulationInputFilePath = developmentPath + subPath + @"myFirstHSFScenario.xml";
-                                TargetDeckFilePath = developmentPath + subPath + @"myFirstHSFTargetDeck.xml";
-                                ModelInputFilePath = developmentPath + subPath + @"myFirstHSFSystemDependency.xml";
+                                //subpath = @"..\..\..\..\samples\myFirstHSFProjectDependency\";
+                                subPath = Path.Combine(subPath, "myFirstHSFProjectDependency");
+                                SimulationFilePath = Path.Combine(subPath, "myFirstHSFScenario.json");
+                                TaskDeckFilePath = Path.Combine(subPath, "myFirstHSFTargetDeck.json");
+                                ModelFilePath = Path.Combine(subPath, "myFirstHSFSystemDependency.json");
                                 simulationSet = true;
                                 targetSet = true;
                                 modelSet = true;
@@ -212,42 +215,46 @@ namespace Horizon
                         }
                         break;
                     case "-s":
-                        SimulationInputFilePath = developmentPath + subPath + argsList[i];
-                    case " - s":
-                        Console.WriteLine("Using custom simulation file: " + SimulationInputFilePath);
-                        log.Info("Using custom simulation file: " + SimulationInputFilePath);
-                        TargetDeckFilePath = developmentPath + subPath + argsList[i];
-                    case "-t":
-                        Console.WriteLine("Using custom target deck file: " + TargetDeckFilePath);
-                        log.Info("Using custom simulation file: " + TargetDeckFilePath);
-                        ModelInputFilePath = developmentPath + subPath + argsList[i];
-                    case "-m":
+                        SimulationFilePath = Path.Combine(subPath, argsList[i]);
+                        simulationSet = true;
                         break;
-                    case "-o":
-                        OutputPath = argsList[i];
+                    case "-t":
+                        TaskDeckFilePath = Path.Combine(subPath, argsList[i]);
+                        targetSet = true;
+                        break;
+                    case "-m":
+                        ModelFilePath = Path.Combine(subPath, argsList[i]);
+                        modelSet = true;
+                        break;
+                    case "-o": // In the CLI args-in, this would be set as a directory path. 
+                        OutputPath = Path.Combine(subPath, argsList[i]);
                         outputSet = true;
-                        Console.WriteLine("Using custom model file: " + ModelInputFilePath);
-                        log.Info("Using custom model file: " + ModelInputFilePath);
                         break;
                 }
+            }
+            ///add usage statement
+
             if (simulationSet)
-
-            if (!simulationSet)
             {
-                Console.WriteLine("Using simulation file: " + SimulationInputFilePath);
-                log.Info("Using simulation file: " + SimulationInputFilePath);
+                Console.WriteLine("Using simulation file: " + SimulationFilePath);
+                log.Info("Using simulation file: " + SimulationFilePath);
             }
 
-                Console.WriteLine("Using target deck file: " + TargetDeckFilePath);
-                log.Info("Using simulation file: " + TargetDeckFilePath);
+            if (targetSet)
             {
-                log.Info("Using Default Target File");
+                Console.WriteLine("Using target deck file: " + TaskDeckFilePath);
+                log.Info("Using simulation file: " + TaskDeckFilePath);
             }
 
-                Console.WriteLine("Using model file: " + ModelInputFilePath);
-                log.Info("Using model file: " + ModelInputFilePath);
+            if (modelSet)
             {
-                log.Info("Using Default Model File");
+                Console.WriteLine("Using model file: " + ModelFilePath);
+                log.Info("Using model file: " + ModelFilePath);
+            }
+            if (outputSet)
+            {
+                Console.WriteLine("Using output path: " + OutputPath);
+                log.Info("Using output path: " + OutputPath);
             }
 
         }

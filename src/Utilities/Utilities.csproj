@@ -121,6 +121,7 @@
   <ItemGroup>
     <Compile Include="Complex.cs" />
     <Compile Include="DeepCopy.cs" />
+    <Compile Include="DevelopmentEnvironmentSetup.cs" />
     <Compile Include="EOMS.cs" />
     <Compile Include="GeometryUtilities.cs" />
     <Compile Include="Integrator.cs" />

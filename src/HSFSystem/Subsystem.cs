@@ -7,6 +7,7 @@ using Utilities;
 using HSFUniverse;
 using MissionElements;
 using System.Xml;
+using System.Runtime.CompilerServices;
 
 namespace HSFSystem
 {
@@ -18,7 +19,7 @@ namespace HSFSystem
         public bool IsEvaluated { get; set; }
         public Asset Asset { get; set; }
         public virtual List<Subsystem> DependentSubsystems { get; set; } = new List<Subsystem>();
-        public string Name { get; protected set; }
+        public string Name { get; set; }
         //public static string DefaultSubName { get; protected set; }
         public virtual Dictionary<string, Delegate> SubsystemDependencyFunctions { get; set; }
         public List<StateVariableKey<int>> Ikeys { get; private set; } = new List<StateVariableKey<int>>();
@@ -205,6 +206,7 @@ namespace HSFSystem
         /// <returns></returns>
         public static string parseNameFromXmlNode(XmlNode subXmlNode, string assetName)
         {
+            
             string Name;
             if (subXmlNode.Attributes["subsystemName"] != null)
                 Name = assetName + "." + subXmlNode.Attributes["subsystemName"].Value.ToString().ToLower();

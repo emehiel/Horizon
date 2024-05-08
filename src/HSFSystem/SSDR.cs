@@ -10,6 +10,7 @@ using MissionElements;
 using Utilities;
 using log4net;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json.Linq;
 
 namespace HSFSystem
 {
@@ -21,6 +22,13 @@ namespace HSFSystem
         protected StateVariableKey<double> DATABUFFERRATIO_KEY;
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
+        public SSDR(JObject ssdrJson)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            JToken paramJson;
+            if (ssdrJson.TryGetValue("bufferSize", stringCompare, out paramJson))
+                this._bufferSize = paramJson.Value<double>();
+        }
         /// <summary>
         /// Constructor for built in subsystem
         /// Default: BufferSize = 4098
@@ -34,18 +42,6 @@ namespace HSFSystem
             if (SSDRXmlNode.Attributes["bufferSize"] != null)
                 _bufferSize = (double)Convert.ChangeType(SSDRXmlNode.Attributes["bufferSize"].Value.ToString(), typeof(double));
         }
-
-        /// <summary>
-        /// Constructor for use by scripted subsystem
-        /// </summary>
-        /// <param name="SSDRXmlNode"></param>
-        /// <param name="asset"></param>
-        /*
-        public SSDR(XmlNode SSDRXmlNode, Asset asset) : base(SSDRXmlNode, asset)
-        {
-            
-        }
-        */
 
         /// <summary>
         /// An override of the Subsystem CanPerform method

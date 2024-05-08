@@ -24,13 +24,13 @@ namespace HSFSchedulerUnitTest
         {
             //arrange
             Program programAct = new Program();
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_TargValEval.xml");
-            programAct.LoadTargets();
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler_crop.xml");
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_TargValEval.xml");
+            programAct.LoadTasks();
 
             //XmlNode simNode = XmlParser.ParseSimulationInput(programAct.SimulationInputFilePath); // only need this in order to construct asset
-            XmlNode modelNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
+            XmlNode modelNode = XmlParser.GetModelNode(programAct.ModelFilePath);
             //Asset asset = new Asset(modelNode.ChildNodes[1]);
             //trying a fancy way to embed dependent methods
             try

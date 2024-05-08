@@ -28,13 +28,13 @@ namespace HSFSystemUnitTest
         {
             //arrange
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput_Scheduler.xml");
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets_Scheduler.xml");
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
 
             try
             {
-                Stack<Task> systemTasks = programAct.LoadTargets();
+                Stack<Task> systemTasks = programAct.LoadTasks();
                 programAct.LoadSubsystems();
             }
             catch
@@ -43,7 +43,7 @@ namespace HSFSystemUnitTest
             }
 
 
-            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelInputFilePath);
+            var modelInputXMLNode = XmlParser.GetModelNode(programAct.ModelFilePath);
             Dictionary<string, Subsystem> subDic = new Dictionary<string, Subsystem>();
            
             //act

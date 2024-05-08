@@ -16,9 +16,12 @@ using log4net;
 using Utilities;
 using Microsoft.Scripting.Actions.Calls;
 using System.Net.Http.Headers;
-using Microsoft.Scripting.Utils;
-using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Web.Configuration;
+using IronPython.Compiler.Ast;
+using System.Diagnostics.Eventing.Reader;
+using System.Net.Configuration;
 
 namespace Horizon
 {
@@ -26,9 +29,9 @@ namespace Horizon
     {
         public ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        public string SimulationInputFilePath { get; set; }
-        public string TargetDeckFilePath { get; set; }
-        public string ModelInputFilePath { get; set; }
+        public string SimulationFilePath { get; set; }
+        public string TaskDeckFilePath { get; set; }
+        public string ModelFilePath { get; set; }
 
         // Load the environment. First check if there is an ENVIRONMENT XMLNode in the input file
         public Domain SystemUniverse { get; set; }
@@ -65,6 +68,8 @@ namespace Horizon
             Program program = new Program();
 
             // Begin the Logger
+            var M = new Matrix<double>(3, 1, 0);
+            Console.WriteLine(M);
             program.log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             program.log.Info("STARTING HSF RUN"); //Do not delete
             
@@ -73,7 +78,7 @@ namespace Horizon
             program.InitOutput(argsList);
             
             program.LoadScenario();
-            program.LoadTargets();
+            program.LoadTasks();
             program.LoadSubsystems();
             program.LoadEvaluator();
             program.CreateSchedules();
@@ -111,8 +116,6 @@ namespace Horizon
             Console.ReadKey();
             return 0;
         }
-        public void InitInput(List<string> argsList)
-        {
             // This would be in a config file
             string basePath = @"C:\Users\emehiel\Source\Repos\Horizon\Horizon Working";
 
@@ -125,7 +128,7 @@ namespace Horizon
 
             // Can't use -scen with other args
             if (argsList.Contains("-scen"))
-            {
+            string subpath = "";
                 List<string> tags = new List<string>() { "-subpath", "-s", "-t", "-m"};
                 foreach(var tag in tags)
                 {
@@ -210,39 +213,41 @@ namespace Horizon
                         break;
                     case "-s":
                         SimulationInputFilePath = developmentPath + subPath + argsList[i];
-                        simulationSet = true;
-                        break;
-                    case "-t":
+                    case " - s":
+                        Console.WriteLine("Using custom simulation file: " + SimulationInputFilePath);
+                        log.Info("Using custom simulation file: " + SimulationInputFilePath);
                         TargetDeckFilePath = developmentPath + subPath + argsList[i];
-                        targetSet = true;
-                        break;
-                    case "-m":
+                    case "-t":
+                        Console.WriteLine("Using custom target deck file: " + TargetDeckFilePath);
+                        log.Info("Using custom simulation file: " + TargetDeckFilePath);
                         ModelInputFilePath = developmentPath + subPath + argsList[i];
-                        modelSet = true;
+                    case "-m":
                         break;
                     case "-o":
                         OutputPath = argsList[i];
                         outputSet = true;
+                        Console.WriteLine("Using custom model file: " + ModelInputFilePath);
+                        log.Info("Using custom model file: " + ModelInputFilePath);
                         break;
                 }
-            }
-
             if (simulationSet)
+
+            if (!simulationSet)
             {
                 Console.WriteLine("Using simulation file: " + SimulationInputFilePath);
                 log.Info("Using simulation file: " + SimulationInputFilePath);
             }
 
-            if (targetSet)
-            {
                 Console.WriteLine("Using target deck file: " + TargetDeckFilePath);
                 log.Info("Using simulation file: " + TargetDeckFilePath);
+            {
+                log.Info("Using Default Target File");
             }
 
-            if (modelSet)
-            {
                 Console.WriteLine("Using model file: " + ModelInputFilePath);
                 log.Info("Using model file: " + ModelInputFilePath);
+            {
+                log.Info("Using Default Model File");
             }
 
         }
@@ -277,125 +282,252 @@ namespace Horizon
 
         public void LoadScenario()
         {
-            // Find the main input node from the XML input files
-            XmlParser.ParseSimulationInput(SimulationInputFilePath);
-        }
-        public void LoadTargets()
-        {
-            // Load the target deck into the targets list from the XML target deck input file
-            bool targetsLoaded = Task.loadTargetsIntoTaskList(XmlParser.GetTargetNode(TargetDeckFilePath), SystemTasks);
-            if (!targetsLoaded)
+            StreamReader jsonStream = new StreamReader(SimulationFilePath);
+
+            JObject scenarioJson = JObject.Parse(jsonStream.ReadToEnd());
+
+            // Load Scenario Name
+            if (JsonLoader<string>.TryGetValue("name", scenarioJson, out string name))
             {
-                throw new Exception("Targets were not loaded.");
+                Console.WriteLine($"Loading scenario {name}");
+                log.Info($"Loading scenario {name}");
+            }
+            else
+            {
+                string msg = $"Scenario {name} must contain a name.";
+                log.Fatal(msg);
+                Console.WriteLine(msg);
+                throw new ArgumentException(msg);
+            }
+            // Load Base Dependencies
+            if(JsonLoader<JToken>.TryGetValue("dependencies", scenarioJson, out JToken dependenciesJson))
+            {
+                Console.WriteLine($"Base Dependecies Loaded for {name} at {SimulationFilePath}");
+                log.Info($"Base Dependecies Loaded for {name} at {SimulationFilePath}");
+            }
+            else
+            {
+                string msg = $"Base Dependecies not found for {name} at {SimulationFilePath}";
+                log.Fatal(msg);
+                Console.WriteLine(msg);
+                throw new ArgumentException(msg);
+            }
+
+            // Load Simulation Parameters
+            if (JsonLoader<JToken>.TryGetValue("simulationParameters", scenarioJson, out JToken simulationJson))
+            {
+                SimParameters.LoadSimulationJson((JObject)simulationJson, name);
+            }
+            else
+            {
+                string msg = $"Simulation Parameters are not found in input files for scenario {name}.";
+                log.Fatal(msg);
+                Console.WriteLine(msg);
+                throw new ArgumentException(msg);
+            }
+
+            // Load Scheduler Parameters
+            if (JsonLoader<JToken>.TryGetValue("schedulerParameters", scenarioJson, out JToken schedulerJson))
+            {
+                SchedParameters.LoadScheduleJson((JObject)schedulerJson);
+            }
+            else
+            {
+                string msg = $"Scheduler Parameters are not found in input files for scenario {name}.";
+                log.Fatal(msg);
+                Console.WriteLine(msg);
+                throw new ArgumentException(msg);
+            }
+
+        }
+        public void LoadTasks()
+        {
+            StreamReader jsonStream = new StreamReader(TaskDeckFilePath);
+            JObject taskListJson = JObject.Parse(jsonStream.ReadToEnd());
+
+            if (!Task.LoadTasks(taskListJson, SystemTasks))
+            {
+                log.Fatal("Error loading Tasks at LoadTasks()");
+                throw new Exception("Error loading Tasks at LoadTasks()");
             }
 
         }
         public void LoadSubsystems()
         {
+            StreamReader jsonStream = new StreamReader(ModelFilePath);
+            JObject scenarioJson = JObject.Parse(jsonStream.ReadToEnd());
+            string msg;
 
-            // Find the main model node from the XML model input file
-            var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
-
-            var environments = modelInputXMLNode.SelectNodes("ENVIRONMENT");
-
-            // Check if environment count is empty, default is space
-            if (environments.Count == 0)
+            if (scenarioJson != null)
             {
-                SystemUniverse = new SpaceEnvironment();
-                Console.WriteLine("Default Space Environment Loaded");
-                log.Info("Default Space Environment Loaded");
-            }
-            
-            // Load Environments
-            foreach (XmlNode environmentNode in environments)
-            {
-                SystemUniverse = UniverseFactory.GetUniverseClass(environmentNode);
-            }
-
-            var snakes = modelInputXMLNode.SelectNodes("PYTHON");
-            foreach (XmlNode pythonNode in snakes)
-            {
-                throw new NotImplementedException();
-            }
-
-            // Load Assets
-            var assets = modelInputXMLNode.SelectNodes("ASSET");
-            foreach(XmlNode assetNode in assets)
-            {
-                Asset asset = new Asset(assetNode);
-                asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
-                AssetList.Add(asset);
-
-                // Load Subsystems
-                var subsystems = assetNode.SelectNodes("SUBSYSTEM");
-
-                foreach (XmlNode subsystemNode in subsystems)
+                if (JsonLoader<JObject>.TryGetValue("model", scenarioJson, out JObject modelJson))
                 {
-                    Subsystem subsys = SubsystemFactory.GetSubsystem(subsystemNode, asset);
-                    SubList.Add(subsys);
-
-                    // Load States (Formerly ICs)
-                    var States = subsystemNode.SelectNodes("STATE");
-
-                    foreach (XmlNode StateNode in States)
+                    // Load Environment
+                    if (JsonLoader<JObject>.TryGetValue("environment", modelJson, out JObject environmentJson))
                     {
-                        // Parse state node for key name and state type, add the key to the subsys's list of keys, return the key name
-                        string keyName = SubsystemFactory.SetStateKeys(StateNode, subsys);
-                        // Use key name and state type to set initial conditions 
-                        InitialSysState.SetInitialSystemState(StateNode, keyName);
+                        SystemUniverse = UniverseFactory.GetUniverseClass(environmentJson);
+                    }
+                    else
+                    {
+                        SystemUniverse = new SpaceEnvironment();
+                        Console.WriteLine("Default Space Environment Loaded");
+                        log.Info("Default Space Environment Loaded");
                     }
 
-                    if (subsys.Type == "scripted")
+                    // Load Assets
+                    if (JsonLoader<JToken>.TryGetValue("assets", modelJson, out JToken assetsListJson))
                     {
-                        // Load Subsystem Parameters
-                        var parameters = subsystemNode.SelectNodes("PARAMETER");
-
-                        foreach (XmlNode parameterNode in parameters)
+                        foreach (JObject assetJson in assetsListJson)
                         {
-                            SubsystemFactory.SetParamenters(parameterNode, subsys);
+                            Asset asset = new Asset(assetJson);
+                            asset.AssetDynamicState.Eoms.SetEnvironment(SystemUniverse);
+                            AssetList.Add(asset);
+
+                            // Load Subsystems
+                            if (JsonLoader<JToken>.TryGetValue("subsystems", assetJson, out JToken subsystemListJson))
+                            {
+                                foreach (JObject subsystemJson in subsystemListJson)
+                                {
+                                    Subsystem subsys = SubsystemFactory.GetSubsystem(subsystemJson, asset);
+                                    SubList.Add(subsys);
+
+                                    // Load Subsystem States (Formerly ICs)
+                                    if (JsonLoader<JToken>.TryGetValue("states", subsystemJson, out JToken stateListJson))
+                                    {
+                                        foreach (JObject stateJson in stateListJson)
+                                        {
+                                            // Parse state node for key name and state type, add the key to the subsys's list of keys, return the key name
+                                            string keyName = SubsystemFactory.SetStateKeys(stateJson, subsys);
+                                            // Use key name and state type to set initial conditions 
+                                            InitialSysState.SetInitialSystemState(stateJson, keyName);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        msg = $"Warning: Subsystem {subsys.Name} loaded with no states";
+                                        Console.WriteLine(msg);
+                                        log.Warn(msg);
+                                    }
+
+                                    // Load Subsystem Parameters
+                                    if (subsys.Type == "scripted")
+                                    {
+                                        // Load Subsystem Parameters                        
+                                        if (JsonLoader<JToken>.TryGetValue("parameters", subsystemJson, out JToken parameterListJson))
+                                            foreach (JObject parameterJson in parameterListJson)
+                                                SubsystemFactory.SetParameters(parameterJson, subsys);
+                                        else
+                                        {
+                                            msg = $"Warning: Subsystem {subsys.Name} loaded with no parameters";
+                                            Console.WriteLine(msg);
+                                            log.Warn(msg);
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                msg = $"Error loading model for {SimParameters.ScenarioName}.  Error loading subsystems for asset, {asset.Name}";
+                                Console.WriteLine(msg);
+                                log.Fatal(msg);
+                                throw new ArgumentException(msg);
+                            }
+                            // Load Constraints
+                            if (JsonLoader<JToken>.TryGetValue("constraints", assetJson, out JToken constraintListJson))
+                                foreach (JObject constraintJson in constraintListJson)
+                                    ConstraintsList.Add(ConstraintFactory.GetConstraint(constraintJson, SubList, asset.Name));
+                            else
+                            {
+                                msg = $"Warning: Asset {asset.Name} loaded with no constraints";
+                                Console.WriteLine(msg);
+                                log.Warn(msg);
+                            }
                         }
+
+                        // give some numbers here
+                        msg = $"Environment, {AssetList.Count} Assets, Subsystems, and Constraints Loaded";
+                        Console.WriteLine(msg);
+                        log.Info(msg);
+                    }
+                    else
+                    {
+                        msg = $"Error loading assets for {SimParameters.ScenarioName}.";
+                        Console.WriteLine(msg);
+                        log.Fatal(msg);
+                        throw new ArgumentException(msg);
+                    }
+
+                    // Load Dependencies
+                    if (JsonLoader<JToken>.TryGetValue("dependencies", modelJson, out JToken dependencyListJson))
+                    {
+                        foreach (JObject dependencyJson in dependencyListJson)
+                            SubsystemFactory.SetDependencies(dependencyJson, SubList);
+
+                        Console.WriteLine("Dependencies Loaded");
+                        log.Info("Dependencies Loaded");
+                    }
+                    else
+                    {
+                        msg = $"Warning: {SimParameters.ScenarioName} loaded with no dependencies.";
+                        Console.WriteLine(msg);
+                        log.Warn(msg);
                     }
                 }
-
-                // Load Constraints
-                var constraints = assetNode.SelectNodes("CONSTRAINT");
-
-                foreach (XmlNode constraintNode in constraints)
+                else
                 {
-                    ConstraintsList.Add(ConstraintFactory.GetConstraint(constraintNode, SubList, asset));
+                    msg = $"Error loading model for {SimParameters.ScenarioName}.  No model element found in Model File.";
+                    Console.WriteLine(msg);
+                    log.Fatal(msg);
+                    throw new ArgumentException(msg);
                 }
             }
-            Console.WriteLine("Environment, Assets, and Constraints Loaded");
-            log.Info("Environment, Assets, and Constraints Loaded");
-
-            // Load Dependencies
-            var dependencies = modelInputXMLNode.SelectNodes("DEPENDENCY");
-
-            foreach (XmlNode dependencyNode in dependencies)
+            else
             {
-                //var SubFact = new SubsystemFactory();
-                SubsystemFactory.SetDependencies(dependencyNode, SubList);
+                msg = $"Error loading model for {SimParameters.ScenarioName}.  No model file found or loaded.";
+                Console.WriteLine(msg);
+                log.Fatal(msg);
+                throw new ArgumentException(msg);
             }
-            Console.WriteLine("Dependencies Loaded");
-            log.Info("Dependencies Loaded");
         }
 
         public void LoadEvaluator()
         {
-            var modelInputXMLNode = XmlParser.GetModelNode(ModelInputFilePath);
-            var evalNodes = modelInputXMLNode.SelectNodes("EVALUATOR");
-            if (evalNodes.Count > 1)
+            StreamReader jsonStream = new StreamReader(ModelFilePath);
+            JObject scenarioJson = JObject.Parse(jsonStream.ReadToEnd());
+
+            if (scenarioJson != null)
             {
-                throw new NotImplementedException("Too many evaluators in input!");
-                Console.WriteLine("Too many evaluators in input");
-                log.Info("Too many evaluators in input");
+                if (JsonLoader<JObject>.TryGetValue("Model", scenarioJson, out JObject modelJson))
+                {
+                    // Load Environment
+                    if(JsonLoader<JObject>.TryGetValue("Evaluator", modelJson, out JObject evaluatorJson))
+                    {
+                        SchedEvaluator = EvaluatorFactory.GetEvaluator(evaluatorJson, SubList);
+                        Console.WriteLine("Evaluator Loaded");
+                        log.Info("Evaluator Loaded");
+                    }
+                    else
+                    {
+                        SchedEvaluator = new DefaultEvaluator(); // ensures at least default is used
+                        Console.WriteLine("Default Evaluator Loaded");
+                    }
+                }
             }
-            else
-            {
-                SchedEvaluator = EvaluatorFactory.GetEvaluator(evalNodes[0],SubList);
-                Console.WriteLine("Evaluator Loaded");
-                log.Info("Evaluator Loaded");
-            }
+            
+            //var modelInputXMLNode = XmlParser.GetModelNode(ModelFilePath);
+            //var evalNodes = modelInputXMLNode.SelectNodes("EVALUATOR");
+            //if (evalNodes.Count > 1)
+            //{
+            //    throw new NotImplementedException("Too many evaluators in input!");
+            //    Console.WriteLine("Too many evaluators in input");
+            //    log.Info("Too many evaluators in input");
+            //}
+            //else
+            //{
+            //    SchedEvaluator = EvaluatorFactory.GetEvaluator(evalNodes[0],SubList);
+            //    Console.WriteLine("Evaluator Loaded");
+            //    log.Info("Evaluator Loaded");
+            //}
         }
         public void CreateSchedules()
         {

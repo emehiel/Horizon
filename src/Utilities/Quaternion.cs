@@ -41,15 +41,15 @@ namespace Utilities
             entry[entry.Length - 1] = entry[entry.Length - 1].TrimEnd(']');
             if (!(entry.Length == 4))
             {
-                throw new ArgumentException("Invalid Input, must be four doubles in [eta, eps1, eps2, eps3] format");
+                throw new ArgumentException("Invalid Input, must be four doubles in [eps1, eps2, eps3, eta] format");
             }
             try
             {
-                _eta = Double.Parse(entry[0]);
+                _eta = Convert.ToDouble(entry[3]);
                 _eps = new Vector(3);
-                _eps[1] = Double.Parse(entry[1]);
-                _eps[2] = Double.Parse(entry[2]);
-                _eps[3] = Double.Parse(entry[3]);
+                _eps[1] = Convert.ToDouble(entry[0]);
+                _eps[2] = Convert.ToDouble(entry[1]);
+                _eps[3] = Convert.ToDouble(entry[2]);
             }
             catch
             {
@@ -87,7 +87,8 @@ namespace Utilities
 
         public override string ToString()
         {
-            return "[" + _eta + ", " + _eps[1] + ", " + _eps[2] + ", " + _eps[3] +"]";
+            return $"[ {_eps[1]}, {_eps[2]}, {_eps[3]}, {_eta} ]";
+            //return "[" + _eps[1] + ", " + _eps[2] + ", " + _eps[3] + ", " + _eta + "]";
         }
     }
 }

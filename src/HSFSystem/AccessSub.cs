@@ -6,12 +6,14 @@ using System.Collections.Generic;
 using System.Xml;
 using HSFUniverse;
 using MissionElements;
+using Newtonsoft.Json.Linq;
 using Utilities;
 
 namespace HSFSystem
 {
     public class AccessSub : Subsystem
     {
+        public AccessSub(JObject accessJson) {}
         /// <summary>
         /// Constructor for the built in subsystem (cannot be scripted)
         /// </summary>

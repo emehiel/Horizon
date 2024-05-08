@@ -40,11 +40,11 @@ namespace MissionElementsUnitTest
             Stack<Task> tasks = new Stack<Task>();
 
             //act
-            bool targetsnotLoaded = Task.loadTargetsIntoTaskList(TargetNodes, tasks);
+            bool targetsnotLoaded = Task.LoadTasks(TargetNodes, tasks);
 
             string targetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
             TargetNodes = XmlParser.GetTargetNode(targetDeckFilePath);
-            bool loaded = Task.loadTargetsIntoTaskList(TargetNodes, tasks);
+            bool loaded = Task.LoadTasks(TargetNodes, tasks);
 
             //assert
             Assert.IsFalse(targetsnotLoaded);

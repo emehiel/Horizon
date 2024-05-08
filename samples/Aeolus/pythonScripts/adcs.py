@@ -56,7 +56,7 @@ class adcs(HSFSystem.Subsystem):
             else:
                     ts = es + timetoslew
 
-        event.State.AddValue(self.POINTVEC_KEY, ts, m_pv)
+        event.State.AddValue(self.pointvec_key, ts, m_pv)
         # event.State.SetProfile(self.POINTVEC_KEY, HSFProfile[Matrix[System.Double]](ts, m_pv))
         event.SetTaskStart(self.Asset, ts)
         #print("ADCS CanPreform, Pointing Vect")

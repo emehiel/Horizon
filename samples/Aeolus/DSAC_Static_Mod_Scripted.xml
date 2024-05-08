@@ -89,10 +89,7 @@
 			type="scripted"
 			subsystemName = "Power"
 			src = "..\..\..\..\samples\Aeolus\pythonScripts\power.py"
-			className = "power"
-			batterySize="1000000"
-			fullSolarPower="150"
-			penumbraSolarPower="75">
+			className = "power">
       <PARAMETER name="batterySize" type="double" value="1000000" />
       <PARAMETER name="fullSolarPower" type="double" value="150" />
       <PARAMETER name="penumbraSolarPower" type="double" value="75" />

@@ -57,9 +57,9 @@ namespace HSFMainUnitTest
 
             //act
             program.InitInput(inputArg);
-            string actual_simpath = program.SimulationInputFilePath;
-            string actual_targpath = program.TargetDeckFilePath;
-            string actual_modpath = program.ModelInputFilePath;
+            string actual_simpath = program.SimulationFilePath;
+            string actual_targpath = program.TaskDeckFilePath;
+            string actual_modpath = program.ModelFilePath;
 
             //assert
             Assert.AreEqual(expected_modpath, actual_modpath);
@@ -85,9 +85,9 @@ namespace HSFMainUnitTest
 
             //act
             program.InitInput(args);
-            string actual_simpath = program.SimulationInputFilePath;
-            string actual_targpath = program.TargetDeckFilePath;
-            string actual_modpath = program.ModelInputFilePath;
+            string actual_simpath = program.SimulationFilePath;
+            string actual_targpath = program.TaskDeckFilePath;
+            string actual_modpath = program.ModelFilePath;
 
             //assert
             Assert.AreEqual(expected_modpath, actual_modpath);
@@ -136,14 +136,14 @@ namespace HSFMainUnitTest
         {
             //arrange
             Program TestProgram = new Program();
-            TestProgram.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            TestProgram.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
-            TestProgram.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            TestProgram.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            TestProgram.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            TestProgram.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
             double exp_TaskCount = 17;
             double exp_TaskVal = 10;
             
             //act
-            Stack<Task> systemTasks = TestProgram.LoadTargets();
+            Stack<Task> systemTasks = TestProgram.LoadTasks();
             double act_TaskCount = systemTasks.Count;
             Task task = systemTasks.Pop();
             //assert
@@ -160,15 +160,15 @@ namespace HSFMainUnitTest
         {
             //arrange
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Simple.xml");
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel_Simple.xml");
             double expAsset = 1;
             double expConstraint = 1;
             double expDependencies = 2;
             double expDepFcn = 1;
             double expSubs = 3;            
-            programAct.LoadTargets();
+            programAct.LoadTasks();
 
 
             //act
@@ -204,10 +204,10 @@ namespace HSFMainUnitTest
         {
             //arrange
             Program programAct = new Program();
-            programAct.SimulationInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
-            programAct.TargetDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
-            programAct.ModelInputFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
-            programAct.LoadTargets();
+            programAct.SimulationFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestSimulationInput.xml");
+            programAct.TaskDeckFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestTargets.xml");
+            programAct.ModelFilePath = Path.Combine(baselocation, @"UnitTestInputs\UnitTestModel.xml");
+            programAct.LoadTasks();
             programAct.LoadSubsystems();
 
             //act
@@ -234,7 +234,7 @@ namespace HSFMainUnitTest
 
             Program program = new Program();
             program.InitInput(inputArg);
-            Stack<Task> systemTasks = program.LoadTargets();
+            Stack<Task> systemTasks = program.LoadTasks();
             program.LoadSubsystems();
             program.LoadDependencies();
 
@@ -259,7 +259,7 @@ namespace HSFMainUnitTest
             string[] inputArg = { "-s", simulationInputFilePath, "-t", targetDeckFilePath, "-m", modelInputFilePath };
             Program program = new Program();
             program.InitInput(inputArg);
-            Stack<Task> systemTasks = program.LoadTargets();
+            Stack<Task> systemTasks = program.LoadTasks();
             program.LoadSubsystems();
             program.LoadDependencies();
             program.CreateSchedules(systemTasks);

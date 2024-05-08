@@ -44,7 +44,7 @@ namespace HSFScheduler
             ScheduleEvaluator = scheduleEvaluator;
             _startTime = SimParameters.SimStartSeconds;
             _endTime = SimParameters.SimEndSeconds;
-            _stepLength = SchedParameters.SimStepSeconds;
+            _stepLength = SimParameters.SimStepSeconds;
             _maxNumSchedules = SchedParameters.MaxNumScheds;
             _numSchedCropTo = SchedParameters.NumSchedCropTo;
         }

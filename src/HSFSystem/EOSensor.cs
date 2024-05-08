@@ -8,6 +8,7 @@ using MissionElements;
 using System.Xml;
 using Utilities;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json.Linq;
 
 namespace HSFSystem
 {
@@ -29,6 +30,23 @@ namespace HSFSystem
         #endregion
 
         #region Constructors
+        public EOSensor(JObject eoSensorJson)
+        {
+            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            JToken paramJson;
+            if (eoSensorJson.TryGetValue("lowQualityPixels", stringCompare, out paramJson))
+                this._lowQualityPixels = paramJson.Value<double>();
+            if (eoSensorJson.TryGetValue("lowQualityTime", stringCompare, out paramJson))
+                this._lowQualityTime = paramJson.Value<double>();
+            if (eoSensorJson.TryGetValue("midQualityPixels", stringCompare, out paramJson))
+                this._midQualityPixels = paramJson.Value<double>();
+            if (eoSensorJson.TryGetValue("midQualityTime", stringCompare, out paramJson))
+                this._midQualityTime = paramJson.Value<double>();
+            if (eoSensorJson.TryGetValue("highQualityPixels", stringCompare, out paramJson))
+                this._highQualityPixels = paramJson.Value<double>();
+            if (eoSensorJson.TryGetValue("highQualityTime", stringCompare, out paramJson))
+                this._highQualityTime = paramJson.Value<double>();
+        }
         /// <summary>
         /// Constructor for built in subsystem
         /// Defaults: lowQualityPixels = 5000, midQualityPixels = 10000, highQualityPixels = 15000
@@ -134,7 +152,7 @@ namespace HSFSystem
                 _newState.AddValue(EOON_KEY, ts, true);
                 _newState.AddValue(EOON_KEY, te, false);
             }
-                return true;
+            return true;
             
         }
 

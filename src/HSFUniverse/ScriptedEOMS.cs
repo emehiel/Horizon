@@ -13,41 +13,45 @@ using System.Xml;
 using UserModel;
 using Utilities;
 using System.IO;
+using Newtonsoft.Json.Linq;
 
 namespace HSFUniverse
 {
-    [Serializable]
     public class ScriptedEOMS : DynamicEOMS
     {
         #region Attributes
-        [NonSerialized] private dynamic _pythonInstance;
+        private dynamic _pythonInstance;
+
+        private readonly string src;
+        private readonly string className;
         #endregion
 
         #region Constructors
+        public ScriptedEOMS(JToken scriptedEOMsJson)
+        {
+            src = (string)scriptedEOMsJson["src"];
+            className = (string)scriptedEOMsJson["className"];
+            InitPython(scriptedEOMsJson);
+        }
+
         public ScriptedEOMS(XmlNode scriptedNode)
         {
-            string pythonFilePath = "", className = "";
-            XmlParser.ParseScriptedSrc(scriptedNode, ref pythonFilePath, ref className);
+            XmlParser.ParseScriptedSrc(scriptedNode, ref src, ref className);
+            InitPython(scriptedNode);
+        }
 
-            //  I believe this was added by Jack B. for unit testing.  Still need to sort out IO issues, but with this commented out
-            //  the execuitable will look for python files in the same directory as the .exe file is located.
-            //  Need to do better specifying the input and output paths.
-            //if (!pythonFilePath.StartsWith("..\\")) //patch work for nunit testing which struggles with relative paths
-            //{
-            //    string baselocation = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\"));
-            //    pythonFilePath = Path.Combine(baselocation, @pythonFilePath);
-            //}
+        private void InitPython(params object[] parameters)
+        { 
             var engine = Python.CreateEngine();
-            //var engine = Python.CreateEngine();
             var scope = engine.CreateScope();
             var ops = engine.Operations;
             var p = engine.GetSearchPaths();
 
             p.Add(AppDomain.CurrentDomain.BaseDirectory + "\\..\\..\\..\\PythonScripting");
             engine.SetSearchPaths(p);
-            engine.ExecuteFile(pythonFilePath, scope);
+            engine.ExecuteFile(src, scope);
             var pythonType = scope.GetVariable(className);
-            _pythonInstance = ops.CreateInstance(pythonType, scriptedNode);
+            _pythonInstance = ops.CreateInstance(pythonType, parameters);
         }
         #endregion
 

@@ -3,6 +3,7 @@
 
 using HSFUniverse;
 using MissionElements;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -19,6 +20,11 @@ namespace HSFSystem
         #endregion
 
         #region Constructors
+
+        public Comm(JObject commJson)
+        {
+
+        }
         /// <summary>
         /// Constructor for built in subsystem
         /// </summary>

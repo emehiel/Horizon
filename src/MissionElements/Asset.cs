@@ -6,6 +6,7 @@ using System.Xml;
 using System;
 using Utilities;
 using Newtonsoft.Json.Linq;
+using UserModel;
 
 namespace MissionElements
 {
@@ -30,17 +31,25 @@ namespace MissionElements
             AssetDynamicState = dynamicState;
             IsTaskable = false;
         }
-
+        /// <summary>
+        /// Standard constructor from JSON Object
+        /// </summary>
+        /// <param name="assetJson"></param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public Asset(JObject assetJson)
         {
-            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
-            if (assetJson.TryGetValue("name", stringCompare, out JToken nameJson))
-                Name = nameJson.Value<string>().ToLower();
+            if(JsonLoader<string>.TryGetValue("name", assetJson, out string name))
+                Name = name.ToLower();
             else
-                throw new ArgumentException("Missing name for Asset!");
+                throw new ArgumentOutOfRangeException("AssetJson", assetJson.ToString(),"Asset JSON is missing Name element");
 
-            if (assetJson.TryGetValue("dynamicState", stringCompare, out JToken dynamicStateJson))
-                AssetDynamicState = new DynamicState((JObject)dynamicStateJson);
+            if (JsonLoader<JObject>.TryGetValue("dynamicState", assetJson, out JObject dynamicStateJson))
+                AssetDynamicState = new DynamicState(dynamicStateJson);
+            else
+                throw new ArgumentOutOfRangeException("assetJson", assetJson.ToString(), $"Asset, {Name}, is missing Dynamic State element.");
+
+            //if (assetJson.TryGetValue("dynamicState", stringCompare, out JToken dynamicStateJson))
+            //    AssetDynamicState = new DynamicState((JObject)dynamicStateJson);
 
             IsTaskable = false;
         }

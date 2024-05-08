@@ -2,10 +2,14 @@
 // Authors: Morgan Yost (morgan.yost125@gmail.com) Eric A. Mehiel (emehiel@calpoly.edu)
 
 using System;
+using System.Net.Configuration;
+using System.Web.UI.WebControls.WebParts;
 using System.Xml;
 using HSFUniverse;
+using log4net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UserModel;
 
 namespace MissionElements
 {
@@ -23,20 +27,68 @@ namespace MissionElements
         // The value of the target 
         public int Value { get; private set; }
 
+        // Logger for log file
+        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
+
         #region Constructors
         /// <summary>
-        /// Standard constructor.  Creates a Target from JSON data
+        /// Standard constructor.  Creates a Target from JSON data.
         /// </summary>
         /// <param name="targetJson"></param>
         public Target(JObject targetJson)
         {
-            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            string msg;
 
-            Name = (string)targetJson.GetValue("name", stringCompare);
-            Type = (string)targetJson.GetValue("type", stringCompare);
-            Value = (int)targetJson.GetValue("value", stringCompare);
-            JObject dynamicStateJson = (JObject)targetJson.GetValue("dynamicState", stringCompare);
-            DynamicState = new DynamicState(dynamicStateJson);
+            if (JsonLoader<string>.TryGetValue("name", targetJson, out string name))
+            {
+                Name = name;
+            }
+            else
+            { 
+                msg = $"Target loading error.  Targets must have a NAME.";
+                log.Fatal(msg);
+                Console.WriteLine(msg);
+                throw new ArgumentOutOfRangeException(msg);
+            }
+            if (JsonLoader<string>.TryGetValue("type", targetJson, out string type))
+            {
+                Type = type;
+            }
+            else
+            {
+                msg = $"Target loading error.  Targets must have a TYPE for target {Name}.";
+                log.Fatal(msg);
+                Console.WriteLine(msg);
+                throw new ArgumentOutOfRangeException(msg);
+            }
+            if (JsonLoader<string>.TryGetValue("value", targetJson, out int value))
+            {
+                Value = value;
+            }
+            else
+            {
+                msg = $"Target loading error.  Targets must have a VALUE for target {Name}.";
+                log.Fatal(msg);
+                Console.WriteLine(msg);
+                throw new ArgumentOutOfRangeException(msg);
+            }
+            //Name = (string)targetJson.GetValue("name", stringCompare);
+            //Type = (string)targetJson.GetValue("type", stringCompare);
+            //Value = (int)targetJson.GetValue("value", stringCompare);
+            if (JsonLoader<JObject>.TryGetValue("dynamicState", targetJson, out JObject dynamicStateJson))
+            {
+                DynamicState = new DynamicState(dynamicStateJson);
+            }
+            else
+            {
+                msg = $"Target loading error.  Targets must have a DYNAMICS STATE for target {Name}.";
+                log.Fatal(msg);
+                Console.WriteLine(msg);
+                throw new ArgumentOutOfRangeException(msg);
+            }
+            //JObject dynamicStateJson = (JObject)targetJson.GetValue("dynamicState", stringCompare);
+            //DynamicState = new DynamicState(dynamicStateJson);
         }
 
         /// <summary>

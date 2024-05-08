@@ -61,6 +61,7 @@ namespace MissionElements
             Console.WriteLine("Loading tasks into simulation... for scenario {0}.  ", SimParameters.ScenarioName);
 
             int maxTimesPerform = 1;
+            string msg;
 
             if (JsonLoader<JToken>.TryGetValue("tasks", taskListJson, out JToken taskList))
             {
@@ -68,7 +69,7 @@ namespace MissionElements
                 {
                     if(!JsonLoader<string>.TryGetValue("name", taskJson, out string taskName))
                     {
-                        string msg = $"Task loading error.  Tasks must have a NAME.";
+                        msg = $"Task loading error.  Tasks must have a NAME.";
                         log.Fatal(msg);
                         Console.WriteLine(msg);
                         return false;
@@ -76,7 +77,7 @@ namespace MissionElements
 
                     if (!JsonLoader<string>.TryGetValue("type", taskJson, out string taskType))
                     {
-                        string msg = $"Task loading error.  Tasks must have a TYPE.";
+                        msg = $"Task loading error.  Tasks must have a TYPE at task named '{taskName}'";
                         log.Fatal(msg);
                         Console.WriteLine(msg);
                         return false;
@@ -84,7 +85,7 @@ namespace MissionElements
 
                     if (!JsonLoader<int>.TryGetValue("maxTimes", taskJson, out maxTimesPerform))
                     {
-                        string msg = $"Task loading warning.  Task loaded without Max Times parameter for task {taskName}";
+                        msg = $"Task loading warning.  Task loaded without Max Times parameter for task '{taskName}'";
                         log.Warn(msg);
                         Console.WriteLine(msg);
                     }
@@ -93,15 +94,16 @@ namespace MissionElements
                         tasks.Push(new Task(taskName, taskType, new Target((JObject)targetJson), maxTimesPerform));
                     else
                     {
-                        string msg = $"Task loading error.  Tasks must have a target for task {taskName}";
+                        msg = $"Task loading error.  Tasks must have a TARGET for task '{taskName}'";
                         log.Fatal(msg);
                         Console.WriteLine(msg);
                         return false;
                     }
                 }
             }
-            log.Info($"Loaded {tasks.Count} tasks.");
-            Console.WriteLine($"Loaded {tasks.Count} tasks.");
+            msg = $"Loaded {tasks.Count} tasks for scenario {SimParameters.ScenarioName}.";
+            log.Info(msg);
+            Console.WriteLine(msg);
 
             return true;
         }

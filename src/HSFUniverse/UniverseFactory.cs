@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using UserModel;
 
 namespace HSFUniverse
 {
@@ -13,25 +14,33 @@ namespace HSFUniverse
     {
         public static Domain GetUniverseClass(JObject environmentJson)
         {
-            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
-            Domain universe = null;
-            string type = environmentJson.GetValue("type", stringCompare).ToString().ToLower();
+            Domain universe;
+            if (JsonLoader<string>.TryGetValue("type", environmentJson, out string type))
+            {
+                type = type.ToLower();
 
-            if (type.Equals("scripted"))
-            {
-                universe = (Domain)new ScriptedUniverse(environmentJson);
-            }
-            else if (type.Equals("spaceenvironment"))
-            {
-                universe = (Domain)new SpaceEnvironment(environmentJson);
-            }
-            else if (type.Equals("airborneenvironment"))
-            {
-                throw new NotImplementedException("Airborne Environment needs to be implemented!");
+                //string type = environmentJson.GetValue("type", stringCompare).ToString().ToLower();
+
+                if (type.Equals("scripted"))
+                {
+                    universe = (Domain)new ScriptedUniverse(environmentJson);
+                }
+                else if (type.Equals("spaceenvironment"))
+                {
+                    universe = (Domain)new SpaceEnvironment(environmentJson);
+                }
+                else if (type.Equals("airborneenvironment"))
+                {
+                    throw new NotImplementedException("Airborne Environment needs to be implemented!");
+                }
+                else
+                {
+                    throw new ArgumentOutOfRangeException($"Evironment is not set to a HSF Environment type, type {type} was found.");
+                }
             }
             else
             {
-                throw new ArgumentException("Evironment is not set to a HSF Environment type");
+                throw new ArgumentOutOfRangeException($"Evironment must contain a TYPE.");
             }
 
             return universe;

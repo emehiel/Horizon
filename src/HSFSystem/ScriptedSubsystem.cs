@@ -67,13 +67,13 @@ namespace HSFSystem
             StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
 
             this.Asset = asset;
-            if(scriptedSubsystemJson.TryGetValue("name", stringCompare, out JToken nameJason))
-                this.Name = this.Asset.Name.ToLower() + "." + nameJason.ToString().ToLower();
-            else
-            {
-                Console.WriteLine($"Error loading subsytem of type {this.Type}, missing Name attribute");
-                throw new ArgumentException($"Error loading subsytem of type {this.Type}, missing Name attribute\"");
-            }
+            //if(scriptedSubsystemJson.TryGetValue("name", stringCompare, out JToken nameJason))
+            //    this.Name = this.Asset.Name.ToLower() + "." + nameJason.ToString().ToLower();
+            //else
+            //{
+            //    Console.WriteLine($"Error loading subsytem of type {this.Type}, missing Name attribute");
+            //    throw new ArgumentException($"Error loading subsytem of type {this.Type}, missing Name attribute\"");
+            //}
 
             if (scriptedSubsystemJson.TryGetValue("src", stringCompare, out JToken srcJason))
                 this.src = srcJason.ToString();

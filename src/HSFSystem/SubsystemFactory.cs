@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using Microsoft.Scripting.Utils;
 using System.Runtime.InteropServices;
 using System.Linq;
+using UserModel;
 
 namespace HSFSystem
 {
@@ -35,23 +36,39 @@ namespace HSFSystem
         /// <returns></returns>
         public static Subsystem GetSubsystem(JObject SubsystemJson, Asset asset)
         {
-            StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
+            //StringComparison stringCompare = StringComparison.CurrentCultureIgnoreCase;
 
-            string type = "";
-     
-            if(SubsystemJson.TryGetValue("type", stringCompare, out JToken typeJson))
-                type = typeJson.Value<string>().ToLower();
+            //string type = "";
+
+            string msg;
+            if (JsonLoader<string>.TryGetValue("name", SubsystemJson, out string name))
+                name = asset.Name + "." + name.ToLower();
             else
-                throw new ArgumentException($"Missing a subsystem 'type' attribute for subsystem in {asset.Name}");
+            {
+                msg = $"Missing a subsystem 'name' attribute for subsystem in {asset.Name}";
+                Console.WriteLine(msg);
+                log.Error(msg);
+                throw new ArgumentOutOfRangeException(msg);
+            }
 
-            string name = "";
-            //string type = SubsystemJson.Attributes["type"].Value.ToString().ToLower();
+            if (JsonLoader<string>.TryGetValue("type", SubsystemJson, out string type))
+                type = type.ToLower();
+            else
+            {
+                msg = $"Missing a subsystem 'type' attribute for subsystem in {asset.Name}";
+                Console.WriteLine(msg);
+                log.Error(msg);
+                throw new ArgumentOutOfRangeException(msg);
+            }
+
             Subsystem subsystem;
+
             if (type.Equals("scripted"))
             {
                 subsystem = new ScriptedSubsystem(SubsystemJson, asset)
                 {
-                    Type = type
+                    Type = type,
+                    Name = name
                 };
             }
             else // not scripted subsystem
@@ -97,8 +114,10 @@ namespace HSFSystem
                 }
                 else
                 {
-                    log.Fatal("Horizon does not recognize the subsystem: " + type);
-                    throw new MissingMemberException("Unknown Subsystem Type " + type);
+                    msg = $"Horizon does not recognize the subsystem: {type}";
+                    Console.WriteLine(msg);
+                    log.Fatal(msg);
+                    throw new ArgumentOutOfRangeException(msg);
                 }
                 // Below assignment should NOT happen when sub is scripted, that is handled in ScriptedSubsystem
                 subsystem.DependentSubsystems = new List<Subsystem>();

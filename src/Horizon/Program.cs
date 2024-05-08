@@ -21,6 +21,7 @@ using Newtonsoft.Json.Linq;
 using System.Web.Configuration;
 using IronPython.Compiler.Ast;
 using System.Diagnostics.Eventing.Reader;
+using System.Net.Configuration;
 
 namespace Horizon
 {
@@ -311,6 +312,7 @@ namespace Horizon
         {
             StreamReader jsonStream = new StreamReader(ModelFilePath);
             JObject scenarioJson = JObject.Parse(jsonStream.ReadToEnd());
+            string msg;
 
             if (scenarioJson != null)
             {
@@ -318,7 +320,9 @@ namespace Horizon
                 {
                     // Load Environment
                     if (JsonLoader<JObject>.TryGetValue("environment", modelJson, out JObject environmentJson))
+                    {
                         SystemUniverse = UniverseFactory.GetUniverseClass(environmentJson);
+                    }
                     else
                     {
                         SystemUniverse = new SpaceEnvironment();
@@ -338,7 +342,6 @@ namespace Horizon
                             // Load Subsystems
                             if (JsonLoader<JToken>.TryGetValue("subsystems", assetJson, out JToken subsystemListJson))
                             {
-
                                 foreach (JObject subsystemJson in subsystemListJson)
                                 {
                                     Subsystem subsys = SubsystemFactory.GetSubsystem(subsystemJson, asset);
@@ -357,7 +360,9 @@ namespace Horizon
                                     }
                                     else
                                     {
-                                        // Log warning, subsystems has no states
+                                        msg = $"Warning: Subsystem {subsys.Name} loaded with no states";
+                                        Console.WriteLine(msg);
+                                        log.Warn(msg);
                                     }
 
                                     // Load Subsystem Parameters
@@ -369,14 +374,19 @@ namespace Horizon
                                                 SubsystemFactory.SetParameters(parameterJson, subsys);
                                         else
                                         {
-                                            // Log warning scripted subsystem has no parameters
+                                            msg = $"Warning: Subsystem {subsys.Name} loaded with no parameters";
+                                            Console.WriteLine(msg);
+                                            log.Warn(msg);
                                         }
                                     }
                                 }
                             }
                             else
                             {
-                                // Log Subsystem Load Error
+                                msg = $"Error loading model for {SimParameters.ScenarioName}.  Error loading subsystems for asset, {asset.Name}";
+                                Console.WriteLine(msg);
+                                log.Fatal(msg);
+                                throw new ArgumentException(msg);
                             }
                             // Load Constraints
                             if (JsonLoader<JToken>.TryGetValue("constraints", assetJson, out JToken constraintListJson))
@@ -384,18 +394,23 @@ namespace Horizon
                                     ConstraintsList.Add(ConstraintFactory.GetConstraint(constraintJson, SubList, asset.Name));
                             else
                             {
-                                //log warning, no constraints loaded
+                                msg = $"Warning: Asset {asset.Name} loaded with no constraints";
+                                Console.WriteLine(msg);
+                                log.Warn(msg);
                             }
                         }
 
                         // give some numbers here
-                        string msg = $"Environment, {AssetList.Count} Assets, Subsystems, and Constraints Loaded";
+                        msg = $"Environment, {AssetList.Count} Assets, Subsystems, and Constraints Loaded";
                         Console.WriteLine(msg);
                         log.Info(msg);
                     }
                     else
                     {
-                        // Log Asset Load Error
+                        msg = $"Error loading assets for {SimParameters.ScenarioName}.";
+                        Console.WriteLine(msg);
+                        log.Fatal(msg);
+                        throw new ArgumentException(msg);
                     }
 
                     // Load Dependencies
@@ -409,13 +424,22 @@ namespace Horizon
                     }
                     else
                     {
-                        // Log warning, no dependencies loaded
+                        msg = $"Warning: {SimParameters.ScenarioName} loaded with no dependencies.";
+                        Console.WriteLine(msg);
+                        log.Warn(msg);
                     }
+                }
+                else
+                {
+                    msg = $"Error loading model for {SimParameters.ScenarioName}.  No model element found in Model File.";
+                    Console.WriteLine(msg);
+                    log.Fatal(msg);
+                    throw new ArgumentException(msg);
                 }
             }
             else
             {
-                string msg = $"Error loading model for {SimParameters.ScenarioName}.  No model found in Model File.";
+                msg = $"Error loading model for {SimParameters.ScenarioName}.  No model file found or loaded.";
                 Console.WriteLine(msg);
                 log.Fatal(msg);
                 throw new ArgumentException(msg);

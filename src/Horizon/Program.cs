@@ -67,11 +67,27 @@ namespace Horizon
             // Begin the Logger
             program.log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
             program.log.Info("STARTING HSF RUN"); //Do not delete
-            
-            List<string> argsList = args.ToList();
-            program.InitInput(argsList);
-            program.InitOutput(argsList);
-            
+
+            // Define the path to the ModelBase folder relative to the executable
+            string modelBasePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\..\samples\ModelBase");
+            modelBasePath = Path.GetFullPath(modelBasePath); // Convert to absolute path
+
+
+            if (args.Contains("ModelBase")) // Just to make sure not intervening with any of the other sim input files 
+            {   // Generate the input file using the provided arguments
+                InputFileGenerator generator = new InputFileGenerator(modelBasePath);
+                generator.GenerateInputFile(args);
+
+                program.SimulationInputFilePath = Path.Combine(modelBasePath, "ModelBaseScenario.xml");
+            }
+            else
+            {
+                List<string> argsList = args.ToList();
+                program.InitInput(argsList);
+            }
+
+            program.InitOutput(args.ToList());
+
             program.LoadScenario();
             program.LoadTargets();
             program.LoadSubsystems();
@@ -148,7 +164,7 @@ namespace Horizon
             {
                 argsList.Add("-scen");
                 // Set this to the default scenario you would like to run
-                string scenarioName = "myFirstHSFProject";
+                string scenarioName = "Aeolus";
                 argsList.Add(scenarioName);
             }
 
@@ -202,6 +218,16 @@ namespace Horizon
                                 SimulationInputFilePath = developmentPath + subPath + @"myFirstHSFScenario.xml";
                                 TargetDeckFilePath = developmentPath + subPath + @"myFirstHSFTargetDeck.xml";
                                 ModelInputFilePath = developmentPath + subPath + @"myFirstHSFSystemDependency.xml";
+                                simulationSet = true;
+                                targetSet = true;
+                                modelSet = true;
+                                break;
+                            case "ModelBase":
+                                // Set ModelBase file paths
+                                subPath = @"samples\ModelBase\";
+                                SimulationInputFilePath = developmentPath + subPath + @"ModelBaseScenario.xml";
+                                TargetDeckFilePath = developmentPath + subPath + @"ModelBaseTargetDeck.xml";
+                                ModelInputFilePath = developmentPath + subPath + @"ModelBaseSystemDependency.xml";
                                 simulationSet = true;
                                 targetSet = true;
                                 modelSet = true;

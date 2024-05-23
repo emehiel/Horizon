@@ -1,0 +1,43 @@
+<MODEL>
+	<ASSET assetName="Asset1">
+		<DynamicState
+            DynamicStateType="PREDETERMINED_ECI"
+            ICs="[7378.137; 0.0; 0.0; 0.0; 6.02088; 4.215866]">
+			<EOMS EOMSType="orbital_EOMS"/>
+		</DynamicState>
+
+		<SUBSYSTEM type="Access" subsystemName="Access"/>
+
+		<SUBSYSTEM
+            type="scripted"
+            subsystemName="Power"
+            src="..\..\..\..\samples\ModelBase\power.py"
+            className="power">
+			<PARAMETER name="batterySize" type="double" value="1000000"/>
+			<PARAMETER name="solarCellEfficiency" type="double" value="0.2"/>
+			<PARAMETER name="solarCellArea" type="double" value="1.0"/>
+			<PARAMETER name="fullSolarPower" type="double" value="150"/>
+			<PARAMETER name="penumbraSolarPower" type="double" value="75"/>
+			<STATE
+                type="Double"
+                name="DOD_KEY"
+                key="DepthofDischarge"
+                value="0.0"/>
+			<STATE
+                type="Double"
+                name="POWIN_KEY"
+                key="SolarPanelPowerIn"
+                value="0.0"/>
+		</SUBSYSTEM>
+
+		<CONSTRAINT
+            value="0.25"
+            subsystemName="Power"
+            type="FAIL_IF_HIGHER"
+            name="con1">
+			<STATEVAR type="Double" key="DepthofDischarge"/>
+		</CONSTRAINT>
+
+	</ASSET>
+
+</MODEL>

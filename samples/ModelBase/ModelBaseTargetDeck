@@ -1,0 +1,30 @@
+<TARGETDECK>
+    <TARGET
+        TargetName="SunlitPeriod1"
+        TargetType="TimeWindow"
+        TaskType="POWER"
+        MaxTimes="1"
+        Value="10">
+        <DynamicState
+            DynamicStateType="STATIC_LLA"
+            ICs="[0.0; 0.0; 0.0]">
+        </DynamicState>
+        <TimeWindow
+            Start="2460454.0"
+            End="2460455.0"/>
+    </TARGET>
+    <TARGET
+        TargetName="EclipsePeriod1"
+        TargetType="TimeWindow"
+        TaskType="POWER"
+        MaxTimes="1"
+        Value="1">
+        <DynamicState
+            DynamicStateType="STATIC_LLA"
+            ICs="[0.0; 0.0; 0.0]">
+        </DynamicState>
+        <TimeWindow
+            Start="2460454.0"
+            End="2460455.0"/>
+    </TARGET>
+</TARGETDECK>

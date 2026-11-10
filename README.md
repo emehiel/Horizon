@@ -1,33 +1,84 @@
-# Horizon Simulation Framework
-## Introduction
-The Horizon Simulation Framework is a modeling and simulation tool which takesmodels,  targets  and  constraints  and  outputs  schedules  for  the  modeled  system  to capture targets within constraints.  It is a powerful systems engineering and mission planning tool because it can be used in initial planning to asses feasibility of a mission concept, in mission design and verification to find leverage points and bottlenecks and iterate designs, and in implementation to determine the final mission schedule that the system will exicute. 
+![Horizon Simulation Framework banner](assets/hsf-banner.png)
 
-To perform all these functions, Horizon only needs three relatively simple input arguments, a target deck,  a model comprised of subsystems,  and simulation parameters,  in  the  form  of  xml  documents. If a desired subsystem, environment of equation of motion does not exist in the current Horizon modeling library, a user may include their own custom model file written in python (or C#). It  returns  schedules,  which  is  are lists  of  successfully  completed  tasks  with  start  and  end  times. The schedules represent efficient ways that the proposed system can achieve the desired goals of the mission.  Because Horizon is split into two independent components, modeling tools and a timedriven simulation algorithm, the Horizon can simulate any model in any domain, without increases in complexity. 
+<p align="center">
+  <img src="assets/hsf-logo.png" alt="HSF logo" width="180">
+</p>
 
-Check out our [wiki](https://github.com/emehiel/Horizon/wiki) for more information about Horizon and to see [examples](https://github.com/emehiel/Horizon/wiki/Example:-Aeolus) of past mission simulations. For those looking to dive into the details about how to create your own models and simulation, check out our User Guide, which describes the building blocks of a model
-## Installation Instructions
-To use Horizon Simulation Framework, simply download the repository and execute the ???????
+# Horizon Simulation Framework (HSF)
 
-For contributers who want to add new features, it will be useful to download [Visual Studio Community Edition](https://visualstudio.microsoft.com/downloads/).  
-## Contribute
-Both users and developers can contribute to Horizon.  First project ideas and example missions are organized in the wiki for new users. Users contribute greatly to the project by adding new models and instances of missions to inspire future users.  New developers can get ideas for thier first contribution under the [Projects tab](https://github.com/emehiel/Horizon/projects).  Prospective contributers can find inspiration for simple new features and regressed features to reintroduce. 
+HSF is a simulation framework for exploring feasible task schedules in complex systems. It combines dynamic programming with discrete-event simulation and a user-defined system model. The model evaluates proposed tasks, checks system constraints, and tracks changes in system state over time.
 
-Please read the contribution guidelines and Code of Conduct if you'd like to contribute to this project.
-## Contribution Guidelines
-If you are thinking about contributing, please read our [contribution guidelines](https://github.com/emehiel/Horizon/wiki/Contribution-Guidelines) for where to find issues and requested features, standards for code quality, and the recommended steps for a successful contribution.
-## Code of Conduct
-[Code of Conduct for Contributers](Horizon/wiki/CODE_OF_CONDUCT.md)
+## Why HSF
 
-Credit: GitHub
+Many system-level requirements describe how a system must perform in use. Those requirements can be difficult to verify before the full system is operational. HSF lets a user model system behavior and evaluate candidate schedules against that model.
+
+The framework separates schedule generation from system behavior. The scheduler proposes tasks and candidate schedules. A modular system model determines whether each task can be performed and how it changes the system state.
+
+## How it works
+
+At a high level, HSF:
+
+1. Generates candidate schedules by proposing tasks within their available access windows.
+2. Evaluates each proposed task against the system model and its constraints.
+3. Retains feasible schedules and scores them against user-defined objectives or requirements.
+
+Core concepts include:
+
+- **Task:** an action for an asset to perform at a target.
+- **Event:** a task together with the system state at a simulation time step.
+- **Schedule:** a time-ordered collection of events.
+- **Subsystem:** a modular model element that defines system capabilities and state changes.
+- **Constraint:** a condition that a subsystem or system state must satisfy.
+- **Dependency:** a defined interface through which subsystems exchange information.
+
+## Visualization with Cesium ion
+
+A Cesium ion-based visualization effort is underway as an important companion to the simulation framework. It is intended to make mission scenarios and simulation results easier to explore in an interactive geospatial view. The visualization project is in progress; add its current capabilities, data flow, and relationship to HSF runs here as those details are established.
+
+## Example: Aeolus mission
+
+The project presentation demonstrates HSF with an Earth-observing satellite scenario named Aeolus. The example models a three-revolution mission and reports target-imaging and asset-state outputs. The presentation's v3.0 target-imaging chart reports **307 hits** for that example; treat this as an illustrative result, not a general performance benchmark.
+
+Example outputs shown include target hits, sensor on/off state, solar-panel power, battery depth of discharge, data rate, buffer fill ratio, and image pixel count.
+
+## Example applications
+
+The project materials identify examples involving:
+
+- Thermal soaring
+- CubeSats
+- Sounding rockets
+- UAV swarm search and rescue
+- A 6U space telescope constellation
+- Lunar Gateway trajectory analysis
+
+## Getting started
+
+> **Draft note:** Confirm the current supported language, dependencies, installation steps, and a runnable example before publishing this section.
+
+1. Install the project dependencies: **[add instructions]**
+2. Run the example: **[add command or notebook link]**
+3. Review the generated schedules and simulation outputs: **[add output location or viewer instructions]**
+
+## Documentation
+
+- [Academic documentation](https://github.com/emehiel/Horizon/wiki/Academic-Documentation)
+- **Cesium ion visualization documentation:** [add repository or project link]
+
+## Project status
+
+**Status:** **[confirm current development status and supported release]**
+
+The material used to prepare this draft describes the framework and example scenarios but does not specify a current release, installation workflow, license, or contribution process. Add those project details before treating this README as final.
+
+## Contributing
+
+Contribution guidelines: **[add link or instructions]**
+
 ## License
-[![The MIT License](https://img.shields.io/badge/License-MIT-green)](https://mit-license.org/)
-## Credits
-Cory O'Connor
 
-[Dr. Eric Mehiel](https://github.com/emehiel)
+License: **[add license name and link]**
 
-[Morgan Yost](https://github.com/moyodancer)
+## Citation
 
-Jack Balfour
-## Get in touch
-Questions can be addressed to Eric Mehiel at emehiel@calpoly.edu.  Please read (or at least ctrl+F) the Wiki, contribution guidelines, and User Guide before emailing.  
+If you use HSF in academic work, cite: **[add preferred citation]**
